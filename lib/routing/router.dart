@@ -1,0 +1,271 @@
+import 'package:Doctors_App/features/authentication/ui/sign_up_screen.dart';
+import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
+import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
+import 'package:Doctors_App/features/home/ui/app_drawer.dart';
+import 'package:Doctors_App/features/product/model/product_tier.dart';
+import 'package:Doctors_App/features/product/ui/widgets/my_plans_widgets.dart';
+import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
+import 'package:Doctors_App/features/product/ui/product_view.dart';
+import 'package:Doctors_App/features/profile/ui/contact_us.dart';
+import 'package:Doctors_App/features/profile/ui/terms_conditions_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../features/admindocs/ui/admin_docs_screen.dart';
+import '../features/authentication/ui/sign_in_screen.dart';
+import '../features/forgot_password/ui/create_new_password.dart';
+import '../features/helpdesk/chat_view.dart';
+import '../features/helpdesk/help_screen.dart';
+import '../features/helpdesk/ui/widgets/add_support_247_screen.dart';
+import '../features/helpdesk/ui/widgets/my_queries_screen.dart';
+import '../features/helpdesk/ui/widgets/query_details_screen.dart';
+import '../features/home/ui/home_screen.dart';
+import '../features/idcard/ui/id_card_screen.dart';
+import '../features/main/ui/main_screen.dart';
+import '../features/notification/ui/notification_screen.dart';
+import '../features/onboarding/ui/splash_screen.dart';
+import '../features/product/model/product_model.dart';
+import '../features/product/ui/my_plans_view.dart';
+import '../features/product/ui/product_hub_view.dart';
+import '../features/product/ui/purchase_wizard_screen.dart';
+import '../features/profile/ui/about_us_screen.dart';
+import '../features/profile/ui/appearances_screen.dart';
+import '../features/profile/ui/languages_screen.dart';
+import '../features/profile/ui/privacy_policy_screen.dart';
+import 'routes.dart';
+
+enum SlideDirection { right, left, up, down }
+
+extension GoRouterStateExtension on GoRouterState {
+  SlideRouteTransition slidePage(
+    Widget child, {
+    SlideDirection direction = SlideDirection.left,
+  }) {
+    return SlideRouteTransition(
+      key: pageKey,
+      child: child,
+      direction: direction,
+    );
+  }
+}
+
+class SlideRouteTransition extends CustomTransitionPage<void> {
+  SlideRouteTransition({
+    required super.key,
+    required super.child,
+    SlideDirection direction = SlideDirection.left,
+  }) : super(
+         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+           final curve = CurvedAnimation(
+             parent: animation,
+             curve: Curves.easeInOut,
+           );
+
+           Offset begin;
+           switch (direction) {
+             case SlideDirection.right:
+               begin = const Offset(-1.0, 0.0);
+               break;
+             case SlideDirection.left:
+               begin = const Offset(1.0, 0.0);
+               break;
+             case SlideDirection.up:
+               begin = const Offset(0.0, 1.0);
+               break;
+             case SlideDirection.down:
+               begin = const Offset(0.0, -1.0);
+               break;
+           }
+           final tween = Tween(begin: begin, end: Offset.zero);
+           final offsetAnimation = tween.animate(curve);
+
+           return SlideTransition(position: offsetAnimation, child: child);
+         },
+       );
+}
+
+final GoRouter router = GoRouter(
+  initialLocation: Routes.splash,
+  routes: [
+    GoRoute(
+      path: Routes.splash,
+      pageBuilder: (context, state) => state.slidePage(const SplashScreen()),
+    ),
+    GoRoute(
+      path: Routes.login,
+      pageBuilder: (context, state) => state.slidePage(const SignInScreen()),
+    ),
+    GoRoute(
+      path: Routes.appDrawer,
+      pageBuilder: (context, state) => state.slidePage(const AppDrawer()),
+    ),
+    GoRoute(
+      path: Routes.register,
+      pageBuilder: (context, state) => state.slidePage(const SignUpScreen()),
+    ),
+    GoRoute(
+      path: Routes.main,
+      pageBuilder: (context, state) => state.slidePage(const MainScreen()),
+    ),
+
+    GoRoute(
+      path: Routes.appearances,
+      pageBuilder: (context, state) =>
+          state.slidePage(const AppearancesScreen()),
+    ),
+    GoRoute(
+      path: Routes.planListScreen,
+      pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
+    ),
+    GoRoute(
+      path: Routes.productList,
+      pageBuilder: (context, state) => state.slidePage(const ProductView()),
+    ),
+
+    GoRoute(
+      path: Routes.productHub,
+      builder: (context, state) => const ProductHubView(),
+    ),
+    GoRoute(
+      path: Routes.productList,
+      builder: (context, state) => const ProductView(),
+    ),
+    GoRoute(
+      path: Routes.myPlans,
+      builder: (context, state) => const MyPlansView(),
+    ),
+    GoRoute(
+      path: Routes.purchaseWizard,
+      builder: (context, state) {
+        final args = state.extra as (Product, TierPlan, String, double, double);
+        return PurchaseWizardScreen(
+          product: args.$1,
+          tier: args.$2,
+          duration: args.$3,
+          sumAssured: args.$4,
+          premium: args.$5,
+        );
+      },
+    ),
+    GoRoute(
+      path: Routes.myPlansScreen,
+      pageBuilder: (context, state) => state.slidePage(const MyPlansWidgets()),
+    ),
+
+
+    GoRoute(
+      path: Routes.languages,
+      pageBuilder: (context, state) => state.slidePage(const LanguagesScreen()),
+    ),
+
+    GoRoute(
+      path: Routes.homeScreen,
+      pageBuilder: (context, state) => state.slidePage(HomeScreen()),
+    ),
+    GoRoute(
+      path: Routes.aboutUs,
+      pageBuilder: (context, state) {
+        final comingFromHome = state.extra as bool? ?? false;
+
+        return state.slidePage(AboutUsScreen(showBack: comingFromHome));
+      },
+    ),
+    GoRoute(
+      path: Routes.privacyPolicy,
+      pageBuilder: (context, state) => state.slidePage(PrivacyPolicyScreen()),
+    ),
+    GoRoute(
+      path: Routes.termsAndCondition,
+      pageBuilder: (context, state) => state.slidePage(TermsConditionsScreen()),
+    ),
+    GoRoute(
+      path: Routes.contactUs,
+      pageBuilder: (context, state) => state.slidePage(ContactUsPage()),
+    ),
+    GoRoute(
+      path: Routes.notification,
+      pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
+    ),
+
+    // GoRoute(
+    //   path: Routes.overview,
+    //   pageBuilder: (context, state) => state.slidePage(OverviewScreen()),
+    // ),
+    GoRoute(
+      path: Routes.adminDocs,
+      pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
+    ),
+    GoRoute(
+      path: Routes.idCard,
+      pageBuilder: (context, state) => state.slidePage(IdCardScreen()),
+    ),
+    GoRoute(
+      path: Routes.helpSupport,
+      pageBuilder: (context, state) => state.slidePage(HelpScreen()),
+    ),
+    GoRoute(
+      path: Routes.addSupport,
+      pageBuilder: (context, state) => state.slidePage(AddSupport247Screen()),
+    ),
+    GoRoute(
+      path: Routes.myQueries,
+      pageBuilder: (context, state) => state.slidePage(MyQueriesScreen()),
+    ),
+    GoRoute(
+      path: Routes.queryDetails,
+      pageBuilder: (context, state) {
+        final queryId = state.extra as String;
+        return state.slidePage(QueryDetailsScreen(queryId: queryId));
+      },
+    ),
+    GoRoute(
+      path: Routes.liveChat,
+      pageBuilder: (context, state) => state.slidePage(ChatView()),
+    ),
+    GoRoute(
+      path: Routes.forgotPassword,
+      pageBuilder: (context, state) =>
+          state.slidePage(const ForgetPasswordScreen()),
+    ),
+
+    GoRoute(
+      path: Routes.otpVerification,
+      pageBuilder: (context, state) {
+        final email = state.extra as String;
+
+        return state.slidePage(OtpScreen(email: email));
+      },
+    ),
+    GoRoute(
+      path: Routes.createNewPassword,
+      pageBuilder: (context, state) {
+        final id = state.extra as String? ?? '';
+        return state.slidePage(CreateNewPassword(id: id));
+      },
+    ),
+    // GoRoute(
+    //   path: Routes.personalDetails,
+    //   pageBuilder: (context, state) {
+    //     final extra = state.extra as Map<String, dynamic>?;
+    //     final isEditMode = extra?['isEditMode'] ?? false;
+    //     return state.slidePage(PersonalDetailsScreen(isEditMode: isEditMode));
+    //   },
+    // ),
+    // GoRoute(
+    //   path: Routes.myProfile,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const MyOnboardingProfileMenusScreen()),
+    // ),
+    // GoRoute(
+    //   path: Routes.welcome,
+    //   pageBuilder: (context, state) => state.slidePage(const WelcomeScreen()),
+    // ),
+    // GoRoute(
+    //   path: Routes.employeeOnboarding,
+    //   pageBuilder: (context, state) => state.slidePage(const OnboardingView()),
+    // ),
+    // GoRoute(
+    //   path: Routes.offerLetter,
+    //   pageBuilder: (context, state) => state.slidePage(OfferLetterScreen()),
+    // ),
+  ],
+);

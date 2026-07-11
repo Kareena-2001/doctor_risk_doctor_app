@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1078061450493",
+    "project_id": "dr-doctors-app",
+    "storage_bucket": "dr-doctors-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078061450493:android:e47ce8a4440993483faa94",
+        "android_client_info": {
+          "package_name": "com.mobisoftseo.doctor_risk_doctors_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmtOT9pWCSJF2DgGcN73mhiULPjEBrhrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
