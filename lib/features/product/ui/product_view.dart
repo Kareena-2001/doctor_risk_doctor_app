@@ -510,7 +510,7 @@ class _ProductRow extends StatelessWidget {
                   formatDate(product.createdDate),
                   style: customTextStyle(fontSize: 10, color: AppColors.grey),
                 ),
-                const SizedBox(height: 6),
+                height(6),
                 AnimatedRotation(
                   turns: isExpanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 250),

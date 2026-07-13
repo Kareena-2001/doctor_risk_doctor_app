@@ -48,9 +48,16 @@ class Routes {
   static const adminDocs = '/adminDocs';
   static const idCard = '/idCard';
   static const helpSupport = '/helpSupport';
+  static const faqScreen = '/faqScreen';
 
   static const addSupport = '/addSupport';
+  static const supportHub = '/supportHub';
   static const myQueries = '/myQueries';
   static const queryDetails = '/queryDetails';
-  static const liveChat = '/liveChat';
+
+  static const newsAdvisory = '/newsAdvisory';
+  static const newsAdvisoryDetails = '/newsAdvisoryDetails';
+  static const blogCentral = '/blogCentral';
+  static const blogCentralDetails = '/blogCentralDetails';
+  static const eventsScreen = '/eventsScreen';
 }

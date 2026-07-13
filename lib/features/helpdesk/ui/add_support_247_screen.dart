@@ -6,13 +6,13 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/dimensions.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../../extensions/build_context_extension.dart';
-import '../../../../theme/app_theme.dart';
-import '../provider/help_categories_provider.dart';
-import '../state/help_state.dart';
-import '../view_model/help_view_model.dart';
+import '../../../core/constants/dimensions.dart';
+import '../../../core/widgets/custom_app_bar.dart';
+import '../../../extensions/build_context_extension.dart';
+import '../../../theme/app_theme.dart';
+import 'provider/help_categories_provider.dart';
+import 'state/help_state.dart';
+import 'view_model/help_view_model.dart';
 
 class AddSupport247Screen extends ConsumerStatefulWidget {
   const AddSupport247Screen({super.key});
@@ -182,51 +182,49 @@ class _AddSupport247ScreenState extends ConsumerState<AddSupport247Screen> {
             _buildAttachmentField(),
             height(24),
           ],
-          if (selectedQuestion != null) ...[
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: helpState.isLoading
-                    ? null
-                    : () {
-                        ref
-                            .read(helpViewModelProvider.notifier)
-                            .addRequestSupport(
-                              category: selectedCategory!,
-                              question: selectedQuestion!,
-                              details: _customQueryController.text,
-                              userAttachment: _selectedFile?.path != null
-                                  ? File(_selectedFile!.path!)
-                                  : null,
-                            );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: helpState.isLoading
+                  ? null
+                  : () {
+                      ref
+                          .read(helpViewModelProvider.notifier)
+                          .addRequestSupport(
+                            category: selectedCategory!,
+                            question: selectedQuestion!,
+                            details: _customQueryController.text,
+                            userAttachment: _selectedFile?.path != null
+                                ? File(_selectedFile!.path!)
+                                : null,
+                          );
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.send_rounded, color: Colors.white),
-                    width(8),
-                    Text(
-                      'Submit Query',
-                      style: customTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                elevation: 2,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.send_rounded, color: Colors.white),
+                  width(8),
+                  Text(
+                    'Submit Query',
+                    style: customTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            height(12),
-          ],
+          ),
+          height(12),
         ],
       ),
     );

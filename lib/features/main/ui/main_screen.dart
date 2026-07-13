@@ -1,12 +1,14 @@
+import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
 import 'package:Doctors_App/features/home/ui/home_screen.dart';
 import 'package:Doctors_App/features/product/ui/product_screen.dart';
+import 'package:Doctors_App/features/testimonial/ui/testimonial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../extensions/build_context_extension.dart';
 import '../../../features/profile/ui/profile_screen.dart';
-import '../../home/ui/custom_bottom_navbar.dart';
+import '../../../core/widgets/custom_bottom_navbar.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -20,7 +22,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   static const List<Widget> _screens = [
     HomeScreen(),
-    ProfileScreen(),
+    TestimonialScreen(),
     ProfileScreen(),
     ProfileScreen(),
   ];
@@ -37,11 +39,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       label: 'Your Story',
     ),
     NavBarItemData(
-      icon: Icons.headset_mic_outlined,
-      activeIcon: Icons.headset_mic,
-      label: 'Support Hub',
+      icon: Icons.people,
+      activeIcon: Icons.people,
+      label: 'Community',
     ),
-
     NavBarItemData(
       icon: MingCuteIcons.mgc_user_3_line,
       activeIcon: MingCuteIcons.mgc_user_3_fill,

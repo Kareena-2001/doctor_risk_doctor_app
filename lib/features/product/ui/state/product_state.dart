@@ -7,7 +7,7 @@ part 'product_state.freezed.dart';
 @freezed
 class ProductState with _$ProductState {
   const factory ProductState({
-    ProductResponse? productResp,
+    // ProductResponse? productResp,
     @Default(true) bool isPlanListSelected,
     @Default(1) int currentStep,
     @Default('') String couponMessage,

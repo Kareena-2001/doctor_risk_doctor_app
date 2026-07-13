@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/dimensions.dart';
-import '../../../../core/constants/values/app_text_style.dart';
-import '../../../../core/widgets/common_empty_state.dart';
-import '../../../../core/widgets/common_error_state.dart';
-import '../../../../extensions/build_context_extension.dart';
-import '../../../../routing/routes.dart';
-import '../../../../theme/app_colors.dart';
-import '../../../common/ui/widgets/loading.dart';
-import '../../model/query_list_model.dart';
-import '../view_model/help_view_model.dart';
+import '../../../core/constants/dimensions.dart';
+import '../../../core/constants/values/app_text_style.dart';
+import '../../../core/widgets/common_empty_state.dart';
+import '../../../core/widgets/common_error_state.dart';
+import '../../../extensions/build_context_extension.dart';
+import '../../../routing/routes.dart';
+import '../../../theme/app_colors.dart';
+import '../../common/ui/widgets/loading.dart';
+import '../model/query_list_model.dart';
+import 'view_model/help_view_model.dart';
 
 class MyQueriesScreen extends ConsumerStatefulWidget {
   const MyQueriesScreen({super.key});
@@ -116,20 +116,20 @@ class _MyQueriesScreenState extends ConsumerState<MyQueriesScreen>
                 ],
               ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          context.push(Routes.addSupport);
-        },
-        backgroundColor: AppColors.primary,
-        icon: Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'New Query',
-          style: customTextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     context.push(Routes.addSupport);
+      //   },
+      //   backgroundColor: AppColors.newPri,
+      //   icon: Icon(Icons.add, color: Colors.white),
+      //   label: Text(
+      //     'New Query',
+      //     style: customTextStyle(
+      //       color: Colors.white,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      // ),
     );
   }
 

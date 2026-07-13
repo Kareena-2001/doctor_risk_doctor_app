@@ -363,7 +363,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           HeadingWidget(
             headingTitle: 'News & Advisories',
             buttonText: "View All",
-            onTap: () {},
+            onTap: () {
+              context.push(Routes.newsAdvisory);
+            },
           ),
           height(Responsive.h(10)),
           _buildNewsTile(
@@ -380,7 +382,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           HeadingWidget(
             headingTitle: 'Blog Central',
             buttonText: 'View All',
-            onTap: () {},
+            onTap: () {
+              context.push(Routes.blogCentral);
+            },
           ),
           height(Responsive.h(10)),
           _buildKnowledgeHub(),
@@ -388,7 +392,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           HeadingWidget(
             headingTitle: 'Events & Learning',
             buttonText: "View All",
-            onTap: () {},
+            onTap: () {
+              context.push(Routes.eventsScreen);
+            },
           ),
           height(Responsive.h(10)),
           _buildEvents(),
@@ -718,7 +724,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             text: 'Contact Us',
             fontSize: Responsive.sp(12),
             fontWeight: FontWeight.w700,
-            onPressed: () {},
+            onPressed: () {
+              context.push(Routes.faqScreen);
+            },
             height: Responsive.h(42),
             backgroundColor: AppColors.newPri,
             borderRadius: Responsive.w(20),
@@ -903,7 +911,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   overflow: TextOverflow.ellipsis,
                   style: customTextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: Responsive.sp(13),
+                    color: AppColors.mono100,
+                    fontSize: Responsive.sp(12),
                   ),
                 ),
                 height(Responsive.h(4)),

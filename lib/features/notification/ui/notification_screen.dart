@@ -106,7 +106,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
+                      color: AppColors.newPri,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(

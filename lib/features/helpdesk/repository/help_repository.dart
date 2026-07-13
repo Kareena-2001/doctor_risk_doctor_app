@@ -24,6 +24,7 @@ class HelpRepository {
     required String category,
     required String question,
     required String description,
+    required String priority,
     File? userAttachment,
   }) async {
     final prefs = await SharedPreferences.getInstance();

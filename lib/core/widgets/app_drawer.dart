@@ -8,7 +8,7 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
 import '../../../utils/global_loading.dart';
-import '../../common/ui/widgets/common_dialog.dart';
+import '../../features/common/ui/widgets/common_dialog.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -40,14 +40,7 @@ class AppDrawer extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sectionLabel('ACCOUNT', isDark),
-                    _tile(
-                      context,
-                      icon: Icons.person_outline_rounded,
-                      title: 'Edit Profile',
-                      subtitle: 'Update your personal details',
-                      isDark: isDark,
-                      onTap: () => context.push(Routes.login),
-                    ),
+
                     // _tile(
                     //   context,
                     //   icon: Icons.history_rounded,
@@ -56,17 +49,28 @@ class AppDrawer extends ConsumerWidget {
                     //   isDark: isDark,
                     //   onTap: () => context.push(Routes.login),
                     // ),
-                    // _tile(
-                    //   context,
-                    //   icon: Icons.history_rounded,
-                    //   title: 'Product',
-                    //   subtitle: 'View products',
-                    //   isDark: isDark,
-                    //   onTap: () {
-                    //     debugPrint("Product tapped");
-                    //     context.push(Routes.productList);
-                    //   },
-                    // ),
+                    _tile(
+                      context,
+                      icon: Icons.history_rounded,
+                      title: 'Support Hub',
+                      subtitle: 'Contact Support',
+                      isDark: isDark,
+                      onTap: () {
+                        debugPrint("Product tapped");
+                        context.push(Routes.supportHub);
+                      },
+                    ),
+                    _tile(
+                      context,
+                      icon: Icons.history_rounded,
+                      title: 'Faq',
+                      subtitle: 'Contact Support',
+                      isDark: isDark,
+                      onTap: () {
+                        debugPrint("Product tapped");
+                        context.push(Routes.faqScreen);
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Divider(
@@ -76,6 +80,14 @@ class AppDrawer extends ConsumerWidget {
                       ),
                     ),
                     _sectionLabel('GENERAL', isDark),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.person_outline_rounded,
+                    //   title: 'Edit Profile',
+                    //   subtitle: 'Update your personal details',
+                    //   isDark: isDark,
+                    //   onTap: () => context.push(Routes.login),
+                    // ),
                     _tile(
                       context,
                       icon: Icons.settings_outlined,
@@ -84,14 +96,14 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.login),
                     ),
-                    _tile(
-                      context,
-                      icon: Icons.help_outline_rounded,
-                      title: 'Help & Support',
-                      subtitle: 'Get assistance and FAQ',
-                      isDark: isDark,
-                      onTap: () => context.push(Routes.login),
-                    ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.help_outline_rounded,
+                    //   title: 'Help & Support',
+                    //   subtitle: 'Get assistance and FAQ',
+                    //   isDark: isDark,
+                    //   onTap: () => context.push(Routes.login),
+                    // ),
                   ],
                 ),
               ),

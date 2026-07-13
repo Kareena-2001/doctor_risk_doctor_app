@@ -1,26 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'chat_view_model.dart';
+part of 'delete_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatViewModelHash() => r'f4848fcfd6d5f839e6cab9cfa30577ed01485f1f';
+String _$deleteViewModelHash() => r'ebfb2c91ef98745ab2b19a7c5de474ed72167ca8';
 
-/// See also [ChatViewModel].
-@ProviderFor(ChatViewModel)
-final chatViewModelProvider =
-    NotifierProvider<ChatViewModel, ChatState>.internal(
-      ChatViewModel.new,
-      name: r'chatViewModelProvider',
+/// See also [DeleteViewModel].
+@ProviderFor(DeleteViewModel)
+final deleteViewModelProvider =
+    AutoDisposeAsyncNotifierProvider<
+      DeleteViewModel,
+      DeleteAcResponse?
+    >.internal(
+      DeleteViewModel.new,
+      name: r'deleteViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$chatViewModelHash,
+          : _$deleteViewModelHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$ChatViewModel = Notifier<ChatState>;
+typedef _$DeleteViewModel = AutoDisposeAsyncNotifier<DeleteAcResponse?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

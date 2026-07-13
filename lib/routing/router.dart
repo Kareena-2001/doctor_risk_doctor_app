@@ -1,22 +1,27 @@
 import 'package:Doctors_App/features/authentication/ui/sign_up_screen.dart';
+import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
+import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
+import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
-import 'package:Doctors_App/features/home/ui/app_drawer.dart';
+import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
+import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_details_screen.dart';
+import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_screen.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
 import 'package:Doctors_App/features/product/ui/widgets/my_plans_widgets.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
+import 'package:Doctors_App/features/profile/faq_screen.dart';
 import 'package:Doctors_App/features/profile/ui/contact_us.dart';
 import 'package:Doctors_App/features/profile/ui/terms_conditions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../core/widgets/app_drawer.dart';
 import '../features/admindocs/ui/admin_docs_screen.dart';
 import '../features/authentication/ui/sign_in_screen.dart';
 import '../features/forgot_password/ui/create_new_password.dart';
-import '../features/helpdesk/chat_view.dart';
-import '../features/helpdesk/help_screen.dart';
-import '../features/helpdesk/ui/widgets/add_support_247_screen.dart';
-import '../features/helpdesk/ui/widgets/my_queries_screen.dart';
+import '../features/helpdesk/ui/add_support_247_screen.dart';
+import '../features/helpdesk/ui/my_queries_screen.dart';
 import '../features/helpdesk/ui/widgets/query_details_screen.dart';
 import '../features/home/ui/home_screen.dart';
 import '../features/main/ui/main_screen.dart';
@@ -107,11 +112,6 @@ final GoRouter router = GoRouter(
     ),
 
     GoRoute(
-      path: Routes.appearances,
-      pageBuilder: (context, state) =>
-          state.slidePage(const AppearancesScreen()),
-    ),
-    GoRoute(
       path: Routes.planListScreen,
       pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
     ),
@@ -149,7 +149,6 @@ final GoRouter router = GoRouter(
       path: Routes.myPlansScreen,
       pageBuilder: (context, state) => state.slidePage(const MyPlansWidgets()),
     ),
-
 
     GoRoute(
       path: Routes.languages,
@@ -193,17 +192,26 @@ final GoRouter router = GoRouter(
       path: Routes.adminDocs,
       pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
     ),
-    GoRoute(
-      path: Routes.helpSupport,
-      pageBuilder: (context, state) => state.slidePage(HelpScreen()),
-    ),
+    // GoRoute(
+    //   path: Routes.helpSupport,
+    //   pageBuilder: (context, state) => state.slidePage(HelpScreen()),
+    // ),
     GoRoute(
       path: Routes.addSupport,
       pageBuilder: (context, state) => state.slidePage(AddSupport247Screen()),
     ),
     GoRoute(
+      path: Routes.supportHub,
+      pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),
+    ),
+
+    GoRoute(
       path: Routes.myQueries,
       pageBuilder: (context, state) => state.slidePage(MyQueriesScreen()),
+    ),
+    GoRoute(
+      path: Routes.faqScreen,
+      pageBuilder: (context, state) => state.slidePage(FaqScreen()),
     ),
     GoRoute(
       path: Routes.queryDetails,
@@ -212,10 +220,10 @@ final GoRouter router = GoRouter(
         return state.slidePage(QueryDetailsScreen(queryId: queryId));
       },
     ),
-    GoRoute(
-      path: Routes.liveChat,
-      pageBuilder: (context, state) => state.slidePage(ChatView()),
-    ),
+    // GoRoute(
+    //   path: Routes.liveChat,
+    //   pageBuilder: (context, state) => state.slidePage(ChatView()),
+    // ),
     GoRoute(
       path: Routes.forgotPassword,
       pageBuilder: (context, state) =>
@@ -237,30 +245,28 @@ final GoRouter router = GoRouter(
         return state.slidePage(CreateNewPassword(id: id));
       },
     ),
-    // GoRoute(
-    //   path: Routes.personalDetails,
-    //   pageBuilder: (context, state) {
-    //     final extra = state.extra as Map<String, dynamic>?;
-    //     final isEditMode = extra?['isEditMode'] ?? false;
-    //     return state.slidePage(PersonalDetailsScreen(isEditMode: isEditMode));
-    //   },
-    // ),
-    // GoRoute(
-    //   path: Routes.myProfile,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const MyOnboardingProfileMenusScreen()),
-    // ),
-    // GoRoute(
-    //   path: Routes.welcome,
-    //   pageBuilder: (context, state) => state.slidePage(const WelcomeScreen()),
-    // ),
-    // GoRoute(
-    //   path: Routes.employeeOnboarding,
-    //   pageBuilder: (context, state) => state.slidePage(const OnboardingView()),
-    // ),
-    // GoRoute(
-    //   path: Routes.offerLetter,
-    //   pageBuilder: (context, state) => state.slidePage(OfferLetterScreen()),
-    // ),
+    GoRoute(
+      path: Routes.newsAdvisory,
+      pageBuilder: (context, state) =>
+          state.slidePage(const NewsAdvisoryScreen()),
+    ),
+    GoRoute(
+      path: Routes.newsAdvisoryDetails,
+      pageBuilder: (context, state) =>
+          state.slidePage(const NewsAdvisoryDetailsScreen()),
+    ),
+    GoRoute(
+      path: Routes.blogCentral,
+      pageBuilder: (context, state) => state.slidePage(const BlogScreen()),
+    ),
+    GoRoute(
+      path: Routes.blogCentralDetails,
+      pageBuilder: (context, state) =>
+          state.slidePage(const BlogDetailsScreen()),
+    ),
+    GoRoute(
+      path: Routes.eventsScreen,
+      pageBuilder: (context, state) => state.slidePage(const EventsScreen()),
+    ),
   ],
 );

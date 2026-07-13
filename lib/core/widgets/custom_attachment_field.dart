@@ -53,7 +53,7 @@ class CustomAttachmentField extends ConsumerWidget {
             decoration: BoxDecoration(
               color: AppColors.cardBackground(ref),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.borderColor(ref)),
+              border: Border.all(color: AppColors.fieldBorder),
             ),
             child: Row(
               children: [

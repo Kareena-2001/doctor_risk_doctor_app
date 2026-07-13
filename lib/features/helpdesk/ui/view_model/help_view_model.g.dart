@@ -6,7 +6,7 @@ part of 'help_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$helpViewModelHash() => r'565083364b14cba6baba2bd19195fc98e5f9dc3d';
+String _$helpViewModelHash() => r'e76d0404b36dac1147877c14702b9ea93c0c85a8';
 
 /// See also [HelpViewModel].
 @ProviderFor(HelpViewModel)
