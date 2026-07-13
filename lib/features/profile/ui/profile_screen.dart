@@ -44,163 +44,164 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final dangerousColor = context.isDarkMode
         ? AppColors.rambutan80
         : AppColors.rambutan100;
+
     return Scaffold(
       backgroundColor: context.secondaryBackgroundColor,
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          MediaQuery.paddingOf(context).top + 48,
-          16,
-          48,
-        ),
-        children: [
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: context.secondaryWidgetColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                Transform.translate(
-                  offset: Offset(0, -48),
-                  child: Column(
-                    children: [
-                      profileAsync.when(
-                        data: (profileResponse) {
-                          final userData = profileResponse?.data;
-                          final name = userData?.fullName ?? 'Guest User';
-                          final photo = userData?.photo;
-                          final vendorCode = userData?.vendorEmployeeCode;
-                          return Column(
-                            children: [
-                              Avatar(url: photo),
-                              height(12),
-                              Center(
-                                child: Text(name, style: AppTheme.title24),
-                              ),
-                              if ((vendorCode ?? '').trim().isNotEmpty) ...[
-                                height(12),
-
-                                Center(
-                                  child: Text(
-                                    vendorCode!,
-                                    style: AppTheme.body14.copyWith(
-                                      color: context.secondaryTextColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          );
-                        },
-                        loading: () => Column(
-                          children: [
-                            const Loading(),
-                            height(12),
-                            const Text('Loading...'),
-                          ],
-                        ),
-                        error: (_, __) => Column(
-                          children: [
-                            const Avatar(),
-                            height(12),
-                            const Text('Guest User'),
-                            height(12),
-                            const Text('guest@email.com'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          height(8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(Languages.general, style: AppTheme.title20),
-          ),
-          height(8),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedIdea,
-            text: Languages.appearances,
-            onTap: () {
-              context.push(Routes.appearances);
-            },
-            isFirst: true,
-            isLast: true,
-          ),
-          // ProfileItem(
-          //   icon: HugeIcons.strokeRoundedCoinsSwap,
-          //   text: Languages.language,
-          //   isLast: true,
-          //   onTap: () {
-          //     context.push(Routes.languages);
-          //   },
-          // ),
-          height(24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(Languages.preferences, style: AppTheme.title20),
-          ),
-          height(8),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedNews,
-            text: Languages.termAndCondition,
-            isFirst: true,
-            onTap: () {
-              context.push(Routes.termsAndCondition);
-            },
-          ),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedShield01,
-            text: Languages.privacyPolicy,
-            onTap: () {
-              context.push(Routes.privacyPolicy);
-            },
-          ),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedUserMultiple,
-            text: Languages.aboutUs,
-            onTap: () {
-              context.push(Routes.aboutUs, extra: true);
-            },
-            // isLast: true,
-          ),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedStar,
-            text: Languages.rateUs,
-            onTap: () => context.tryLaunchUrl(
-              Platform.isIOS ? AppConstants.appStore : AppConstants.playStore,
-            ),
-            isLast: true,
-          ),
-          height(24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(Languages.dangerousZone, style: AppTheme.title20),
-          ),
-          height(8),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedLogout01,
-            text: Languages.logOut,
-            textColor: dangerousColor,
-            isFirst: true,
-            onTap: () => _signOut(context),
-          ),
-          ProfileItem(
-            icon: HugeIcons.strokeRoundedDelete01,
-            text: Languages.deleteAccount,
-            textColor: dangerousColor,
-            isLast: true,
-            onTap: () => _deleteAccount(context),
-          ),
-          height(24),
-          Center(child: Text('Version $_version', style: AppTheme.body12)),
-        ],
-      ),
+      // body: ListView(
+      //   padding: EdgeInsets.fromLTRB(
+      //     16,
+      //     MediaQuery.paddingOf(context).top + 48,
+      //     16,
+      //     48,
+      //   ),
+      //   children: [
+      //     Container(
+      //       margin: EdgeInsets.symmetric(vertical: 16),
+      //       decoration: BoxDecoration(
+      //         color: context.secondaryWidgetColor,
+      //         borderRadius: BorderRadius.circular(16),
+      //       ),
+      //       child: Column(
+      //         children: [
+      //           Transform.translate(
+      //             offset: Offset(0, -48),
+      //             child: Column(
+      //               children: [
+      //                 profileAsync.when(
+      //                   data: (profileResponse) {
+      //                     final userData = profileResponse?.data;
+      //                     final name = userData?.fullName ?? 'Guest User';
+      //                     final photo = userData?.photo;
+      //                     final vendorCode = userData?.vendorEmployeeCode;
+      //                     return Column(
+      //                       children: [
+      //                         Avatar(url: photo),
+      //                         height(12),
+      //                         Center(
+      //                           child: Text(name, style: AppTheme.title24),
+      //                         ),
+      //                         if ((vendorCode ?? '').trim().isNotEmpty) ...[
+      //                           height(12),
+      //
+      //                           Center(
+      //                             child: Text(
+      //                               vendorCode!,
+      //                               style: AppTheme.body14.copyWith(
+      //                                 color: context.secondaryTextColor,
+      //                               ),
+      //                             ),
+      //                           ),
+      //                         ],
+      //                       ],
+      //                     );
+      //                   },
+      //                   loading: () => Column(
+      //                     children: [
+      //                       const Loading(),
+      //                       height(12),
+      //                       const Text('Loading...'),
+      //                     ],
+      //                   ),
+      //                   error: (_, __) => Column(
+      //                     children: [
+      //                       const Avatar(),
+      //                       height(12),
+      //                       const Text('Guest User'),
+      //                       height(12),
+      //                       const Text('guest@email.com'),
+      //                     ],
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //     height(8),
+      //     Padding(
+      //       padding: const EdgeInsets.symmetric(horizontal: 16),
+      //       child: Text(Languages.general, style: AppTheme.title20),
+      //     ),
+      //     height(8),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedIdea,
+      //       text: Languages.appearances,
+      //       onTap: () {
+      //         context.push(Routes.appearances);
+      //       },
+      //       isFirst: true,
+      //       isLast: true,
+      //     ),
+      //     // ProfileItem(
+      //     //   icon: HugeIcons.strokeRoundedCoinsSwap,
+      //     //   text: Languages.language,
+      //     //   isLast: true,
+      //     //   onTap: () {
+      //     //     context.push(Routes.languages);
+      //     //   },
+      //     // ),
+      //     height(24),
+      //     Padding(
+      //       padding: const EdgeInsets.symmetric(horizontal: 16),
+      //       child: Text(Languages.preferences, style: AppTheme.title20),
+      //     ),
+      //     height(8),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedNews,
+      //       text: Languages.termAndCondition,
+      //       isFirst: true,
+      //       onTap: () {
+      //         context.push(Routes.termsAndCondition);
+      //       },
+      //     ),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedShield01,
+      //       text: Languages.privacyPolicy,
+      //       onTap: () {
+      //         context.push(Routes.privacyPolicy);
+      //       },
+      //     ),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedUserMultiple,
+      //       text: Languages.aboutUs,
+      //       onTap: () {
+      //         context.push(Routes.aboutUs, extra: true);
+      //       },
+      //       // isLast: true,
+      //     ),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedStar,
+      //       text: Languages.rateUs,
+      //       onTap: () => context.tryLaunchUrl(
+      //         Platform.isIOS ? AppConstants.appStore : AppConstants.playStore,
+      //       ),
+      //       isLast: true,
+      //     ),
+      //     height(24),
+      //     Padding(
+      //       padding: const EdgeInsets.symmetric(horizontal: 16),
+      //       child: Text(Languages.dangerousZone, style: AppTheme.title20),
+      //     ),
+      //     height(8),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedLogout01,
+      //       text: Languages.logOut,
+      //       textColor: dangerousColor,
+      //       isFirst: true,
+      //       onTap: () => _signOut(context),
+      //     ),
+      //     ProfileItem(
+      //       icon: HugeIcons.strokeRoundedDelete01,
+      //       text: Languages.deleteAccount,
+      //       textColor: dangerousColor,
+      //       isLast: true,
+      //       onTap: () => _deleteAccount(context),
+      //     ),
+      //     height(24),
+      //     Center(child: Text('Version $_version', style: AppTheme.body12)),
+      //   ],
+      // ),
     );
   }
 

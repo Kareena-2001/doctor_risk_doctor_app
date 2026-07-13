@@ -7,6 +7,7 @@ class Assets {
   static const error404 = 'assets/images/404.svg';
 
   static const login = 'assets/images/login.png';
+  static const signIn = 'assets/images/signin.png';
   static const attendance = 'assets/images/events.png';
   static const banner = 'assets/images/banner.png';
   static const offerLetter = 'assets/images/offer.png';

@@ -14,7 +14,6 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/heading_widget.dart';
 import '../../../routing/routes.dart';
 import '../../notification/ui/viewmodel/notification_view_model.dart';
-import '../model/user_profile_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -98,12 +97,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final profileAsync = ref.watch(homeViewModelProvider);
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppColors.newSec,
-
+      backgroundColor: isDark
+          ? const Color(0xFF0E0E10)
+          : const Color(0xFFF6F7FB),
       appBar: CustomAppBar(
         title: 'Dashboard',
         showBack: false,
@@ -116,29 +115,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         onNotification: _handleNotificationTap,
       ),
       body: RefreshIndicator(
+        color: AppColors.newPri,
         onRefresh: _refreshUserData,
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              child: Column(
-                children: [
-                  profileAsync.when(
-                    data: (profileResponse) => _buildCompactProfileHeader(
-                      isDark,
-                      profileResponse?.data,
-                    ),
-                    loading: () => CircularProgressIndicator(),
-                    error: (_, __) => _buildCompactProfileHeader(isDark, null),
-                  ),
-                  height(20),
-                  _buildMainContent(isDark),
-                ],
-              ),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            child: Column(
+              children: [
+                height(Responsive.h(8)),
+                _buildCompactProfileHeader(isDark),
+                height(Responsive.h(20)),
+                _buildMainContent(isDark),
+                height(Responsive.h(100)),
+              ],
             ),
           ),
         ),
@@ -146,179 +138,234 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildCompactProfileHeader(bool isDark, UserProfileModel? userData) {
-    final userPhoto = userData?.photo;
-
-    return Center(
-      child: Container(
-        // width: double.infinity,
-        // margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(20),
-        // decoration: BoxDecoration(
-        //   color: isDark ? Colors.grey.shade900 : Colors.white,
-        //   borderRadius: BorderRadius.circular(24),
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: Colors.black.withValues(alpha: 0.04),
-        //       blurRadius: 10,
-        //       offset: const Offset(0, 4),
-        //     ),
-        //   ],
-        // ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Hero(
+  Widget _buildCompactProfileHeader(bool isDark) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      padding: EdgeInsets.symmetric(
+        vertical: Responsive.h(24),
+        horizontal: Responsive.w(20),
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Responsive.w(28)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [const Color(0xFF1A1A1D), const Color(0xFF232326)]
+              : [Colors.white, const Color(0xFFF3F4FF)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.newPri.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: EdgeInsets.all(Responsive.w(4)),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [AppColors.newPri, AppColors.primary],
+              ),
+            ),
+            child: Hero(
               tag: 'user_avatar',
               child: CircleAvatar(
-                radius: 40,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                backgroundImage: userPhoto != null && userPhoto.isNotEmpty
-                    ? NetworkImage(userPhoto)
-                    : const AssetImage(Assets.user) as ImageProvider,
-              ),
-            ),
-            height(12),
-            Text(
-              'Dr. Paresh Mathur',
-              style: customTextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            height(6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                'Membership Status: Active',
-                style: customTextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                radius: Responsive.w(38),
+                backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+                child: CircleAvatar(
+                  radius: Responsive.w(35),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  backgroundImage: AssetImage(Assets.user),
                 ),
               ),
             ),
-            height(12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          height(Responsive.h(12)),
+          Text(
+            'Dr. Paresh Mathur',
+            style: customTextStyle(
+              fontSize: Responsive.sp(20),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textColor,
+            ),
+          ),
+          height(Responsive.h(8)),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.w(14),
+              vertical: Responsive.h(5),
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.newPri, AppColors.primary],
+              ),
+              borderRadius: BorderRadius.circular(Responsive.w(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.newPri.withValues(alpha: 0.35),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.assignment_ind_outlined,
-                  size: 16,
-                  color: Colors.grey.shade600,
+                  Icons.verified,
+                  size: Responsive.sp(13),
+                  color: Colors.white,
                 ),
-                width(4),
+                width(Responsive.w(4)),
                 Text(
-                  'Med Reg: 48578',
+                  'Membership Active',
                   style: customTextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 13,
-                  ),
-                ),
-                width(16),
-                Icon(Icons.fingerprint, size: 16, color: Colors.grey.shade600),
-                width(4),
-                Text(
-                  'ID: 38765734112',
-                  style: customTextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 13,
+                    color: Colors.white,
+                    fontSize: Responsive.sp(12),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-            height(10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.gavel_outlined, size: 16, color: AppColors.primary),
-                const SizedBox(width: 6),
-                Text(
-                  'Doctors Risk Medico Legal Services',
-                  style: customTextStyle(
-                    color: AppColors.newPri,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
+          ),
+          height(Responsive.h(14)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _metaChip(Icons.assignment_ind_outlined, 'Med Reg: 48578'),
+              width(Responsive.w(10)),
+              _metaChip(Icons.fingerprint, 'ID: 38765734112'),
+            ],
+          ),
+          height(Responsive.h(12)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.gavel_outlined,
+                size: Responsive.sp(16),
+                color: AppColors.primary,
+              ),
+              width(Responsive.w(6)),
+              Text(
+                'Doctors Risk Medico Legal Services',
+                style: customTextStyle(
+                  color: AppColors.newPri,
+                  fontSize: Responsive.sp(13),
+                  fontWeight: FontWeight.w700,
                 ),
-              ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _metaChip(IconData icon, String label) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(10),
+        vertical: Responsive.h(6),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(Responsive.w(30)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: Responsive.sp(14), color: Colors.grey.shade600),
+          width(Responsive.w(4)),
+          Text(
+            label,
+            style: customTextStyle(
+              color: Colors.grey.shade600,
+              fontSize: Responsive.sp(11.5),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMainContent(bool isDark) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPolicyCard(),
-          height(16),
+          height(Responsive.h(24)),
           HeadingWidget(
             headingTitle: 'My Products',
             buttonText: 'View All',
             onTap: () => context.push(Routes.productHub),
           ),
-          height(10),
-// reuses the same _EntryCard row pattern as ProductHubView, or just:
+          height(Responsive.h(10)),
           InkWell(
+            borderRadius: BorderRadius.circular(Responsive.w(18)),
             onTap: () => context.push(Routes.productHub),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(Responsive.w(16)),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.homeBorder),
+                borderRadius: BorderRadius.circular(Responsive.w(18)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Icon(Icons.grid_view_rounded, color: AppColors.newPri),
-                  width(10),
-                  Expanded(
-                    child: Text('Browse plans, manage your policies & more',
-                        style: customTextStyle(fontSize: 13, color: AppColors.textColor)),
+                  Container(
+                    padding: EdgeInsets.all(Responsive.w(8)),
+                    decoration: BoxDecoration(
+                      color: AppColors.newPri.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(Responsive.w(12)),
+                    ),
+                    child: Icon(
+                      Icons.grid_view_rounded,
+                      color: AppColors.newPri,
+                      size: Responsive.sp(20),
+                    ),
                   ),
-                  Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.homeTextMuted),
+                  width(Responsive.w(12)),
+                  Expanded(
+                    child: Text(
+                      'Browse plans, manage your policies & more',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(13),
+                        color: AppColors.textColor,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: Responsive.sp(14),
+                    color: AppColors.homeTextMuted,
+                  ),
                 ],
               ),
             ),
           ),
-          height(24),
-          HeadingWidget(
-            headingTitle: 'Upcoming Appointments',
-            buttonText: "View All",
-            onTap: () {
-              // context.push(Routes.nearbyRides);
-            },
-          ),
-          height(10),
-          _buildAppointmentTile(
-            'Patient: Rahul Sharma',
-            '10:30 AM • General Checkup',
-            '12\nOCT',
-          ),
-          _buildAppointmentTile(
-            'Patient: Priya Verma',
-            '02:15 PM • Follow-up',
-            '12\nOCT',
-          ),
-          height(24),
+          height(Responsive.h(28)),
           HeadingWidget(
             headingTitle: 'News & Advisories',
             buttonText: "View All",
-            onTap: () {
-              // context.push(Routes.nearbyRides);
-            },
+            onTap: () {},
           ),
-          height(10),
+          height(Responsive.h(10)),
           _buildNewsTile(
             'Medical Negligence in Post-Operative Care: Supreme Court...',
             'Jan 2025 • Legal Update',
@@ -329,28 +376,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             'Aug 2025 • Policy Watch',
             Icons.cancel_outlined,
           ),
-          height(24),
+          height(Responsive.h(28)),
           HeadingWidget(
             headingTitle: 'Blog Central',
             buttonText: 'View All',
             onTap: () {},
           ),
-          height(10),
+          height(Responsive.h(10)),
           _buildKnowledgeHub(),
-
-          height(24),
+          height(Responsive.h(28)),
           HeadingWidget(
             headingTitle: 'Events & Learning',
             buttonText: "View All",
-            onTap: () {
-              // context.push(Routes.nearbyRides);
-            },
+            onTap: () {},
           ),
-          height(10),
+          height(Responsive.h(10)),
           _buildEvents(),
-          height(24),
+          height(Responsive.h(28)),
           _buildFAQCard(),
-          height(30),
+          height(Responsive.h(30)),
         ],
       ),
     );
@@ -386,118 +430,112 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       itemCount: blogs.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 14),
+      separatorBuilder: (_, __) => SizedBox(height: Responsive.h(14)),
       itemBuilder: (context, index) {
         final blog = blogs[index];
 
         return InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(Responsive.w(18)),
           onTap: () {},
           child: Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(Responsive.w(12)),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.homeBorder),
+              borderRadius: BorderRadius.circular(Responsive.w(18)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(Responsive.w(14)),
                   child: Image.asset(
                     blog['image']!,
-                    width: 90,
-                    height: 90,
+                    width: Responsive.w(90),
+                    height: Responsive.w(90),
                     fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(width: 14),
+                width(Responsive.w(14)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.w(10),
+                          vertical: Responsive.h(4),
                         ),
                         decoration: BoxDecoration(
                           color: AppColors.newPri.withValues(alpha: .10),
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(Responsive.w(30)),
                         ),
                         child: Text(
                           blog['category']!,
                           style: customTextStyle(
                             color: AppColors.newPri,
-                            fontSize: 10,
+                            fontSize: Responsive.sp(10),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 8),
-
+                      height(Responsive.h(8)),
                       Text(
                         blog['title']!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
-                          fontSize: 12,
+                          fontSize: Responsive.sp(12),
                           fontWeight: FontWeight.bold,
                           color: AppColors.textColor,
                         ),
                       ),
-
-                      const SizedBox(height: 10),
-
+                      height(Responsive.h(10)),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule_outlined,
-                            size: 14,
+                            size: Responsive.sp(14),
                             color: AppColors.homeTextMuted,
                           ),
-
-                          const SizedBox(width: 4),
-
+                          width(Responsive.w(4)),
                           Text(
                             blog['read']!,
                             style: customTextStyle(
-                              fontSize: 11,
+                              fontSize: Responsive.sp(11),
                               color: AppColors.homeTextMuted,
                             ),
                           ),
-
-                          const SizedBox(width: 12),
-
+                          width(Responsive.w(12)),
                           Icon(
                             Icons.calendar_today_outlined,
-                            size: 14,
+                            size: Responsive.sp(14),
                             color: AppColors.homeTextMuted,
                           ),
-
-                          const SizedBox(width: 4),
-
+                          width(Responsive.w(4)),
                           Text(
                             blog['date']!,
                             style: customTextStyle(
-                              fontSize: 11,
+                              fontSize: Responsive.sp(11),
                               color: AppColors.homeTextMuted,
                             ),
                           ),
-
                           const Spacer(),
-
                           Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: EdgeInsets.all(Responsive.w(6)),
                             decoration: BoxDecoration(
                               color: AppColors.newPri.withValues(alpha: .10),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.arrow_forward_ios,
-                              size: 14,
+                              size: Responsive.sp(14),
                               color: AppColors.newPri,
                             ),
                           ),
@@ -516,10 +554,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildPolicyCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(Responsive.w(20)),
       decoration: BoxDecoration(
-        color: AppColors.newPri.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(Responsive.w(26)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.newPri, AppColors.newPri.withValues(alpha: 0.75)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.newPri.withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,58 +576,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Policy Details',
-                    style: customTextStyle(
-                      color: AppColors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+              Text(
+                'Policy Details',
+                style: customTextStyle(
+                  color: AppColors.white,
+                  fontSize: Responsive.sp(14),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               PrimaryButton(
-                height: 30,
-                width: 120,
+                height: Responsive.h(30),
+                width: Responsive.w(120),
                 text: 'Renew Now',
-                fontSize: 12,
+                fontSize: Responsive.sp(12),
                 backgroundColor: Colors.white,
                 textColor: AppColors.newPri,
                 onPressed: () => context.push(Routes.myPlans),
               ),
             ],
           ),
-          height(10),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Medico Legal Services',
-                style: customTextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                'Professional Indemnity',
-                style: customTextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 12,
-                ),
-              ),
-            ],
+          height(Responsive.h(10)),
+          Text(
+            'Medico Legal Services',
+            style: customTextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: Responsive.sp(12),
+            ),
           ),
-          const Divider(color: Colors.white24, height: 24),
+          Text(
+            'Professional Indemnity',
+            style: customTextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: Responsive.sp(12),
+            ),
+          ),
+          Divider(color: Colors.white24, height: Responsive.h(28)),
           _buildPolicyMeta(
             'Coverage Amount',
             'Rs. 50,000,000',
             crossAlign: CrossAxisAlignment.end,
           ),
-          const Divider(color: Colors.white24, height: 24),
+          Divider(color: Colors.white24, height: Responsive.h(28)),
           _buildPolicyMeta('Policy Number', '03303387333412'),
-          const Divider(color: Colors.white24, height: 24),
+          Divider(color: Colors.white24, height: Responsive.h(28)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -604,38 +644,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           label,
           style: customTextStyle(
             color: Colors.white.withValues(alpha: 0.8),
-            fontSize: 11,
+            fontSize: Responsive.sp(11),
           ),
         ),
-        height(2),
-        Text(value, style: customTextStyle(color: Colors.white, fontSize: 13)),
+        height(Responsive.h(2)),
+        Text(
+          value,
+          style: customTextStyle(
+            color: Colors.white,
+            fontSize: Responsive.sp(13),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildFAQCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(20),
+        vertical: Responsive.h(28),
+      ),
       decoration: BoxDecoration(
         color: AppColors.white,
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.20)),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(Responsive.w(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(Responsive.w(12)),
             decoration: BoxDecoration(
-              color: AppColors.newPri,
-              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [AppColors.newPri, AppColors.primary],
+              ),
+              borderRadius: BorderRadius.circular(Responsive.w(14)),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.help_outline,
               color: AppColors.white,
-              size: 28,
+              size: Responsive.sp(28),
             ),
           ),
-          height(8),
+          height(Responsive.h(10)),
           Text(
             'Frequently Asked Questions',
             textAlign: TextAlign.center,
@@ -645,25 +703,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               color: AppColors.textColor,
             ),
           ),
-          height(8),
+          height(Responsive.h(8)),
           Text(
             'Need help with legal compliance?',
             textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: 14,
+              fontSize: Responsive.sp(14),
               fontWeight: FontWeight.w400,
               color: AppColors.textColor,
             ),
           ),
-          height(15),
+          height(Responsive.h(16)),
           PrimaryButton(
             text: 'Contact Us',
-            fontSize: 12,
+            fontSize: Responsive.sp(12),
             fontWeight: FontWeight.w700,
             onPressed: () {},
-            height: 40,
+            height: Responsive.h(42),
             backgroundColor: AppColors.newPri,
-            borderRadius: 20,
+            borderRadius: Responsive.w(20),
           ),
         ],
       ),
@@ -676,7 +734,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         'name': 'Live Webinar',
         'desc':
             'Upcoming Webinar: Telemedicine Laws and How it Impacts Medical Practice?',
-
         'image': 'assets/images/events.jpg',
         'Know More': true,
       },
@@ -684,7 +741,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         'name': 'Collaborate',
         'desc':
             'Upcoming Webinar: Telemedicine Laws and How it Impacts Medical Practice?',
-
         'image': 'assets/images/events.jpg',
         'Know More': false,
       },
@@ -692,14 +748,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         'name': 'Your Story',
         'desc':
             'Upcoming Webinar: Telemedicine Laws and How it Impacts Medical Practice?',
-
         'image': 'assets/images/events.jpg',
         'Know More': false,
       },
     ];
 
     return SizedBox(
-      height: Responsive.h(280),
+      height: Responsive.h(300),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -713,45 +768,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             width: Responsive.w(220),
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.homeBorder, width: 1.5),
+              borderRadius: BorderRadius.circular(Responsive.w(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(18),
-                      ),
-                      child: Image.asset(
-                        c['image'] as String,
-                        height: Responsive.h(130),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(Responsive.w(20)),
+                  ),
+                  child: Image.asset(
+                    c['image'] as String,
+                    height: Responsive.h(130),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                  padding: EdgeInsets.fromLTRB(
+                    Responsive.w(12),
+                    Responsive.h(10),
+                    Responsive.w(12),
+                    0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              c['name'] as String,
-                              style: customTextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textColor,
-                              ).copyWith(overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        c['name'] as String,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(13),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textColor,
+                        ).copyWith(overflow: TextOverflow.ellipsis),
                       ),
                       SizedBox(height: Responsive.h(4)),
                       Text(
@@ -759,41 +815,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
-                          fontSize: 11,
+                          fontSize: Responsive.sp(11),
                           color: AppColors.homeTextMuted,
                         ),
                       ),
                       SizedBox(height: Responsive.h(10)),
-
                       Row(
                         children: [
                           Expanded(
                             child: PrimaryButton(
                               text: avail ? 'Register to Join' : 'Know More',
                               fontWeight: FontWeight.w700,
-                              fontSize: 12,
+                              fontSize: Responsive.sp(12),
                               onPressed: () {},
-                              height: 42,
+                              height: Responsive.h(42),
                               backgroundColor: avail
                                   ? AppColors.newPri
                                   : AppColors.homeBorder,
-                              borderRadius: 10,
+                              borderRadius: Responsive.w(10),
                             ),
                           ),
-
-                          const SizedBox(width: 10),
+                          width(Responsive.w(10)),
                           InkWell(
                             onTap: () => Share.share(_shareMessage),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(
+                              Responsive.w(10),
+                            ),
                             child: Container(
-                              width: 42,
-                              height: 42,
+                              width: Responsive.w(42),
+                              height: Responsive.h(42),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(
+                                  Responsive.w(10),
+                                ),
                                 border: Border.all(color: AppColors.homeBorder),
                               ),
-                              child: const Icon(Icons.share_outlined, size: 20),
+                              child: Icon(
+                                Icons.share_outlined,
+                                size: Responsive.sp(20),
+                              ),
                             ),
                           ),
                         ],
@@ -809,78 +870,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildAppointmentTile(String title, String subtitle, String date) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              date,
-              textAlign: TextAlign.center,
-              style: customTextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-          width(14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: customTextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: customTextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.grey),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildNewsTile(String title, String date, IconData icon) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: Responsive.h(10)),
+      padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: Colors.grey.shade300,
-            child: Icon(icon, color: AppColors.newPri),
+            radius: Responsive.w(20),
+            backgroundColor: AppColors.newPri.withValues(alpha: 0.1),
+            child: Icon(icon, color: AppColors.newPri, size: Responsive.sp(18)),
           ),
-          width(14),
+          width(Responsive.w(14)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -891,15 +903,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   overflow: TextOverflow.ellipsis,
                   style: customTextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontSize: Responsive.sp(13),
                   ),
                 ),
-                height(4),
+                height(Responsive.h(4)),
                 Text(
                   date,
                   style: customTextStyle(
                     color: Colors.grey.shade600,
-                    fontSize: 11,
+                    fontSize: Responsive.sp(11),
                   ),
                 ),
               ],

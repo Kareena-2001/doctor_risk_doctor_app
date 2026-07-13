@@ -22,7 +22,7 @@ class EnvironmentConfig {
   factory EnvironmentConfig.production() {
     return const EnvironmentConfig._(
       environment: Environment.production,
-      baseUrl: 'https://kals360.com/api/',
+      baseUrl: 'https://kals360sdsAD.com/api/',
     );
   }
 

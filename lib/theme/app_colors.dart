@@ -17,6 +17,8 @@ class AppColors {
   static const blueberry90 = Color(0xFF1A9EFF);
   static const blueberry100 = Color(0xFF0093FF);
 
+  static const Color fieldBorder = Color(0xFFAECDCD);
+  static const Color brown = Color(0xFFAE7C51);
   static const Color iconPink = Color(0xFFFF8C93);
   static const watermelon1 = Color(0xFFCAE6D5);
   static const watermelon10 = Color(0xFFE6F3F0);

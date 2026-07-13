@@ -106,26 +106,31 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     return Scaffold(
-      backgroundColor: context.secondaryBackgroundColor,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
-                height: 320,
+                height: Responsive.screenWidth * 0.70,
                 width: double.infinity,
                 child: ClipPath(
                   clipper: HeaderClipper(),
                   child: Container(
-                    color: AppColors.watermelon1,
-                    child: Center(child: Image.asset(Assets.login, width: 200)),
+                    color: AppColors.newPri.withValues(alpha: 0.6),
+                    child: Center(
+                      child: Image.asset(
+                        Assets.signIn,
+                        width: Responsive.w(180),
+                      ),
+                    ),
                   ),
                 ),
               ),
               Container(
                 // color: Colors.white,
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(Responsive.sp(24)),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -137,11 +142,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             style: customTextStyle(
                               fontSize: Responsive.sp(25),
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: AppColors.newPri,
                             ),
                           ),
                         ),
-                        height(32),
+                        height(Responsive.h(30)),
                         CustomTextField(
                           label: 'Email Address',
                           hint: 'Enter email address',
@@ -150,7 +155,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                           isRequired: true,
                           maxLength: 10,
                         ),
-                        height(12),
+                        height(Responsive.h(12)),
                         CustomTextField(
                           label: 'Password',
                           hint: 'Enter password',
@@ -162,7 +167,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                               _isPasswordVisible
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
-                              color: AppColors.primary,
+                              color: AppColors.newPri,
                             ),
                             onPressed: () {
                               setState(() {
@@ -177,7 +182,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             return null;
                           },
                         ),
-                        height(8),
+                        height(Responsive.h(8)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -214,22 +219,23 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             ),
                           ],
                         ),
-                        height(24),
+                        height(Responsive.h(24)),
                         PrimaryButton(
                           text: 'Login',
+                          backgroundColor: AppColors.newPri,
                           isLoading: authState.isLoading,
                           onPressed: authState.isLoading ? null : _login,
                         ),
-                        height(32),
                       ],
                     ),
                   ),
                 ),
               ),
+              // height(32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? "),
+                  Text("Don't have an account? "),
                   GestureDetector(
                     onTap: () {
                       context.push(Routes.register);
@@ -237,14 +243,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     child: Text(
                       "Sign Up",
                       style: customTextStyle(
-                        color: AppColors.primary,
+                        color: AppColors.newPri,
                         fontWeight: FontWeight.bold,
                       ).copyWith(decoration: TextDecoration.underline),
                     ),
                   ),
                 ],
               ),
-              height(40),
+              height(Responsive.h(40)),
             ],
           ),
         ),

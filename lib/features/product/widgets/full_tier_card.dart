@@ -1,4 +1,3 @@
-
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/features/product/widgets/tier_helper.dart';
 import 'package:flutter/material.dart';
@@ -171,6 +170,43 @@ class FullTierCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    'Sum insured',
+                    style: customTextStyle(
+                      fontSize: 11,
+                      color: s.textColor.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '₹${formatAmount(plan.sumInsured)}',
+                    style: customTextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: s.accentColor,
+                    ).copyWith(letterSpacing: -0.5, height: 1),
+                  ),
+                  Text(
+                    'coverage',
+                    style: customTextStyle(
+                      fontSize: 11,
+                      color: s.textColor.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 52,
+              color: s.accentColor.withValues(alpha: 0.15),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     'Premium',
                     style: customTextStyle(
                       fontSize: 11,
@@ -203,43 +239,6 @@ class FullTierCard extends StatelessWidget {
                   ),
                   Text(
                     'per year',
-                    style: customTextStyle(
-                      fontSize: 11,
-                      color: s.textColor.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 1,
-              height: 52,
-              color: s.accentColor.withValues(alpha: 0.15),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sum insured',
-                    style: customTextStyle(
-                      fontSize: 11,
-                      color: s.textColor.withValues(alpha: 0.6),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '₹${formatAmount(plan.sumInsured)}',
-                    style: customTextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: s.accentColor,
-                    ).copyWith(letterSpacing: -0.5, height: 1),
-                  ),
-                  Text(
-                    'coverage',
                     style: customTextStyle(
                       fontSize: 11,
                       color: s.textColor.withValues(alpha: 0.6),

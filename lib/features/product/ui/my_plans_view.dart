@@ -168,13 +168,39 @@ class _MyPlanCard extends ConsumerWidget {
               ),
             ],
           ),
+          height(16),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
+              label: Text(
+                'Download Policy',
+                style: customTextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
           if (plan.isRenewable) ...[
             height(12),
             PrimaryButton(
               height: 38,
               text: 'Renew Now',
               fontSize: 13,
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.newPri,
               onPressed: () =>
                   ref.read(myPlansViewModelProvider.notifier).renew(plan.id),
             ),

@@ -74,9 +74,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           : null,
       leading: showBack
           ? AppBarAction(
-        icon: Icons.arrow_back,
-        onTap: onBack ?? () => context.pop(),
-      )
+              icon: Icons.arrow_back,
+              onTap: onBack ?? () => context.pop(),
+            )
           : showDrawer && onDrawer != null
           ? AppBarAction(icon: Icons.menu_rounded, onTap: onDrawer!)
           : null,
@@ -86,8 +86,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           Text(
             title,
             style: customTextStyle(
-              color: AppColors.primary,
-              fontSize: Responsive.sp(18),
+              color: AppColors.newPri,
+              fontSize: Responsive.sp(16),
               fontWeight: FontWeight.w700,
             ),
           ),

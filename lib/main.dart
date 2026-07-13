@@ -13,6 +13,7 @@ import 'features/common/ui/providers/app_theme_mode_provider.dart';
 import 'features/common/ui/widgets/offline_container.dart';
 import 'features/fcm/notification_service.dart';
 import 'firebase_options.dart';
+import 'package:device_preview/device_preview.dart';
 
 // @pragma('vm:entry-point')
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -45,6 +46,7 @@ Future<void> main() async {
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
         child: const MainApp(),
+        // child: DevicePreview(builder: (context) => const MainApp()),
       ),
     ),
   );
@@ -79,11 +81,6 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
 
     return MaterialApp.router(
       theme: context.lightTheme,
-      darkTheme: context.darkTheme,
-      themeMode: themeMode.value,
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

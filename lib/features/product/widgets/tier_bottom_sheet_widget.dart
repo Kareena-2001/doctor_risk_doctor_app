@@ -67,9 +67,9 @@ class TierBottomSheetState extends State<TierBottomSheet> {
               ),
             ),
             _buildSheetHeader(),
-            const SizedBox(height: 6),
+            height(6),
             _buildDots(tiers.length),
-            const SizedBox(height: 14),
+            height(14),
             Expanded(
               child: PageView.builder(
                 controller: _pageCtrl,
@@ -121,9 +121,12 @@ class TierBottomSheetState extends State<TierBottomSheet> {
                     color: Color(0xFF0F172A),
                   ).copyWith(letterSpacing: -0.5),
                 ),
-                 Text(
+                Text(
                   'Swipe to compare · tap to select',
-                  style: customTextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                  style: customTextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
@@ -229,34 +232,34 @@ class TierBottomSheetState extends State<TierBottomSheet> {
             child: GestureDetector(
               onTap: hasSel
                   ? () {
-                context.push(
-                  Routes.purchaseWizard,
-                  extra: (
-                  widget.product,
-                  selPlan!,
-                  '1 Year', // TODO: replace if you add a real duration selector
-                  selPlan.sumInsured,
-                  selPlan.premiumPerYear,
-                  ),
-                );
-              }
+                      context.push(
+                        Routes.purchaseWizard,
+                        extra: (
+                          widget.product,
+                          selPlan!,
+                          '1 Year',
+                          selPlan.sumInsured,
+                          selPlan.premiumPerYear,
+                        ),
+                      );
+                    }
                   : null,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: hasSel ? AppColors.accent : const Color(0xFFE2E8F0),
+                  color: hasSel ? AppColors.secondary : const Color(0xFFE2E8F0),
                   borderRadius: BorderRadius.circular(14),
                   boxShadow: hasSel
                       ? [
-                    BoxShadow(
-                      color: const Color(
-                        0xFF6366F1,
-                      ).withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: const Color(
+                              0xFF6366F1,
+                            ).withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
                       : [],
                 ),
                 child: Center(

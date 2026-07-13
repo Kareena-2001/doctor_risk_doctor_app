@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../theme/app_colors.dart';
-import '../../theme/app_theme.dart';
 import '../constants/values/app_text_style.dart';
 import '../constants/dimensions.dart';
 
-class CustomTextField extends ConsumerWidget {
+class CustomTextField extends StatelessWidget {
   final String? label;
   final String? hint;
   final IconData? icon;
@@ -24,9 +21,8 @@ class CustomTextField extends ConsumerWidget {
   final bool enabled;
   final TextCapitalization textCapitalization;
   final int? maxLength;
+  final bool? readOnly;
   final List<TextInputFormatter>? inputFormatters;
-  final VoidCallback? onTap;
-  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -46,13 +42,12 @@ class CustomTextField extends ConsumerWidget {
     this.enabled = true,
     this.textCapitalization = TextCapitalization.none,
     this.maxLength,
+    this.readOnly= false,
     this.inputFormatters,
-    this.onTap,
-    this.readOnly = false,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,7 +56,15 @@ class CustomTextField extends ConsumerWidget {
           children: [
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: double.infinity),
-              child: Text(label ?? '', style: AppTheme.label12, softWrap: true),
+              child: Text(
+                label ?? '',
+                style: customTextStyle(
+                  color: AppColors.labelColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+                softWrap: true,
+              ),
             ),
             if (isRequired)
               Text(
@@ -74,19 +77,18 @@ class CustomTextField extends ConsumerWidget {
               ),
           ],
         ),
-
         height(8),
         TextFormField(
+          style: customTextStyle(fontSize: 12),
           textCapitalization: textCapitalization,
           maxLength: maxLength,
           controller: controller,
           initialValue: controller == null ? value : null,
           onChanged: onChanged,
-          onTap: onTap,
-          readOnly: readOnly,
           obscureText: obscureText,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          readOnly: readOnly!,
           enabled: enabled,
           textAlign: TextAlign.start,
           validator: (val) {
@@ -96,7 +98,7 @@ class CustomTextField extends ConsumerWidget {
             if (validator != null) return validator!(val);
             return null;
           },
-          style: AppTheme.label12,
+          // style: AppTheme.label12,
           decoration: InputDecoration(
             // prefixIcon: icon != null
             //     ? Icon(icon, color: const Color(0xFF1565C0), size: 20)
@@ -107,19 +109,30 @@ class CustomTextField extends ConsumerWidget {
               color: AppColors.textHint,
               fontWeight: FontWeight.w500,
             ),
-            // filled: true,
-            // fillColor: AppColors.cardBackground(ref),
+            filled: true,
+            fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            // border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             suffixIcon: suffixIcon,
             prefixIcon: prefixIcon,
-            // enabledBorder: OutlineInputBorder(
-            //   borderRadius: BorderRadius.circular(10),
-            //   borderSide: BorderSide(color: AppColors.borderColor(ref)),
-            // ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.fieldBorder,
+                // width: 1.5,
+              ),
+            ),
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppColors.fieldBorder,
+                // width: 1.5,
+              ),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(

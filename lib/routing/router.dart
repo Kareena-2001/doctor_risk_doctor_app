@@ -19,7 +19,6 @@ import '../features/helpdesk/ui/widgets/add_support_247_screen.dart';
 import '../features/helpdesk/ui/widgets/my_queries_screen.dart';
 import '../features/helpdesk/ui/widgets/query_details_screen.dart';
 import '../features/home/ui/home_screen.dart';
-import '../features/idcard/ui/id_card_screen.dart';
 import '../features/main/ui/main_screen.dart';
 import '../features/notification/ui/notification_screen.dart';
 import '../features/onboarding/ui/splash_screen.dart';
@@ -193,10 +192,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.adminDocs,
       pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
-    ),
-    GoRoute(
-      path: Routes.idCard,
-      pageBuilder: (context, state) => state.slidePage(IdCardScreen()),
     ),
     GoRoute(
       path: Routes.helpSupport,

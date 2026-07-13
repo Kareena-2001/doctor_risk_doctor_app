@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../extensions/build_context_extension.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_theme.dart';
 import '../constants/dimensions.dart';
 import '../constants/values/app_text_style.dart';
 
-class CustomDropdownField<T> extends ConsumerWidget {
+class CustomDropdownField<T> extends StatelessWidget {
   final String? label;
   final String? hint;
   final List<T> items;
@@ -37,7 +35,7 @@ class CustomDropdownField<T> extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final effectiveValue = items.contains(value) ? value : null;
 
     return Column(
@@ -45,7 +43,14 @@ class CustomDropdownField<T> extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Text(label ?? '', style: AppTheme.label12),
+            Text(
+              label ?? '',
+              style: customTextStyle(
+                color: AppColors.labelColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
             if (isRequired)
               Text(
                 ' *',
@@ -64,6 +69,11 @@ class CustomDropdownField<T> extends ConsumerWidget {
           style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           value: effectiveValue,
           decoration: InputDecoration(
+            suffixIcon: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppColors.brown,
+              size: 22,
+            ),
             prefixIcon: icon != null
                 ? Icon(icon, color: const Color(0xFF1565C0), size: 20)
                 : null,
@@ -77,9 +87,21 @@ class CustomDropdownField<T> extends ConsumerWidget {
               horizontal: 16,
               vertical: 14,
             ),
+            filled: true,
+            fillColor: AppColors.white,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.fieldBorder,
+                // width: 1.5,
+              ),
+            ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE8E8E8)),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.fieldBorder,
+                // width: 1.5,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -99,6 +121,8 @@ class CustomDropdownField<T> extends ConsumerWidget {
                   color: context.primaryTextColor,
                   fontWeight: FontWeight.w400,
                 ),
+                // overflow: TextOverflow.ellipsis, // ADD THIS - truncate long text
+                // maxLines: 1, // ADD THIS
               ),
             );
           }).toList(),

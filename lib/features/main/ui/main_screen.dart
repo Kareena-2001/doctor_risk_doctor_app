@@ -20,7 +20,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   static const List<Widget> _screens = [
     HomeScreen(),
-    ProductScreen(),
+    ProfileScreen(),
     ProfileScreen(),
     ProfileScreen(),
   ];
@@ -32,15 +32,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       label: 'Home',
     ),
     NavBarItemData(
-      icon: MingCuteIcons.mgc_box_3_line,
-      activeIcon: MingCuteIcons.mgc_box_3_fill,
-      label: 'Product',
+      icon: Icons.auto_stories_outlined,
+      activeIcon: Icons.auto_stories,
+      label: 'Your Story',
     ),
-
     NavBarItemData(
-      icon: Icons.groups_outlined,
-      activeIcon: Icons.groups,
-      label: 'Community',
+      icon: Icons.headset_mic_outlined,
+      activeIcon: Icons.headset_mic,
+      label: 'Support Hub',
     ),
 
     NavBarItemData(

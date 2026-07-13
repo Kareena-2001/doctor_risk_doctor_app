@@ -22,6 +22,7 @@ class AppDrawer extends ConsumerWidget {
       backgroundColor: isDark
           ? const Color(0xFF0F0F12)
           : const Color(0xFFF8F9FA),
+
       width: MediaQuery.of(context).size.width * 0.85,
       child: SafeArea(
         child: Column(
@@ -45,27 +46,27 @@ class AppDrawer extends ConsumerWidget {
                       title: 'Edit Profile',
                       subtitle: 'Update your personal details',
                       isDark: isDark,
-                      onTap: () => context.push(Routes.addPlanScreen),
+                      onTap: () => context.push(Routes.login),
                     ),
-                    _tile(
-                      context,
-                      icon: Icons.history_rounded,
-                      title: 'History',
-                      subtitle: 'View your past activities',
-                      isDark: isDark,
-                      onTap: () => context.push(Routes.termsAndCondition),
-                    ),
-                    _tile(
-                      context,
-                      icon: Icons.history_rounded,
-                      title: 'Product',
-                      subtitle: 'View products',
-                      isDark: isDark,
-                      onTap: () {
-                        debugPrint("Product tapped");
-                        context.push(Routes.productList);
-                      },
-                    ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.history_rounded,
+                    //   title: 'History',
+                    //   subtitle: 'View your past activities',
+                    //   isDark: isDark,
+                    //   onTap: () => context.push(Routes.login),
+                    // ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.history_rounded,
+                    //   title: 'Product',
+                    //   subtitle: 'View products',
+                    //   isDark: isDark,
+                    //   onTap: () {
+                    //     debugPrint("Product tapped");
+                    //     context.push(Routes.productList);
+                    //   },
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Divider(
