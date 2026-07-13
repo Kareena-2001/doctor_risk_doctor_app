@@ -6,8 +6,9 @@ import 'package:Doctors_App/features/product/ui/state/purchase_wizard_state.dart
 import 'package:Doctors_App/features/product/ui/view_model/purchase_wizard_controller.dart';
 import 'package:Doctors_App/features/product/ui/widgets/address_step.dart';
 import 'package:Doctors_App/features/product/ui/widgets/hospital_details_step.dart';
-import 'package:Doctors_App/features/product/ui/widgets/purchase_details_step.dart';
+import 'package:Doctors_App/features/product/ui/widgets/personal_details_step.dart';
 import 'package:Doctors_App/features/product/ui/widgets/review_step.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
       widget.sumAssured,
       widget.premium,
     );
-
+    final isIndividual = widget.product.type == ProductType.individual;
     // Animate the PageView whenever the controller's step changes
     // (e.g. after a step widget calls nextStep()/previousStep()).
     ref.listen(provider, (prev, next) {
@@ -98,7 +99,10 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _WizardStepIndicator(currentIndex: state.currentStepIndex),
+            _WizardStepIndicator(
+              currentIndex: state.currentStepIndex,
+              isEstablishment: isIndividual,
+            ),
             if (state.errorMessage != null)
               _ErrorBanner(message: state.errorMessage!),
             Expanded(
@@ -114,7 +118,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                     premium: widget.premium,
                     controllerArgs: args,
                   ),
-                  HospitalDetailsStep(controllerArgs: args),
+                  if (isIndividual) HospitalDetailsStep(controllerArgs: args),
                   AddressStep(controllerArgs: args),
                   ReviewStep(controllerArgs: args),
                 ],
@@ -148,6 +152,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -190,7 +195,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                         Navigator.of(context).pop();
                         context.pop();
                       },
-                      child: const Text('Go Back'),
+                      child: Text('Go Back'),
                     ),
                   ),
                   width(12),
@@ -200,9 +205,14 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                       text: 'Proceed to Payment',
                       fontSize: 13,
                       backgroundColor: AppColors.orange,
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.of(context).pop();
-                        // TODO: context.push(Routes.payment, extra: state);
+
+                        await Future.delayed(Duration.zero);
+
+                        if (context.mounted) {
+                          context.push(Routes.productList);
+                        }
                       },
                     ),
                   ),
@@ -218,22 +228,29 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
 
 class _WizardStepIndicator extends StatelessWidget {
   final int currentIndex;
+  final bool isEstablishment;
 
-  const _WizardStepIndicator({required this.currentIndex});
+  const _WizardStepIndicator({
+    required this.currentIndex,
+    required this.isEstablishment,
+  });
 
-  static const _labels = ['Personal', 'Hospital', 'Address', 'Review'];
+  // static const _labels = ['Personal', 'Hospital', 'Address', 'Review'];
 
   @override
   Widget build(BuildContext context) {
+    final labels = isEstablishment
+        ? ['Personal', 'Hospital', 'Address', 'Review']
+        : ['Personal', 'Address', 'Review'];
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       child: Row(
-        children: List.generate(_labels.length, (i) {
+        children: List.generate(labels.length, (i) {
           final isDone = i < currentIndex;
           final isActive = i == currentIndex;
           final color = isDone || isActive
-              ? AppColors.orange
+              ? AppColors.newPri
               : const Color(0xFFE2E8F0);
 
           return Expanded(
@@ -243,7 +260,7 @@ class _WizardStepIndicator extends StatelessWidget {
                   radius: 12,
                   backgroundColor: color,
                   child: isDone
-                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      ? Icon(Icons.check, size: 14, color: Colors.white)
                       : Text(
                           '${i + 1}',
                           style: customTextStyle(
@@ -255,7 +272,7 @@ class _WizardStepIndicator extends StatelessWidget {
                           ),
                         ),
                 ),
-                if (i != _labels.length - 1)
+                if (i != labels.length - 1)
                   Expanded(
                     child: Container(
                       height: 2,
@@ -286,7 +303,7 @@ class _ErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Text(
         message,
-        style: customTextStyle(fontSize: 12, color: const Color(0xFFB91C1C)),
+        style: customTextStyle(fontSize: 12, color: AppColors.cardRed),
       ),
     );
   }

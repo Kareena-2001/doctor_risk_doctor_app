@@ -49,6 +49,10 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
   final _firstNameCtrl = TextEditingController();
   final _middleNameCtrl = TextEditingController();
   final _lastNameCtrl = TextEditingController();
+
+  final _opdCtrl = TextEditingController();
+  final _ipdCtrl = TextEditingController();
+
   final _degreeCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _mobileCtrl = TextEditingController();
@@ -131,6 +135,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
 
   @override
   Widget build(BuildContext context) {
+    final isIndividual = widget.product.type == ProductType.individual;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -210,6 +215,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
               keyboardType: TextInputType.emailAddress,
             ),
             height(10),
+
             Row(
               children: [
                 Expanded(
@@ -228,6 +234,29 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
                     hint: 'Enter Alternate No.',
                     controller: _altMobileCtrl,
                     keyboardType: TextInputType.phone,
+                  ),
+                ),
+              ],
+            ),
+            height(10),
+
+            if (isIndividual)
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextField(
+                    label: 'OPD',
+                    controller: _opdCtrl,
+                    hint: 'Enter OPD',
+                  ),
+                ),
+                width(10),
+                Expanded(
+                  child: CustomTextField(
+                    label: 'IPD',
+                    controller: _ipdCtrl,
+                    isRequired: true,
+                    hint: 'Enter IPD',
                   ),
                 ),
               ],
@@ -263,7 +292,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
             PrimaryButton(
               height: 50,
               text: 'Continue',
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.newPri,
               onPressed: _submit,
             ),
             height(20),

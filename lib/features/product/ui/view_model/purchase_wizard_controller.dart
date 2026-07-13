@@ -11,12 +11,12 @@ part 'purchase_wizard_controller.g.dart';
 class PurchaseWizardController extends _$PurchaseWizardController {
   @override
   PurchaseWizardState build(
-      Product product,
-      TierPlan tier,
-      String duration,
-      double sumAssured,
-      double premium,
-      ) {
+    Product product,
+    TierPlan tier,
+    String duration,
+    double sumAssured,
+    double premium,
+  ) {
     return PurchaseWizardState(
       product: product,
       tier: tier,
@@ -80,8 +80,6 @@ class PurchaseWizardController extends _$PurchaseWizardController {
     state = state.copyWith(addresses: updated);
   }
 
-  // ---- submit ----
-
   Future<bool> submit() async {
     if (!state.canSubmit) {
       state = state.copyWith(
@@ -92,7 +90,6 @@ class PurchaseWizardController extends _$PurchaseWizardController {
 
     state = state.copyWith(isSubmitting: true, errorMessage: null);
     try {
-      // TODO: replace with real API call
       // await ref.read(planRepositoryProvider).purchasePlan(state);
       await Future.delayed(const Duration(milliseconds: 900));
       state = state.copyWith(isSubmitting: false, isSubmitted: true);

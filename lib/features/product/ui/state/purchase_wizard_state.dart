@@ -49,10 +49,17 @@ class PurchaseWizardState {
 
   int get currentStepIndex => wizardStepOrder.indexOf(currentStep);
 
+  bool get isIndividual => product.type == ProductType.individual;
+
+  // bool get canSubmit =>
+  //     personalDetails != null &&
+  //     hospitalDetails != null &&
+  //     addresses.isNotEmpty;
+
   bool get canSubmit =>
       personalDetails != null &&
-      hospitalDetails != null &&
-      addresses.isNotEmpty;
+      addresses.isNotEmpty &&
+      (!isIndividual || hospitalDetails != null);
 
   PurchaseWizardState copyWith({
     WizardStep? currentStep,

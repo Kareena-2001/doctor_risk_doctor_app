@@ -27,7 +27,7 @@ class ProductHubView extends StatelessWidget {
                       icon: Icons.storefront_rounded,
                       title: 'Browse Plans',
                       subtitle: 'Explore & buy new plans',
-                      color: AppColors.orange,
+                      color: AppColors.accent.withValues(alpha: 0.5),
                       onTap: () => context.push(Routes.productList),
                     ),
                   ),
@@ -37,7 +37,7 @@ class ProductHubView extends StatelessWidget {
                       icon: Icons.shield_moon_rounded,
                       title: 'My Plans',
                       subtitle: 'View, renew & manage',
-                      color: const Color(0xFF10B981),
+                      color: AppColors.newPri,
                       onTap: () => context.push(Routes.myPlans),
                     ),
                   ),
@@ -61,14 +61,38 @@ class ProductHubView extends StatelessWidget {
                 crossAxisSpacing: 12,
                 childAspectRatio: 0.85,
                 children: const [
-                  _ServiceIcon(icon: Icons.description_outlined, label: 'Auditing\nMedical Records'),
-                  _ServiceIcon(icon: Icons.share_outlined, label: 'Social Media\nDefamation'),
-                  _ServiceIcon(icon: Icons.support_agent_outlined, label: 'Person-to-Person\nConsultation'),
-                  _ServiceIcon(icon: Icons.folder_open_outlined, label: 'Legal\nDocumentation'),
-                  _ServiceIcon(icon: Icons.security_outlined, label: 'Defense Cost\nof Defending'),
-                  _ServiceIcon(icon: Icons.payments_outlined, label: 'Bail Cost\nCoverage'),
-                  _ServiceIcon(icon: Icons.balance_outlined, label: 'Pre-Litigation\nSupport'),
-                  _ServiceIcon(icon: Icons.handshake_outlined, label: 'Out-of-Court\nSettlement'),
+                  _ServiceIcon(
+                    icon: Icons.description_outlined,
+                    label: 'Auditing\nMedical Records',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.share_outlined,
+                    label: 'Social Media\nDefamation',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.support_agent_outlined,
+                    label: 'Person-to-Person\nConsultation',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.folder_open_outlined,
+                    label: 'Legal\nDocumentation',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.security_outlined,
+                    label: 'Defense Cost\nof Defending',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.payments_outlined,
+                    label: 'Bail Cost\nCoverage',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.balance_outlined,
+                    label: 'Pre-Litigation\nSupport',
+                  ),
+                  _ServiceIcon(
+                    icon: Icons.handshake_outlined,
+                    label: 'Out-of-Court\nSettlement',
+                  ),
                 ],
               ),
             ],
@@ -122,12 +146,13 @@ class _EntryCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 2),
+            height(2),
             Text(
               subtitle,
               style: customTextStyle(
                 fontSize: 11,
                 color: Colors.white.withValues(alpha: 0.85),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -140,6 +165,7 @@ class _EntryCard extends StatelessWidget {
 class _ServiceIcon extends StatelessWidget {
   final IconData icon;
   final String label;
+
   const _ServiceIcon({required this.icon, required this.label});
 
   @override
@@ -165,13 +191,16 @@ class _ServiceIcon extends StatelessWidget {
               ),
               child: Icon(icon, color: AppColors.newPri, size: 18),
             ),
-            const SizedBox(height: 6),
+            height(6),
             Text(
               label,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: customTextStyle(fontSize: 9.5, color: const Color(0xFF64748B)),
+              style: customTextStyle(
+                fontSize: 9.5,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),

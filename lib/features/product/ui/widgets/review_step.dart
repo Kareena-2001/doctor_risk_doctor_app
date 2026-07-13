@@ -11,6 +11,7 @@ import '../view_model/purchase_wizard_controller.dart';
 
 class ReviewStep extends ConsumerWidget {
   final WizardArgs controllerArgs;
+
   const ReviewStep({super.key, required this.controllerArgs});
 
   @override
@@ -88,7 +89,7 @@ class ReviewStep extends ConsumerWidget {
           child: PrimaryButton(
             height: 46,
             text: state.isSubmitting ? 'Submitting...' : 'Submit',
-            backgroundColor: AppColors.orange,
+            backgroundColor: AppColors.newPri,
             onPressed: state.isSubmitting ? null : () => notifier.submit(),
           ),
         ),
@@ -115,22 +116,34 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+          Text(
+            title,
+            style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+          ),
           height(10),
           ...rows.entries.map(
-                (e) => Padding(
+            (e) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     width: 120,
-                    child: Text(e.key, style: customTextStyle(fontSize: 11.5, color: AppColors.grey)),
+                    child: Text(
+                      e.key,
+                      style: customTextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.grey,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: Text(
                       e.value,
-                      style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: customTextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

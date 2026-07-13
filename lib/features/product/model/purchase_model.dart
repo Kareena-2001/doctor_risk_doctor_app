@@ -40,7 +40,8 @@ class PersonalDetails {
     required this.organisation,
   });
 
-  String get fullName => '$prefix $firstName $middleName $lastName'.replaceAll('  ', ' ').trim();
+  String get fullName =>
+      '$prefix $firstName $middleName $lastName'.replaceAll('  ', ' ').trim();
 }
 
 class HospitalDetails {

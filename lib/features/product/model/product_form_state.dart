@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../model/product_model.dart';
 
 part 'product_form_state.freezed.dart';
 

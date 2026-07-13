@@ -121,9 +121,9 @@ class TierBottomSheetState extends State<TierBottomSheet> {
                     color: Color(0xFF0F172A),
                   ).copyWith(letterSpacing: -0.5),
                 ),
-                const Text(
+                 Text(
                   'Swipe to compare · tap to select',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                  style: customTextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
                 ),
               ],
             ),

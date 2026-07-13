@@ -1,6 +1,10 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,10 +16,12 @@ import '../view_model/purchase_wizard_controller.dart';
 
 class HospitalDetailsStep extends ConsumerStatefulWidget {
   final WizardArgs controllerArgs;
+
   const HospitalDetailsStep({super.key, required this.controllerArgs});
 
   @override
-  ConsumerState<HospitalDetailsStep> createState() => _HospitalDetailsStepState();
+  ConsumerState<HospitalDetailsStep> createState() =>
+      _HospitalDetailsStepState();
 }
 
 class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
@@ -25,6 +31,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
   final _regYearCtrl = TextEditingController();
   final _staffCountCtrl = TextEditingController(text: '0');
 
+  final _retroactiveDateCtrl = TextEditingController();
   String? _diplomaPath;
   String? _previousPolicyPath;
   DateTime? _retroactiveDate;
@@ -33,7 +40,12 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
 
   @override
   void dispose() {
-    for (final c in [_regStateCtrl, _regNoCtrl, _regYearCtrl, _staffCountCtrl]) {
+    for (final c in [
+      _regStateCtrl,
+      _regNoCtrl,
+      _regYearCtrl,
+      _staffCountCtrl,
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -46,13 +58,17 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
       firstDate: DateTime(1990),
       lastDate: DateTime.now(),
     );
-    if (picked != null) setState(() => _retroactiveDate = picked);
+    if (picked != null) {
+      setState(() {
+        _retroactiveDate = picked;
+        _retroactiveDateCtrl.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
   }
 
   Future<void> _pickFile(void Function(String path) onPicked) async {
-    // TODO: wire to file_picker / image_picker depending on what you use elsewhere
-    // final result = await FilePicker.platform.pickFiles();
-    // if (result != null) onPicked(result.files.single.path!);
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) onPicked(result.files.single.path!);
     onPicked('selected_document.pdf');
     setState(() {});
   }
@@ -60,9 +76,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
   void _submit() {
     if (!_formKey.currentState!.validate() || _retroactiveDate == null) {
       if (_retroactiveDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a retroactive date')),
-        );
+        context.showWarningSnackBar('Please select a retroactive date');
       }
       return;
     }
@@ -80,13 +94,15 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
     );
 
     ref
-        .read(purchaseWizardControllerProvider(
-      widget.controllerArgs.$1,
-      widget.controllerArgs.$2,
-      widget.controllerArgs.$3,
-      widget.controllerArgs.$4,
-      widget.controllerArgs.$5,
-    ).notifier)
+        .read(
+          purchaseWizardControllerProvider(
+            widget.controllerArgs.$1,
+            widget.controllerArgs.$2,
+            widget.controllerArgs.$3,
+            widget.controllerArgs.$4,
+            widget.controllerArgs.$5,
+          ).notifier,
+        )
         .saveHospitalDetails(details);
   }
 
@@ -99,10 +115,16 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Hospital/clinic details',
-                style: customTextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+            Text(
+              'Hospital/clinic details',
+              style: customTextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            ),
             height(12),
-            CustomTextField(label: 'Medical reg. state', controller: _regStateCtrl, isRequired: true),
+            CustomTextField(
+              label: 'Medical reg. state',
+              controller: _regStateCtrl,
+              isRequired: true,
+            ),
             height(10),
             Row(
               children: [
@@ -137,16 +159,24 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
               onTap: () => _pickFile((p) => _previousPolicyPath = p),
             ),
             height(14),
-            InkWell(
+            // InkWell(
+            //   onTap: _pickRetroactiveDate,
+            //   child: InputDecorator(
+            //     decoration: const InputDecoration(
+            //       labelText: 'Retroactive date',
+            //     ),
+            //     child: Text(
+            //       _retroactiveDate == null
+            //           ? 'Select date'
+            //           : '${_retroactiveDate!.day}/${_retroactiveDate!.month}/${_retroactiveDate!.year}',
+            //     ),
+            //   ),
+            // ),
+            CustomDatePicker(
+              label: 'Retroactive date',
+              hint: 'Select Date',
+              controller: _retroactiveDateCtrl,
               onTap: _pickRetroactiveDate,
-              child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Retroactive date'),
-                child: Text(
-                  _retroactiveDate == null
-                      ? 'Select date'
-                      : '${_retroactiveDate!.day}/${_retroactiveDate!.month}/${_retroactiveDate!.year}',
-                ),
-              ),
             ),
             height(14),
             _YesNoRow(
@@ -172,7 +202,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
             PrimaryButton(
               height: 50,
               text: 'Continue',
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.newPri,
               onPressed: _submit,
             ),
             height(20),
@@ -188,7 +218,11 @@ class _FilePickerTile extends StatelessWidget {
   final String? fileName;
   final VoidCallback onTap;
 
-  const _FilePickerTile({required this.label, required this.fileName, required this.onTap});
+  const _FilePickerTile({
+    required this.label,
+    required this.fileName,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -203,19 +237,28 @@ class _FilePickerTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.attach_file_rounded, size: 18, color: Color(0xFF64748B)),
-            const SizedBox(width: 8),
+            const Icon(
+              Icons.attach_file_rounded,
+              size: 18,
+              color: Color(0xFF64748B),
+            ),
+            width(8),
             Expanded(
               child: Text(
                 fileName ?? label,
                 style: customTextStyle(
                   fontSize: 12,
-                  color: fileName == null ? const Color(0xFF94A3B8) : const Color(0xFF1E293B),
+                  color: fileName == null
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF1E293B),
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text('Attach', style: customTextStyle(fontSize: 12, color: AppColors.orange)),
+            Text(
+              'Attach',
+              style: customTextStyle(fontSize: 12, color: AppColors.orange),
+            ),
           ],
         ),
       ),
@@ -228,14 +271,22 @@ class _YesNoRow extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _YesNoRow({required this.label, required this.value, required this.onChanged});
+  const _YesNoRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(child: Text(label, style: customTextStyle(fontSize: 13))),
-        Switch(value: value, onChanged: onChanged, activeThumbColor: AppColors.orange),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: AppColors.orange,
+        ),
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/state/purchase_wizard_state.dart';
@@ -63,15 +64,15 @@ class AddressStep extends ConsumerWidget {
                 label: const Text('Add more address'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 44),
-                  foregroundColor: AppColors.orange,
-                  side: BorderSide(color: AppColors.orange),
+                  foregroundColor: AppColors.newPri,
+                  side: BorderSide(color: AppColors.newPri),
                 ),
               ),
               height(10),
               PrimaryButton(
                 height: 44,
                 text: 'Continue',
-                backgroundColor: AppColors.orange,
+                backgroundColor: AppColors.newPri,
                 onPressed: state.addresses.isEmpty
                     ? null
                     : () => notifier.nextStep(),
@@ -156,7 +157,7 @@ class _AddressCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 2),
+                height(2),
                 Text(
                   '${address.landmark}, ${address.city}, ${address.state} - ${address.pinCode}',
                   style: customTextStyle(fontSize: 11, color: AppColors.grey),
@@ -275,39 +276,28 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<AddressType>(
-                        initialValue: _type,
-                        decoration: const InputDecoration(
-                          labelText: 'Address type',
-                        ),
-                        items: AddressType.values
-                            .map(
-                              (t) => DropdownMenuItem(
-                                value: t,
-                                child: Text(t.label),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) => setState(() => _type = v ?? _type),
+                      child: CustomDropdownField<AddressType>(
+                        label: 'Address type',
+                        items: AddressType.values,
+                        value: _type,
+                        itemBuilder: (t) => t.label,
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => _type = value);
+                          }
+                        },
                       ),
                     ),
                     width(10),
+
                     Expanded(
-                      child: DropdownButtonFormField<OwnOrVisiting>(
-                        initialValue: _ownOrVisiting,
-                        decoration: const InputDecoration(
-                          labelText: 'Own/visiting',
-                        ),
-                        items: OwnOrVisiting.values
-                            .map(
-                              (o) => DropdownMenuItem(
-                                value: o,
-                                child: Text(o.label),
-                              ),
-                            )
-                            .toList(),
+                      child: CustomDropdownField<OwnOrVisiting>(
+                        label:  'Own/visiting',
+                        items: OwnOrVisiting.values,
+                        value: _ownOrVisiting,
+                        itemBuilder: (t) => t.label,
                         onChanged: (v) => setState(
-                          () => _ownOrVisiting = v ?? _ownOrVisiting,
+                              () => _ownOrVisiting = v ?? _ownOrVisiting,
                         ),
                       ),
                     ),
@@ -357,7 +347,7 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                 PrimaryButton(
                   height: 50,
                   text: 'Save your address',
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.newPri,
                   onPressed: _save,
                 ),
               ],

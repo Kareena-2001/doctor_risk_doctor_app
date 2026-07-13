@@ -250,7 +250,7 @@ class _ProductViewState extends ConsumerState<ProductView>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: index == 0
-                      ? [AppColors.orange, AppColors.orange]
+                      ? [AppColors.newPri, AppColors.newPri]
                       : [const Color(0xFF10B981), const Color(0xFF059669)],
                 )
               : null,
@@ -411,7 +411,7 @@ class _ProductRow extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    final isEstab = product.type == ProductType.medicalEstablishment;
+    final isEstab = product.type == ProductType.individual;
     return InkWell(
       onTap: onToggle,
       borderRadius: BorderRadius.circular(20),
@@ -602,7 +602,7 @@ class _ProductRow extends StatelessWidget {
               PrimaryButton(
                 height: 40,
                 // prefix: Icon(Icons.layers_rounded),
-                backgroundColor: AppColors.orange,
+                backgroundColor: AppColors.newPri,
                 fontSize: 14,
                 text: "View full tier details",
                 onPressed: onViewTiers,
