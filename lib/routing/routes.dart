@@ -60,4 +60,16 @@ class Routes {
   static const blogCentral = '/blogCentral';
   static const blogCentralDetails = '/blogCentralDetails';
   static const eventsScreen = '/eventsScreen';
+
+
+  static const communityScreen = '/communityScreen';
+  static const profileView = '/profileView';
+  static const editProfile = '/editProfile';
+
+
+  static const addBlog = '/addBlog';
+
+  static const addAppointment = '/addAppointment';
+  static const viewAppointment = '/viewAppointment';
+
 }

@@ -32,6 +32,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final VoidCallback? onMenu;
   final VoidCallback? onDrawer;
   final VoidCallback? onView;
+  final bool showEdit;
+  final VoidCallback? onEdit;
 
   const CustomAppBar({
     super.key,
@@ -59,6 +61,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.onMenu,
     this.onDrawer,
     this.onView,
+    this.showEdit = false,
+    this.onEdit,
   });
 
   @override
@@ -98,6 +102,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
+        if (showEdit && onEdit != null)
+          AppBarAction(icon: Icons.edit_outlined, onTap: onEdit!),
         if (showSearch && onSearch != null)
           AppBarAction(icon: Icons.search, onTap: onSearch!),
         if (showAdd && onAdd != null)

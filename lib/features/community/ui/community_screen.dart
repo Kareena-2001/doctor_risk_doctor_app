@@ -1,23 +1,20 @@
-import 'package:Doctors_App/features/testimonial/ui/widget/community_testimonial_list.dart';
-import 'package:Doctors_App/features/testimonial/ui/widget/share_testimonial_form.dart';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/features/community/ui/peer_forum_screen.dart';
+import 'package:Doctors_App/features/community/ui/refer_group_screen.dart';
 import 'package:flutter/material.dart';
-
-import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 
-enum TestimonialMode { text, video }
-
-class TestimonialScreen extends StatefulWidget {
-  const TestimonialScreen({super.key});
+class CommunityScreen extends StatefulWidget {
+  const CommunityScreen({super.key});
 
   @override
-  State<TestimonialScreen> createState() => _TestimonialScreenState();
+  State<CommunityScreen> createState() => _CommunityScreenState();
 }
 
-class _TestimonialScreenState extends State<TestimonialScreen>
+class _CommunityScreenState extends State<CommunityScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
@@ -36,8 +33,8 @@ class _TestimonialScreenState extends State<TestimonialScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
-      appBar: CustomAppBar(title: 'Your Story', showBack: false),
+      backgroundColor: AppColors.newBg,
+      appBar: CustomAppBar(title: 'Community', showBack: false),
       body: Column(
         children: [
           Container(
@@ -53,21 +50,18 @@ class _TestimonialScreenState extends State<TestimonialScreen>
                 fontWeight: FontWeight.bold,
               ),
               tabs: const [
-                Tab(text: 'Share Testimonial'),
-                Tab(text: 'Community Stories'),
+                Tab(text: 'Peer Forum'),
+                Tab(text: 'Refer & Groups'),
               ],
             ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                ShareTestimonialForm(),
-                CommunityTestimonialsList(),
-              ],
+              children: const [PeerForumTab(), ReferAndGroupsTab()],
             ),
           ),
-          height(100),
+          height(Responsive.h(100)),
         ],
       ),
     );

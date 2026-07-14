@@ -1,19 +1,13 @@
-import 'dart:io';
-
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
-import 'package:Doctors_App/features/helpdesk/ui/state/help_state.dart';
-import 'package:Doctors_App/features/helpdesk/ui/view_model/help_view_model.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../../extensions/build_context_extension.dart';
 import '../../../../theme/app_colors.dart';
 import '../model/suppport_enums.dart';
-import 'widgets/success_view.dart';
 
 const _medicoLegalCallNumber = '+911234567890';
 const _legalCallNumber = '+911234567891';
@@ -26,8 +20,6 @@ class LegalSupportScreen extends ConsumerStatefulWidget {
 }
 
 class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
-  int _tabIndex = 0; // 0 = Book Appointment, 1 = On Call Support
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,18 +70,20 @@ class _OnCallSupportViewState extends State<_OnCallSupportView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.support_agent_rounded, size: 48, color: AppColors.primary),
+          Icon(Icons.support_agent_rounded, size: 48, color: AppColors.newPri),
           height(12),
-          const Text(
+          Text(
             'Emergency Expert Support',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: customTextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           height(4),
-          const Text(
+          Text(
             'Select the type of support you need — you\'ll be connected to the right line',
+            style: customTextStyle(),
           ),
           height(20),
           CustomDropdownField<QueryType>(
+            hint: 'Select type',
             label: 'Support Type',
             value: _queryType,
             items: QueryType.values,
@@ -99,6 +93,7 @@ class _OnCallSupportViewState extends State<_OnCallSupportView> {
           height(24),
           PrimaryButton(
             text: 'Call Now',
+            backgroundColor: AppColors.newPri,
             onPressed: _queryType == null ? null : _call,
           ),
         ],

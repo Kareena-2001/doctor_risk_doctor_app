@@ -294,7 +294,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       height(16),
-
                       CustomTextField(
                         label: 'Confirm Password',
                         hint: 'Confirm password',

@@ -5,6 +5,7 @@ import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/helpdesk/ui/state/help_state.dart';
 import 'package:Doctors_App/features/helpdesk/ui/view_model/help_view_model.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,6 +106,7 @@ class _RegisterQueryScreenState extends ConsumerState<RegisterQueryScreen> {
                   ),
                   height(24),
                   PrimaryButton(
+                    backgroundColor: AppColors.newPri,
                     text: 'Submit Query',
                     onPressed: helpState.isLoading ? null : _submit,
                   ),

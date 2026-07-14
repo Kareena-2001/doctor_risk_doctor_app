@@ -73,9 +73,11 @@ class AppColors {
 
   static const premiumBackground = Color(0xFF000000);
 
-  static const Color newPri = Color(0xFF669b98);
+  // static const Color newPri = Color(0xFF669b98);
+  static const Color newPri = Color(0xFF558583);
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
+  static const Color newBg = Color(0xffF6F7FB);
 
   static const Color primary = Color(0xFF339D5C);
   static const Color sec = Color(0xFFf6c989);

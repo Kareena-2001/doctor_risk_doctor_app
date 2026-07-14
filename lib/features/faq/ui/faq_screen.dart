@@ -1,12 +1,12 @@
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/dimensions.dart';
-import '../../../core/constants/responsive.dart';
-import '../../../core/constants/values/app_text_style.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../core/widgets/custom_seachbar.dart';
-import '../../theme/app_colors.dart';
+import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/responsive.dart';
+import '../../../../core/constants/values/app_text_style.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../core/widgets/custom_seachbar.dart';
+import '../../../theme/app_colors.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});

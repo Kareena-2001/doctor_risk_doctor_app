@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/features/helpdesk/ui/registery_query_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -53,10 +54,13 @@ class SupportHubScreen extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () => context.push(Routes.myQueries),
-                icon: const Icon(Icons.list_alt_rounded),
-                label: const Text('View My Queries'),
+                icon: Icon(Icons.list_alt_rounded, color: AppColors.textColor),
+                label: Text(
+                  'View My Queries',
+                  style: customTextStyle(fontSize: 14),
+                ),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -108,7 +112,7 @@ class _SupportCard extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: AppColors.primary),
+                child: Icon(icon, color: AppColors.newPri),
               ),
               width(14),
               Expanded(

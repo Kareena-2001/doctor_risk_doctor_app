@@ -51,23 +51,32 @@ class AppDrawer extends ConsumerWidget {
                     // ),
                     _tile(
                       context,
-                      icon: Icons.history_rounded,
+                      icon: Icons.support_agent_rounded,
                       title: 'Support Hub',
                       subtitle: 'Contact Support',
                       isDark: isDark,
                       onTap: () {
-                        debugPrint("Product tapped");
                         context.push(Routes.supportHub);
+                      },
+                    ),
+
+                    _tile(
+                      context,
+                      icon: Icons.calendar_month_outlined,
+                      title: 'My Appointments',
+                      subtitle: 'View upcoming & past appointments',
+                      isDark: isDark,
+                      onTap: () {
+                        context.push(Routes.viewAppointment);
                       },
                     ),
                     _tile(
                       context,
-                      icon: Icons.history_rounded,
-                      title: 'Faq',
-                      subtitle: 'Contact Support',
+                      icon: Icons.quiz_outlined,
+                      title: 'FAQ',
+                      subtitle: 'Frequently Asked Questions',
                       isDark: isDark,
                       onTap: () {
-                        debugPrint("Product tapped");
                         context.push(Routes.faqScreen);
                       },
                     ),

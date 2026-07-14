@@ -14,6 +14,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/heading_widget.dart';
 import '../../../routing/routes.dart';
 import '../../notification/ui/viewmodel/notification_view_model.dart';
+import 'floating_chat_bubble.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -98,43 +99,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: isDark
-          ? const Color(0xFF0E0E10)
-          : const Color(0xFFF6F7FB),
-      appBar: CustomAppBar(
-        title: 'Dashboard',
-        showBack: false,
-        showDrawer: true,
-        onDrawer: () {
-          context.push(Routes.appDrawer);
-        },
-        backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
-        showNotification: true,
-        onNotification: _handleNotificationTap,
-      ),
-      body: RefreshIndicator(
-        color: AppColors.newPri,
-        onRefresh: _refreshUserData,
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            child: Column(
-              children: [
-                height(Responsive.h(8)),
-                _buildCompactProfileHeader(isDark),
-                height(Responsive.h(20)),
-                _buildMainContent(isDark),
-                height(Responsive.h(100)),
-              ],
+    return Stack(
+      children: [
+        Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: isDark
+              ? const Color(0xFF0E0E10)
+              : const Color(0xFFF6F7FB),
+          appBar: CustomAppBar(
+            title: 'Dashboard',
+            showBack: false,
+            showDrawer: true,
+            onDrawer: () {
+              context.push(Routes.appDrawer);
+            },
+            backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
+            showNotification: true,
+            onNotification: _handleNotificationTap,
+          ),
+          body: RefreshIndicator(
+            color: AppColors.newPri,
+            onRefresh: _refreshUserData,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                child: Column(
+                  children: [
+                    height(Responsive.h(8)),
+                    _buildCompactProfileHeader(isDark),
+                    height(Responsive.h(20)),
+                    _buildMainContent(isDark),
+                    height(Responsive.h(100)),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        const FloatingChatBubble(),
+      ],
     );
   }
 

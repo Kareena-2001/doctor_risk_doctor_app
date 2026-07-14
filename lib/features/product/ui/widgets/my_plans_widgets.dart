@@ -247,7 +247,7 @@ class _MyPlansWidgetsState extends State<MyPlansWidgets> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF046648),
+        color: AppColors.newPri,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -261,14 +261,14 @@ class _MyPlansWidgetsState extends State<MyPlansWidgets> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
+          height(4),
           Text(
             'Need assistance with your current policy or claims?',
             style: customTextStyle(color: Colors.white70, fontSize: 12),
           ),
-          const SizedBox(height: 16),
+          height(16),
           _buildSupportActionRow('Contact Advisor'),
-          const SizedBox(height: 8),
+          height(8),
           _buildSupportActionRow('Raise a Query'),
         ],
       ),

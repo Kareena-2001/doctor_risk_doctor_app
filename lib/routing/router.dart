@@ -1,6 +1,10 @@
+import 'package:Doctors_App/features/appointment/ui/appointment_form_view.dart';
+import 'package:Doctors_App/features/appointment/ui/appointment_list_view.dart';
 import 'package:Doctors_App/features/authentication/ui/sign_up_screen.dart';
+import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
+import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
@@ -11,8 +15,11 @@ import 'package:Doctors_App/features/product/model/product_tier.dart';
 import 'package:Doctors_App/features/product/ui/widgets/my_plans_widgets.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
-import 'package:Doctors_App/features/profile/faq_screen.dart';
+import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
+import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
 import 'package:Doctors_App/features/profile/ui/contact_us.dart';
+import 'package:Doctors_App/features/profile/ui/edit_profile_screen.dart';
+import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
 import 'package:Doctors_App/features/profile/ui/terms_conditions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -267,6 +274,44 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),
+    ),
+    GoRoute(
+      path: Routes.communityScreen,
+      pageBuilder: (context, state) => state.slidePage(const CommunityScreen()),
+    ),
+    GoRoute(
+      path: Routes.addBlog,
+      pageBuilder: (context, state) => state.slidePage(const AddBlogScreen()),
+    ),
+    GoRoute(
+      path: Routes.editProfile,
+      pageBuilder: (context, state) =>
+          state.slidePage(const EditProfileScreen()),
+    ),
+    GoRoute(
+      path: Routes.profileView,
+      pageBuilder: (context, state) => state.slidePage(
+        const ProfileViewScreen(
+          data: DoctorProfileData(
+            prefix: 'Dr',
+            firstName: 'Arun',
+            lastName: 'Mishra',
+            degree: 'MBBS',
+            email: 'arun@gmail.com',
+            mobile: '9326481596',
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      path: Routes.addAppointment,
+      pageBuilder: (context, state) =>
+          state.slidePage(const AppointmentFormView()),
+    ),
+    GoRoute(
+      path: Routes.viewAppointment,
+      pageBuilder: (context, state) =>
+          state.slidePage(const AppointmentListView()),
     ),
   ],
 );
