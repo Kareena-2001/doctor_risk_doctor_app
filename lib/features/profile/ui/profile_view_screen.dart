@@ -102,13 +102,9 @@ class ProfileViewScreen extends StatelessWidget {
                                     fontSize: 15,
                                   ),
                                 ),
-
                                 const Spacer(),
-
                                 InkWell(
-                                  onTap: () {
-                                    // Navigate to edit screen
-                                  },
+                                  onTap: () {},
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
