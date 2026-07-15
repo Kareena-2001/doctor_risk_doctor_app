@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,12 +35,15 @@ class CustomDatePicker extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Text(label, style: AppTheme.label12),
+            Text(
+              label,
+              style: AppTheme.label12.copyWith(fontWeight: FontWeight.w700),
+            ),
             if (isRequired)
               Text(
                 ' *',
                 style: customTextStyle(
-                  fontSize: 13,
+                  fontSize: Responsive.sp(13),
                   fontWeight: FontWeight.w600,
                   color: Colors.red,
                 ),

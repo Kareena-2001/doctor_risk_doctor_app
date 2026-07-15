@@ -1,7 +1,6 @@
 class CasesModel {
   final String id;
-  final String doctorId;
-  final String advocateName;
+  final String description;
   final String complainantName;
   final String complainantNo;
   final String addedOn;
@@ -11,8 +10,7 @@ class CasesModel {
 
   CasesModel({
     required this.id,
-    required this.doctorId,
-    required this.advocateName,
+    required this.description,
     required this.complainantName,
     required this.complainantNo,
     required this.addedOn,

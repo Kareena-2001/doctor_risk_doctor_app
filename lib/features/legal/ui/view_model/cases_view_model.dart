@@ -8,32 +8,30 @@ class CasesNotifier extends StateNotifier<List<CasesModel>> {
     state = newCases;
   }
 }
-
 final List<CasesModel> _mockCases = [
   CasesModel(
-    id: '',
-    advocateName: 'John Doe',
-    status: 'Active',
+    id: 'CASE001',
+    description:
+    'Medical negligence complaint regarding post-operative care. The complainant alleges inadequate follow-up treatment after surgery, resulting in complications. The matter is currently under review.',
+    status: 'In Progress',
     complainantName: 'Alice Smith',
     complainantNo: '+123456789',
-    doctorId: 'DOC001',
     addedOn: '2026-05-12',
     updateOn: '2026-07-10',
     caseStatus: 'Hearing Stage',
   ),
   CasesModel(
-    advocateName: 'Robert Vance',
-    status: 'In-Progress',
+    id: 'CASE002',
+    description:
+    'Dispute related to billing and treatment charges. Supporting documents, invoices, and patient records have been submitted for verification before the next hearing.',
+    status: 'In Progress',
     complainantName: 'Michael Scott',
     complainantNo: '+987654321',
-    doctorId: '',
     addedOn: '2026-01-15',
     updateOn: '2026-06-22',
     caseStatus: 'Document Review',
-    id: '',
   ),
 ];
-
 final casesProvider = StateNotifierProvider<CasesNotifier, List<CasesModel>>((
   ref,
 ) {

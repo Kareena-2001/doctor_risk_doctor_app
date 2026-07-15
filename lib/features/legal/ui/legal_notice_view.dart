@@ -106,8 +106,6 @@ class LegalNoticeView extends ConsumerWidget {
                 height(6),
                 _buildInfoRow(Icons.call, 'Receiver: ${cases.complainantName}'),
                 height(6),
-                _buildInfoRow(Icons.badge, 'Doctor ID: ${cases.doctorId}'),
-                height(6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
