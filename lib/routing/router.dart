@@ -43,7 +43,6 @@ import '../features/product/ui/my_plans_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
 import '../features/profile/ui/about_us_screen.dart';
-import '../features/profile/ui/appearances_screen.dart';
 import '../features/profile/ui/languages_screen.dart';
 import '../features/profile/ui/privacy_policy_screen.dart';
 import 'routes.dart';

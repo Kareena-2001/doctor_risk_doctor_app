@@ -180,16 +180,16 @@ class ProfileViewScreen extends StatelessWidget {
                 _CertificateList(certificates: data.organisationCertificates),
               ],
             ),
-            height(10),
-            SectionCard(
-              title: 'Policy Information',
-              icon: Icons.health_and_safety_outlined,
-              children: policies.isEmpty
-                  ? [const _EmptyState(text: 'No policy purchased yet')]
-                  : List.generate(policies.length, (index) {
-                      return _PolicyCard(policy: policies[index]);
-                    }),
-            ),
+            // height(10),
+            // SectionCard(
+            //   title: 'Policy Information',
+            //   icon: Icons.health_and_safety_outlined,
+            //   children: policies.isEmpty
+            //       ? [const _EmptyState(text: 'No policy purchased yet')]
+            //       : List.generate(policies.length, (index) {
+            //           return _PolicyCard(policy: policies[index]);
+            //         }),
+            // ),
             height(100),
           ],
         ),
@@ -382,7 +382,7 @@ class _PolicyCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          height(8),
           _InfoRow(label: 'Insurer', value: policy.insurerName),
           _InfoRow(label: 'Policy number', value: policy.policyNumber),
           _InfoRow(

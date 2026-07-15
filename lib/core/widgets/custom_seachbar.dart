@@ -32,8 +32,7 @@ class CustomSearchBar extends ConsumerWidget {
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: AppColors.fieldBorder, width: 2),
+          borderSide: BorderSide(color: AppColors.fieldBorder, width: 2),
         ),
         hintText: hint,
         hintStyle: customTextStyle(
@@ -47,6 +46,14 @@ class CustomSearchBar extends ConsumerWidget {
           horizontal: 16,
           vertical: 12,
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: AppColors.fieldBorder,
+            // width: 1.5,
+          ),
+        ),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(

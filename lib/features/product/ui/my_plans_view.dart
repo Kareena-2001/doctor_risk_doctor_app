@@ -4,6 +4,7 @@ import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/view_model/my_plans_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/common_empty_state.dart';
@@ -201,13 +202,24 @@ class _MyPlanCard extends ConsumerWidget {
               text: 'Renew Now',
               fontSize: 13,
               backgroundColor: AppColors.newPri,
-              onPressed: () =>
-                  ref.read(myPlansViewModelProvider.notifier).renew(plan.id),
+              onPressed: () {
+                _downloadPolicy('assets/pdf/docs.pdf');
+              },
+              // onPressed: () =>
+              //     ref.read(myPlansViewModelProvider.notifier).renew(plan.id),
             ),
           ],
         ],
       ),
     );
+  }
+
+  Future<void> _downloadPolicy(String url) async {
+    final uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _metaCol(String label, String value) {

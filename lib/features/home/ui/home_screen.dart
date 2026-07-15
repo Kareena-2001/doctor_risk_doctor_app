@@ -676,7 +676,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.w(20),
-        vertical: Responsive.h(28),
+        vertical: Responsive.h(25),
       ),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -702,7 +702,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: Icon(
               Icons.help_outline,
               color: AppColors.white,
-              size: Responsive.sp(28),
+              size: Responsive.sp(25),
             ),
           ),
           height(Responsive.h(10)),
@@ -710,7 +710,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             'Frequently Asked Questions',
             textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: Responsive.sp(16),
+              fontSize: Responsive.sp(14),
               fontWeight: FontWeight.bold,
               color: AppColors.textColor,
             ),
@@ -720,7 +720,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             'Need help with legal compliance?',
             textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: Responsive.sp(14),
+              fontSize: Responsive.sp(12),
               fontWeight: FontWeight.w400,
               color: AppColors.textColor,
             ),
@@ -768,7 +768,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     ];
 
     return SizedBox(
-      height: Responsive.h(300),
+      height: Responsive.h(265),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),

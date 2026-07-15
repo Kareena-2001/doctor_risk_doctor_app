@@ -7,13 +7,13 @@ import '../constants/dimensions.dart';
 class CustomOptionsBottomSheet extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final List<OptionItem> options;
+  // final List<OptionItem> options;
 
   const CustomOptionsBottomSheet({
     super.key,
     required this.title,
     this.subtitle,
-    required this.options,
+    // required this.options,
   });
 
   @override
@@ -74,7 +74,7 @@ class CustomOptionsBottomSheet extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  ...options.map((option) => _buildOptionItem(option)),
+                  // ...options.map((option) => _buildOptionItem(option)),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -85,36 +85,36 @@ class CustomOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionItem(OptionItem option) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: option.onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          child: Row(
-            children: [
-              Icon(option.icon, size: 24, color: AppColors.orange),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  option.title,
-                  style: customTextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textColor,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Colors.grey.shade400,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildOptionItem(OptionItem option) {
+  //   return Material(
+  //     color: Colors.transparent,
+  //     child: InkWell(
+  //       onTap: option.onTap,
+  //       child: Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+  //         child: Row(
+  //           children: [
+  //             Icon(option.icon, size: 24, color: AppColors.orange),
+  //             const SizedBox(width: 16),
+  //             Expanded(
+  //               child: Text(
+  //                 option.title,
+  //                 style: customTextStyle(
+  //                   fontSize: 15,
+  //                   fontWeight: FontWeight.w500,
+  //                   color: AppColors.textColor,
+  //                 ),
+  //               ),
+  //             ),
+  //             Icon(
+  //               Icons.arrow_forward_ios,
+  //               size: 16,
+  //               color: Colors.grey.shade400,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

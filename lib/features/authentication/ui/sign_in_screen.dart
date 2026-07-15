@@ -19,7 +19,6 @@ import '../../../theme/app_theme.dart';
 import '../../../utils/validator.dart';
 import '../../common/ui/widgets/primary_button.dart';
 import '../../fcm/device_service.dart';
-import '../../fcm/notification_service.dart';
 import '../repository/authentication_repository.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -51,8 +50,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _getDeviceToken() async {
-    final notificationService = ref.read(notificationServiceProvider);
-    fcmToken = await notificationService.getDeviceToken();
+    // final notificationService = ref.read(notificationServiceProvider);
+    // fcmToken = await notificationService.getDeviceToken();
     deviceId = await DeviceService.getDeviceId();
 
     debugPrint('FCM token is: $fcmToken');

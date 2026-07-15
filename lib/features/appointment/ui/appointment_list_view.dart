@@ -15,14 +15,14 @@ import '../provider/appointment_provider.dart';
 class AppointmentListView extends ConsumerWidget {
   const AppointmentListView({super.key});
 
-  Color _statusColor(String status, BuildContext context) {
+  Color _statusColor(String status) {
     switch (status) {
       case 'Completed':
         return Colors.green;
       case 'Cancelled':
         return Colors.red;
       default:
-        return Theme.of(context).colorScheme.primary;
+        return AppColors.newPri; // Aligned with the form's primary color scheme
     }
   }
 
@@ -31,16 +31,17 @@ class AppointmentListView extends ConsumerWidget {
     final appointments = ref.watch(appointmentProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'My Appointments'),
+      appBar: const CustomAppBar(title: 'My Appointments'),
       floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        backgroundColor: AppColors.accent,
+        shape: const CircleBorder(),
+        backgroundColor: AppColors.newPri,
+        // Swapped accent with the primary brand color
         onPressed: () => context.push(Routes.addAppointment),
-        child: Icon(Icons.add, color: AppColors.white, size: 25),
+        child: const Icon(Icons.add, color: AppColors.white, size: 25),
       ),
       body: appointments.isEmpty
-          ? CommonEmptyState(
-              icon: Icons.dashboard_customize,
+          ? const CommonEmptyState(
+              icon: Icons.calendar_month_outlined,
               title: 'No appointments booked yet',
             )
           : ListView.separated(
@@ -50,8 +51,9 @@ class AppointmentListView extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final appt = appointments[index];
                 return Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outlineVariant,
@@ -64,26 +66,28 @@ class AppointmentListView extends ConsumerWidget {
                         children: [
                           Icon(
                             appt.mode.icon,
-                            size: 15,
-                            color: Theme.of(context).colorScheme.primary,
+                            size: 16,
+                            color: AppColors.newPri,
                           ),
                           width(8),
                           Expanded(
                             child: Text(
                               appt.subject,
                               overflow: TextOverflow.ellipsis,
-                              style: customTextStyle(fontSize: 14),
+                              style: customTextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
+                              horizontal: 10,
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
                               color: _statusColor(
                                 appt.status,
-                                context,
                               ).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -91,7 +95,7 @@ class AppointmentListView extends ConsumerWidget {
                               appt.status,
                               style: customTextStyle(
                                 fontSize: 10,
-                                color: _statusColor(appt.status, context),
+                                color: _statusColor(appt.status),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -101,22 +105,75 @@ class AppointmentListView extends ConsumerWidget {
                       height(8),
                       Text(
                         '${appt.mode.label} • ${DateFormat('dd MMM yyyy').format(appt.date)} • ${appt.time.format(context)}',
-                        style: customTextStyle(fontSize: 12),
+                        style: customTextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       if (appt.description.isNotEmpty) ...[
-                        height(6),
+                        height(8),
                         Text(
                           appt.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: customTextStyle(fontSize: 12),
+                          style: customTextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ],
                       if (appt.attachments.isNotEmpty) ...[
-                        height(6),
+                        height(12),
+                        const Divider(height: 1),
+                        height(10),
                         Text(
-                          '${appt.attachments.length} attachment(s)',
-                          style: Theme.of(context).textTheme.labelSmall,
+                          'Attached Documents (${appt.attachments.length})',
+                          style: customTextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        height(6),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: appt.attachments.map((file) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.insert_drive_file_outlined,
+                                    size: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  width(4),
+                                  Flexible(
+                                    child: Text(
+                                      file.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: customTextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ],
                     ],

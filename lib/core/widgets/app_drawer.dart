@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,15 +40,6 @@ class AppDrawer extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // _sectionLabel('ACCOUNT', isDark),
-                    // _tile(
-                    //   context,
-                    //   icon: Icons.history_rounded,
-                    //   title: 'History',
-                    //   subtitle: 'View your past activities',
-                    //   isDark: isDark,
-                    //   onTap: () => context.push(Routes.login),
-                    // ),
                     _tile(
                       context,
                       icon: Icons.support_agent_rounded,
@@ -78,7 +70,6 @@ class AppDrawer extends ConsumerWidget {
                         context.push(Routes.faqScreen);
                       },
                     ),
-
                     _tile(
                       context,
                       icon: Icons.gavel_outlined,
@@ -89,7 +80,6 @@ class AppDrawer extends ConsumerWidget {
                         context.push(Routes.legalConsultant);
                       },
                     ),
-
                     _tile(
                       context,
                       icon: Icons.description_outlined,
@@ -154,16 +144,30 @@ class AppDrawer extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 8, right: 16),
           child: Align(
             alignment: Alignment.topRight,
-            child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.close_rounded,
-                color: isDark ? Colors.white54 : AppColors.mono60,
-                size: 22,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? Colors.white24 : Colors.grey.shade300,
+                  ),
+                ),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 22,
+                  color: isDark ? Colors.white70 : AppColors.mono60,
+                ),
               ),
             ),
           ),
         ),
+        height(10),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.all(20),
@@ -196,12 +200,12 @@ class AppDrawer extends ConsumerWidget {
                     width: 2,
                   ),
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   radius: 28,
                   backgroundColor: Colors.white,
                   child: Text(
                     "P",
-                    style: TextStyle(
+                    style: customTextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: AppColors.newPri,
@@ -209,7 +213,7 @@ class AppDrawer extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              width(14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +228,7 @@ class AppDrawer extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    height(2),
                     Text(
                       "doctor@example.com",
                       maxLines: 1,
@@ -234,36 +238,6 @@ class AppDrawer extends ConsumerWidget {
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.verified_rounded,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Verified Doctor',
-                            style: customTextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -271,20 +245,6 @@ class AppDrawer extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _sectionLabel(String label, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 12),
-      child: Text(
-        label,
-        style: customTextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          color: isDark ? Colors.white38 : AppColors.mono60,
-        ).copyWith(letterSpacing: 1.2),
-      ),
     );
   }
 
@@ -396,9 +356,9 @@ class AppDrawer extends ConsumerWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => CommonDialog(
-        title: Languages.logOutTitle,
-        content: Languages.logOutMessage,
-        primaryButtonLabel: Languages.logOut,
+        title: "Log out confirmation",
+        content: "Are you sure you want to log out?",
+        primaryButtonLabel: 'Logout',
         primaryButtonBackground: AppColors.rambutan100,
         secondaryButtonLabel: Languages.cancel,
         autoDismiss: false,

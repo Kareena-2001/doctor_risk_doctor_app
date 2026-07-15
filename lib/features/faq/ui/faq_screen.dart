@@ -96,6 +96,10 @@ class _FaqScreenState extends State<FaqScreen> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: ExpansionTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         tilePadding: const EdgeInsets.symmetric(horizontal: 12),
         childrenPadding: const EdgeInsets.symmetric(
           horizontal: 12,
@@ -145,7 +149,7 @@ class _FaqScreenState extends State<FaqScreen> {
             "Still need help?",
             textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppColors.textColor,
             ),
@@ -155,7 +159,7 @@ class _FaqScreenState extends State<FaqScreen> {
             "Our support team is available 24/7 to assist you with any issues.",
             textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w400,
               color: AppColors.textColor,
             ),
@@ -163,14 +167,14 @@ class _FaqScreenState extends State<FaqScreen> {
           height(20),
           PrimaryButton(
             text: "Contact Support",
-            fontSize: 14,
+            fontSize: 12,
             iconAfterText: false,
             icon: Icons.support_agent,
             fontWeight: FontWeight.w700,
             onPressed: () {
               // context.push(/*AadharNoRegisterRoute*/());
             },
-            height: 50,
+            height: 40,
             backgroundColor: Color(0xFF008080),
             borderRadius: 20,
           ),

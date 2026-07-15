@@ -19,22 +19,32 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
-  final _descriptionController = TextEditingController();
   final _complainantNameController = TextEditingController();
   final _complainantMobileController = TextEditingController();
+  final _placeController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _documentNameController = TextEditingController();
 
   // State Variables
-  String _supportType = 'Medical'; // Default radio selection
+  String _noticeTypeSelection = 'Select'; // Handles Notice: Select, Send, Received
+  String? _selectedNoticeCategory; // Handles Type of Notice Dropdown
   DateTime? _selectedDate;
-  final List<String> _uploadedFiles =
-      []; // Temporary storage for mock file uploads
+  final List<String> _uploadedFiles = [];
+
+  // Dropdown options for Type of Notice
+  final List<String> _noticeCategories = [
+    'Defamation',
+    'Recovery',
+    '138 NI',
+    'Medical Negligence',
+  ];
 
   @override
   void dispose() {
-    _descriptionController.dispose();
     _complainantNameController.dispose();
     _complainantMobileController.dispose();
+    _placeController.dispose();
+    _descriptionController.dispose();
     _documentNameController.dispose();
     super.dispose();
   }
@@ -77,20 +87,28 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please pick an incident date')),
+          const SnackBar(content: Text('Please pick a date')),
+        );
+        return;
+      }
+      if (_selectedNoticeCategory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a Notice Type')),
         );
         return;
       }
 
-      // Form fields verified successfully -> Dispatch object to riverpod notifier map here
-      // ref.read(casesProvider.notifier).addNewCase(...);
+      // Form verified completely! You can pass these items to your notifier map here:
+      // debugPrint("Mode: $_noticeTypeSelection");
+      // debugPrint("Category: $_selectedNoticeCategory");
+      // debugPrint("Place: ${_placeController.text}");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add New Case', showBack: true),
+      appBar: const CustomAppBar(title: 'Add Legal Notice', showBack: true),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.all(Responsive.sp(16)),
@@ -99,66 +117,33 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextField(
-                label: 'Description',
-                controller: _descriptionController,
-                maxLines: 3,
-                hint: 'Enter case brief or details...',
-                validator: (val) =>
-                    val!.isEmpty ? 'Description required' : null,
-              ),
-              height(16),
+              // Notice Action Selector Radio Items
               Text(
-                'Legal Support Type',
+                'Notice',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               Row(
-                children: [
-                  Expanded(
+                children: [ 'Send', 'Received'].map((option) {
+                  return Expanded(
                     child: RadioListTile<String>(
                       title: Text(
-                        'Medical',
-                        style: customTextStyle(fontSize: 14),
+                        option,
+                        style: customTextStyle(fontSize: 13),
                       ),
-                      value: 'Medical',
-                      groupValue: _supportType,
+                      value: option,
+                      groupValue: _noticeTypeSelection,
                       activeColor: AppColors.newPri,
                       contentPadding: EdgeInsets.zero,
-                      onChanged: (val) => setState(() => _supportType = val!),
+                      onChanged: (val) => setState(() => _noticeTypeSelection = val!),
                     ),
-                  ),
-                  Expanded(
-                    child: RadioListTile<String>(
-                      title: Text(
-                        'Non Medical',
-                        style: customTextStyle(fontSize: 14),
-                      ),
-                      value: 'Non Medical',
-                      groupValue: _supportType,
-                      activeColor: AppColors.newPri,
-                      contentPadding: EdgeInsets.zero,
-                      onChanged: (val) => setState(() => _supportType = val!),
-                    ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
-              height(8),
-              CustomTextField(
-                controller: _complainantNameController,
-                label: 'Complainant Name',
-                validator: (val) => val!.isEmpty ? 'Name required' : null,
-              ),
-              height(16),
-              CustomTextField(
-                label: 'Complainant Mobile',
-                controller: _complainantMobileController,
-                keyboardType: TextInputType.phone,
-                validator: (val) =>
-                    val!.isEmpty ? 'Mobile number required' : null,
-              ),
-              height(16),
+              height(12),
+
+              // Date Selector Block
               Text(
-                'Incident Date',
+                'Date',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               height(6),
@@ -183,11 +168,7 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                         _selectedDate == null
                             ? 'Select Date'
                             : DateFormat('dd MMM yyyy').format(_selectedDate!),
-                        style: customTextStyle(
-                          color: _selectedDate == null
-                              ? AppColors.textColor
-                              : AppColors.textColor,
-                        ),
+                        style: customTextStyle(color: AppColors.textColor),
                       ),
                       Icon(
                         Icons.calendar_today,
@@ -199,38 +180,112 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                 ),
               ),
               height(16),
+
+              // Type Of Notice Dropdown Menu Form field
+              Text(
+                'Type Of Notice',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              height(6),
+              DropdownButtonFormField<String>(
+                value: _selectedNoticeCategory,
+                hint: Text(
+                  'Select Notice Type',
+                  style: customTextStyle(color: AppColors.textColor, fontSize: 13),
+                ),
+                decoration: _inputDecoration(''),
+                dropdownColor: Colors.white,
+                items: _noticeCategories.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, style: customTextStyle(fontSize: 14)),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedNoticeCategory = newValue;
+                  });
+                },
+                validator: (val) => val == null ? 'Notice type configuration required' : null,
+              ),
+              height(16),
+
+              // Complainant Input Fields
+              CustomTextField(
+                controller: _complainantNameController,
+                label: 'Complainant Name',
+                hint: 'Enter complainant name',
+                validator: (val) => val!.isEmpty ? 'Name required' : null,
+              ),
+              height(16),
+              CustomTextField(
+                label: 'Complainant Mobile',
+                controller: _complainantMobileController,
+                keyboardType: TextInputType.phone,
+                hint: 'Enter mobile number',
+                validator: (val) => val!.isEmpty ? 'Mobile number required' : null,
+              ),
+              height(16),
+
+              // Place Input Field
+              CustomTextField(
+                controller: _placeController,
+                label: 'Place',
+                hint: 'Enter place location',
+                validator: (val) => val!.isEmpty ? 'Place requirement missing' : null,
+              ),
+              height(16),
+
+              // Description Form Text field
+              CustomTextField(
+                label: 'Description',
+                controller: _descriptionController,
+                maxLines: 3,
+                hint: 'Enter notice brief summary details...',
+                validator: (val) => val!.isEmpty ? 'Description details required' : null,
+              ),
+              height(16),
+
+              // Document Upload Configuration Section
+              Text(
+                'Upload Documents',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              height(6),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: CustomTextField(
-                      label: 'Document Attachment Name',
-                      hint: 'Medical Report, Case Bill',
+                      label: 'Documents Name',
+                      hint: 'e.g., Medical Report, Case Bill',
                       controller: _documentNameController,
                     ),
                   ),
                   width(8),
-                  ElevatedButton.icon(
-                    onPressed: _addMockAttachment,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.divider,
-                      foregroundColor: Theme.of(
-                        context,
-                      ).colorScheme.onPrimaryContainer,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Responsive.sp(12),
-                        vertical: Responsive.sp(14),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 22.0), // Pushes button clear of field text label
+                    child: ElevatedButton.icon(
+                      onPressed: _addMockAttachment,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.divider,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.sp(12),
+                          vertical: Responsive.sp(14),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      icon: const Icon(Icons.upload_file, size: 16),
+                      label: Text('Upload', style: customTextStyle()),
                     ),
-                    icon: Icon(Icons.upload_file, size: 16),
-                    label: Text('Add File', style: customTextStyle()),
                   ),
                 ],
               ),
 
-              // Generated dynamic list displaying files attached so far
+              // Dynamic uploaded listing panel
               if (_uploadedFiles.isNotEmpty) ...[
                 height(12),
                 Container(
@@ -258,8 +313,7 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                           color: Colors.redAccent,
                           size: 18,
                         ),
-                        onPressed: () =>
-                            setState(() => _uploadedFiles.removeAt(idx)),
+                        onPressed: () => setState(() => _uploadedFiles.removeAt(idx)),
                       ),
                     ),
                   ),
@@ -267,7 +321,7 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
               ],
               height(32),
 
-              // Submit Action Action Button
+              // Finalized Submit Form Action Control Button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -297,7 +351,7 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
     );
   }
 
-  // Consistent Input decoration configurations
+  // Consistent Input decoration for standard configurations like Dropdowns
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
