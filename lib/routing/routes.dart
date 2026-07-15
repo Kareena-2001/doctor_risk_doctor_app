@@ -72,4 +72,11 @@ class Routes {
   static const addAppointment = '/addAppointment';
   static const viewAppointment = '/viewAppointment';
 
+
+  static const legalConsultant = '/legalConsultant';
+  static const legalNotice = '/legalNotice';
+
+  static const addLegalConsultant = '/addLegalConsultant';
+  static const addLegalNotice = '/addLegalNotice';
+
 }

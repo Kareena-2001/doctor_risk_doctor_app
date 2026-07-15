@@ -42,7 +42,7 @@ class CustomTextField extends StatelessWidget {
     this.enabled = true,
     this.textCapitalization = TextCapitalization.none,
     this.maxLength,
-    this.readOnly= false,
+    this.readOnly = false,
     this.inputFormatters,
   });
 

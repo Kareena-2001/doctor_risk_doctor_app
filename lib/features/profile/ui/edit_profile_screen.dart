@@ -172,17 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Edit Profile',
-        // actions: [
-        //   IconButton(
-        //     tooltip: 'View Profile',
-        //     onPressed: _openViewProfile,
-        //     icon: const Icon(Icons.remove_red_eye_outlined),
-        //   ),
-        // ],
-        showView: true,
-        onView: () {
-          _openViewProfile();
-        },
+        showView: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -321,7 +311,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     label: 'Religion',
                     hint: 'Enter Religion',
                     controller: _religionCtrl,
-                    items: ['Hindu','Muslim'],
+                    items: ['Hindu', 'Muslim'],
                   ),
                 ],
               ),

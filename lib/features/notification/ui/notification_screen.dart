@@ -1,8 +1,6 @@
 import 'package:Doctors_App/features/notification/ui/viewmodel/notification_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../core/constants/assets.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/common_empty_state.dart';
@@ -94,44 +92,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: 20.0,
-                    top: index == 0 ? 0 : 20,
-                  ),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.newPri,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          group.dateTitle,
-                          style: customTextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        // Text(
-                        //   "Mark all as read",
-                        //   style: customTextStyle(
-                        //     fontSize: 14,
-                        //     fontWeight: FontWeight.w600,
-                        //     color: Colors.white,
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -139,67 +99,86 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                   itemBuilder: (context, notificationIndex) {
                     final notification = group.notifications[notificationIndex];
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: context.dividerColor),
-                        borderRadius: BorderRadius.circular(7),
+                    return Card(
+                      elevation: 0,
+                      color: AppColors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(color: context.dividerColor),
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2, right: 10),
-                            child: Image.asset(
-                              Assets.bellIcons,
-                              height: 28,
-                              width: 28,
-                              color: context.primaryTextColor,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: .1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.notifications_active_outlined,
+                                color: AppColors.primary,
+                                size: 18,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        notification.title,
-                                        style: customTextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: context.primaryTextColor,
+                            width(14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          notification.title,
+                                          style: customTextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            color: context.primaryTextColor,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      notification.datetime,
-                                      style: customTextStyle(
-                                        fontSize: 10,
-                                        color: context.primaryTextColor
-                                            .withValues(alpha: 0.6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: context.dividerColor
+                                              .withValues(alpha: .3),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          notification.datetime,
+                                          style: customTextStyle(
+                                            fontSize: 10,
+                                            color: context.primaryTextColor
+                                                .withValues(alpha: .7),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  notification.body,
-                                  style: customTextStyle(
-                                    fontSize: 11,
-                                    color: context.primaryTextColor.withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  height(5),
+                                  Text(
+                                    notification.body,
+                                    style: customTextStyle(
+                                      fontSize: 11,
+                                      color: context.primaryTextColor
+                                          .withValues(alpha: .75),
+                                    ).copyWith(height: 1.5),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

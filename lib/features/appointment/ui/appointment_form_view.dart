@@ -54,6 +54,20 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
     final time = await showTimePicker(
       context: context,
       initialTime: _selectedTime ?? TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(surface: Colors.white),
+            timePickerTheme: Theme.of(context).timePickerTheme.copyWith(
+              backgroundColor: Colors.white,
+              dialBackgroundColor: Colors.grey[200],
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (time != null) setState(() => _selectedTime = time);
   }
@@ -117,12 +131,13 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
               children: AppointmentMode.values.map((mode) {
                 final selected = mode == _selectedMode;
                 return ChoiceChip(
+                  showCheckmark: false,
                   selected: selected,
                   label: Text(mode.label),
+                  backgroundColor: Colors.white,
                   avatar: Icon(
                     mode.icon,
-                    size: 18,
-                    color: selected ? AppColors.white : AppColors.newPri,
+                    color: selected ? Colors.white : AppColors.newPri,
                   ),
                   labelStyle: customTextStyle(
                     color: selected ? AppColors.white : AppColors.newPri,
@@ -180,8 +195,11 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
             height(10),
             OutlinedButton.icon(
               onPressed: _pickDocuments,
-              icon: const Icon(Icons.attach_file),
-              label: const Text('Add Files'),
+              icon: Icon(Icons.attach_file, color: AppColors.newPri),
+              label: Text(
+                'Add Files',
+                style: customTextStyle(color: AppColors.newPri),
+              ),
             ),
             if (_pickedFiles.isNotEmpty) ...[
               height(10),
@@ -191,6 +209,7 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
                 children: List.generate(_pickedFiles.length, (i) {
                   final file = _pickedFiles[i];
                   return Chip(
+                    backgroundColor: AppColors.white,
                     label: Text(file.name, overflow: TextOverflow.ellipsis),
                     onDeleted: () => _removeFile(i),
                   );
@@ -240,7 +259,7 @@ class _PickerTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: theme.colorScheme.primary),
+            Icon(icon, size: 20, color: AppColors.newPri),
             const SizedBox(width: 8),
             Expanded(
               child: Column(

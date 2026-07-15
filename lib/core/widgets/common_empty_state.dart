@@ -97,7 +97,7 @@ class CommonEmptyState extends ConsumerWidget {
       child: Icon(
         icon ?? Icons.info_outline,
         size: 35,
-        color: AppColors.primary,
+        color: AppColors.newPri,
       ),
     );
   }

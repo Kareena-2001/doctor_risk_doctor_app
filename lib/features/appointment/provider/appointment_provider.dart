@@ -1,9 +1,11 @@
-// lib/features/appointment/provider/appointment_provider.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../profile/model/certificate_model.dart';
 import '../model/appointment_model.dart';
 
 class AppointmentNotifier extends StateNotifier<List<AppointmentModel>> {
-  AppointmentNotifier() : super([]);
+  // Pass the mock data array directly into super() instead of super([])
+  AppointmentNotifier() : super(_mockAppointments);
 
   void addAppointment(AppointmentModel appointment) {
     state = [...state, appointment];
@@ -29,7 +31,43 @@ class AppointmentNotifier extends StateNotifier<List<AppointmentModel>> {
   }
 }
 
+final List<AppointmentModel> _mockAppointments = [
+  AppointmentModel(
+    id: '1',
+    mode: AppointmentMode.phoneCall,
+    date: DateTime.now().add(const Duration(days: 1)),
+    time: const TimeOfDay(hour: 10, minute: 30),
+    subject: 'Dr. Sarah Jenkins - Cardiologist',
+    description: 'Routine quarterly check-up and review of latest ECG results.',
+    attachments: [CertificateModel(name: 'ecg_report.pdf', id: '1')],
+    status: 'Upcoming',
+  ),
+  AppointmentModel(
+    id: '2',
+    mode: AppointmentMode.videoCall,
+    date: DateTime.now().subtract(const Duration(days: 2)),
+    time: const TimeOfDay(hour: 15, minute: 0),
+    subject: 'Dr. Alex Rivera - Dermatologist',
+    description: 'Follow-up regarding skin allergy patch test results.',
+    attachments: [],
+    status: 'Completed',
+  ),
+  AppointmentModel(
+    id: '3',
+    mode: AppointmentMode.inPerson,
+    date: DateTime.now().subtract(const Duration(days: 5)),
+    time: const TimeOfDay(hour: 09, minute: 15),
+    subject: 'Dental Care Center - Cleaning',
+    description: 'Bi-annual scaling and polishing deep clean appointment.',
+    // 2. Do the same here
+    attachments: [
+      CertificateModel(name: 'dental_xray.png', id: '1'),
+      CertificateModel(name: 'receipt.pdf', id: '2'),
+    ],
+    status: 'Cancelled',
+  ),
+];
 final appointmentProvider =
-StateNotifierProvider<AppointmentNotifier, List<AppointmentModel>>(
+    StateNotifierProvider<AppointmentNotifier, List<AppointmentModel>>(
       (ref) => AppointmentNotifier(),
-);
+    );

@@ -29,7 +29,7 @@ extension AppointmentModeX on AppointmentMode {
 
   static AppointmentMode fromLabel(String label) {
     return AppointmentMode.values.firstWhere(
-          (m) => m.label == label,
+      (m) => m.label == label,
       orElse: () => AppointmentMode.videoCall,
     );
   }
@@ -43,7 +43,7 @@ class AppointmentModel {
   final String subject;
   final String description;
   final List<CertificateModel> attachments;
-  final String status; // Upcoming, Completed, Cancelled
+  final String status;
 
   AppointmentModel({
     required this.id,

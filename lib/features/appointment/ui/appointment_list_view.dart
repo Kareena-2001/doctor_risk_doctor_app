@@ -32,14 +32,11 @@ class AppointmentListView extends ConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(title: 'My Appointments'),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
         backgroundColor: AppColors.accent,
         onPressed: () => context.push(Routes.addAppointment),
-        icon: Icon(Icons.add, color: AppColors.white, size: 14),
-        label: Text(
-          'Book',
-          style: customTextStyle(color: AppColors.white, fontSize: 14),
-        ),
+        child: Icon(Icons.add, color: AppColors.white, size: 25),
       ),
       body: appointments.isEmpty
           ? CommonEmptyState(
@@ -67,15 +64,15 @@ class AppointmentListView extends ConsumerWidget {
                         children: [
                           Icon(
                             appt.mode.icon,
-                            size: 20,
+                            size: 15,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           width(8),
                           Expanded(
                             child: Text(
                               appt.subject,
-                              style: Theme.of(context).textTheme.titleMedium,
                               overflow: TextOverflow.ellipsis,
+                              style: customTextStyle(fontSize: 14),
                             ),
                           ),
                           Container(
@@ -93,7 +90,7 @@ class AppointmentListView extends ConsumerWidget {
                             child: Text(
                               appt.status,
                               style: customTextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: _statusColor(appt.status, context),
                                 fontWeight: FontWeight.w600,
                               ),
@@ -104,7 +101,7 @@ class AppointmentListView extends ConsumerWidget {
                       height(8),
                       Text(
                         '${appt.mode.label} • ${DateFormat('dd MMM yyyy').format(appt.date)} • ${appt.time.format(context)}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: customTextStyle(fontSize: 12),
                       ),
                       if (appt.description.isNotEmpty) ...[
                         height(6),
@@ -112,7 +109,7 @@ class AppointmentListView extends ConsumerWidget {
                           appt.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: customTextStyle(fontSize: 12),
                         ),
                       ],
                       if (appt.attachments.isNotEmpty) ...[

@@ -39,8 +39,7 @@ class AppDrawer extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _sectionLabel('ACCOUNT', isDark),
-
+                    // _sectionLabel('ACCOUNT', isDark),
                     // _tile(
                     //   context,
                     //   icon: Icons.history_rounded,
@@ -59,7 +58,6 @@ class AppDrawer extends ConsumerWidget {
                         context.push(Routes.supportHub);
                       },
                     ),
-
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,
@@ -80,15 +78,37 @@ class AppDrawer extends ConsumerWidget {
                         context.push(Routes.faqScreen);
                       },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(
-                        color: isDark
-                            ? Colors.white10
-                            : Colors.black87.withValues(alpha: 0.05),
-                      ),
+
+                    _tile(
+                      context,
+                      icon: Icons.gavel_outlined,
+                      title: 'Legal Consultant',
+                      subtitle: 'View Legal Reports',
+                      isDark: isDark,
+                      onTap: () {
+                        context.push(Routes.legalConsultant);
+                      },
                     ),
-                    _sectionLabel('GENERAL', isDark),
+
+                    _tile(
+                      context,
+                      icon: Icons.description_outlined,
+                      title: 'Legal Notice',
+                      subtitle: 'View Legal Notices',
+                      isDark: isDark,
+                      onTap: () {
+                        context.push(Routes.legalNotice);
+                      },
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(vertical: 16),
+                    //   child: Divider(
+                    //     color: isDark
+                    //         ? Colors.white10
+                    //         : Colors.black87.withValues(alpha: 0.05),
+                    //   ),
+                    // ),
+                    // _sectionLabel('GENERAL', isDark),
                     // _tile(
                     //   context,
                     //   icon: Icons.person_outline_rounded,
@@ -97,14 +117,14 @@ class AppDrawer extends ConsumerWidget {
                     //   isDark: isDark,
                     //   onTap: () => context.push(Routes.login),
                     // ),
-                    _tile(
-                      context,
-                      icon: Icons.settings_outlined,
-                      title: 'Settings',
-                      subtitle: 'Manage app preferences',
-                      isDark: isDark,
-                      onTap: () => context.push(Routes.login),
-                    ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.settings_outlined,
+                    //   title: 'Settings',
+                    //   subtitle: 'Manage app preferences',
+                    //   isDark: isDark,
+                    //   onTap: () => context.push(Routes.login),
+                    // ),
                     // _tile(
                     //   context,
                     //   icon: Icons.help_outline_rounded,
