@@ -62,7 +62,7 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^3.0.0
   android_intent_plus: ^6.0.0
-
+  font_awesome_icon_class:
   local_auth: ^2.3.0
   camera: ^0.10.5+9
   app_settings: ^5.1.1
