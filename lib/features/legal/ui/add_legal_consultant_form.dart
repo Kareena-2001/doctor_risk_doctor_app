@@ -2,10 +2,12 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
+import 'package:Doctors_App/core/widgets/custom_radio_group.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/widgets/custom_text_field.dart';
 
@@ -39,7 +41,6 @@ class _AddLegalConsultantFormState
     super.dispose();
   }
 
-  // Pure white theme styled Date Picker helper
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -58,6 +59,7 @@ class _AddLegalConsultantFormState
         );
       },
     );
+
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
@@ -76,13 +78,9 @@ class _AddLegalConsultantFormState
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please pick an incident date')),
-        );
+        context.showWarningSnackBar('Please pick an incident date');
         return;
       }
-
-      // Form fields verified successfully -> Dispatch object to riverpod notifier map here
       // ref.read(casesProvider.notifier).addNewCase(...);
     }
   }
@@ -108,37 +106,16 @@ class _AddLegalConsultantFormState
                     val!.isEmpty ? 'Description required' : null,
               ),
               height(16),
-              Text(
-                'Legal Support Type',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              // Text(
+              //   'Legal Support Type',
+              //   style: Theme.of(context).textTheme.titleSmall,
+              // ),
               Row(
                 children: [
-                  Expanded(
-                    child: RadioListTile<String>(
-                      title: Text(
-                        'Medical',
-                        style: customTextStyle(fontSize: 14),
-                      ),
-                      value: 'Medical',
-                      groupValue: _supportType,
-                      contentPadding: EdgeInsets.zero,
-                      activeColor: AppColors.newPri,
-                      onChanged: (val) => setState(() => _supportType = val!),
-                    ),
-                  ),
-                  Expanded(
-                    child: RadioListTile<String>(
-                      title: Text(
-                        'Non Medical',
-                        style: customTextStyle(fontSize: 14),
-                      ),
-                      value: 'Non Medical',
-                      groupValue: _supportType,
-                      contentPadding: EdgeInsets.zero,
-                      activeColor: AppColors.newPri,
-                      onChanged: (val) => setState(() => _supportType = val!),
-                    ),
+                  CustomRadioGroup(
+                    label: 'Legal Support Type',
+                    options: ['Medical', 'Non Medical'],
+                    onChanged: (val) => setState(() => _supportType = val!),
                   ),
                 ],
               ),
@@ -146,7 +123,6 @@ class _AddLegalConsultantFormState
               CustomTextField(
                 controller: _complainantNameController,
                 label: 'Full legal name',
-                // decoration: _inputDecoration('Full legal name'),
                 validator: (val) => val!.isEmpty ? 'Name required' : null,
               ),
               height(16),
@@ -154,51 +130,15 @@ class _AddLegalConsultantFormState
                 label: 'Complainant Mobile',
                 controller: _complainantMobileController,
                 keyboardType: TextInputType.phone,
-                // decoration: _inputDecoration('Mobile number'),
                 validator: (val) =>
                     val!.isEmpty ? 'Mobile number required' : null,
               ),
               height(16),
-              Text(
-                'Incident Date',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              height(6),
-              InkWell(
+              CustomDatePicker(
+                label: 'Incident Date',
+                hint: 'Select Date',
+                controller: TextEditingController(),
                 onTap: () => _selectDate(context),
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.sp(12),
-                    vertical: Responsive.sp(14),
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _selectedDate == null
-                            ? 'Select Date'
-                            : DateFormat('dd MMM yyyy').format(_selectedDate!),
-                        style: customTextStyle(
-                          color: _selectedDate == null
-                              ? AppColors.textColor
-                              : AppColors.textColor,
-                        ),
-                      ),
-                      Icon(
-                        Icons.calendar_today,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ],
-                  ),
-                ),
               ),
               height(16),
               Row(
@@ -292,30 +232,6 @@ class _AddLegalConsultantFormState
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // Consistent Input decoration configurations
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: customTextStyle(color: AppColors.textColor, fontSize: 13),
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: Responsive.sp(12),
-        vertical: Responsive.sp(12),
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
         ),
       ),
     );

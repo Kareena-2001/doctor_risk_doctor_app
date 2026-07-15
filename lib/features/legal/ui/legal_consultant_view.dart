@@ -53,7 +53,7 @@ class LegalConsultantView extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        backgroundColor: AppColors.accent,
+        backgroundColor: AppColors.newPri,
         onPressed: () => context.push(Routes.addLegalConsultant),
         child: Icon(Icons.add, color: AppColors.white, size: 25),
       ),

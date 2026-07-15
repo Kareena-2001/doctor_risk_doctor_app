@@ -27,7 +27,10 @@ class CustomRadioGroup<T> extends FormField<T> {
            return Column(
              crossAxisAlignment: CrossAxisAlignment.start,
              children: [
-               Text(label, style: AppTheme.label12),
+               Text(
+                 label,
+                 style: AppTheme.label12.copyWith(color: AppColors.labelColor,fontWeight: FontWeight.w700),
+               ),
                height(8),
                Wrap(
                  spacing: 12,
@@ -55,7 +58,7 @@ class CustomRadioGroup<T> extends FormField<T> {
                        decoration: BoxDecoration(
                          border: Border.all(
                            color: isSelected
-                               ? AppColors.primary
+                               ? AppColors.newPri
                                : AppColors.mono60,
                          ),
                          borderRadius: BorderRadius.circular(10),
@@ -66,7 +69,7 @@ class CustomRadioGroup<T> extends FormField<T> {
                            Radio<T>(
                              value: value,
                              groupValue: state.value,
-                             activeColor: AppColors.primary,
+                             activeColor: AppColors.newPri,
                              materialTapTargetSize:
                                  MaterialTapTargetSize.shrinkWrap,
                              visualDensity: VisualDensity.compact,
@@ -79,7 +82,7 @@ class CustomRadioGroup<T> extends FormField<T> {
                              title,
                              style: customTextStyle(
                                fontSize: 12,
-                               fontWeight: FontWeight.w600,
+                               fontWeight: FontWeight.w700,
                                color: AppColors.textHint,
                              ),
                            ),
