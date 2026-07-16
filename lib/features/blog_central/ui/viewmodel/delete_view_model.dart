@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../model/delete_model.dart';
+import '../../model/blog_model.dart';
 import '../../repository/delete_repository.dart';
 
 part 'delete_view_model.g.dart';

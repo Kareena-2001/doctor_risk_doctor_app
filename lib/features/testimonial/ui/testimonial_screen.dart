@@ -1,4 +1,5 @@
 import 'package:Doctors_App/features/testimonial/ui/widget/community_testimonial_list.dart';
+import 'package:Doctors_App/features/testimonial/ui/widget/experience_list_screen.dart';
 import 'package:Doctors_App/features/testimonial/ui/widget/share_testimonial_form.dart';
 import 'package:flutter/material.dart';
 
@@ -53,8 +54,10 @@ class _TestimonialScreenState extends State<TestimonialScreen>
                 fontWeight: FontWeight.bold,
               ),
               tabs: const [
-                Tab(text: 'Share Testimonial'),
-                Tab(text: 'Community Stories'),
+                // Tab(text: 'Share Testimonial'),
+                // Tab(text: 'Community Stories'),
+                Tab(text: 'Experience'),
+                Tab(text: 'Testimonial'),
               ],
             ),
           ),
@@ -62,7 +65,7 @@ class _TestimonialScreenState extends State<TestimonialScreen>
             child: TabBarView(
               controller: _tabController,
               children: const [
-                ShareTestimonialForm(),
+                ExperienceListScreen(),
                 CommunityTestimonialsList(),
               ],
             ),

@@ -70,7 +70,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
       widget.sumAssured,
       widget.premium,
     );
-    final isIndividual = widget.product.type == ProductType.individual;
+    final isEstab = widget.product.type == ProductType.medicalEstablishment;
     // Animate the PageView whenever the controller's step changes
     // (e.g. after a step widget calls nextStep()/previousStep()).
     ref.listen(provider, (prev, next) {
@@ -101,7 +101,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
           children: [
             _WizardStepIndicator(
               currentIndex: state.currentStepIndex,
-              isEstablishment: isIndividual,
+              isEstablishment: isEstab,
             ),
             if (state.errorMessage != null)
               _ErrorBanner(message: state.errorMessage!),
@@ -118,7 +118,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                     premium: widget.premium,
                     controllerArgs: args,
                   ),
-                  if (isIndividual) HospitalDetailsStep(controllerArgs: args),
+                  if (isEstab) HospitalDetailsStep(controllerArgs: args),
                   AddressStep(controllerArgs: args),
                   ReviewStep(controllerArgs: args),
                 ],
@@ -205,11 +205,10 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                       text: 'Proceed to Payment',
                       fontSize: 13,
                       backgroundColor: AppColors.orange,
+                      // padding: EdgeInsets.all(5),
                       onPressed: () async {
                         Navigator.of(context).pop();
-
                         await Future.delayed(Duration.zero);
-
                         if (context.mounted) {
                           context.push(Routes.productList);
                         }

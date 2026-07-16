@@ -10,14 +10,15 @@ import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
 import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
+import 'package:Doctors_App/features/legal/ui/add_legal_cases_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_consultant_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_notice_form.dart';
 import 'package:Doctors_App/features/legal/ui/legal_consultant_view.dart';
 import 'package:Doctors_App/features/legal/ui/legal_notice_view.dart';
+import 'package:Doctors_App/features/legal/ui/legal_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_details_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_screen.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
-import 'package:Doctors_App/features/product/ui/widgets/my_plans_widgets.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
 import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
@@ -32,7 +33,6 @@ import '../core/widgets/app_drawer.dart';
 import '../features/admindocs/ui/admin_docs_screen.dart';
 import '../features/authentication/ui/sign_in_screen.dart';
 import '../features/forgot_password/ui/create_new_password.dart';
-import '../features/helpdesk/ui/add_support_247_screen.dart';
 import '../features/helpdesk/ui/my_queries_screen.dart';
 import '../features/helpdesk/ui/widgets/query_details_screen.dart';
 import '../features/home/ui/home_screen.dart';
@@ -126,6 +126,26 @@ final GoRouter router = GoRouter(
       path: Routes.planListScreen,
       pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
     ),
+    // GoRoute(
+    //   path: Routes.myPlanDetails,
+    //   pageBuilder: (context, state) => state.slidePage(
+    //     const MyPlanDetailsScreen(
+    //     //   plan: MyPlan(
+    //     //     srNo: srNo,
+    //     //     id: id,
+    //     //     planName: planName,
+    //     //     duration: duration,
+    //     //     sumAssured: sumAssured,
+    //     //     premium: premium,
+    //     //     payable: payable,
+    //     //     status: status,
+    //     //     fromDate: fromDate,
+    //     //     toDate: toDate,
+    //     //     policyNumber: policyNumber,
+    //     //   ),
+    //     // ),
+    //   ),
+    // ),
     GoRoute(
       path: Routes.productList,
       pageBuilder: (context, state) => state.slidePage(const ProductView()),
@@ -155,10 +175,6 @@ final GoRouter router = GoRouter(
           premium: args.$5,
         );
       },
-    ),
-    GoRoute(
-      path: Routes.myPlansScreen,
-      pageBuilder: (context, state) => state.slidePage(const MyPlansWidgets()),
     ),
 
     GoRoute(
@@ -203,14 +219,7 @@ final GoRouter router = GoRouter(
       path: Routes.adminDocs,
       pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
     ),
-    // GoRoute(
-    //   path: Routes.helpSupport,
-    //   pageBuilder: (context, state) => state.slidePage(HelpScreen()),
-    // ),
-    GoRoute(
-      path: Routes.addSupport,
-      pageBuilder: (context, state) => state.slidePage(AddSupport247Screen()),
-    ),
+
     GoRoute(
       path: Routes.supportHub,
       pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),
@@ -278,9 +287,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),
-    ),    GoRoute(
+    ),
+    GoRoute(
       path: Routes.eventRegister,
-      pageBuilder: (context, state) => state.slidePage(const EventRegisterScreen(event: {},)),
+      pageBuilder: (context, state) =>
+          state.slidePage(const EventRegisterScreen(event: {})),
     ),
     GoRoute(
       path: Routes.communityScreen,
@@ -334,6 +345,15 @@ final GoRouter router = GoRouter(
       path: Routes.addLegalConsultant,
       pageBuilder: (context, state) =>
           state.slidePage(const AddLegalConsultantForm()),
+    ),
+    GoRoute(
+      path: Routes.addLegalCases,
+      pageBuilder: (context, state) =>
+          state.slidePage(const AddLegalCasesForm()),
+    ),
+    GoRoute(
+      path: Routes.legalScreen,
+      pageBuilder: (context, state) => state.slidePage(const LegalScreen()),
     ),
     GoRoute(
       path: Routes.addLegalNotice,

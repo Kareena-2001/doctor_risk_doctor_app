@@ -27,7 +27,7 @@ class ProductHubView extends StatelessWidget {
                       icon: Icons.storefront_rounded,
                       title: 'Browse Plans',
                       subtitle: 'Explore & buy new plans',
-                      color: AppColors.accent.withValues(alpha: 0.5),
+                      color: AppColors.accent.withValues(alpha: 0.7),
                       onTap: () => context.push(Routes.productList),
                     ),
                   ),

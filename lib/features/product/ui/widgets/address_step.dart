@@ -206,13 +206,13 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
   late final _cityCtrl = TextEditingController(text: widget.existing?.city);
   late final _stateCtrl = TextEditingController(text: widget.existing?.state);
 
-  AddressType _type = AddressType.clinic;
+  AddressType _type = AddressType.home;
   OwnOrVisiting _ownOrVisiting = OwnOrVisiting.own;
 
   @override
   void initState() {
     super.initState();
-    _type = widget.existing?.type ?? AddressType.clinic;
+    _type = widget.existing?.type ?? AddressType.home;
     _ownOrVisiting = widget.existing?.ownOrVisiting ?? OwnOrVisiting.own;
   }
 
@@ -289,15 +289,14 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                       ),
                     ),
                     width(10),
-
                     Expanded(
                       child: CustomDropdownField<OwnOrVisiting>(
-                        label:  'Own/visiting',
+                        label: 'Own/visiting',
                         items: OwnOrVisiting.values,
                         value: _ownOrVisiting,
                         itemBuilder: (t) => t.label,
                         onChanged: (v) => setState(
-                              () => _ownOrVisiting = v ?? _ownOrVisiting,
+                          () => _ownOrVisiting = v ?? _ownOrVisiting,
                         ),
                       ),
                     ),
@@ -312,10 +311,9 @@ class _AddressFormSheetState extends State<_AddressFormSheet> {
                 height(10),
                 CustomTextField(label: 'Address 2', controller: _address2Ctrl),
                 height(10),
-                CustomTextField(
-                  label: 'Landmark/locality/area',
-                  controller: _landmarkCtrl,
-                ),
+                CustomTextField(label: 'Landmark', controller: _landmarkCtrl),
+                height(10),
+                CustomTextField(label: 'Area', controller: _landmarkCtrl),
                 height(10),
                 Row(
                   children: [

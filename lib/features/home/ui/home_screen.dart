@@ -31,7 +31,7 @@ final policyModel = PolicyModel(
   duration: '1 Year',
   validFrom: '01/09/2024',
   validTo: '31/08/2025',
-  status: PolicyStatus.expired,
+  status: PolicyStatus.active,
 );
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -53,17 +53,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   static const String _facebookUrl = 'https://facebook.com/doctorsrisk';
   static const String _youtubeUrl = 'https://youtube.com/@doctorsrisk';
   static const String _linkedin = 'https://facebook.com/doctorsrisk';
-
-  String get _referralCode => userId
-      .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')
-      .toUpperCase()
-      .padRight(6, '0')
-      .substring(0, 6);
-
-  String get _inviteLink => 'https://saarthi.app/invite/$_referralCode';
-
-  String get _shareMessage =>
-      'Hey! Join me on Saathi 🚴 Use my code $_referralCode and we both get 7 days of Premium free!\n$_inviteLink';
 
   @override
   void initState() {

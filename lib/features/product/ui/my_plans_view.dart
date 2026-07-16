@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/view_model/my_plans_view_model.dart';
+import 'package:Doctors_App/features/product/ui/widgets/renew_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,6 +11,7 @@ import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/common_empty_state.dart';
 import '../../../theme/app_colors.dart';
 import '../model/my_plan_model.dart';
+import 'my_plan_details_screen.dart';
 
 class MyPlansView extends ConsumerWidget {
   const MyPlansView({super.key});
@@ -19,7 +21,7 @@ class MyPlansView extends ConsumerWidget {
     final plansAsync = ref.watch(myPlansViewModelProvider);
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'My Plans'),
+      appBar: CustomAppBar(title: 'My Plans'),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () =>
@@ -27,24 +29,39 @@ class MyPlansView extends ConsumerWidget {
           child: plansAsync.when(
             data: (plans) => plans.isEmpty
                 ? ListView(
-                    children: const [
-                      SizedBox(height: 120),
-                      // CommonEmptyState(
-                      //   title: 'No plans yet',
-                      //   message: 'Your purchased plans will show up here',
-                      // ),
+                    children: [
+                      height(120),
+                      CommonEmptyState(
+                        title: 'No plans yet',
+                        message: 'Your purchased plans will show up here',
+                      ),
                     ],
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
                     itemCount: plans.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (_, i) => _MyPlanCard(plan: plans[i]),
+                    // itemBuilder: (_, i) => _MyPlanCard(plan: plans[i]),
+                    itemBuilder: (_, i) {
+                      final selectedPlan = plans[i];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MyPlanDetailsScreen(plan: selectedPlan),
+                            ),
+                          );
+                        },
+                        child: _MyPlanCard(plan: selectedPlan),
+                      );
+                    },
                   ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => ListView(
               children: [
-                const SizedBox(height: 120),
+                height(120),
                 CommonEmptyState(
                   title: 'Something went wrong',
                   message: 'Pull down to try again',
@@ -174,7 +191,9 @@ class _MyPlanCard extends ConsumerWidget {
             width: double.infinity,
             height: 44,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                _downloadPolicy('assets/pdf/docs.pdf');
+              },
               icon: const Icon(
                 Icons.file_download_outlined,
                 color: Colors.white,
@@ -203,7 +222,11 @@ class _MyPlanCard extends ConsumerWidget {
               fontSize: 13,
               backgroundColor: AppColors.newPri,
               onPressed: () {
-                _downloadPolicy('assets/pdf/docs.pdf');
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => RenewForm(plan: plan),
+                  ),
+                );
               },
               // onPressed: () =>
               //     ref.read(myPlansViewModelProvider.notifier).renew(plan.id),

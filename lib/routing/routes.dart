@@ -30,6 +30,7 @@ class Routes {
   // static const productList = '/productList';
   static const planListScreen = '/planListScreen';
   static const myPlansScreen = '/myPlansScreen';
+  static const myPlanDetails = '/myPlanDetails';
   static const addPlanScreen = '/addPlanScreen';
 
   static const String productHub = '/product-hub';
@@ -78,6 +79,8 @@ class Routes {
   static const legalNotice = '/legalNotice';
 
   static const addLegalConsultant = '/addLegalConsultant';
+  static const addLegalCases = '/addLegalCases';
+  static const legalScreen = '/legalScreen';
   static const addLegalNotice = '/addLegalNotice';
 
 }

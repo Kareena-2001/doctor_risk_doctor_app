@@ -1,4 +1,6 @@
 enum QueryType {
+  adminService,
+  renewal,
   medicoLegal,
   legal;
 
@@ -8,6 +10,10 @@ enum QueryType {
         return 'Medico Legal';
       case QueryType.legal:
         return 'Legal';
+      case QueryType.adminService:
+        return 'Admin Service';
+      case QueryType.renewal:
+        return 'Renewal';
     }
   }
 }

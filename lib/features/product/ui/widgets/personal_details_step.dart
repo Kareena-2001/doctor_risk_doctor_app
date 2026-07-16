@@ -135,7 +135,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
 
   @override
   Widget build(BuildContext context) {
-    final isIndividual = widget.product.type == ProductType.individual;
+    final isEstab = widget.product.type == ProductType.medicalEstablishment;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -143,6 +143,41 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Information',
+                  style: customTextStyle(
+                    fontSize: Responsive.h(13),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.newPri,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _showCodeGuide,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: AppColors.newPri,
+                      ),
+                      width(4),
+                      Text(
+                        'Which one?',
+                        style: customTextStyle(
+                          fontSize: Responsive.h(12),
+                          color: AppColors.newPri,
+                        ).copyWith(decoration: TextDecoration.underline),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            height(12),
             PlanSummaryCard(
               productName: widget.product.productNames.join(' / '),
               tierName: widget.tier.name,
@@ -215,7 +250,6 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
               keyboardType: TextInputType.emailAddress,
             ),
             height(10),
-
             Row(
               children: [
                 Expanded(
@@ -239,28 +273,27 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
               ],
             ),
             height(10),
-
-            if (isIndividual)
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    label: 'OPD',
-                    controller: _opdCtrl,
-                    hint: 'Enter OPD',
+            if (isEstab)
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'OPD',
+                      controller: _opdCtrl,
+                      hint: 'Enter OPD',
+                    ),
                   ),
-                ),
-                width(10),
-                Expanded(
-                  child: CustomTextField(
-                    label: 'IPD',
-                    controller: _ipdCtrl,
-                    isRequired: true,
-                    hint: 'Enter IPD',
+                  width(10),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'IPD',
+                      controller: _ipdCtrl,
+                      isRequired: true,
+                      hint: 'Enter IPD',
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             height(10),
             Row(
               children: [
@@ -296,6 +329,56 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
               onPressed: _submit,
             ),
             height(20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCodeGuide() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.info_outline, color: AppColors.newPri),
+                width(8),
+                Text(
+                  'Which code should I enter?',
+                  style: customTextStyle(
+                    fontSize: Responsive.h(16),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            height(16),
+            Text(
+              '• If you are joining through an organization, enter the '
+              'Organization Code (Source Code).\n\n'
+              '• If you are joining independently through a referral, '
+              'enter the Associate Code instead.\n\n'
+              'You only need to fill one of these — not both.',
+              style: customTextStyle(
+                fontSize: Responsive.h(14),
+                color: AppColors.grey,
+              ),
+            ),
+            height(20),
+            PrimaryButton(
+              text: 'Got it',
+              onPressed: () => Navigator.pop(context),
+              backgroundColor: AppColors.newPri,
+            ),
           ],
         ),
       ),

@@ -135,12 +135,12 @@ class LegalNoticeView extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      appBar: CustomAppBar(
-        title: 'Legal Notice Records',
-        showRefresh: true,
-        showBack: true,
-        onRefresh: () {},
-      ),
+      // appBar: CustomAppBar(
+      //   title: 'Legal Notice Records',
+      //   showRefresh: true,
+      //   showBack: true,
+      //   onRefresh: () {},
+      // ),
       body: Column(
         children: [
           height(12),

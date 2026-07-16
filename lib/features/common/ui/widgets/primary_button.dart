@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../theme/app_colors.dart';
@@ -85,38 +86,33 @@ class PrimaryButton extends StatelessWidget {
               )
                   : child ??
                   Row(
-                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: iconAfterText
-                        ? [
-                      Text(
-                        text ?? '',
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: fontWeight,
-                          color: txtColor,
-                        ),
-                      ),
-                      if (icon != null) ...[
-                        const SizedBox(width: 8),
-                        Icon(icon, color: txtColor, size: fontSize),
-                      ],
-                    ]
-                        : [
-                      if (icon != null) ...[
+                    children: [
+                      if (!iconAfterText && icon != null) ...[
                         Icon(icon, color: txtColor, size: fontSize),
                         const SizedBox(width: 8),
                       ],
-                      Text(
-                        text ?? '',
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: fontWeight,
-                          color: txtColor,
+
+                      Flexible(
+                        child: Text(
+                          text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                            fontWeight: fontWeight,
+                            color: txtColor,
+                          ),
                         ),
                       ),
+
+                      if (iconAfterText && icon != null) ...[
+                        const SizedBox(width: 8),
+                        Icon(icon, color: txtColor, size: fontSize),
+                      ],
                     ],
-                  ),
+                  )
             ),
           ),
         ),

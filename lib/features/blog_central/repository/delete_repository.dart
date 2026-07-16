@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/api_client.dart';
-import '../model/delete_model.dart';
+import '../model/blog_model.dart';
 
 part 'delete_repository.g.dart';
 

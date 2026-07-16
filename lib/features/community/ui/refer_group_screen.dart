@@ -3,11 +3,13 @@ import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
+import '../../../routing/routes.dart';
 import '../../../theme/app_colors.dart';
 import '../model/whatsApp_model.dart';
 
@@ -54,10 +56,14 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
 
   Future<void> _joinGroup(String link) async {
     final uri = Uri.parse(link);
-    if (await canLaunchUrl(uri)) {
+    final canLaunch = await canLaunchUrl(uri);
+
+    if (!mounted) return;
+
+    if (canLaunch) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else if (mounted) {
-      context.showSuccessSnackBar('Could not open WhatsApp');
+    } else {
+      context.showWarningSnackBar('Could not open WhatsApp');
     }
   }
 
@@ -89,6 +95,11 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
     );
   }
 
+  void _goToCollaborate() {
+    // TODO: swap 'Routes.collaborate' for your actual add/list-collaborator route.
+    context.push(Routes.eventsScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -97,6 +108,8 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPointsBanner(),
+          height(Responsive.h(14)),
+          _buildCollaborateBanner(),
           height(Responsive.h(24)),
           Text(
             'WhatsApp Community Groups',
@@ -197,6 +210,77 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
                     color: Colors.white.withValues(alpha: 0.85),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Lets the user know an existing collaborate feature (add/list
+  // collaborators) exists elsewhere, and links straight to it.
+  Widget _buildCollaborateBanner() {
+    return Container(
+      padding: EdgeInsets.all(Responsive.w(14)),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(Responsive.w(10)),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(Responsive.w(12)),
+            ),
+            child: const Icon(
+              Icons.handshake_rounded,
+              color: AppColors.primary,
+            ),
+          ),
+          width(Responsive.w(12)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Looking to collaborate?',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(13),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textColor,
+                  ),
+                ),
+                height(Responsive.h(3)),
+                Text(
+                  'Add or view your collaborators from the Collaborate section',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          width(Responsive.w(8)),
+          TextButton(
+            onPressed: _goToCollaborate,
+            style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Go there',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(12),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_rounded, size: 16),
               ],
             ),
           ),
@@ -330,7 +414,6 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
           CustomDropdownField<String>(
             label: 'Select Type',
             hint: 'Speciality',
-            controller: _numberController,
             value: _speciality,
             items: specialities,
             onChanged: (String? value) {

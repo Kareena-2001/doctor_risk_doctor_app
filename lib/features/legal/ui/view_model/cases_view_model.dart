@@ -5,7 +5,6 @@ import '../../model/legal_consultant_model.dart';
 class CasesNotifier extends StateNotifier<List<CasesModel>> {
   CasesNotifier() : super(_mockCases);
 
-  /// Overwrites the full system records state list
   void updateCases(List<CasesModel> newCases) {
     state = newCases;
   }

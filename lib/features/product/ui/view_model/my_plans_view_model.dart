@@ -27,7 +27,7 @@ class MyPlansViewModel extends _$MyPlansViewModel {
     MyPlan(
       srNo: 1,
       id: 'PLN001',
-      planName: 'Product A',
+      planName: 'Error and Omission',
       duration: '2 Years',
       sumAssured: 5000000,
       premium: 44000,
@@ -40,7 +40,7 @@ class MyPlansViewModel extends _$MyPlansViewModel {
     MyPlan(
       srNo: 2,
       id: 'PLN002',
-      planName: 'Product C',
+      planName: 'Error and Omission',
       duration: '1 Year',
       sumAssured: 2500000,
       premium: 21000,

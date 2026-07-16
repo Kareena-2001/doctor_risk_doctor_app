@@ -2,7 +2,9 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +28,8 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
   final _documentNameController = TextEditingController();
 
   // State Variables
-  String _noticeTypeSelection = 'Select'; // Handles Notice: Select, Send, Received
+  String _noticeTypeSelection =
+      'Select'; // Handles Notice: Select, Send, Received
   String? _selectedNoticeCategory; // Handles Type of Notice Dropdown
   DateTime? _selectedDate;
   final List<String> _uploadedFiles = [];
@@ -86,22 +89,22 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please pick a date')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please pick a date')));
         return;
       }
       if (_selectedNoticeCategory == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a Notice Type')),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Please select a Notice Type')),
+        // );
+        context.showWarningSnackBar('Please select a Notice Type');
         return;
       }
 
-      // Form verified completely! You can pass these items to your notifier map here:
-      // debugPrint("Mode: $_noticeTypeSelection");
-      // debugPrint("Category: $_selectedNoticeCategory");
-      // debugPrint("Place: ${_placeController.text}");
+      debugPrint("Mode: $_noticeTypeSelection");
+      debugPrint("Category: $_selectedNoticeCategory");
+      debugPrint("Place: ${_placeController.text}");
     }
   }
 
@@ -118,23 +121,18 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Notice Action Selector Radio Items
-              Text(
-                'Notice',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              Text('Notice', style: Theme.of(context).textTheme.titleSmall),
               Row(
-                children: [ 'Send', 'Received'].map((option) {
+                children: ['Send', 'Received'].map((option) {
                   return Expanded(
                     child: RadioListTile<String>(
-                      title: Text(
-                        option,
-                        style: customTextStyle(fontSize: 13),
-                      ),
+                      title: Text(option, style: customTextStyle(fontSize: 13)),
                       value: option,
                       groupValue: _noticeTypeSelection,
                       activeColor: AppColors.newPri,
                       contentPadding: EdgeInsets.zero,
-                      onChanged: (val) => setState(() => _noticeTypeSelection = val!),
+                      onChanged: (val) =>
+                          setState(() => _noticeTypeSelection = val!),
                     ),
                   );
                 }).toList(),
@@ -142,10 +140,7 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
               height(12),
 
               // Date Selector Block
-              Text(
-                'Date',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              Text('Date', style: Theme.of(context).textTheme.titleSmall),
               height(6),
               InkWell(
                 onTap: () => _selectDate(context),
@@ -180,33 +175,17 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                 ),
               ),
               height(16),
-
-              // Type Of Notice Dropdown Menu Form field
-              Text(
-                'Type Of Notice',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              height(6),
-              DropdownButtonFormField<String>(
-                value: _selectedNoticeCategory,
-                hint: Text(
-                  'Select Notice Type',
-                  style: customTextStyle(color: AppColors.textColor, fontSize: 13),
-                ),
-                decoration: _inputDecoration(''),
-                dropdownColor: Colors.white,
-                items: _noticeCategories.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: customTextStyle(fontSize: 14)),
-                  );
-                }).toList(),
+              CustomDropdownField(
+                label: 'Type Of Notice',
+                hint: 'Select Notice Type',
+                items: _noticeCategories,
                 onChanged: (newValue) {
                   setState(() {
                     _selectedNoticeCategory = newValue;
                   });
                 },
-                validator: (val) => val == null ? 'Notice type configuration required' : null,
+                validator: (val) =>
+                    val == null ? 'Notice type configuration required' : null,
               ),
               height(16),
 
@@ -223,7 +202,8 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                 controller: _complainantMobileController,
                 keyboardType: TextInputType.phone,
                 hint: 'Enter mobile number',
-                validator: (val) => val!.isEmpty ? 'Mobile number required' : null,
+                validator: (val) =>
+                    val!.isEmpty ? 'Mobile number required' : null,
               ),
               height(16),
 
@@ -232,7 +212,8 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                 controller: _placeController,
                 label: 'Place',
                 hint: 'Enter place location',
-                validator: (val) => val!.isEmpty ? 'Place requirement missing' : null,
+                validator: (val) =>
+                    val!.isEmpty ? 'Place requirement missing' : null,
               ),
               height(16),
 
@@ -242,7 +223,8 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                 controller: _descriptionController,
                 maxLines: 3,
                 hint: 'Enter notice brief summary details...',
-                validator: (val) => val!.isEmpty ? 'Description details required' : null,
+                validator: (val) =>
+                    val!.isEmpty ? 'Description details required' : null,
               ),
               height(16),
 
@@ -264,12 +246,15 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                   ),
                   width(8),
                   Padding(
-                    padding: const EdgeInsets.only(top: 22.0), // Pushes button clear of field text label
+                    padding: const EdgeInsets.only(top: 22.0),
+                    // Pushes button clear of field text label
                     child: ElevatedButton.icon(
                       onPressed: _addMockAttachment,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.divider,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer,
                         padding: EdgeInsets.symmetric(
                           horizontal: Responsive.sp(12),
                           vertical: Responsive.sp(14),
@@ -313,7 +298,8 @@ class _AddLegalNoticeFormState extends ConsumerState<AddLegalNoticeForm> {
                           color: Colors.redAccent,
                           size: 18,
                         ),
-                        onPressed: () => setState(() => _uploadedFiles.removeAt(idx)),
+                        onPressed: () =>
+                            setState(() => _uploadedFiles.removeAt(idx)),
                       ),
                     ),
                   ),

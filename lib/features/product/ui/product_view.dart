@@ -23,6 +23,7 @@ class ProductView extends ConsumerStatefulWidget {
 
 class _ProductViewState extends ConsumerState<ProductView>
     with SingleTickerProviderStateMixin {
+
   late final TabController _tabController;
 
   int? _expandedId;
@@ -249,9 +250,10 @@ class _ProductViewState extends ConsumerState<ProductView>
               ? LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: index == 0
-                      ? [AppColors.newPri, AppColors.newPri]
-                      : [const Color(0xFF10B981), const Color(0xFF059669)],
+                  colors: [AppColors.primary, AppColors.newPri]
+                  // colors: index == 0
+                  //     ? [AppColors.newPri, AppColors.newPri]
+                  //     : [const Color(0xFF10B981), const Color(0xFF059669)],
                 )
               : null,
           boxShadow: isSelected

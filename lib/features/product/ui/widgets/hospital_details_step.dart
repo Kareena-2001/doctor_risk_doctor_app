@@ -1,5 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_attachment_field.dart';
 import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
@@ -35,6 +37,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
   String? _diplomaPath;
   String? _previousPolicyPath;
   DateTime? _retroactiveDate;
+  bool retroactive = false;
   bool _worldwide = false;
   bool _hasUnqualifiedStaff = false;
 
@@ -74,11 +77,18 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate() || _retroactiveDate == null) {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (retroactive) {
       if (_retroactiveDate == null) {
-        context.showWarningSnackBar('Please select a retroactive date');
+        context.showWarningSnackBar('Please select the retroactive date.');
+        return;
       }
-      return;
+
+      if (_previousPolicyPath == null || _previousPolicyPath!.isEmpty) {
+        context.showWarningSnackBar('Please upload your previous policy.');
+        return;
+      }
     }
 
     final details = HospitalDetails(
@@ -88,6 +98,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
       diplomaCertificatePath: _diplomaPath,
       previousPolicyPath: _previousPolicyPath,
       retroactiveDate: _retroactiveDate!,
+      retroActive: retroactive,
       worldwide: _worldwide,
       hasUnqualifiedStaff: _hasUnqualifiedStaff,
       unqualifiedStaffCount: int.tryParse(_staffCountCtrl.text) ?? 0,
@@ -120,10 +131,12 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
               style: customTextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             height(12),
-            CustomTextField(
+            CustomDropdownField(
               label: 'Medical reg. state',
+              hint: 'Select State',
               controller: _regStateCtrl,
               isRequired: true,
+              items: ['Maharashtra', 'Goa'],
             ),
             height(10),
             Row(
@@ -147,38 +160,46 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
               ],
             ),
             height(14),
-            _FilePickerTile(
+            CustomAttachmentField(
               label: 'Diploma/degree/additional certificate',
-              fileName: _diplomaPath,
+              // fileName: _previousPolicyPath,
               onTap: () => _pickFile((p) => _diplomaPath = p),
-            ),
-            height(10),
-            _FilePickerTile(
-              label: 'Previous policy',
-              fileName: _previousPolicyPath,
-              onTap: () => _pickFile((p) => _previousPolicyPath = p),
+              hint: '',
+              controller: TextEditingController(),
             ),
             height(14),
-            // InkWell(
-            //   onTap: _pickRetroactiveDate,
-            //   child: InputDecorator(
-            //     decoration: const InputDecoration(
-            //       labelText: 'Retroactive date',
-            //     ),
-            //     child: Text(
-            //       _retroactiveDate == null
-            //           ? 'Select date'
-            //           : '${_retroactiveDate!.day}/${_retroactiveDate!.month}/${_retroactiveDate!.year}',
-            //     ),
-            //   ),
-            // ),
-            CustomDatePicker(
-              label: 'Retroactive date',
-              hint: 'Select Date',
-              controller: _retroactiveDateCtrl,
-              onTap: _pickRetroactiveDate,
+            CustomAttachmentField(
+              label: 'Practice Document',
+              // fileName: _previousPolicyPath,
+              onTap: () => _pickFile((p) => _diplomaPath = p),
+              hint: '',
+              controller: TextEditingController(),
             ),
             height(14),
+            _YesNoRow(
+              label: 'Retroactive?',
+              value: retroactive,
+              onChanged: (v) => setState(() => retroactive = v),
+            ),
+            if (retroactive) ...[
+              CustomDatePicker(
+                label: 'Retroactive Date',
+                hint: 'Select Date',
+                controller: _retroactiveDateCtrl,
+                onTap: _pickRetroactiveDate,
+                isRequired: retroactive,
+              ),
+              height(14),
+              CustomAttachmentField(
+                label: 'Previous Policy',
+                controller: TextEditingController(
+                  text: _previousPolicyPath ?? '',
+                ),
+                hint: '',
+                onTap: () => _pickFile((p) => _previousPolicyPath = p),
+              ),
+              height(14),
+            ],
             _YesNoRow(
               label: 'Worldwide coverage?',
               value: _worldwide,
@@ -193,9 +214,28 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
             if (_hasUnqualifiedStaff) ...[
               height(10),
               CustomTextField(
-                label: 'Unqualified staff count',
+                label: 'Unqualified Staff Count',
                 controller: _staffCountCtrl,
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (!_hasUnqualifiedStaff) return null;
+
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter staff count';
+                  }
+
+                  final count = int.tryParse(value);
+
+                  if (count == null) {
+                    return 'Enter a valid number';
+                  }
+
+                  if (count < 1 || count > 5) {
+                    return 'Staff count must be between 1 and 5';
+                  }
+
+                  return null;
+                },
               ),
             ],
             height(24),
@@ -206,59 +246,6 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
               onPressed: _submit,
             ),
             height(20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _FilePickerTile extends StatelessWidget {
-  final String label;
-  final String? fileName;
-  final VoidCallback onTap;
-
-  const _FilePickerTile({
-    required this.label,
-    required this.fileName,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.attach_file_rounded,
-              size: 18,
-              color: Color(0xFF64748B),
-            ),
-            width(8),
-            Expanded(
-              child: Text(
-                fileName ?? label,
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: fileName == null
-                      ? const Color(0xFF94A3B8)
-                      : const Color(0xFF1E293B),
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Text(
-              'Attach',
-              style: customTextStyle(fontSize: 12, color: AppColors.orange),
-            ),
           ],
         ),
       ),

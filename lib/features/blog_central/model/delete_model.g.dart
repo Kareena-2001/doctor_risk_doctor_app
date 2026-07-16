@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'delete_model.dart';
+part of 'blog_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

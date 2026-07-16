@@ -51,6 +51,7 @@ class HospitalDetails {
   final String? diplomaCertificatePath;
   final String? previousPolicyPath;
   final DateTime retroactiveDate;
+  final bool retroActive;
   final bool worldwide;
   final bool hasUnqualifiedStaff;
   final int unqualifiedStaffCount;
@@ -62,25 +63,26 @@ class HospitalDetails {
     this.diplomaCertificatePath,
     this.previousPolicyPath,
     required this.retroactiveDate,
+    required this.retroActive,
     required this.worldwide,
     required this.hasUnqualifiedStaff,
     required this.unqualifiedStaffCount,
   });
 }
 
-enum AddressType { home, clinic, hospital, office }
+enum AddressType { home, hospital }
 
 extension AddressTypeX on AddressType {
   String get label {
     switch (this) {
       case AddressType.home:
-        return 'Home';
-      case AddressType.clinic:
-        return 'Clinic';
+        return 'Residential';
+      // case AddressType.clinic:
+      //   return 'Clinic';
       case AddressType.hospital:
-        return 'Hospital';
-      case AddressType.office:
-        return 'Office';
+        return 'Hospital/Clinic';
+      // case AddressType.office:
+      //   return 'Office';
     }
   }
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:Doctors_App/core/constants/responsive.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/testimonial/model/experience_model.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +16,15 @@ import '../../../../theme/app_colors.dart';
 import '../testimonial_screen.dart';
 
 class ShareTestimonialForm extends StatefulWidget {
-  const ShareTestimonialForm({super.key});
+  // Passed in by the caller (from the logged-in doctor's profile/session).
+  final String authorName;
+  final String authorSpeciality;
+
+  const ShareTestimonialForm({
+    super.key,
+    this.authorName = 'You',
+    this.authorSpeciality = '',
+  });
 
   @override
   State<ShareTestimonialForm> createState() => _ShareTestimonialFormState();
@@ -27,6 +37,7 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
   VideoPlayerController? _videoController;
   bool _isSubmitting = false;
   bool _isSubmitted = false;
+  ExperienceModel? _createdExperience;
 
   @override
   void dispose() {
@@ -47,6 +58,7 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
       final controller = VideoPlayerController.file(file);
       await controller.initialize();
 
+      if (!mounted) return;
       setState(() {
         _videoFile = file;
         _videoController?.dispose();
@@ -71,6 +83,7 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
       final controller = VideoPlayerController.file(file);
       await controller.initialize();
 
+      if (!mounted) return;
       setState(() {
         _videoFile = file;
         _videoController?.dispose();
@@ -89,6 +102,25 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
       _videoController = null;
       _videoFile = null;
     });
+  }
+
+  String _formattedToday() {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final now = DateTime.now();
+    return '${now.day} ${months[now.month - 1]} ${now.year}';
   }
 
   Future<void> _submit() async {
@@ -110,25 +142,51 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
     await Future.delayed(const Duration(seconds: 1));
 
     if (!mounted) return;
+
+    final newExperience = ExperienceModel(
+      name: widget.authorName,
+      speciality: widget.authorSpeciality,
+      experienceType: _mode == TestimonialMode.text
+          ? ExperienceType.text
+          : ExperienceType.video,
+      experience: _mode == TestimonialMode.text
+          ? _textController.text.trim()
+          : (_videoFile?.path ?? ''),
+      addedOn: _formattedToday(),
+    );
+
     setState(() {
       _isSubmitting = false;
       _isSubmitted = true;
+      _createdExperience = newExperience;
     });
   }
 
   void _resetForm() {
     setState(() {
       _isSubmitted = false;
+      _createdExperience = null;
       _mode = TestimonialMode.text;
       _textController.clear();
       _removeVideo();
     });
   }
 
+  void _done() {
+    // Return the created testimonial to ExperienceListScreen so it can
+    // be inserted into the list.
+    Navigator.pop(context, _createdExperience);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_isSubmitted) return _buildSuccessView();
+    return Scaffold(
+      appBar: CustomAppBar(title: 'Share Experience'),
+      body: _isSubmitted ? _buildSuccessView() : _buildForm(),
+    );
+  }
 
+  Widget _buildForm() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(Responsive.w(20)),
       child: Column(
@@ -143,29 +201,6 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
           else
             _buildVideoInput(),
           height(Responsive.h(28)),
-          // SizedBox(
-          //   width: double.infinity,
-          //   height: Responsive.h(48),
-          //   child: ElevatedButton.icon(
-          //     style: ElevatedButton.styleFrom(
-          //
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(Responsive.w(14)),
-          //       ),
-          //       elevation: 0,
-          //     ),
-          //     icon: _isSubmitting
-          //         ? const SizedBox(
-          //             height: 18,
-          //             width: 18,
-          //             child: CircularProgressIndicator(
-          //               strokeWidth: 2,
-          //               color: Colors.white,
-          //             ),
-          //           )
-          //         : const Icon(Icons.send_rounded, color: Colors.white),
-          //   ),
-          // ),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
             text: _isSubmitting ? 'Submitting...' : 'Share Testimonial',
@@ -457,7 +492,7 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
                   size: 16,
                   color: Colors.white,
                 ),
-                label: Text('Upload'),
+                label: const Text('Upload'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.newPri,
                   foregroundColor: Colors.white,
@@ -515,6 +550,15 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
             height(Responsive.h(24)),
             SizedBox(
               width: double.infinity,
+              child: PrimaryButton(
+                backgroundColor: AppColors.newPri,
+                text: 'Done',
+                onPressed: _done,
+              ),
+            ),
+            height(Responsive.h(12)),
+            SizedBox(
+              width: double.infinity,
               child: OutlinedButton(
                 onPressed: _resetForm,
                 style: OutlinedButton.styleFrom(
@@ -547,21 +591,30 @@ class _PlayPauseOverlay extends StatefulWidget {
 }
 
 class _PlayPauseOverlayState extends State<_PlayPauseOverlay> {
+  late final VoidCallback _listener;
+
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(() => setState(() {}));
+    _listener = () {
+      if (mounted) setState(() {});
+    };
+    widget.controller.addListener(_listener);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_listener);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          widget.controller.value.isPlaying
-              ? widget.controller.pause()
-              : widget.controller.play();
-        });
+        widget.controller.value.isPlaying
+            ? widget.controller.pause()
+            : widget.controller.play();
       },
       child: AnimatedOpacity(
         opacity: widget.controller.value.isPlaying ? 0 : 1,

@@ -70,59 +70,70 @@ class AppDrawer extends ConsumerWidget {
                         context.push(Routes.faqScreen);
                       },
                     ),
-                    _tile(
-                      context,
-                      icon: Icons.gavel_outlined,
-                      title: 'Legal Consultant',
-                      subtitle: 'View Legal Reports',
-                      isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.legalConsultant);
-                      },
-                    ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.gavel_outlined,
+                    //   title: 'Legal Consultant',
+                    //   subtitle: 'View Legal Reports',
+                    //   isDark: isDark,
+                    //   onTap: () {
+                    //     context.push(Routes.legalConsultant);
+                    //   },
+                    // ),
                     _tile(
                       context,
                       icon: Icons.description_outlined,
-                      title: 'Legal Notice',
-                      subtitle: 'View Legal Notices',
+                      title: 'Legal',
+                      subtitle: 'View Legal Services',
                       isDark: isDark,
                       onTap: () {
-                        context.push(Routes.legalNotice);
+                        context.push(Routes.legalScreen);
                       },
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(vertical: 16),
-                    //   child: Divider(
-                    //     color: isDark
-                    //         ? Colors.white10
-                    //         : Colors.black87.withValues(alpha: 0.05),
-                    //   ),
-                    // ),
-                    // _sectionLabel('GENERAL', isDark),
-                    // _tile(
-                    //   context,
-                    //   icon: Icons.person_outline_rounded,
-                    //   title: 'Edit Profile',
-                    //   subtitle: 'Update your personal details',
-                    //   isDark: isDark,
-                    //   onTap: () => context.push(Routes.login),
-                    // ),
-                    // _tile(
-                    //   context,
-                    //   icon: Icons.settings_outlined,
-                    //   title: 'Settings',
-                    //   subtitle: 'Manage app preferences',
-                    //   isDark: isDark,
-                    //   onTap: () => context.push(Routes.login),
-                    // ),
-                    // _tile(
-                    //   context,
-                    //   icon: Icons.help_outline_rounded,
-                    //   title: 'Help & Support',
-                    //   subtitle: 'Get assistance and FAQ',
-                    //   isDark: isDark,
-                    //   onTap: () => context.push(Routes.login),
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        color: isDark
+                            ? Colors.white10
+                            : Colors.black87.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    _sectionLabel('GENERAL', isDark),
+                    _tile(
+                      context,
+                      icon: Icons.shopping_bag_outlined,
+                      title: 'My Products',
+                      subtitle: 'View and manage your purchased plans',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.productList),
+                    ),
+
+                    _tile(
+                      context,
+                      icon: Icons.article_outlined,
+                      title: 'News & Advisories',
+                      subtitle: 'Latest medico-legal news and updates',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.newsAdvisory),
+                    ),
+
+                    _tile(
+                      context,
+                      icon: Icons.menu_book_outlined,
+                      title: 'Blog Central',
+                      subtitle: 'Read articles and expert insights',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.blogCentral),
+                    ),
+
+                    _tile(
+                      context,
+                      icon: Icons.event_available_outlined,
+                      title: 'Events & Learning',
+                      subtitle: 'Webinars, workshops and upcoming events',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.eventsScreen),
+                    ),
                   ],
                 ),
               ),
@@ -133,6 +144,20 @@ class AppDrawer extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String label, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        label,
+        style: customTextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          color: isDark ? Colors.white38 : AppColors.mono60,
+        ).copyWith(letterSpacing: 1.2),
       ),
     );
   }
