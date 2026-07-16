@@ -1,16 +1,10 @@
-enum Environment {
-  development,
-  production,
-}
+enum Environment { development, production }
 
 class EnvironmentConfig {
   final Environment environment;
   final String baseUrl;
 
-  const EnvironmentConfig._({
-    required this.environment,
-    required this.baseUrl,
-  });
+  const EnvironmentConfig._({required this.environment, required this.baseUrl});
 
   factory EnvironmentConfig.development() {
     return const EnvironmentConfig._(
@@ -27,5 +21,6 @@ class EnvironmentConfig {
   }
 
   bool get isDevelopment => environment == Environment.development;
+
   bool get isProduction => environment == Environment.production;
 }

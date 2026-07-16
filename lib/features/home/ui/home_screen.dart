@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
@@ -11,12 +12,27 @@ import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../core/constants/assets.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/heading_widget.dart';
 import '../../../routing/routes.dart';
+import '../../events/ui/event_register_screen.dart';
 import '../../notification/ui/viewmodel/notification_view_model.dart';
+import '../model/policy_model.dart';
 import 'floating_chat_bubble.dart';
+
+final policyModel = PolicyModel(
+  title: 'Policy Details',
+  planName: 'Medico Legal Services',
+  policyType: 'Professional Indemnity',
+  coverageAmount: 'Rs. 50,000,000',
+  policyNumber: '03303387333412',
+  duration: '1 Year',
+  validFrom: '01/09/2024',
+  validTo: '31/08/2025',
+  status: PolicyStatus.expired,
+);
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +44,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   late final String userId;
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   Timer? _sessionTimer;
@@ -158,9 +175,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: Column(
                   children: [
                     height(Responsive.h(8)),
-                    _buildCompactProfileHeader(isDark),
+                    _buildCompactProfileHeader(isDark, policyModel),
                     height(Responsive.h(20)),
-                    _buildMainContent(isDark),
+                    _buildMainContent(isDark, policyModel),
                     height(Responsive.h(100)),
                   ],
                 ),
@@ -173,7 +190,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildCompactProfileHeader(bool isDark) {
+  Widget _buildCompactProfileHeader(bool isDark, PolicyModel policy) {
+    final status = policy.status;
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
@@ -201,23 +220,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: EdgeInsets.all(Responsive.w(4)),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [AppColors.newPri, AppColors.primary],
+          InkWell(
+            onTap: () => context.push(Routes.editProfile),
+            child: Container(
+              padding: EdgeInsets.all(Responsive.w(4)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [AppColors.newPri, AppColors.primary],
+                ),
               ),
-            ),
-            child: Hero(
-              tag: 'user_avatar',
-              child: CircleAvatar(
-                radius: Responsive.w(38),
-                backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+              child: Hero(
+                tag: 'user_avatar',
                 child: CircleAvatar(
-                  radius: Responsive.w(35),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  backgroundImage: AssetImage(Assets.user),
+                  radius: Responsive.w(38),
+                  backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+                  child: CircleAvatar(
+                    radius: Responsive.w(35),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                    backgroundImage: AssetImage(Assets.user),
+                  ),
                 ),
               ),
             ),
@@ -238,13 +260,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               vertical: Responsive.h(5),
             ),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.newPri, AppColors.primary],
-              ),
+              gradient: LinearGradient(colors: status.gradient),
               borderRadius: BorderRadius.circular(Responsive.w(20)),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.newPri.withValues(alpha: 0.35),
+                  color: status.color.withValues(alpha: 0.35),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -253,14 +273,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.verified,
-                  size: Responsive.sp(13),
-                  color: Colors.white,
-                ),
+                Icon(status.icon, size: Responsive.sp(13), color: Colors.white),
                 width(Responsive.w(4)),
                 Text(
-                  'Membership Active',
+                  status.label,
                   style: customTextStyle(
                     color: Colors.white,
                     fontSize: Responsive.sp(12),
@@ -331,13 +347,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildMainContent(bool isDark) {
+  Widget _buildMainContent(bool isDark, PolicyModel policyModel) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPolicyCard(),
+          _buildPolicyCard(policyModel),
           height(Responsive.h(24)),
           HeadingWidget(
             headingTitle: 'My Products',
@@ -702,108 +718,300 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildPolicyCard() {
-    return Container(
-      padding: EdgeInsets.all(Responsive.w(20)),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Responsive.w(26)),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.newPri, AppColors.newPri.withValues(alpha: 0.75)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.newPri.withValues(alpha: 0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+  Widget _buildPolicyCard(PolicyModel policy) {
+    final status = policy.status;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Responsive.w(28)),
+      child: Container(
+        padding: EdgeInsets.all(Responsive.w(20)),
+        decoration: BoxDecoration(
+          // 1. Give the gradient a premium diagonal direction
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: status.gradient,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Policy Details',
-                style: customTextStyle(
-                  color: AppColors.white,
-                  fontSize: Responsive.sp(14),
-                  fontWeight: FontWeight.w600,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.20),
+              // Slightly softer shadow
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // 2. Translucent white circles for elegant contrast (instead of more status color)
+            Positioned(
+              top: -Responsive.w(40),
+              right: -Responsive.w(30),
+              child: IgnorePointer(
+                child: Container(
+                  width: Responsive.w(140),
+                  height: Responsive.w(140),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.10),
+                  ),
                 ),
               ),
-              PrimaryButton(
-                height: Responsive.h(30),
-                width: Responsive.w(120),
-                text: 'Renew Now',
-                fontSize: Responsive.sp(12),
-                backgroundColor: Colors.white,
-                textColor: AppColors.newPri,
-                onPressed: () => context.push(Routes.myPlans),
+            ),
+            Positioned(
+              bottom: -Responsive.w(50),
+              left: -Responsive.w(40),
+              child: IgnorePointer(
+                child: Container(
+                  width: Responsive.w(150),
+                  height: Responsive.w(150),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.06),
+                  ),
+                ),
               ),
-            ],
-          ),
-          height(Responsive.h(10)),
-          Text(
-            'Medico Legal Services',
-            style: customTextStyle(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: Responsive.sp(12),
             ),
-          ),
-          Text(
-            'Professional Indemnity',
-            style: customTextStyle(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: Responsive.sp(12),
+            // Faint watermark shield icon for a "certified membership" feel
+            Positioned(
+              right: Responsive.w(4),
+              bottom: Responsive.h(4),
+              child: IgnorePointer(
+                child: Icon(
+                  Icons.shield_moon_outlined,
+                  size: Responsive.sp(90),
+                  color: Colors.white.withValues(
+                    alpha: 0.08,
+                  ), // Slightly more visible
+                ),
+              ),
             ),
-          ),
-          Divider(color: Colors.white24, height: Responsive.h(28)),
-          _buildPolicyMeta(
-            'Coverage Amount',
-            'Rs. 50,000,000',
-            crossAlign: CrossAxisAlignment.end,
-          ),
-          Divider(color: Colors.white24, height: Responsive.h(28)),
-          _buildPolicyMeta('Policy Number', '03303387333412'),
-          Divider(color: Colors.white24, height: Responsive.h(28)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildPolicyMeta('Duration', '1 Year'),
-              _buildPolicyMeta('Valid From', '01/09/2024'),
-              _buildPolicyMeta('Valid To', '31/08/2025'),
-            ],
-          ),
-        ],
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            policy.title.toUpperCase(),
+                            style: customTextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              // Smoother than white70
+                              fontSize: Responsive.sp(11),
+                              fontWeight: FontWeight.w700,
+                            ).copyWith(letterSpacing: 1.2),
+                          ),
+                          height(Responsive.h(6)),
+                          Text(
+                            policy.planName,
+                            style: customTextStyle(
+                              color: Colors.white,
+                              fontSize: Responsive.sp(14),
+                              // Slightly larger for hierarchy
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 3. Glassmorphism Status Ribbon so it stands out against the card
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.w(10),
+                        vertical: Responsive.h(6),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        // Translucent overlay
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          // Subtle shine
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(Responsive.w(20)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            status.icon,
+                            size: Responsive.sp(12),
+                            color: Colors.white,
+                          ),
+                          width(Responsive.w(4)),
+                          Text(
+                            status.name[0].toUpperCase() +
+                                status.name.substring(1),
+                            style: customTextStyle(
+                              color: Colors.white,
+                              fontSize: Responsive.sp(11),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                height(Responsive.h(4)),
+                Text(
+                  policy.policyType,
+                  style: customTextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: Responsive.sp(12.5),
+                  ),
+                ),
+                height(Responsive.h(22)),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: Responsive.w(25),
+                      height: Responsive.w(25),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+                        ),
+                        borderRadius: BorderRadius.circular(Responsive.w(6)),
+                      ),
+                    ),
+                    width(Responsive.w(12)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'POLICY NUMBER',
+                            style: customTextStyle(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: Responsive.sp(9.5),
+                              fontWeight: FontWeight.w600,
+                            ).copyWith(letterSpacing: 1.1),
+                          ),
+                          height(Responsive.h(3)),
+                          Text(
+                            policy.policyNumber,
+                            style: customTextStyle(
+                              color: Colors.white,
+                              fontSize: Responsive.sp(12),
+                              fontWeight: FontWeight.w600,
+                            ).copyWith(letterSpacing: 1.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                height(Responsive.h(20)),
+                Container(
+                  height: 1,
+                  color: Colors.white.withValues(
+                    alpha: 0.15,
+                  ), // Slightly brighter divider
+                ),
+                height(Responsive.h(18)),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _cardStat(
+                        icon: Icons.security_rounded,
+                        label: 'Coverage',
+                        value: policy.coverageAmount,
+                      ),
+                    ),
+                    Expanded(
+                      child: _cardStat(
+                        icon: Icons.timelapse_rounded,
+                        label: 'Duration',
+                        value: policy.duration,
+                      ),
+                    ),
+                  ],
+                ),
+                height(Responsive.h(16)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _cardStat(
+                        icon: Icons.calendar_today_rounded,
+                        label: 'Valid From',
+                        value: policy.validFrom,
+                      ),
+                    ),
+                    Expanded(
+                      child: _cardStat(
+                        icon: Icons.event_busy_rounded,
+                        label: 'Valid To',
+                        value: policy.validTo,
+                      ),
+                    ),
+                  ],
+                ),
+
+                if (policy.canRenew) ...[
+                  height(Responsive.h(22)),
+                  SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButton(
+                      height: Responsive.h(44),
+                      text: status == PolicyStatus.expired
+                          ? 'Renew Now'
+                          : 'Renew Early',
+                      fontSize: Responsive.sp(13),
+                      fontWeight: FontWeight.w700,
+                      backgroundColor: Colors.white,
+                      textColor: status.gradient.last,
+                      onPressed: () => context.push(Routes.myPlans),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPolicyMeta(
-    String label,
-    String value, {
-    CrossAxisAlignment crossAlign = CrossAxisAlignment.start,
+  Widget _cardStat({
+    required IconData icon,
+    required String label,
+    required String value,
   }) {
-    return Column(
-      crossAxisAlignment: crossAlign,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: customTextStyle(
-            color: Colors.white.withValues(alpha: 0.8),
-            fontSize: Responsive.sp(11),
-          ),
-        ),
-        height(Responsive.h(2)),
-        Text(
-          value,
-          style: customTextStyle(
-            color: Colors.white,
-            fontSize: Responsive.sp(13),
-            fontWeight: FontWeight.w600,
+        Icon(icon, size: Responsive.sp(15), color: Colors.white38),
+        width(Responsive.w(8)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: customTextStyle(
+                  color: Colors.white70,
+                  fontSize: Responsive.sp(9.5),
+                  fontWeight: FontWeight.w600,
+                ).copyWith(letterSpacing: 0.8),
+              ),
+              height(Responsive.h(3)),
+              Text(
+                value,
+                style: customTextStyle(
+                  color: Colors.white,
+                  fontSize: Responsive.sp(13),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -979,7 +1187,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               text: avail ? 'Register to Join' : 'Know More',
                               fontWeight: FontWeight.w700,
                               fontSize: Responsive.sp(12),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EventRegisterScreen(event: {}),
+                                  ),
+                                );
+                              },
                               height: Responsive.h(42),
                               backgroundColor: avail
                                   ? AppColors.newPri
@@ -989,7 +1205,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ),
                           width(Responsive.w(10)),
                           InkWell(
-                            onTap: () => Share.share(_shareMessage),
+                            onTap: () => Share.share(
+                              'Check out this event: ${c['title']} on '
+                              '${c['day']} ${c['month']}, ${c['time']}',
+                            ),
                             borderRadius: BorderRadius.circular(
                               Responsive.w(10),
                             ),

@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/authentication/ui/widgets/recapta_widget.dart';
 import 'package:Doctors_App/features/fcm/device_service.dart';
@@ -142,7 +143,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     });
 
     return Scaffold(
-      backgroundColor: context.secondaryBackgroundColor,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -153,8 +154,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 child: ClipPath(
                   clipper: HeaderClipper(),
                   child: Container(
-                    color: AppColors.watermelon1,
-                    child: Center(child: Image.asset(Assets.login, width: 200)),
+                    color: AppColors.newPri.withValues(alpha: 0.6),
+                    child: Center(
+                      child: Image.asset(Assets.signIn, width: 200),
+                    ),
                   ),
                 ),
               ),
@@ -165,19 +168,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      height(32),
                       Center(
                         child: Text(
                           'Create Account',
                           style: customTextStyle(
-                            fontSize: 25,
+                            fontSize: Responsive.h(20),
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: AppColors.newPri,
                           ),
                         ),
                       ),
-                      height(24),
-
+                      height(10),
                       CustomDropdownField(
                         label: 'Prefix',
                         hint: 'Select Prefix',
@@ -190,7 +191,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         },
                       ),
                       height(16),
-
                       Row(
                         children: [
                           Expanded(
@@ -221,7 +221,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ],
                       ),
                       height(16),
-
                       CustomTextField(
                         label: 'Mobile Number',
                         hint: 'Enter your mobile number',
@@ -254,7 +253,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           items: specialities,
                         ),
                         height(16),
-
                         CustomDropdownField(
                           label: 'Degree',
                           hint: 'Select Degree',
@@ -262,20 +260,88 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                         height(16),
                       ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Referral Info',
+                            style: customTextStyle(
+                              fontSize: Responsive.h(13),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.newPri,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: _showCodeGuide,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 16,
+                                  color: AppColors.newPri,
+                                ),
+                                width(4),
+                                Text(
+                                  'Which one?',
+                                  style:
+                                      customTextStyle(
+                                        fontSize: Responsive.h(12),
+                                        color: AppColors.newPri,
+                                      ).copyWith(
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      height(12),
                       CustomTextField(
-                        label: 'Organization Code',
+                        label: 'Source Code',
                         hint: 'Enter your organization code',
+                        isRequired: false,
                         controller: _organizationCodeController,
                       ),
                       height(16),
-
                       CustomTextField(
                         label: 'Associate Code',
                         hint: 'Enter your associate code',
+                        isRequired: false,
                         controller: _associateCodeController,
                       ),
-                      height(16),
-
+                      // Container(
+                      //   padding: const EdgeInsets.all(14),
+                      //   decoration: BoxDecoration(
+                      //     color: AppColors.newPri.withValues(alpha: .08),
+                      //     borderRadius: BorderRadius.circular(12),
+                      //     border: Border.all(
+                      //       color: AppColors.newPri.withValues(alpha: .25),
+                      //     ),
+                      //   ),
+                      //   child: Row(
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       Icon(
+                      //         Icons.info_outline,
+                      //         color: AppColors.newPri,
+                      //       ),
+                      //       const SizedBox(width: 10),
+                      //       Expanded(
+                      //         child: Text(
+                      //           "If you are joining through a hospital, clinic, or organization, please enter the Source Code provided by them.\n\n"
+                      //               "If you were referred by a Doctors Risk Associate, enter the Associate Code instead.\n\n"
+                      //               "If neither applies, you may leave both fields blank.",
+                      //           style: customTextStyle(
+                      //             fontSize: 12,
+                      //             color: AppColors.textColor,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       CustomTextField(
                         label: 'Password',
                         hint: 'Enter password',
@@ -327,6 +393,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onPressed: authState.isLoading
                             ? null
                             : _onSignUpPressed,
+                        backgroundColor: AppColors.newPri,
                       ),
                       height(24),
 
@@ -339,7 +406,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             child: Text(
                               'Sign In',
                               style: customTextStyle(
-                                color: AppColors.primary,
+                                color: AppColors.newPri,
                                 fontWeight: FontWeight.w600,
                               ).copyWith(decoration: TextDecoration.underline),
                             ),
@@ -352,6 +419,56 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showCodeGuide() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.info_outline, color: AppColors.newPri),
+                width(8),
+                Text(
+                  'Which code should I enter?',
+                  style: customTextStyle(
+                    fontSize: Responsive.h(16),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            height(16),
+            Text(
+              '• If you are joining through an organization, enter the '
+              'Organization Code (Source Code).\n\n'
+              '• If you are joining independently through a referral, '
+              'enter the Associate Code instead.\n\n'
+              'You only need to fill one of these — not both.',
+              style: customTextStyle(
+                fontSize: Responsive.h(14),
+                color: AppColors.grey,
+              ),
+            ),
+            height(20),
+            PrimaryButton(
+              text: 'Got it',
+              onPressed: () => Navigator.pop(context),
+              backgroundColor: AppColors.newPri,
+            ),
+          ],
         ),
       ),
     );

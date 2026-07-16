@@ -16,12 +16,12 @@ import '../../../theme/app_colors.dart';
 
 class ProfileViewScreen extends StatelessWidget {
   final DoctorProfileData data;
-  final List<PolicyModel> policies;
+  // final List<PolicyModel> policies;
 
   const ProfileViewScreen({
     super.key,
     required this.data,
-    this.policies = const [],
+    // this.policies = const [],
   });
 
   @override
@@ -318,91 +318,91 @@ class _CertificateList extends StatelessWidget {
   }
 }
 
-class _PolicyCard extends StatelessWidget {
-  final PolicyModel policy;
-
-  const _PolicyCard({required this.policy});
-
-  Color get _statusColor {
-    switch (policy.status.toLowerCase()) {
-      case 'active':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'expired':
-        return Colors.red;
-      default:
-        return Colors.blueGrey;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  policy.planName,
-                  style: customTextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: _statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  policy.status,
-                  style: customTextStyle(
-                    color: _statusColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          height(8),
-          _InfoRow(label: 'Insurer', value: policy.insurerName),
-          _InfoRow(label: 'Policy number', value: policy.policyNumber),
-          _InfoRow(
-            label: 'Purchase date',
-            value: DateFormat('dd/MM/yyyy').format(policy.purchaseDate),
-          ),
-          _InfoRow(
-            label: 'Retroactive date',
-            value: policy.retroactiveDate != null
-                ? DateFormat('dd/MM/yyyy').format(policy.retroactiveDate!)
-                : '-',
-          ),
-          if (policy.expiryDate != null)
-            _InfoRow(
-              label: 'Expiry date',
-              value: DateFormat('dd/MM/yyyy').format(policy.expiryDate!),
-            ),
-          if (policy.premiumAmount != null)
-            _InfoRow(
-              label: 'Premium',
-              value: '\u20b9 ${policy.premiumAmount!.toStringAsFixed(2)}',
-            ),
-        ],
-      ),
-    );
-  }
-}
+// class _PolicyCard extends StatelessWidget {
+//   final PolicyModel policy;
+//
+//   const _PolicyCard({required this.policy});
+//
+//   Color get _statusColor {
+//     switch (policy.status.toLowerCase()) {
+//       case 'active':
+//         return Colors.green;
+//       case 'pending':
+//         return Colors.orange;
+//       case 'expired':
+//         return Colors.red;
+//       default:
+//         return Colors.blueGrey;
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 12),
+//       padding: const EdgeInsets.all(12),
+//       decoration: BoxDecoration(
+//         color: Colors.grey.shade50,
+//         border: Border.all(color: Colors.grey.shade300),
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Expanded(
+//                 child: Text(
+//                   policy.planName,
+//                   style: customTextStyle(
+//                     fontWeight: FontWeight.w600,
+//                     fontSize: 14,
+//                   ),
+//                 ),
+//               ),
+//               Container(
+//                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+//                 decoration: BoxDecoration(
+//                   color: _statusColor.withValues(alpha: 0.12),
+//                   borderRadius: BorderRadius.circular(20),
+//                 ),
+//                 child: Text(
+//                   policy.status,
+//                   style: customTextStyle(
+//                     color: _statusColor,
+//                     fontSize: 11,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           height(8),
+//           _InfoRow(label: 'Insurer', value: policy.insurerName),
+//           _InfoRow(label: 'Policy number', value: policy.policyNumber),
+//           _InfoRow(
+//             label: 'Purchase date',
+//             value: DateFormat('dd/MM/yyyy').format(policy.purchaseDate),
+//           ),
+//           _InfoRow(
+//             label: 'Retroactive date',
+//             value: policy.retroactiveDate != null
+//                 ? DateFormat('dd/MM/yyyy').format(policy.retroactiveDate!)
+//                 : '-',
+//           ),
+//           if (policy.expiryDate != null)
+//             _InfoRow(
+//               label: 'Expiry date',
+//               value: DateFormat('dd/MM/yyyy').format(policy.expiryDate!),
+//             ),
+//           if (policy.premiumAmount != null)
+//             _InfoRow(
+//               label: 'Premium',
+//               value: '\u20b9 ${policy.premiumAmount!.toStringAsFixed(2)}',
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }

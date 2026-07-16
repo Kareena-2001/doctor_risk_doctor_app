@@ -1,6 +1,5 @@
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/home/ui/home_screen.dart';
-import 'package:Doctors_App/features/profile/model/policy_model.dart';
 import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
 import 'package:Doctors_App/features/testimonial/ui/testimonial_screen.dart';
 import 'package:flutter/material.dart';
@@ -78,18 +77,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           ),
         ],
       ),
-      policies: [
-        PolicyModel(
-          planName: 'Professional Indemnity Insurance',
-          insurerName: 'ICICI Lombard',
-          policyNumber: 'PI-2026-001245',
-          purchaseDate: DateTime(2026, 1, 10),
-          retroactiveDate: DateTime(2025, 1, 10),
-          expiryDate: DateTime(2027, 1, 9),
-          premiumAmount: 8500.00,
-          status: 'Active',
-        ),
-      ],
+      // policies: [
+      //   PolicyModel(
+      //     planName: 'Professional Indemnity Insurance',
+      //     insurerName: 'ICICI Lombard',
+      //     policyNumber: 'PI-2026-001245',
+      //     purchaseDate: DateTime(2026, 1, 10),
+      //     retroactiveDate: DateTime(2025, 1, 10),
+      //     expiryDate: DateTime(2027, 1, 9),
+      //     premiumAmount: 8500.00,
+      //     status: 'Active',
+      //   ),
+      // ],
     ),
   ];
 

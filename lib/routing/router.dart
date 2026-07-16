@@ -5,6 +5,7 @@ import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
+import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
@@ -277,6 +278,9 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),
+    ),    GoRoute(
+      path: Routes.eventRegister,
+      pageBuilder: (context, state) => state.slidePage(const EventRegisterScreen(event: {},)),
     ),
     GoRoute(
       path: Routes.communityScreen,

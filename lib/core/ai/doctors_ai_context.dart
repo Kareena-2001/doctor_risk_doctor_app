@@ -1,7 +1,7 @@
 import 'app_ai_context.dart';
 
 const kals360AIContext = AppAIContext(
-  appName: 'Kals 360',
+  appName: 'Doctors App',
   description:
       'Kals 360 is an HR and internal management platform used for employee onboarding, document handling, helpdesk support, and organization management.',
   features: [

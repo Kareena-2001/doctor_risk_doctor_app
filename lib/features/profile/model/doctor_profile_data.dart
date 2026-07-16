@@ -20,7 +20,7 @@ class DoctorProfileData {
   final List<AddressViewData> addresses;
   final List<CertificateModel> doctorCertificates;
   final List<CertificateModel> organisationCertificates;
-  final List<PolicyModel> policies;
+  // final List<PolicyModel> policies;
 
   const DoctorProfileData({
     required this.prefix,
@@ -40,7 +40,7 @@ class DoctorProfileData {
     this.addresses = const [],
     this.doctorCertificates = const [],
     this.organisationCertificates = const [],
-    this.policies = const [],
+    // this.policies = const [],
   });
 
   String get fullName => [prefix, firstName, middleName, lastName]

@@ -60,6 +60,7 @@ class Routes {
   static const blogCentral = '/blogCentral';
   static const blogCentralDetails = '/blogCentralDetails';
   static const eventsScreen = '/eventsScreen';
+  static const eventRegister = '/eventRegister';
 
 
   static const communityScreen = '/communityScreen';
