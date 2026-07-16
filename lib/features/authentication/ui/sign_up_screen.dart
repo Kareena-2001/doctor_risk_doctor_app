@@ -50,10 +50,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   String? _selectedPrefix;
 
   final categories = [
-    'General Practitioner All Pathy'
-        'Physician Consultant',
-    'Dental Surgeon'
-        'Plastic /Cosmetic',
+    'General Practitioner All Pathy',
+    'Physician Consultant',
+    'Dental Surgeon',
+    'Plastic /Cosmetic',
   ];
 
   final specialities = [
@@ -342,6 +342,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       //     ],
                       //   ),
                       // ),
+
+                      height(16),
                       CustomTextField(
                         label: 'Password',
                         hint: 'Enter password',

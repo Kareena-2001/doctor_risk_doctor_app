@@ -1186,9 +1186,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 );
                               },
                               height: Responsive.h(42),
-                              backgroundColor: avail
-                                  ? AppColors.newPri
-                                  : AppColors.homeBorder,
+                              // backgroundColor: avail
+                              //     ? AppColors.primary
+                              //     : AppColors.homeBorder,
+                              gradientColors: avail
+                                  ? [AppColors.newPri, AppColors.primary]
+                                  : [AppColors.lightGray, AppColors.grey],
                               borderRadius: Responsive.w(10),
                             ),
                           ),

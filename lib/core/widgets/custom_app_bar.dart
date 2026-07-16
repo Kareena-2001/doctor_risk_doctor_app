@@ -90,7 +90,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           Text(
             title,
             style: customTextStyle(
-              color: AppColors.newPri,
+              color: AppColors.watermelon100,
               fontSize: Responsive.sp(16),
               fontWeight: FontWeight.w700,
             ),
@@ -141,10 +141,10 @@ class AppBarAction extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: IconButton.outlined(
         onPressed: onTap,
-        icon: Icon(icon, size: Responsive.sp(22), color: AppColors.iconPink),
+        icon: Icon(icon, size: Responsive.sp(22), color: AppColors.watermelon100),
         style: IconButton.styleFrom(
           shape: const CircleBorder(),
-          side: const BorderSide(color: AppColors.borderGrey),
+          side: const BorderSide(color: AppColors.greyLight),
           padding: const EdgeInsets.all(10),
         ),
       ),

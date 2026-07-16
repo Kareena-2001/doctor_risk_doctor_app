@@ -108,17 +108,17 @@ class AllBlogsTab extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.newPri,
-          elevation: 8,
-          onPressed: () {
-            // Open chat screen
-          },
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.only(bottom: 70),
+      //   child: FloatingActionButton(
+      //     backgroundColor: AppColors.newPri,
+      //     elevation: 8,
+      //     onPressed: () {
+      //       // Open chat screen
+      //     },
+      //     child: const Icon(Icons.add, color: Colors.white),
+      //   ),
+      // ),
     );
   }
 }

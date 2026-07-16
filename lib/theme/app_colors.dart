@@ -99,6 +99,8 @@ class AppColors {
   static const Color textHint = Color(0xFFAAAAAA);
   static const Color fieldGrey = Color(0xffDBDBDB);
   static const Color textColor = Color(0xFF2D3748);
+  static const Color textPri = Color(0xff333334);
+
 
   static const Color supportTabColor = Color(0xFF1565C0);
   static const Color white = Color(0xFFFFFFFF);

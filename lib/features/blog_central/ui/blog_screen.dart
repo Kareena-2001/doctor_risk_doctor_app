@@ -37,16 +37,7 @@ class _BlogScreenState extends State<BlogScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Blogs'),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.accent,
-          onPressed: () {
-            context.push(Routes.addBlog);
-          },
-          child: Icon(Icons.add, color: AppColors.white),
-        ),
-      ),
+
       body: Column(
         children: [
           Padding(
