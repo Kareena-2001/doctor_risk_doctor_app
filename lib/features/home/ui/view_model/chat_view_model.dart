@@ -30,8 +30,6 @@ class ChatViewModel extends _$ChatViewModel {
 
     state = [...state, userMessage];
 
-    // TODO: Replace this block with a real API/socket call once backend is ready.
-    // Kept here only so the UI has something to show while wiring the rest.
     Future.delayed(const Duration(milliseconds: 700), () {
       final reply = ChatMessageModel(
         id: '${DateTime.now().millisecondsSinceEpoch}_r',

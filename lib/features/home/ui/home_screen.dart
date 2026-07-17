@@ -31,7 +31,7 @@ final policyModel = PolicyModel(
   duration: '1 Year',
   validFrom: '01/09/2024',
   validTo: '31/08/2025',
-  status: PolicyStatus.active,
+  status: PolicyStatus.expired,
 );
 
 class HomeScreen extends ConsumerStatefulWidget {

@@ -75,8 +75,7 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
                   vertical: Responsive.h(10),
                 ),
                 itemCount: messages.length,
-                itemBuilder: (context, index) =>
-                    _buildBubble(messages[index]),
+                itemBuilder: (context, index) => _buildBubble(messages[index]),
               ),
             ),
             _buildInputBar(),
@@ -93,13 +92,15 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
         vertical: Responsive.h(14),
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.newPri, AppColors.primary],
-        ),
+        gradient: LinearGradient(colors: [AppColors.newPri, AppColors.primary]),
       ),
       child: Row(
         children: [
-          Icon(Icons.support_agent, color: Colors.white, size: Responsive.sp(20)),
+          Icon(
+            Icons.support_agent,
+            color: Colors.white,
+            size: Responsive.sp(20),
+          ),
           width(Responsive.w(8)),
           Expanded(
             child: Text(
@@ -116,7 +117,11 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
             borderRadius: BorderRadius.circular(Responsive.w(20)),
             child: Padding(
               padding: EdgeInsets.all(Responsive.w(4)),
-              child: Icon(Icons.close, color: Colors.white, size: Responsive.sp(20)),
+              child: Icon(
+                Icons.close,
+                color: Colors.white,
+                size: Responsive.sp(20),
+              ),
             ),
           ),
         ],
@@ -203,7 +208,11 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
                 color: AppColors.newPri,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.send_rounded, color: Colors.white, size: Responsive.sp(18)),
+              child: Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: Responsive.sp(18),
+              ),
             ),
           ),
         ],
