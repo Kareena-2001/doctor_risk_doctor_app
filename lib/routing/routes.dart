@@ -82,5 +82,6 @@ class Routes {
   static const addLegalCases = '/addLegalCases';
   static const legalScreen = '/legalScreen';
   static const addLegalNotice = '/addLegalNotice';
+  static const scanScreen = '/scanScreen';
 
 }

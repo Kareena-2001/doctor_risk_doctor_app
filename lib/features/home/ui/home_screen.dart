@@ -31,7 +31,7 @@ final policyModel = PolicyModel(
   duration: '1 Year',
   validFrom: '01/09/2024',
   validTo: '31/08/2025',
-  status: PolicyStatus.expired,
+  status: PolicyStatus.active,
 );
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -145,6 +145,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             title: 'Dashboard',
             showBack: false,
             showDrawer: true,
+            showScan: true,
+            onScan: () async {
+              final result = await context.push(Routes.scanScreen);
+              if (result != null) {
+                debugPrint('Scanned: $result');
+              }
+            },
             onDrawer: () {
               context.push(Routes.appDrawer);
             },
@@ -514,7 +521,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               _socialIconButton(
                 icon: FontAwesomeIcons.linkedin,
                 bgColors: [const Color(0xFF0A66C2), const Color(0xFF0A66C2)],
-                // LinkedIn Brand Blue
                 onTap: () => _launchSocialUrl(_linkedin),
               ),
             ],

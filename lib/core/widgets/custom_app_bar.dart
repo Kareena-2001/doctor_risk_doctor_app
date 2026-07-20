@@ -33,7 +33,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final VoidCallback? onDrawer;
   final VoidCallback? onView;
   final bool showEdit;
+  final bool showScan;
   final VoidCallback? onEdit;
+  final VoidCallback? onScan;
 
   const CustomAppBar({
     super.key,
@@ -62,7 +64,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.onDrawer,
     this.onView,
     this.showEdit = false,
+    this.showScan = false,
     this.onEdit,
+    this.onScan,
   });
 
   @override
@@ -104,6 +108,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         if (showEdit && onEdit != null)
           AppBarAction(icon: Icons.edit_outlined, onTap: onEdit!),
+        if (showScan && onScan != null)
+          AppBarAction(icon: Icons.qr_code, onTap: onScan!),
         if (showSearch && onSearch != null)
           AppBarAction(icon: Icons.search, onTap: onSearch!),
         if (showAdd && onAdd != null)
@@ -141,7 +147,11 @@ class AppBarAction extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: IconButton.outlined(
         onPressed: onTap,
-        icon: Icon(icon, size: Responsive.sp(22), color: AppColors.watermelon100),
+        icon: Icon(
+          icon,
+          size: Responsive.sp(22),
+          color: AppColors.watermelon100,
+        ),
         style: IconButton.styleFrom(
           shape: const CircleBorder(),
           side: const BorderSide(color: AppColors.greyLight),

@@ -10,6 +10,7 @@ import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
 import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
+import 'package:Doctors_App/features/home/ui/widgets/scan_screen.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_cases_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_consultant_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_notice_form.dart';
@@ -359,6 +360,10 @@ final GoRouter router = GoRouter(
       path: Routes.addLegalNotice,
       pageBuilder: (context, state) =>
           state.slidePage(const AddLegalNoticeForm()),
+    ),    GoRoute(
+      path: Routes.scanScreen,
+      pageBuilder: (context, state) =>
+          state.slidePage(const ScanScreen()),
     ),
   ],
 );

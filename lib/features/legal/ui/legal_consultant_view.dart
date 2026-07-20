@@ -86,7 +86,7 @@ class LegalConsultantView extends ConsumerWidget {
     final Color modeBg = isSent ? Colors.blue.shade50 : Colors.purple.shade50;
 
     // Safety fallback for remarks count if list isn't initialized yet
-    final remarksCount = cases.remarks?.length ?? 0;
+    final remarksCount = cases.remarks.length ?? 0;
     final docsCount = cases.uploadedFiles.length;
 
     return Container(

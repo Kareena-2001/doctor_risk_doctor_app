@@ -1,8 +1,5 @@
 import 'dart:io';
 
-/// Represents a single certificate/document.
-/// - `file` is set when the user has just picked it locally (not yet uploaded).
-/// - `url` is set when it's already been uploaded and is coming from the backend.
 class CertificateModel {
   final String id;
   final String name;
@@ -30,12 +27,7 @@ class CertificateModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'url': url,
-      'uploadedAt': uploadedAt,
-    };
+    return {'id': id, 'name': name, 'url': url, 'uploadedAt': uploadedAt};
   }
 
   CertificateModel copyWith({
