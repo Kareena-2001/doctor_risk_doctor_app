@@ -40,7 +40,7 @@ class ProductViewModel extends _$ProductViewModel {
       productNames: ['Basic Medico Legal Services'],
       shortDescription: 'Entry level legal medical services at low cost',
       fullDescription:
-      'Basic Medico Legal Services provides affordable entry-level legal and medical advisory for individuals. Ideal for those seeking essential coverage without breaking the bank. Includes basic legal consultation and document assistance.',
+          'Basic Medico Legal Services provides affordable entry-level legal and medical advisory for individuals. Ideal for those seeking essential coverage without breaking the bank. Includes basic legal consultation and document assistance.',
       createdDate: DateTime(2025, 6, 20),
       tiers: [
         TierPlan(
@@ -67,7 +67,7 @@ class ProductViewModel extends _$ProductViewModel {
       productNames: ['Medico Legal Service'],
       shortDescription: 'Comprehensive medico-legal cover for hospitals',
       fullDescription:
-      'Designed for hospitals and clinics, this plan offers comprehensive medico-legal risk coverage. Protects medical establishments from legal liabilities, supports compliance, and provides expert witness services for complex cases.',
+          'Designed for hospitals and clinics, this plan offers comprehensive medico-legal risk coverage. Protects medical establishments from legal liabilities, supports compliance, and provides expert witness services for complex cases.',
       createdDate: DateTime(2025, 6, 15),
       tiers: [
         TierPlan(
@@ -110,9 +110,9 @@ class ProductViewModel extends _$ProductViewModel {
       type: ProductType.individual,
       productNames: ['Comprehensive Medico Legal', 'Basic Medico Legal'],
       shortDescription:
-      'Covers full legal and medical advisory for individuals',
+          'Covers full legal and medical advisory for individuals',
       fullDescription:
-      'Our flagship individual plan offering complete peace of mind. From legal consultation to courtroom representation, this plan ensures you\'re never alone in a medico-legal dispute. Multiple tiers let you choose the exact level of coverage you need.',
+          'Our flagship individual plan offering complete peace of mind. From legal consultation to courtroom representation, this plan ensures you\'re never alone in a medico-legal dispute. Multiple tiers let you choose the exact level of coverage you need.',
       createdDate: DateTime(2025, 6, 1),
       tiers: [
         TierPlan(
@@ -294,9 +294,9 @@ class ProductViewModel extends _$ProductViewModel {
   }
 
   Future<void> selectDate(
-      BuildContext context, {
-        required bool isStartDate,
-      }) async {
+    BuildContext context, {
+    required bool isStartDate,
+  }) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),

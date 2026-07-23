@@ -6,6 +6,7 @@ import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
+import '../../testimonial/ui/widget/community_testimonial_list.dart';
 
 class PeerForumTab extends ConsumerStatefulWidget {
   const PeerForumTab({super.key});
@@ -45,15 +46,34 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
       date: '1 week ago',
       likes: 61,
     ),
-    const ForumPost(
-      type: ForumContentType.testimonial,
-      title: 'How the legal support team helped resolve my case',
-      snippet:
-          'When I received a legal notice over a case I didn\'t even remember, the team guided me through every step...',
-      source: 'Dr. Anjali Mehta',
-      date: '1 week ago',
-      likes: 34,
-    ),
+
+    // const ForumPost(
+    //   type: ForumContentType.testimonial,
+    //   title: 'How the legal support team helped resolve my case',
+    //   snippet:
+    //       'When I received a legal notice over a case I didn\'t even remember, the team guided me through every step...',
+    //   source: 'Dr. Anjali Mehta',
+    //   date: '1 week ago',
+    //   likes: 34,
+    // ),
+    // const ForumPost(
+    //   type: ForumContentType.testimonial,
+    //   title: 'Doctors Risk helped me handle a medico-legal issue',
+    //   snippet:
+    //   'Doctors Risk helped me handle a medico-legal issue professionally. Their guidance gave me confidence throughout the process.',
+    //   source: 'Dr. Paresh Mathur',
+    //   date: '15 Jul 2026',
+    //   likes: 0,
+    // ),
+    //
+    // const ForumPost(
+    //   type: ForumContentType.testimonial,
+    //   title: 'Video Testimonial',
+    //   snippet: 'Watch my experience with Doctors Risk.',
+    //   source: 'Dr. Neha Sharma',
+    //   date: '10 Jul 2026',
+    //   likes: 0,
+    // ),
   ];
 
   List<ForumPost> get _filteredPosts {
@@ -68,6 +88,22 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
         height(Responsive.h(14)),
         _buildFilterChips(),
         height(Responsive.h(10)),
+        // Expanded(
+        //   child: _filter == ForumContentType.testimonial
+        //       ? const CommunityTestimonialsList()
+        //       : ListView.separated(
+        //           padding: EdgeInsets.fromLTRB(
+        //             Responsive.w(16),
+        //             0,
+        //             Responsive.w(16),
+        //             Responsive.h(24),
+        //           ),
+        //           itemCount: _filteredPosts.length,
+        //           separatorBuilder: (_, __) => height(Responsive.h(14)),
+        //           itemBuilder: (_, index) =>
+        //               _buildPostCard(_filteredPosts[index]),
+        //         ),
+        // ),
         Expanded(
           child: ListView.separated(
             padding: EdgeInsets.fromLTRB(

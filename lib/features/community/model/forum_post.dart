@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ForumContentType { blog, advisory, testimonial, video }
+enum ForumContentType { blog, advisory, video }//, testimonial
 
 extension ForumContentTypeX on ForumContentType {
   String get label {
@@ -9,8 +9,8 @@ extension ForumContentTypeX on ForumContentType {
         return 'Blog';
       case ForumContentType.advisory:
         return 'Advisory';
-      case ForumContentType.testimonial:
-        return 'Testimonial';
+      // case ForumContentType.testimonial:
+      //   return 'Testimonial';
       case ForumContentType.video:
         return 'Video';
     }
@@ -22,8 +22,8 @@ extension ForumContentTypeX on ForumContentType {
         return Icons.article_rounded;
       case ForumContentType.advisory:
         return Icons.campaign_rounded;
-      case ForumContentType.testimonial:
-        return Icons.format_quote_rounded;
+      // case ForumContentType.testimonial:
+      //   return Icons.format_quote_rounded;
       case ForumContentType.video:
         return Icons.play_circle_fill_rounded;
     }
@@ -35,8 +35,8 @@ extension ForumContentTypeX on ForumContentType {
         return const Color(0xFF6C63FF);
       case ForumContentType.advisory:
         return const Color(0xFFE67E22);
-      case ForumContentType.testimonial:
-        return const Color(0xFF27AE60);
+      // case ForumContentType.testimonial:
+      //   return const Color(0xFF27AE60);
       case ForumContentType.video:
         return const Color(0xFFE74C3C);
     }

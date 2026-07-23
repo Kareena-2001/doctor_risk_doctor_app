@@ -15,22 +15,22 @@ import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
 import '../testimonial_screen.dart';
 
-class ShareTestimonialForm extends StatefulWidget {
+class ShareExperienceForm extends StatefulWidget {
   // Passed in by the caller (from the logged-in doctor's profile/session).
   final String authorName;
   final String authorSpeciality;
 
-  const ShareTestimonialForm({
+  const ShareExperienceForm({
     super.key,
     this.authorName = 'You',
     this.authorSpeciality = '',
   });
 
   @override
-  State<ShareTestimonialForm> createState() => _ShareTestimonialFormState();
+  State<ShareExperienceForm> createState() => _ShareExperienceFormState();
 }
 
-class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
+class _ShareExperienceFormState extends State<ShareExperienceForm> {
   final TextEditingController _textController = TextEditingController();
   TestimonialMode _mode = TestimonialMode.text;
   File? _videoFile;
@@ -203,7 +203,7 @@ class _ShareTestimonialFormState extends State<ShareTestimonialForm> {
           height(Responsive.h(28)),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
-            text: _isSubmitting ? 'Submitting...' : 'Share Testimonial',
+            text: _isSubmitting ? 'Submitting...' : 'Share Experience',
             onPressed: _isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),

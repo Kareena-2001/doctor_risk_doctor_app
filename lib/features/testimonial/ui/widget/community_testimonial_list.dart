@@ -1,13 +1,23 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/features/community/ui/add_testimonial_form.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/responsive.dart';
+import '../../model/experience_model.dart';
 
-class CommunityTestimonialsList extends StatelessWidget {
+class CommunityTestimonialsList extends StatefulWidget {
   const CommunityTestimonialsList({super.key});
+
+  @override
+  State<CommunityTestimonialsList> createState() =>
+      _CommunityTestimonialsListState();
+}
+
+class _CommunityTestimonialsListState extends State<CommunityTestimonialsList> {
+  final List<ExperienceModel> experiences = [];
 
   static final List<Map<String, dynamic>> _testimonials = [
     {
@@ -37,12 +47,44 @@ class CommunityTestimonialsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: EdgeInsets.all(Responsive.w(16)),
-      itemCount: _testimonials.length,
-      separatorBuilder: (_, __) => height(Responsive.h(14)),
-      itemBuilder: (_, index) => _buildCard(_testimonials[index]),
+    return Scaffold(
+      body: ListView.separated(
+        padding: EdgeInsets.all(Responsive.w(16)),
+        itemCount: _testimonials.length,
+        separatorBuilder: (_, __) => height(Responsive.h(14)),
+        itemBuilder: (_, index) => _buildCard(_testimonials[index]),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'addExperience',
+        backgroundColor: AppColors.newPri,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Share Testimonial'),
+        onPressed: _openShareForm,
+      ),
     );
+  }
+
+  Future<void> _openShareForm() async {
+    final result = await Navigator.push<ExperienceModel>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddTestimonialForm()),
+    );
+
+    if (result != null) {
+      setState(() {
+        _testimonials.insert(0, {
+          'name': result.name,
+          'speciality': result.speciality,
+          'type': result.experienceType == ExperienceType.video
+              ? 'video'
+              : 'text',
+          'content': result.experience,
+          'date': result.addedOn,
+        });
+      });
+    }
   }
 
   Widget _buildCard(Map<String, dynamic> t) {

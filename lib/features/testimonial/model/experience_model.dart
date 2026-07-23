@@ -1,6 +1,16 @@
 enum ExperienceType { text, video }
 
-class ExperienceModel  {
+// String id;
+// String doctorName;
+// String speciality;
+// String type; // text/video
+// String title;
+// String content;
+// String videoUrl;
+// String status; // pending/approved/rejected
+// String date;
+
+class ExperienceModel {
   final String name;
   final String speciality;
   final ExperienceType experienceType;

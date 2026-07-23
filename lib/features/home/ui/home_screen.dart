@@ -739,48 +739,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         child: Stack(
           children: [
             // 2. Translucent white circles for elegant contrast (instead of more status color)
-            Positioned(
-              top: -Responsive.w(40),
-              right: -Responsive.w(30),
-              child: IgnorePointer(
-                child: Container(
-                  width: Responsive.w(140),
-                  height: Responsive.w(140),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.10),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -Responsive.w(50),
-              left: -Responsive.w(40),
-              child: IgnorePointer(
-                child: Container(
-                  width: Responsive.w(150),
-                  height: Responsive.w(150),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.06),
-                  ),
-                ),
-              ),
-            ),
-            // Faint watermark shield icon for a "certified membership" feel
-            Positioned(
-              right: Responsive.w(4),
-              bottom: Responsive.h(4),
-              child: IgnorePointer(
-                child: Icon(
-                  Icons.shield_moon_outlined,
-                  size: Responsive.sp(90),
-                  color: Colors.white.withValues(
-                    alpha: 0.08,
-                  ), // Slightly more visible
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: -Responsive.w(40),
+            //   right: -Responsive.w(30),
+            //   child: IgnorePointer(
+            //     child: Container(
+            //       width: Responsive.w(140),
+            //       height: Responsive.w(140),
+            //       decoration: BoxDecoration(
+            //         shape: BoxShape.circle,
+            //         color: Colors.white.withValues(alpha: 0.10),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Positioned(
+            //   bottom: -Responsive.w(50),
+            //   left: -Responsive.w(40),
+            //   child: IgnorePointer(
+            //     child: Container(
+            //       width: Responsive.w(150),
+            //       height: Responsive.w(150),
+            //       decoration: BoxDecoration(
+            //         shape: BoxShape.circle,
+            //         color: Colors.white.withValues(alpha: 0.06),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // // Faint watermark shield icon for a "certified membership" feel
+            // Positioned(
+            //   right: Responsive.w(4),
+            //   bottom: Responsive.h(4),
+            //   child: IgnorePointer(
+            //     child: Icon(
+            //       Icons.shield_moon_outlined,
+            //       size: Responsive.sp(90),
+            //       color: Colors.white.withValues(
+            //         alpha: 0.08,
+            //       ), // Slightly more visible
+            //     ),
+            //   ),
+            // ),
 
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -815,7 +815,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         ],
                       ),
                     ),
-                    // 3. Glassmorphism Status Ribbon so it stands out against the card
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: Responsive.w(10),
@@ -826,7 +825,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         // Translucent overlay
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.3),
-                          // Subtle shine
                           width: 1,
                         ),
                         borderRadius: BorderRadius.circular(Responsive.w(20)),
