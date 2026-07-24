@@ -9,7 +9,6 @@ part 'my_plans_view_model.g.dart';
 class MyPlansViewModel extends _$MyPlansViewModel {
   @override
   FutureOr<List<MyPlan>> build() async {
-    // TODO: replace with real API call, e.g. ref.read(planRepositoryProvider).fetchMyPlans()
     return _samplePlans;
   }
 
@@ -19,7 +18,6 @@ class MyPlansViewModel extends _$MyPlansViewModel {
   }
 
   Future<void> renew(String planId) async {
-    // TODO: call renew API, then refresh
     await refresh();
   }
 

@@ -26,8 +26,6 @@ class PurchaseWizardController extends _$PurchaseWizardController {
     );
   }
 
-  // ---- navigation ----
-
   void goToStep(WizardStep step) {
     state = state.copyWith(currentStep: step, errorMessage: null);
   }
@@ -51,8 +49,6 @@ class PurchaseWizardController extends _$PurchaseWizardController {
       );
     }
   }
-
-  // ---- step data ----
 
   void savePersonalDetails(PersonalDetails details) {
     state = state.copyWith(personalDetails: details);

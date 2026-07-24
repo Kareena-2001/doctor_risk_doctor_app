@@ -6,6 +6,7 @@ part 'product_view_model.g.dart';
 
 @Riverpod(keepAlive: true)
 class ProductViewModel extends _$ProductViewModel {
+
   @override
   FutureOr<ProductState> build() {
     return const ProductState();

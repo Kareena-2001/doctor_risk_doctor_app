@@ -10,6 +10,7 @@ class CustomAttachmentField extends ConsumerWidget {
   final String hint;
   final TextEditingController controller;
   final VoidCallback onTap;
+  final bool isRequired;
 
   const CustomAttachmentField({
     super.key,
@@ -17,6 +18,7 @@ class CustomAttachmentField extends ConsumerWidget {
     required this.hint,
     required this.controller,
     required this.onTap,
+    this.isRequired = true,
   });
 
   @override
@@ -27,21 +29,22 @@ class CustomAttachmentField extends ConsumerWidget {
         Row(
           children: [
             Text(
-              label,
+              label ?? '',
               style: customTextStyle(
+                color: AppColors.labelColor,
+                fontWeight: FontWeight.w600,
                 fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textQuaternary(ref),
               ),
             ),
-            Text(
-              ' *',
-              style: customTextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.red,
+            if (isRequired)
+              Text(
+                ' *',
+                style: customTextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.red,
+                ),
               ),
-            ),
           ],
         ),
         height(8),

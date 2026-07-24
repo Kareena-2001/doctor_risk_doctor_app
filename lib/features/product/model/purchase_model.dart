@@ -49,8 +49,7 @@ class HospitalDetails {
   final String medicalRegNo;
   final String medicalRegYear;
   final String? diplomaCertificatePath;
-  final String? previousPolicyPath;
-  final DateTime retroactiveDate;
+  final String? previousPolicyPath;final DateTime? retroactiveDate;
   final bool retroActive;
   final bool worldwide;
   final bool hasUnqualifiedStaff;

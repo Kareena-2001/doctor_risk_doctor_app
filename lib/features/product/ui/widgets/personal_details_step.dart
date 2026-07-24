@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/core/widgets/multi_select_dropdown.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
@@ -60,6 +61,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
   final _orgCtrl = TextEditingController();
 
   final _dobCtrl = TextEditingController();
+  List<String> _selectedDegrees = [];
 
   DateTime? _dob;
   final Gender _gender = Gender.male;
@@ -83,10 +85,15 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate() || _dob == null) {
-      if (_dob == null) {
-        context.showWarningSnackBar('Please select date of birth');
-      }
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedDegrees.isEmpty) {
+      context.showWarningSnackBar('Please select a degree');
+      return;
+    }
+
+    if (_dob == null) {
+      context.showWarningSnackBar('Please select date of birth');
       return;
     }
 
@@ -95,7 +102,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
       firstName: _firstNameCtrl.text.trim(),
       middleName: _middleNameCtrl.text.trim(),
       lastName: _lastNameCtrl.text.trim(),
-      degree: _degreeCtrl.text.trim(),
+      degree: _selectedDegrees.isNotEmpty ? _selectedDegrees.first : '',
       emailId: _emailCtrl.text.trim(),
       mobileNumber: _mobileCtrl.text.trim(),
       alternateNumber: _altMobileCtrl.text.trim(),
@@ -135,7 +142,8 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
 
   @override
   Widget build(BuildContext context) {
-    final isEstab = widget.product.type == ProductType.medicalEstablishment;
+    final isEstablishment =
+        widget.product.type == ProductType.medicalEstablishment;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -234,19 +242,24 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
               ],
             ),
             height(10),
-            CustomDropdownField(
+            MultiSelectDropdown(
               label: 'Degree',
-              hint: 'Select Degree',
-              controller: _degreeCtrl,
-              isRequired: true,
-              items: degrees,
+              hintText: 'Select Degree',
+              isRequired: !isEstablishment,
+              options: degrees,
+              selectedItems: _selectedDegrees,
+              onSelectionChanged: (List<String> selected) {
+                setState(() {
+                  _selectedDegrees = selected;
+                });
+              },
             ),
             height(10),
             CustomTextField(
               label: 'Email ID',
               controller: _emailCtrl,
               hint: 'Enter Email Id',
-              isRequired: true,
+              isRequired: !isEstablishment,
               keyboardType: TextInputType.emailAddress,
             ),
             height(10),
@@ -272,28 +285,7 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
                 ),
               ],
             ),
-            height(10),
-            if (isEstab)
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'OPD',
-                      controller: _opdCtrl,
-                      hint: 'Enter OPD',
-                    ),
-                  ),
-                  width(10),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'IPD',
-                      controller: _ipdCtrl,
-                      isRequired: true,
-                      hint: 'Enter IPD',
-                    ),
-                  ),
-                ],
-              ),
+
             height(10),
             Row(
               children: [

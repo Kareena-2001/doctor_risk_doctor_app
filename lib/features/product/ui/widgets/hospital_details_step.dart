@@ -12,14 +12,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
+import '../../model/product_model.dart';
 import '../../model/purchase_model.dart';
 import '../state/purchase_wizard_state.dart';
 import '../view_model/purchase_wizard_controller.dart';
 
 class HospitalDetailsStep extends ConsumerStatefulWidget {
   final WizardArgs controllerArgs;
+  final Product product;
 
-  const HospitalDetailsStep({super.key, required this.controllerArgs});
+  const HospitalDetailsStep({
+    super.key,
+    required this.controllerArgs,
+    required this.product,
+  });
 
   @override
   ConsumerState<HospitalDetailsStep> createState() =>
@@ -27,13 +33,20 @@ class HospitalDetailsStep extends ConsumerStatefulWidget {
 }
 
 class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
+  final _opdCtrl = TextEditingController();
+  final _ipdCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _regStateCtrl = TextEditingController();
   final _regNoCtrl = TextEditingController();
   final _regYearCtrl = TextEditingController();
-  final _staffCountCtrl = TextEditingController(text: '0');
 
+  final _hospitalClinicStateCtrl = TextEditingController();
+  final _hospitalClinicNoCtrl = TextEditingController();
+  final _hospitalClinicYearCtrl = TextEditingController();
+
+  final _staffCountCtrl = TextEditingController(text: '0');
   final _retroactiveDateCtrl = TextEditingController();
+
   String? _diplomaPath;
   String? _previousPolicyPath;
   DateTime? _retroactiveDate;
@@ -97,7 +110,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
       medicalRegYear: _regYearCtrl.text.trim(),
       diplomaCertificatePath: _diplomaPath,
       previousPolicyPath: _previousPolicyPath,
-      retroactiveDate: _retroactiveDate!,
+      retroactiveDate: _retroactiveDate,
       retroActive: retroactive,
       worldwide: _worldwide,
       hasUnqualifiedStaff: _hasUnqualifiedStaff,
@@ -119,6 +132,10 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
 
   @override
   Widget build(BuildContext context) {
+    final isEstablishment =
+        widget.product.type == ProductType.medicalEstablishment;
+    final isIndividual = widget.product.type == ProductType.individual;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -135,7 +152,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
               label: 'Medical reg. state',
               hint: 'Select State',
               controller: _regStateCtrl,
-              isRequired: true,
+              isRequired: isIndividual,
               items: ['Maharashtra', 'Goa'],
             ),
             height(10),
@@ -145,7 +162,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
                   child: CustomTextField(
                     label: 'Medical reg. no.',
                     controller: _regNoCtrl,
-                    isRequired: true,
+                    isRequired: isIndividual,
                   ),
                 ),
                 width(10),
@@ -153,12 +170,63 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
                   child: CustomTextField(
                     label: 'Medical reg. year',
                     controller: _regYearCtrl,
-                    isRequired: true,
+                    isRequired: isIndividual,
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
+            height(12),
+            CustomDropdownField(
+              label: 'Hospital/clinic reg. state',
+              hint: 'Select State',
+              controller: _hospitalClinicStateCtrl,
+              isRequired: isEstablishment,
+              items: ['Maharashtra', 'Goa'],
+            ),
+            height(10),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextField(
+                    label: 'Hospital/clinic reg. no.',
+                    controller: _hospitalClinicNoCtrl,
+                    isRequired: isEstablishment,
+                  ),
+                ),
+                width(10),
+                Expanded(
+                  child: CustomTextField(
+                    label: 'Hospital/clinic reg. year',
+                    controller: _hospitalClinicYearCtrl,
+                    isRequired: isEstablishment,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            height(14),
+            if (isEstablishment)
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'OPD',
+                      controller: _opdCtrl,
+                      hint: 'Enter OPD',
+                    ),
+                  ),
+                  width(10),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'IPD',
+                      controller: _ipdCtrl,
+                      isRequired: true,
+                      hint: 'Enter IPD',
+                    ),
+                  ),
+                ],
+              ),
             height(14),
             CustomAttachmentField(
               label: 'Diploma/degree/additional certificate',
@@ -169,7 +237,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
             ),
             height(14),
             CustomAttachmentField(
-              label: 'Practice Document',
+              label: 'Training Document',
               // fileName: _previousPolicyPath,
               onTap: () => _pickFile((p) => _diplomaPath = p),
               hint: '',
@@ -196,6 +264,7 @@ class _HospitalDetailsStepState extends ConsumerState<HospitalDetailsStep> {
                   text: _previousPolicyPath ?? '',
                 ),
                 hint: '',
+                isRequired: retroactive,
                 onTap: () => _pickFile((p) => _previousPolicyPath = p),
               ),
               height(14),

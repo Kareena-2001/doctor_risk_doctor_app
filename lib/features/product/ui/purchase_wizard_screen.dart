@@ -118,7 +118,11 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
                     premium: widget.premium,
                     controllerArgs: args,
                   ),
-                  if (isEstab) HospitalDetailsStep(controllerArgs: args),
+                  // if (isEstab)
+                  HospitalDetailsStep(
+                    product: widget.product,
+                    controllerArgs: args,
+                  ),
                   AddressStep(controllerArgs: args),
                   ReviewStep(controllerArgs: args),
                 ],
@@ -234,18 +238,18 @@ class _WizardStepIndicator extends StatelessWidget {
     required this.isEstablishment,
   });
 
-  // static const _labels = ['Personal', 'Hospital', 'Address', 'Review'];
+  static const _labels = ['Personal', 'Hospital', 'Address', 'Review'];
 
   @override
   Widget build(BuildContext context) {
-    final labels = isEstablishment
-        ? ['Personal', 'Hospital', 'Address', 'Review']
-        : ['Personal', 'Address', 'Review'];
+    // final labels = isEstablishment
+    //     ? ['Personal', 'Hospital', 'Address', 'Review']
+    //     : ['Personal', 'Address', 'Review'];
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       child: Row(
-        children: List.generate(labels.length, (i) {
+        children: List.generate(_labels.length, (i) {
           final isDone = i < currentIndex;
           final isActive = i == currentIndex;
           final color = isDone || isActive
@@ -271,7 +275,7 @@ class _WizardStepIndicator extends StatelessWidget {
                           ),
                         ),
                 ),
-                if (i != labels.length - 1)
+                if (i != _labels.length - 1)
                   Expanded(
                     child: Container(
                       height: 2,

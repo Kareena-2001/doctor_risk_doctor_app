@@ -7,8 +7,11 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
-
-enum TestimonialMode { text, video }
+enum TestimonialMode {
+  text,
+  video,
+  document,
+}
 
 class TestimonialScreen extends StatefulWidget {
   const TestimonialScreen({super.key});
@@ -40,37 +43,37 @@ class _TestimonialScreenState extends State<TestimonialScreen>
       appBar: CustomAppBar(title: 'Your Story', showBack: false),
       body: Column(
         children: [
-          Expanded(child: ExperienceListScreen()),
+          // Expanded(child: ExperienceListScreen()),
 
-          // Container(
-          //   color: Colors.white,
-          //   padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
-          //   child: TabBar(
-          //     controller: _tabController,
-          //     indicatorColor: AppColors.newPri,
-          //     labelColor: AppColors.newPri,
-          //     unselectedLabelColor: Colors.grey.shade500,
-          //     labelStyle: customTextStyle(
-          //       fontSize: Responsive.sp(13),
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //     tabs: const [
-          //       // Tab(text: 'Share Testimonial'),
-          //       // Tab(text: 'Community Stories'),
-          //       Tab(text: 'Experience'),
-          //       Tab(text: 'Testimonial'),
-          //     ],
-          //   ),
-          // ),
-          // Expanded(
-          //   child: TabBarView(
-          //     controller: _tabController,
-          //     children: const [
-          //       ExperienceListScreen(),
-          //       CommunityTestimonialsList(),
-          //     ],
-          //   ),
-          // ),
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: AppColors.newPri,
+              labelColor: AppColors.newPri,
+              unselectedLabelColor: Colors.grey.shade500,
+              labelStyle: customTextStyle(
+                fontSize: Responsive.sp(13),
+                fontWeight: FontWeight.bold,
+              ),
+              tabs: const [
+                // Tab(text: 'Share Testimonial'),
+                // Tab(text: 'Community Stories'),
+                Tab(text: 'Experience'),
+                Tab(text: 'Testimonial'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                ExperienceListScreen(),
+                CommunityTestimonialsList(),
+              ],
+            ),
+          ),
           height(100),
         ],
       ),

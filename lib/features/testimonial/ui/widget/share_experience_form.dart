@@ -6,6 +6,7 @@ import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/testimonial/model/experience_model.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -38,6 +39,8 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
   bool _isSubmitting = false;
   bool _isSubmitted = false;
   ExperienceModel? _createdExperience;
+  File? _pdfFile;
+  String? _pdfName;
 
   @override
   void dispose() {
@@ -198,8 +201,10 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
           height(Responsive.h(20)),
           if (_mode == TestimonialMode.text)
             _buildTextInput()
+          else if (_mode == TestimonialMode.video)
+            _buildVideoInput()
           else
-            _buildVideoInput(),
+            _buildPdfInput(),
           height(Responsive.h(28)),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
@@ -217,6 +222,74 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
                 color: Colors.grey.shade500,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPdfInput() {
+    if (_pdfFile != null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.picture_as_pdf, size: 60, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(
+              _pdfName ?? '',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _removePdf,
+                    icon: const Icon(Icons.delete),
+                    label: const Text("Remove"),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _pickPdf,
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Change"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.picture_as_pdf, size: 40, color: Colors.red),
+          const SizedBox(height: 12),
+          const Text("No PDF selected"),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            style: ButtonStyle(),
+            onPressed: _pickPdf,
+            icon: Icon(Icons.upload_file, color: AppColors.textPri),
+            label: Text("Upload PDF", style: customTextStyle()),
           ),
         ],
       ),
@@ -282,6 +355,33 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
     );
   }
 
+  Future<void> _pickPdf() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+
+      if (result == null) return;
+
+      setState(() {
+        _pdfFile = File(result.files.single.path!);
+        _pdfName = result.files.single.name;
+      });
+    } catch (e) {
+      if (mounted) {
+        context.showWarningSnackBar("Unable to pick PDF");
+      }
+    }
+  }
+
+  void _removePdf() {
+    setState(() {
+      _pdfFile = null;
+      _pdfName = null;
+    });
+  }
+
   Widget _buildModeToggle() {
     return Container(
       padding: EdgeInsets.all(Responsive.w(4)),
@@ -293,13 +393,18 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
         children: [
           _toggleOption(
             label: 'Text',
-            icon: Icons.edit_note_rounded,
+            icon: Icons.edit,
             mode: TestimonialMode.text,
           ),
           _toggleOption(
             label: 'Video',
-            icon: Icons.videocam_rounded,
+            icon: Icons.videocam,
             mode: TestimonialMode.video,
+          ),
+          _toggleOption(
+            label: 'PDF',
+            icon: Icons.picture_as_pdf,
+            mode: TestimonialMode.document,
           ),
         ],
       ),

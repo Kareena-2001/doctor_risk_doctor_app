@@ -22,7 +22,7 @@ class _CommunityScreenState extends State<CommunityScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -52,7 +52,7 @@ class _CommunityScreenState extends State<CommunityScreen>
               ),
               tabs: const [
                 Tab(text: 'Peer Forum'),
-                Tab(text: 'Testimonials'),
+                // Tab(text: 'Testimonials'),
                 Tab(text: 'Refer & Groups'),
               ],
             ),
@@ -62,7 +62,7 @@ class _CommunityScreenState extends State<CommunityScreen>
               controller: _tabController,
               children: const [
                 PeerForumTab(),
-                CommunityTestimonialsList(),
+                // CommunityTestimonialsList(),
                 ReferAndGroupsTab(),
               ],
             ),

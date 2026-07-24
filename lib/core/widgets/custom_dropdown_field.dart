@@ -121,8 +121,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                   color: context.primaryTextColor,
                   fontWeight: FontWeight.w400,
                 ),
-                // overflow: TextOverflow.ellipsis, // ADD THIS - truncate long text
-                // maxLines: 1, // ADD THIS
+
               ),
             );
           }).toList(),
