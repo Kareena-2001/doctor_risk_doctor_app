@@ -78,10 +78,7 @@ class AppColors {
   static const Color brand600 = Color(0xFF16A34A);
   static const Color brand800 = Color(0xFF166C3F);
   static const LinearGradient brandLinearGradient = LinearGradient(
-    colors: [
-      Color(0xFF16A34A),
-      Color(0xFF166C3F),
-    ],
+    colors: [Color(0xFF16A34A), Color(0xFF166C3F)],
     transform: GradientRotation(0.785398), // 45° rotation
   );
   static const premiumBackground = Color(0xFF000000);
@@ -93,6 +90,7 @@ class AppColors {
   static const Color newBg = Color(0xffF6F7FB);
 
   static const Color primary = Color(0xFF339D5C);
+  static const Color secondaryColor = Color(0xff0A5EB0);
   static const Color sec = Color(0xFFf6c989);
   static const Color homeAccent = Color(0xFF00C6A2);
   static const Color homeTextMuted = Color(0xFF8FA3A6);

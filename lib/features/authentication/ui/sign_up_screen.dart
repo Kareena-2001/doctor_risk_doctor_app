@@ -13,6 +13,7 @@ import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_dropdown_field.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../common/ui/widgets/primary_button.dart';
+import '../../home/ui/widgets/social_link_widget.dart';
 import 'view_model/authentication_view_model.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -79,12 +80,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     _lastNameController = TextEditingController();
     _mobileNoController = TextEditingController();
     _emailController = TextEditingController();
-    _passwordController = TextEditingController();
     _organizationCodeController = TextEditingController();
     _associateCodeController = TextEditingController();
+    _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
 
-    // Listeners to trigger rebuilds for the Live Preview
+    // Attach listeners to update Live Preview in real-time
     _firstNameController.addListener(_onFieldChanged);
     _middleNameController.addListener(_onFieldChanged);
     _lastNameController.addListener(_onFieldChanged);
@@ -161,9 +162,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       _lastNameController.text,
     ].where((e) => e.trim().isNotEmpty).join(' ');
 
+    final isDoctor = _selectedPrefix == 'Dr.';
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'Membership Registration'),
+      appBar: const CustomAppBar(title: 'Membership Registration'),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -173,7 +176,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 margin: EdgeInsets.all(Responsive.sp(16)),
                 padding: EdgeInsets.all(Responsive.sp(16)),
                 decoration: BoxDecoration(
-                  color: Color(0xFFF8FAFC),
+                  color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                   boxShadow: [
@@ -195,8 +198,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             Container(
                               width: 8,
                               height: 8,
-                              decoration: BoxDecoration(
-                                color: AppColors.buttonColor1,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF16A34A),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -206,18 +209,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               style: customTextStyle(
                                 fontSize: Responsive.sp(10),
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.buttonColor1,
+                                color: const Color(0xFF16A34A),
                               ).copyWith(letterSpacing: 0.8),
                             ),
                           ],
                         ),
-                        Text(
-                          'Takes ~ 3 mins',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(10),
-                            color: const Color(0xFF64748B),
-                          ),
-                        ),
+                        // Text(
+                        //   'Takes ~ 3 mins',
+                        //   style: customTextStyle(
+                        //     fontSize: Responsive.sp(10),
+                        //     color: const Color(0xFF64748B),
+                        //   ),
+                        // ),
                       ],
                     ),
                     const Divider(height: 20, color: Color(0xFFE2E8F0)),
@@ -231,15 +234,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             : AppColors.brandGreen,
                       ),
                     ),
-                    height(Responsive.h(4)),
-                    Text(
-                      '${_selectedCategory ?? 'Category'} · ${_selectedSpeciality ?? 'Speciality'}',
-                      style: TextStyle(
-                        fontSize: Responsive.sp(12),
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF475569),
+
+                    // Show Category & Speciality in Live Preview ONLY if Dr. is selected
+                    if (isDoctor) ...[
+                      height(Responsive.h(4)),
+                      Text(
+                        '${_selectedCategory ?? 'Category'} · ${_selectedSpeciality ?? 'Speciality'}',
+                        style: TextStyle(
+                          fontSize: Responsive.sp(12),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF475569),
+                        ),
                       ),
-                    ),
+                    ],
+
                     height(Responsive.h(12)),
                     Row(
                       children: [
@@ -259,12 +267,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 : _emailController.text,
                           ),
                         ),
-                        Expanded(
-                          child: _PreviewDetailTile(
-                            label: 'Degree',
-                            value: _selectedDegree ?? '—',
+                        // Show Degree in preview only if Dr. is selected
+                        if (isDoctor)
+                          Expanded(
+                            child: _PreviewDetailTile(
+                              label: 'Degree',
+                              value: _selectedDegree ?? '—',
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ],
@@ -302,33 +312,42 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onChanged: (value) {
                           setState(() {
                             _selectedPrefix = value;
+                            // Clear doctor specific values if prefix changes away from Dr.
+                            if (_selectedPrefix != 'Dr.') {
+                              _selectedCategory = null;
+                              _selectedSpeciality = null;
+                              _selectedDegree = null;
+                            }
                           });
                         },
                       ),
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'First Name *',
+                        label: 'First Name',
                         hint: 'Enter first name',
                         controller: _firstNameController,
                         isRequired: true,
                       ),
                       height(Responsive.h(12)),
+
                       CustomTextField(
                         label: 'Middle Name',
                         hint: 'Enter middle name',
                         controller: _middleNameController,
                       ),
                       height(Responsive.h(12)),
+
                       CustomTextField(
-                        label: 'Last Name *',
+                        label: 'Last Name ',
                         hint: 'Enter last name',
                         controller: _lastNameController,
                         isRequired: true,
                       ),
                       height(Responsive.h(12)),
+
                       CustomTextField(
-                        label: 'Enter your mobile number *',
+                        label: 'Enter your mobile number ',
                         hint: '10 digit mobile number',
                         controller: _mobileNoController,
                         keyboardType: TextInputType.phone,
@@ -336,58 +355,71 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
                       height(Responsive.h(12)),
+
                       CustomTextField(
-                        label: 'Enter your email address *',
+                        label: 'Enter your email address',
                         hint: 'e.g. doctor@clinic.com',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         isRequired: true,
                       ),
                       height(Responsive.h(20)),
-                      const _SectionHeader(title: 'Professional details'),
+
+                      // --- PROFESSIONAL DETAILS SECTION (CONDITIONAL FOR Dr.) ---
+                      if (isDoctor) ...[
+                        const _SectionHeader(title: 'Professional details'),
+                        height(Responsive.h(12)),
+
+                        CustomDropdownField(
+                          label: 'Category ',
+                          hint: 'Select Category',
+                          items: categories,
+                          value: _selectedCategory,
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedCategory = val;
+                            });
+                          },
+                        ),
+                        height(Responsive.h(12)),
+
+                        CustomDropdownField(
+                          label: 'Speciality ',
+                          hint: 'Select Speciality',
+                          items: specialities,
+                          value: _selectedSpeciality,
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedSpeciality = val;
+                            });
+                          },
+                        ),
+                        height(Responsive.h(12)),
+
+                        CustomDropdownField(
+                          label: 'Degree',
+                          hint: 'Select Degree',
+                          items: degrees,
+                          value: _selectedDegree,
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedDegree = val;
+                            });
+                          },
+                        ),
+                        height(Responsive.h(20)),
+                      ],
+
+                      const _SectionHeader(title: 'Referral details'),
                       height(Responsive.h(12)),
-                      CustomDropdownField(
-                        label: 'Category *',
-                        hint: 'Select Category',
-                        items: categories,
-                        value: _selectedCategory,
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedCategory = val;
-                          });
-                        },
-                      ),
-                      height(Responsive.h(12)),
-                      CustomDropdownField(
-                        label: 'Speciality *',
-                        hint: 'Select Speciality',
-                        items: specialities,
-                        value: _selectedSpeciality,
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedSpeciality = val;
-                          });
-                        },
-                      ),
-                      height(Responsive.h(12)),
-                      CustomDropdownField(
-                        label: 'Degree',
-                        hint: 'Select Degree',
-                        items: degrees,
-                        value: _selectedDegree,
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedDegree = val;
-                          });
-                        },
-                      ),
-                      height(Responsive.h(16)),
+
                       CustomTextField(
                         label: 'Organization / Source Code',
                         hint: 'Enter your organization code',
                         controller: _organizationCodeController,
                       ),
                       height(Responsive.h(12)),
+
                       CustomTextField(
                         label: 'Associate Code',
                         hint: 'Enter your associate code',
@@ -396,8 +428,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       height(Responsive.h(20)),
                       const _SectionHeader(title: 'Set your password'),
                       height(Responsive.h(12)),
+
                       CustomTextField(
-                        label: 'Password *',
+                        label: 'Password ',
                         hint: 'Enter password',
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
@@ -413,6 +446,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                       ),
+
                       if (_passwordController.text.isNotEmpty) ...[
                         height(Responsive.h(4)),
                         Text(
@@ -424,9 +458,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                       ],
+
                       height(Responsive.h(12)),
                       CustomTextField(
-                        label: 'Confirm password *',
+                        label: 'Confirm password ',
                         hint: 'Confirm password',
                         controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
@@ -466,7 +501,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'I agree to the Terms & Conditions and Privacy Policy.',
@@ -488,25 +523,26 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         backgroundColor: AppColors.brandGreen,
                       ),
                       height(Responsive.h(16)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.cloud_done_outlined,
-                            size: 14,
-                            color: Color(0xFF64748B),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Your progress is saved automatically',
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(11),
-                              color: Color(0xFF64748B),
-                            ),
-                          ),
-                        ],
-                      ),
-                      height(Responsive.h(24)),
+
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     const Icon(
+                      //       Icons.cloud_done_outlined,
+                      //       size: 14,
+                      //       color: Color(0xFF64748B),
+                      //     ),
+                      //     const SizedBox(width: 4),
+                      //     Text(
+                      //       'Your progress is saved automatically',
+                      //       style: customTextStyle(
+                      //         fontSize: Responsive.sp(11),
+                      //         color: const Color(0xFF64748B),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      // height(Responsive.h(24)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -523,6 +559,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ],
                       ),
+
+                      height(Responsive.h(32)),
+                      SocialLinkWidget(),
                       height(Responsive.h(32)),
                     ],
                   ),
@@ -574,18 +613,18 @@ class _PreviewDetailTile extends StatelessWidget {
       children: [
         Text(
           label,
-          style: customTextStyle(
+          style: TextStyle(
             fontSize: Responsive.sp(10),
             color: const Color(0xFF94A3B8),
             fontWeight: FontWeight.w500,
           ),
         ),
-        height(2),
+        const SizedBox(height: 2),
         Text(
           value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: customTextStyle(
+          style: TextStyle(
             fontSize: Responsive.sp(12),
             color: const Color(0xFF1E293B),
             fontWeight: FontWeight.w600,

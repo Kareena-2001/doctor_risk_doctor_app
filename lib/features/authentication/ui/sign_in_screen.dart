@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/features/authentication/ui/view_model/authentication_view_model.dart';
+import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -429,7 +430,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ],
                 ),
               ),
-
+              height(Responsive.h(0)),
+              SocialLinkWidget(),
               height(Responsive.h(24)),
             ],
           ),

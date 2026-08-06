@@ -105,9 +105,9 @@ class _StatColumn extends StatelessWidget {
         Text(
           number,
           style: customTextStyle(
-            fontSize: Responsive.sp(20),
+            fontSize: Responsive.sp(15),
             fontWeight: FontWeight.w800,
-            color: const Color(0xff0A5EB0),
+            color: AppColors.secondaryColor,
           ),
         ),
         const SizedBox(height: 4),

@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/home/ui/view_model/home_view_model.dart';
+import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_icon_class/font_awesome_icon_class.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/assets.dart';
 import '../../../core/widgets/custom_app_bar.dart';
@@ -43,16 +43,13 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   late final String userId;
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   Timer? _sessionTimer;
-
-  static const String _instagramUrl = 'https://instagram.com/doctorsrisk';
-  static const String _facebookUrl = 'https://facebook.com/doctorsrisk';
-  static const String _youtubeUrl = 'https://youtube.com/@doctorsrisk';
-  static const String _linkedin = 'https://facebook.com/doctorsrisk';
 
   @override
   void initState() {
@@ -106,30 +103,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
-  Future<void> _launchSocialUrl(String url) async {
-    final uri = Uri.parse(url);
-    try {
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not open link')));
-      }
-    } catch (e) {
-      debugPrint('Failed to launch $url: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not open link')));
-      }
-    }
-  }
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -141,6 +114,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           backgroundColor: isDark
               ? const Color(0xFF0E0E10)
               : const Color(0xFFF6F7FB),
+
           appBar: CustomAppBar(
             title: 'Dashboard',
             showBack: false,
@@ -170,6 +144,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
                 child: Column(
                   children: [
+                    height(Responsive.h(8)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Responsive.h(5),
+                        horizontal: Responsive.w(20),
+                      ),
+                      child: CustomSearchBar(
+                        controller: TextEditingController(),
+                        hint: 'Search policies, blogs, FAQs, community...',
+                      ),
+                    ),
                     height(Responsive.h(8)),
                     _buildCompactProfileHeader(isDark, policyModel),
                     height(Responsive.h(20)),
@@ -448,83 +433,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           height(Responsive.h(28)),
           _buildFAQCard(),
           height(Responsive.h(24)),
-          _buildSocialLinks(),
+          SocialLinkWidget(),
           height(Responsive.h(30)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSocialLinks() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: Responsive.w(20),
-        vertical: Responsive.h(22),
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Connect With Us',
-            style: customTextStyle(
-              fontSize: Responsive.sp(14),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(6)),
-          Text(
-            'Follow for updates, news & legal advisories',
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(11.5),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(16)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _socialIconButton(
-                icon: FontAwesomeIcons.instagram,
-                bgColors: [
-                  const Color(0xFFF58529),
-                  const Color(0xFFDD2A7B),
-                  const Color(0xFF8134AF),
-                ],
-                onTap: () => _launchSocialUrl(_instagramUrl),
-              ),
-              width(Responsive.w(18)),
-              _socialIconButton(
-                icon: FontAwesomeIcons.facebook,
-                bgColors: [const Color(0xFF1877F2), const Color(0xFF1877F2)],
-                onTap: () => _launchSocialUrl(_facebookUrl),
-              ),
-              width(Responsive.w(18)),
-              _socialIconButton(
-                icon: FontAwesomeIcons.youtube,
-                bgColors: [const Color(0xFFFF0000), const Color(0xFFFF0000)],
-                onTap: () => _launchSocialUrl(_youtubeUrl),
-              ),
-              width(Responsive.w(18)),
-              _socialIconButton(
-                icon: FontAwesomeIcons.linkedin,
-                bgColors: [const Color(0xFF0A66C2), const Color(0xFF0A66C2)],
-                onTap: () => _launchSocialUrl(_linkedin),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -781,7 +691,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             //     ),
             //   ),
             // ),
-
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
