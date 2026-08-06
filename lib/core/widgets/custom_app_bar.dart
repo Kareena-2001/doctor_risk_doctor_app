@@ -147,11 +147,7 @@ class AppBarAction extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: IconButton.outlined(
         onPressed: onTap,
-        icon: Icon(
-          icon,
-          size: Responsive.sp(22),
-          color: AppColors.watermelon100,
-        ),
+        icon: Icon(icon, size: Responsive.sp(22), color: AppColors.newPri),
         style: IconButton.styleFrom(
           shape: const CircleBorder(),
           side: const BorderSide(color: AppColors.greyLight),

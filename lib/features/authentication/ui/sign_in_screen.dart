@@ -2,19 +2,17 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/features/authentication/ui/view_model/authentication_view_model.dart';
-import 'package:Doctors_App/features/authentication/ui/widgets/header_clipper.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/assets.dart';
 import '../../../core/exceptions/exception_extension.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../extensions/build_context_extension.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../../../routing/routes.dart';
-import '../../../theme/app_colors.dart';
 import '../../../theme/app_theme.dart';
 import '../../../utils/validator.dart';
 import '../../common/ui/widgets/primary_button.dart';
@@ -40,6 +38,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   String? fcmToken;
   String? deviceId;
 
+  static const Color accentGreen = Color(0xFF16A34A);
+  static const Color cardBg = Color(0xFFF1F5F9);
+
   @override
   void initState() {
     super.initState();
@@ -50,12 +51,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _getDeviceToken() async {
-    // final notificationService = ref.read(notificationServiceProvider);
-    // fcmToken = await notificationService.getDeviceToken();
     deviceId = await DeviceService.getDeviceId();
-
-    debugPrint('FCM token is: $fcmToken');
-    debugPrint('device Id is  : $deviceId ');
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -90,11 +86,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 state.model!.data.customer.application_status;
 
             if (applicationStatus == 'Pending' || applicationStatus == null) {
-              context.go(Routes.employeeOnboarding);
+              context.go(Routes.main);
             } else if (applicationStatus == 'Accept') {
               context.go(Routes.main);
             } else {
-              context.go(Routes.employeeOnboarding);
+              context.go(Routes.main);
             }
           }
         },
@@ -105,24 +101,176 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                height: Responsive.screenWidth * 0.70,
-                width: double.infinity,
-                child: ClipPath(
-                  clipper: HeaderClipper(),
-                  child: Container(
-                    color: AppColors.newPri.withValues(alpha: 0.6),
-                    child: Center(
-                      child: Image.asset(
-                        Assets.signIn,
-                        width: Responsive.w(180),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.w(24),
+                  vertical: Responsive.h(24),
+                ),
+                decoration: BoxDecoration(
+                  gradient: AppColors.brandLinearGradient,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.verified_user_rounded,
+                              color: Color(0xFF4ADE80),
+                              size: 22,
+                            ),
+                            width(8),
+                            Text(
+                              'DOCTORS RISK',
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(14),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Container(
+                        //   padding: EdgeInsets.symmetric(
+                        //     horizontal: 10,
+                        //     vertical: 4,
+                        //   ),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.white.withValues(alpha: 0.12),
+                        //     borderRadius: BorderRadius.circular(20),
+                        //   ),
+                        //   child: Row(
+                        //     children: [
+                        //       Icon(
+                        //         Icons.lock_outline_rounded,
+                        //         color: Colors.white,
+                        //         size: 12,
+                        //       ),
+                        //       SizedBox(width: 4),
+                        //       Text(
+                        //         'Encrypted Portal',
+                        //         style: customTextStyle(
+                        //           fontSize: Responsive.sp(10),
+                        //           color: Colors.white,
+                        //           fontWeight: FontWeight.w500,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                    height(Responsive.h(16)),
+                    Text(
+                      'Instant Legal Defense\nIn Your Pocket.',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(16),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ).copyWith(height: 1.25),
+                    ),
+                    height(Responsive.h(14)),
+                    Container(
+                      padding: EdgeInsets.all(Responsive.w(10)),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.12),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.headset_mic_rounded,
+                            color: Color(0xFF4ADE80),
+                            size: 18,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '24/7 Immediate Legal Hotline & Medical Defense Access',
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(11),
+                                color: Colors.white.withValues(alpha: 0.9),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ],
+                ),
+              ),
+              height(Responsive.h(20)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: Responsive.w(24)),
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Sign in',
+                              style: customTextStyle(
+                                color: const Color(0xFF1E293B),
+                                fontWeight: FontWeight.bold,
+                                fontSize: Responsive.sp(13),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => context.push(Routes.register),
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Center(
+                              child: Text(
+                                'Create account',
+                                style: customTextStyle(
+                                  color: const Color(0xFF64748B),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: Responsive.sp(13),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -133,29 +281,34 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: Text(
-                          'Sign In',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(25),
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.newPri,
-                          ),
+                      Text(
+                        'Welcome back, Doctor',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(22),
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0F172A),
                         ),
                       ),
-                      height(Responsive.h(30)),
+                      height(Responsive.h(4)),
+                      Text(
+                        'Sign in to manage active cases, indemnity & legal docs.',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(13),
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                      height(Responsive.h(24)),
                       CustomTextField(
-                        label: 'Email Address',
-                        hint: 'Enter email address',
+                        label: 'Email',
+                        hint: 'doctor@clinic.com',
                         controller: _mobileNoController,
                         validator: notEmptyPhoneValidator,
                         isRequired: true,
-                        maxLength: 10,
                       ),
-                      height(Responsive.h(12)),
+                      height(Responsive.h(16)),
                       CustomTextField(
                         label: 'Password',
-                        hint: 'Enter password',
+                        hint: 'Enter your password',
                         controller: _passwordController,
                         isRequired: true,
                         obscureText: !_isPasswordVisible,
@@ -164,7 +317,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             _isPasswordVisible
                                 ? Icons.visibility_outlined
                                 : Icons.visibility_off_outlined,
-                            color: AppColors.newPri,
+                            color: const Color(0xFF64748B),
                           ),
                           onPressed: () {
                             setState(() {
@@ -185,41 +338,50 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         children: [
                           Row(
                             children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value ?? false;
-                                  });
-                                },
-                                activeColor: AppColors.primary,
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _rememberMe = value ?? false;
+                                    });
+                                  },
+                                  activeColor: accentGreen,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
                               ),
+                              SizedBox(width: 8),
                               Text(
                                 'Remember Me',
                                 style: AppTheme.label12.copyWith(
-                                  color: AppColors.grey,
+                                  color: const Color(0xFF475569),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
-                          Spacer(),
                           GestureDetector(
                             onTap: () {
                               context.push(Routes.forgotPassword);
                             },
                             child: Text(
-                              'Forgot Password?',
+                              'Forgot password?',
                               style: AppTheme.label12.copyWith(
-                                color: AppColors.grey,
+                                color: accentGreen,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      height(Responsive.h(24)),
+                      height(Responsive.h(28)),
                       PrimaryButton(
-                        text: 'Login',
-                        backgroundColor: AppColors.newPri,
+                        text: 'Sign In to Dashboard',
+                        gradient: AppColors.brandLinearGradient,
                         isLoading: authState.isLoading,
                         onPressed: authState.isLoading ? null : _login,
                       ),
@@ -227,26 +389,48 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
               ),
-              // height(32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Don't have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      context.push(Routes.register);
-                    },
-                    child: Text(
-                      "Sign Up",
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: Responsive.w(24)),
+                padding: EdgeInsets.symmetric(vertical: Responsive.h(16)),
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Doctors • Hospitals • Clinics • Allied Professionals',
+                      textAlign: TextAlign.center,
                       style: customTextStyle(
-                        color: AppColors.newPri,
-                        fontWeight: FontWeight.bold,
-                      ).copyWith(decoration: TextDecoration.underline),
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF64748B),
+                      ),
                     ),
-                  ),
-                ],
+                    height(Responsive.h(8)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.phone_in_talk_rounded,
+                          size: 14,
+                          color: Color(0xFFDC2626),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Need help? Call +91-8080099908 (24×7 Emergency)',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(11),
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF334155),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              height(Responsive.h(40)),
+
+              height(Responsive.h(24)),
             ],
           ),
         ),
@@ -256,17 +440,5 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   void _login() {
     context.push(Routes.main);
-    //   if (_formKey.currentState?.validate() ?? false) {
-    //     ref
-    //         .read(authenticationViewModelProvider.notifier)
-    //         .login(
-    //           mobile: _mobileNoController.text.trim(),
-    //           password: _passwordController.text.trim(),
-    //           fcmToken: fcmToken ?? '',
-    //           deviceId: deviceId ?? '',
-    //           platform: PlatformUtils.platform,
-    //           rememberMe: _rememberMe,
-    //         );
-    //   }
   }
 }

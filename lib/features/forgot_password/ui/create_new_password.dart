@@ -1,7 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
-import 'package:Doctors_App/features/common/ui/widgets/common_background.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/forgot_password/ui/view_model/forgot_password_view_model.dart';
 import 'package:Doctors_App/routing/routes.dart';
@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../extensions/build_context_extension.dart';
-import '../../common/ui/widgets/common_back_button.dart';
 
 class CreateNewPassword extends ConsumerStatefulWidget {
   final String id;
@@ -138,15 +137,8 @@ class _CreateNewPasswordState extends ConsumerState<CreateNewPassword> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            CommonBackground(),
-            _buildForm(asyncState),
-            CommonBackButton(),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(title: ''),
+      body: SafeArea(child: _buildForm(asyncState)),
     );
   }
 
@@ -237,7 +229,7 @@ class _CreateNewPasswordState extends ConsumerState<CreateNewPassword> {
                 height(40),
                 PrimaryButton(
                   text: "Continue",
-                  backgroundColor: AppColors.red,
+                  gradient: AppColors.brandLinearGradient,
                   onPressed: asyncState.isLoading ? null : _resetPassword,
                   borderRadius: 50,
                 ),

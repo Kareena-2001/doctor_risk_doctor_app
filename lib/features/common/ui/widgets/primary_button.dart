@@ -1,4 +1,3 @@
-import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../theme/app_colors.dart';
@@ -21,6 +20,7 @@ class PrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool iconAfterText;
   final List<Color>? gradientColors;
+  final Gradient? gradient;
 
   const PrimaryButton({
     super.key,
@@ -40,7 +40,12 @@ class PrimaryButton extends StatelessWidget {
     this.fontWeight = FontWeight.w600,
     this.icon,
     this.iconAfterText = true,
+
+    // Existing
     this.gradientColors,
+
+    // New
+    this.gradient,
   });
 
   @override
@@ -56,13 +61,15 @@ class PrimaryButton extends StatelessWidget {
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            gradient: gradientColors != null
-                ? LinearGradient(
-              colors: gradientColors!,
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            )
-                : null,
+            gradient:
+                gradient ??
+                (gradientColors != null
+                    ? LinearGradient(
+                        colors: gradientColors!,
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      )
+                    : null),
             color: gradientColors == null
                 ? (backgroundColor ?? AppColors.primary)
                 : null,
@@ -77,42 +84,42 @@ class PrimaryButton extends StatelessWidget {
             child: Center(
               child: isLoading
                   ? SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(txtColor),
-                ),
-              )
-                  : child ??
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (!iconAfterText && icon != null) ...[
-                        Icon(icon, color: txtColor, size: fontSize),
-                        const SizedBox(width: 8),
-                      ],
-
-                      Flexible(
-                        child: Text(
-                          text,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: fontSize,
-                            fontWeight: fontWeight,
-                            color: txtColor,
-                          ),
-                        ),
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(txtColor),
                       ),
+                    )
+                  : child ??
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (!iconAfterText && icon != null) ...[
+                              Icon(icon, color: txtColor, size: fontSize),
+                              const SizedBox(width: 8),
+                            ],
 
-                      if (iconAfterText && icon != null) ...[
-                        const SizedBox(width: 8),
-                        Icon(icon, color: txtColor, size: fontSize),
-                      ],
-                    ],
-                  )
+                            Flexible(
+                              child: Text(
+                                text,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: fontSize,
+                                  fontWeight: fontWeight,
+                                  color: txtColor,
+                                ),
+                              ),
+                            ),
+
+                            if (iconAfterText && icon != null) ...[
+                              const SizedBox(width: 8),
+                              Icon(icon, color: txtColor, size: fontSize),
+                            ],
+                          ],
+                        ),
             ),
           ),
         ),

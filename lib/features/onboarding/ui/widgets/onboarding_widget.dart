@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/dimensions.dart';
@@ -38,7 +39,7 @@ class OnboardingWidget extends StatelessWidget {
                     fontFamily: 'SF Pro Display',
                     fontSize: Responsive.sp(22),
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: AppColors.textColor,
                   ),
                 ),
                 height(Responsive.h(12)),

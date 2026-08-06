@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/features/forgot_password/ui/view_model/forgot_password_view_model.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
@@ -54,11 +55,8 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
 
     return Scaffold(
       backgroundColor: context.secondaryBackgroundColor,
-      body: SafeArea(
-        child: Stack(
-          children: [CommonBackground(), _buildForm(), CommonBackButton()],
-        ),
-      ),
+      appBar: CustomAppBar(title: ''),
+      body: SafeArea(child: _buildForm()),
     );
   }
 
@@ -86,7 +84,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
                 style: customTextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: AppColors.newPri,
                 ),
               ),
               Text(
@@ -108,7 +106,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
               height(40),
               PrimaryButton(
                 text: 'Continue',
-                backgroundColor: AppColors.red,
+                gradient: AppColors.brandLinearGradient,
                 onPressed: asyncState.isLoading ? null : _forgotPassword,
                 borderRadius: 50,
               ),

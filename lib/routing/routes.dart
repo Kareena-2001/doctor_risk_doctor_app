@@ -19,7 +19,6 @@ class Routes {
   static const createNewPassword = '/createNewPassword';
 
   static const main = '/main';
-  static const employeeOnboarding = '/employeeOnboarding';
   static const accountInformation = '/accountInformation';
   static const appearances = '/appearances';
   static const languages = '/languages';

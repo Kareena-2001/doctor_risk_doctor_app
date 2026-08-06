@@ -62,6 +62,7 @@ class AppColors {
   static const mono80 = Color(0xFF606060);
   static const mono90 = Color(0xFF404040);
   static const mono100 = Color(0xFF222222);
+  static const Color brandGreen = Color(0xFF0D4B34);
 
   static const gradient0 = Color(0x00000000);
   static const gradient10 = Color(0x1A000000);
@@ -71,10 +72,22 @@ class AppColors {
   static const gradient80 = Color(0xCC000000);
   static const gradient100 = Color(0xFF000000);
 
+  static const buttonColor1 = Color(0xFF16A34A);
+  static const buttonColor2 = Color(0xFF166C3F);
+
+  static const Color brand600 = Color(0xFF16A34A);
+  static const Color brand800 = Color(0xFF166C3F);
+  static const LinearGradient brandLinearGradient = LinearGradient(
+    colors: [
+      Color(0xFF16A34A),
+      Color(0xFF166C3F),
+    ],
+    transform: GradientRotation(0.785398), // 45° rotation
+  );
   static const premiumBackground = Color(0xFF000000);
 
   // static const Color newPri = Color(0xFF669b98);
-  static const Color newPri = Color(0xFF558583);
+  static const Color newPri = Color(0xFF166C3F);
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
   static const Color newBg = Color(0xffF6F7FB);
@@ -100,7 +113,6 @@ class AppColors {
   static const Color fieldGrey = Color(0xffDBDBDB);
   static const Color textColor = Color(0xFF2D3748);
   static const Color textPri = Color(0xff333334);
-
 
   static const Color supportTabColor = Color(0xFF1565C0);
   static const Color white = Color(0xFFFFFFFF);

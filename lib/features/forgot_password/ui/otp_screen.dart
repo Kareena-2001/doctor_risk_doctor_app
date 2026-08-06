@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/features/common/ui/widgets/common_back_button.dart';
 import 'package:Doctors_App/features/common/ui/widgets/common_background.dart';
 import 'package:Doctors_App/features/forgot_password/ui/view_model/forgot_password_view_model.dart';
@@ -115,11 +116,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
     return Scaffold(
       backgroundColor: context.secondaryBackgroundColor,
-      body: SafeArea(
-        child: Stack(
-          children: [CommonBackground(), _buildForm(), CommonBackButton()],
-        ),
-      ),
+      appBar: CustomAppBar(title: ''),
+      body: SafeArea(child: _buildForm()),
     );
   }
 
@@ -253,7 +251,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               height(40),
               PrimaryButton(
                 text: 'Verify',
-                backgroundColor: _isExpired ? Colors.grey : AppColors.red,
+                gradient: AppColors.brandLinearGradient,
+                // backgroundColor: _isExpired ? Colors.grey : AppColors.red,
                 onPressed: (asyncState.isLoading || _isExpired)
                     ? null
                     : () {
