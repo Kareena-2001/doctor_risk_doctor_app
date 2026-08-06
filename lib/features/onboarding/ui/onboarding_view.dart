@@ -18,12 +18,12 @@ class OnboardingView extends ConsumerWidget {
       subTitle: "Trusted partner for professional indemnity and legal defense.",
     ),
     OnboardingModel(
-      image: "assets/images/ob_1.png",
+      image: "assets/images/ob_2.jpeg",
       title: "24/7 MEDICO-LEGAL SUPPORT",
       subTitle: "Emergency aid, documentation, and expert guidance.",
     ),
     OnboardingModel(
-      image: "assets/images/ob_1.png",
+      image: "assets/images/ob_3.jpeg",
       title: "LEARN & CONNECT",
       subTitle: "Risk management resources, workshops, and peer community.",
     ),

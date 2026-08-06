@@ -85,6 +85,7 @@ class AppColors {
 
   // static const Color newPri = Color(0xFF669b98);
   static const Color newPri = Color(0xFF166C3F);
+
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
   static const Color newBg = Color(0xffF6F7FB);
@@ -98,6 +99,9 @@ class AppColors {
   static const Color secondary = Color(0xFFF9B62D);
   static const Color accent = Color(0xFFFF9800);
   static const Color orange = Color(0xFFF16723);
+
+  static const Color activeGreen = Color(0xFFe5fbed);
+
 
   static const Color homeBorder = Color(0xFFE2ECEA);
   static const Color border = Color(0xFFE8E8E8);

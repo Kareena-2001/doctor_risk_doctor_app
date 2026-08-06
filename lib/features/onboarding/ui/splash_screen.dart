@@ -82,10 +82,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     debugPrint("Onboarding Completed : $onboardingCompleted");
 
-    if (!onboardingCompleted) {
-      context.go(Routes.onboarding);
-      return;
-    }
+    // if (!onboardingCompleted) {
+    //   context.go(Routes.onboarding);
+    //   return;
+    // }
 
     final authRepo = ref.read(authenticationRepositoryProvider);
 

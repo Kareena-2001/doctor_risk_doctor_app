@@ -31,8 +31,44 @@ final policyModel = PolicyModel(
   duration: '1 Year',
   validFrom: '01/09/2024',
   validTo: '31/08/2025',
-  status: PolicyStatus.active,
+  status: PolicyStatus.expired,
 );
+
+final List<PolicyModel> personalPlansList = [
+  const PolicyModel(
+    title: 'Personal Plan',
+    planName: 'Doctor Indemnity Cover',
+    policyType: 'Professional Indemnity',
+    coverageAmount: '₹ 50,00,000',
+    policyNumber: '03303387333412',
+    duration: '1 Year',
+    validFrom: '01/09/2024',
+    validTo: '31/08/2025',
+    status: PolicyStatus.active,
+  ),
+  const PolicyModel(
+    title: 'Personal Plan',
+    planName: 'Clinic Liability Cover',
+    policyType: 'Clinical Establishment',
+    coverageAmount: '₹ 25,00,000',
+    policyNumber: '03303387998821',
+    duration: '1 Year',
+    validFrom: '01/08/2024',
+    validTo: '31/07/2025',
+    status: PolicyStatus.renewal,
+  ),
+  const PolicyModel(
+    title: 'Personal Plan',
+    planName: 'Locum Cover',
+    policyType: 'Locum Indemnity',
+    coverageAmount: '₹ 10,00,000',
+    policyNumber: '03303387112233',
+    duration: '1 Year',
+    validFrom: '01/06/2023',
+    validTo: '31/05/2024',
+    status: PolicyStatus.expired,
+  ),
+];
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -50,6 +86,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   Timer? _sessionTimer;
+
+  // Carousel state for the personal-plans pager inside _buildPolicyCard
+  final PageController _planPageController = PageController();
+  int _currentPlanPage = 0;
 
   @override
   void initState() {
@@ -77,6 +117,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   void dispose() {
     _animationController.dispose();
     _sessionTimer?.cancel();
+    _planPageController.dispose();
     super.dispose();
   }
 
@@ -171,8 +212,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
+  // ═══════════════════════════════════════════════════════════
+  // HERO / COMPACT PROFILE HEADER — matches the prototype's
+  // hero-left content: avatar, name, points, role, tier badge,
+  // status tag, profile completion, and the Med Reg/Membership
+  // ID/Coverage/Renews meta grid.
+  // ═══════════════════════════════════════════════════════════
   Widget _buildCompactProfileHeader(bool isDark, PolicyModel policy) {
     final status = policy.status;
+    final noPlan = status == PolicyStatus.noPlan;
 
     return Container(
       width: double.infinity,
@@ -226,101 +274,621 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
           height(Responsive.h(12)),
-          Text(
-            'Dr. Paresh Mathur',
-            style: customTextStyle(
-              fontSize: Responsive.sp(20),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(8)),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: Responsive.w(14),
-              vertical: Responsive.h(5),
-            ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: status.gradient),
-              borderRadius: BorderRadius.circular(Responsive.w(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: status.color.withValues(alpha: 0.35),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(status.icon, size: Responsive.sp(13), color: Colors.white),
-                width(Responsive.w(4)),
-                Text(
-                  status.label,
+
+          // Name + points badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  'Dr. Paresh Mathur',
+                  textAlign: TextAlign.center,
                   style: customTextStyle(
-                    color: Colors.white,
-                    fontSize: Responsive.sp(12),
-                    fontWeight: FontWeight.w600,
+                    fontSize: Responsive.sp(16),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textColor,
                   ),
                 ),
-              ],
+              ),
+              if (!noPlan) ...[width(Responsive.w(8)), _pointsBadge('320')],
+            ],
+          ),
+          height(Responsive.h(4)),
+          Text(
+            'General Practitioner · B.A.M.S.',
+            style: customTextStyle(
+              fontSize: Responsive.sp(11.5),
+              color: AppColors.homeTextMuted,
             ),
           ),
-          height(Responsive.h(14)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          height(Responsive.h(12)),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: Responsive.w(8),
+            runSpacing: Responsive.h(8),
             children: [
-              _metaChip(Icons.assignment_ind_outlined, 'Med Reg: 48578'),
-              width(Responsive.w(10)),
-              _metaChip(Icons.fingerprint, 'ID: 38765734112'),
+              if (!noPlan) _tierBadge('Gold II · Premium'),
+              _statusTag(status),
+              _profileCompletionTag(noPlan ? '48' : '92'),
             ],
           ),
-          height(Responsive.h(12)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.gavel_outlined,
-                size: Responsive.sp(16),
-                color: AppColors.primary,
-              ),
-              width(Responsive.w(6)),
-              Text(
-                'Doctors Risk Medico Legal Services',
-                style: customTextStyle(
-                  color: AppColors.newPri,
-                  fontSize: Responsive.sp(13),
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          height(Responsive.h(18)),
+          _buildHeroMetaGrid(policy, noPlan),
+          height(Responsive.h(14)),
+
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     Icon(
+          //       Icons.gavel_outlined,
+          //       size: Responsive.sp(16),
+          //       color: AppColors.primary,
+          //     ),
+          //     width(Responsive.w(6)),
+          //     Text(
+          //       'Doctors Risk Medico Legal Services',
+          //       style: customTextStyle(
+          //         color: AppColors.newPri,
+          //         fontSize: Responsive.sp(13),
+          //         fontWeight: FontWeight.w700,
+          //       ),
+          //     ),
+          //   ],
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pointsBadge(String points) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(10),
+        vertical: Responsive.h(4),
+      ),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+        ),
+        borderRadius: BorderRadius.circular(Responsive.w(20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.star_rounded,
+            size: Responsive.sp(13),
+
+            color: AppColors.white,
+          ),
+          width(Responsive.w(3)),
+          Text(
+            '$points pts',
+            style: customTextStyle(
+              fontSize: Responsive.sp(11.5),
+              fontWeight: FontWeight.w700,
+              color: AppColors.white,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _metaChip(IconData icon, String label) {
+  Widget _tierBadge(String label) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.w(10),
-        vertical: Responsive.h(6),
+        vertical: Responsive.h(5),
       ),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(Responsive.w(30)),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+        ),
+        borderRadius: BorderRadius.circular(Responsive.w(20)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: Responsive.sp(14), color: Colors.grey.shade600),
+          Icon(
+            Icons.workspace_premium_rounded,
+            size: Responsive.sp(13),
+            color: Colors.white,
+          ),
           width(Responsive.w(4)),
           Text(
             label,
             style: customTextStyle(
-              color: Colors.grey.shade600,
+              fontSize: Responsive.sp(11),
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Light-color status pill — green/red/yellow/white per status, as requested.
+  Widget _statusTag(PolicyStatus status) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(12),
+        vertical: Responsive.h(5),
+      ),
+      decoration: BoxDecoration(
+        color: status.lightBg,
+        border: Border.all(color: status.lightBorder),
+        borderRadius: BorderRadius.circular(Responsive.w(20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(status.icon, size: Responsive.sp(12), color: status.color),
+          width(Responsive.w(4)),
+          Text(
+            status.label,
+            style: customTextStyle(
               fontSize: Responsive.sp(11.5),
+              fontWeight: FontWeight.w700,
+              color: status.color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _profileCompletionTag(String percent) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(12),
+        vertical: Responsive.h(5),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(Responsive.w(20)),
+      ),
+      child: Text(
+        'Profile $percent% complete',
+        style: customTextStyle(
+          fontSize: Responsive.sp(11.5),
+          fontWeight: FontWeight.w600,
+          color: AppColors.homeTextMuted,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroMetaGrid(PolicyModel policy, bool noPlan) {
+    final items = <Widget>[
+      _heroMetaItem('Med. Reg. No.', '48578'),
+      if (!noPlan) ...[
+        _heroMetaItem('Membership ID', 'DR-2026-084213'),
+        _heroMetaItem('Coverage', policy.coverageAmount),
+        _heroMetaItem(
+          policy.status == PolicyStatus.expired ? 'Expired' : 'Renews',
+          policy.validTo,
+        ),
+      ],
+    ];
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: Responsive.w(22),
+      runSpacing: Responsive.h(14),
+      children: items,
+    );
+  }
+
+  Widget _heroMetaItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: customTextStyle(
+            fontSize: Responsive.sp(9.5),
+            fontWeight: FontWeight.w600,
+            color: AppColors.homeTextMuted,
+          ).copyWith(letterSpacing: 0.6),
+        ),
+        height(Responsive.h(3)),
+        Text(
+          value,
+          style: customTextStyle(
+            fontSize: Responsive.sp(12.5),
+            fontWeight: FontWeight.w700,
+            color: AppColors.textColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<PolicyModel> _filterPlansByPriorityStatus(List<PolicyModel> plans) {
+    if (plans.isEmpty) return [];
+
+    final expired = plans
+        .where((p) => p.status == PolicyStatus.expired)
+        .toList();
+
+    if (expired.isNotEmpty) return expired;
+
+    final renewal = plans
+        .where((p) => p.status == PolicyStatus.renewal)
+        .toList();
+
+    if (renewal.isNotEmpty) return renewal;
+
+    final active = plans.where((p) => p.status == PolicyStatus.active).toList();
+
+    if (active.isNotEmpty) return active;
+
+    return [];
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // POLICY CARD — carousel + pagination when multiple plans.
+  // Single static card when there's only one. Light-color card
+  // per status (green/red/yellow/white), matching the prototype.
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildPolicyCard(List<PolicyModel> plans) {
+    if (plans.isEmpty) return _buildNoPlanCard();
+
+    return Column(
+      children: [
+        SizedBox(
+          height: Responsive.h(370),
+          child: PageView.builder(
+            controller: _planPageController,
+            itemCount: plans.length,
+            onPageChanged: (index) => setState(() => _currentPlanPage = index),
+            itemBuilder: (context, index) {
+              final plan = plans[index];
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: Responsive.w(2)),
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: plan.status == PolicyStatus.noPlan
+                      ? _buildNoPlanCard()
+                      : _buildSinglePolicyCard(plan),
+                ),
+              );
+            },
+          ),
+        ),
+        if (plans.length > 1) ...[
+          height(Responsive.h(10)),
+          _buildPageDots(plans.length),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPageDots(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (i) {
+        final active = i == _currentPlanPage;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: EdgeInsets.symmetric(horizontal: Responsive.w(3)),
+          width: active ? Responsive.w(18) : Responsive.w(6),
+          height: Responsive.h(6),
+          decoration: BoxDecoration(
+            color: active ? AppColors.newPri : AppColors.homeBorder,
+            borderRadius: BorderRadius.circular(Responsive.w(10)),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildSinglePolicyCard(PolicyModel policy) {
+    final status = policy.status;
+    final isActive = policy.status == PolicyStatus.active;
+    final isExpired = policy.status == PolicyStatus.expired;
+    final noPlan = policy.status == PolicyStatus.noPlan;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(Responsive.w(20)),
+      decoration: BoxDecoration(
+        color: status.lightBg,
+        borderRadius: BorderRadius.circular(Responsive.w(28)),
+        border: Border.all(color: status.lightBorder, width: 1.2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      policy.title.toUpperCase(),
+                      style: customTextStyle(
+                        color: AppColors.homeTextMuted,
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w700,
+                      ).copyWith(letterSpacing: 1.2),
+                    ),
+                    height(Responsive.h(6)),
+                    Text(
+                      policy.planName,
+                      style: customTextStyle(
+                        color: AppColors.textColor,
+                        fontSize: Responsive.sp(15),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.w(10),
+                  vertical: Responsive.h(6),
+                ),
+                decoration: BoxDecoration(
+                  color: status.color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(Responsive.w(20)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      status.icon,
+                      size: Responsive.sp(12),
+                      color: status.color,
+                    ),
+                    width(Responsive.w(4)),
+                    Text(
+                      status.name[0].toUpperCase() + status.name.substring(1),
+                      style: customTextStyle(
+                        color: status.color,
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          height(Responsive.h(4)),
+          Text(
+            policy.policyType,
+            style: customTextStyle(
+              color: AppColors.homeTextMuted,
+              fontSize: Responsive.sp(12.5),
+            ),
+          ),
+          height(Responsive.h(20)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: Responsive.w(25),
+                height: Responsive.w(25),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+                  ),
+                  borderRadius: BorderRadius.circular(Responsive.w(6)),
+                ),
+              ),
+              width(Responsive.w(12)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'POLICY NUMBER',
+                      style: customTextStyle(
+                        color: AppColors.homeTextMuted,
+                        fontSize: Responsive.sp(9.5),
+                        fontWeight: FontWeight.w600,
+                      ).copyWith(letterSpacing: 1.1),
+                    ),
+                    height(Responsive.h(3)),
+                    Text(
+                      policy.policyNumber,
+                      style: customTextStyle(
+                        color: AppColors.textColor,
+                        fontSize: Responsive.sp(12),
+                        fontWeight: FontWeight.w600,
+                      ).copyWith(letterSpacing: 1.5),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          height(Responsive.h(18)),
+          Divider(color: status.lightBorder, height: 1),
+          height(Responsive.h(16)),
+          Row(
+            children: [
+              Expanded(
+                child: _cardStatLight(
+                  icon: Icons.security_rounded,
+                  label: 'Coverage',
+                  value: policy.coverageAmount,
+                  status: status,
+                ),
+              ),
+              Expanded(
+                child: _cardStatLight(
+                  icon: Icons.timelapse_rounded,
+                  label: 'Duration',
+                  value: policy.duration,
+                  status: status,
+                ),
+              ),
+            ],
+          ),
+          height(Responsive.h(14)),
+          Row(
+            children: [
+              Expanded(
+                child: _cardStatLight(
+                  icon: Icons.calendar_today_rounded,
+                  label: 'Valid From',
+                  value: policy.validFrom,
+                  status: status,
+                ),
+              ),
+              Expanded(
+                child: _cardStatLight(
+                  icon: Icons.event_busy_rounded,
+                  label: 'Valid To',
+                  value: policy.validTo,
+                  status: status,
+                ),
+              ),
+            ],
+          ),
+          if (policy.canRenew) ...[
+            height(Responsive.h(20)),
+            SizedBox(
+              width: double.infinity,
+              child: PrimaryButton(
+                height: Responsive.h(44),
+                text: status == PolicyStatus.expired
+                    ? 'Renew Now'
+                    : 'Renew Early',
+                fontSize: Responsive.sp(13),
+                fontWeight: FontWeight.w700,
+                gradientColors: status.gradient,
+                borderRadius: Responsive.w(20),
+                onPressed: () => context.push(Routes.myPlans),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _cardStatLight({
+    required IconData icon,
+    required String label,
+    required String value,
+    required PolicyStatus status,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          size: Responsive.sp(15),
+          color: status.color.withValues(alpha: 0.75),
+        ),
+        width(Responsive.w(8)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: customTextStyle(
+                  color: AppColors.homeTextMuted,
+                  fontSize: Responsive.sp(9.5),
+                  fontWeight: FontWeight.w600,
+                ).copyWith(letterSpacing: 0.8),
+              ),
+              height(Responsive.h(3)),
+              Text(
+                value,
+                style: customTextStyle(
+                  color: AppColors.textColor,
+                  fontSize: Responsive.sp(13),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNoPlanCard() {
+    const status = PolicyStatus.noPlan;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(Responsive.w(22)),
+      decoration: BoxDecoration(
+        color: status.lightBg,
+        borderRadius: BorderRadius.circular(Responsive.w(28)),
+        border: Border.all(color: status.lightBorder, width: 1.2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(Responsive.w(12)),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(Responsive.w(14)),
+            ),
+            child: Icon(
+              Icons.lock_outline_rounded,
+              color: Colors.grey.shade600,
+              size: Responsive.sp(24),
+            ),
+          ),
+          height(Responsive.h(14)),
+          Text(
+            'No plan on file yet',
+            style: customTextStyle(
+              fontSize: Responsive.sp(15),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textColor,
+            ),
+          ),
+          height(Responsive.h(6)),
+          Text(
+            "You're a registered member, but haven't secured coverage. "
+            "Choose a plan to activate your Membership ID, coverage and "
+            "policy documents.",
+            style: customTextStyle(
+              fontSize: Responsive.sp(12.5),
+              fontWeight: FontWeight.w400,
+              color: AppColors.homeTextMuted,
+            ).copyWith(height: 1.5),
+          ),
+          height(Responsive.h(20)),
+          SizedBox(
+            width: double.infinity,
+            child: PrimaryButton(
+              height: Responsive.h(44),
+              text: 'Secure Membership',
+              fontSize: Responsive.sp(13),
+              fontWeight: FontWeight.w700,
+              gradientColors: [AppColors.newPri, AppColors.primary],
+              borderRadius: Responsive.w(20),
+              onPressed: () => context.push(Routes.productHub),
+            ),
+          ),
+          height(Responsive.h(10)),
+          Center(
+            child: TextButton(
+              onPressed: () => context.push(Routes.myPlans),
+              child: Text(
+                'View My Plans',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12.5),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.newPri,
+                ),
+              ),
             ),
           ),
         ],
@@ -334,7 +902,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPolicyCard(policyModel),
+          _buildPolicyCard(_filterPlansByPriorityStatus(personalPlansList)),
           height(Responsive.h(24)),
           HeadingWidget(
             headingTitle: 'My Products',
@@ -623,303 +1191,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildPolicyCard(PolicyModel policy) {
-    final status = policy.status;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(Responsive.w(28)),
-      child: Container(
-        padding: EdgeInsets.all(Responsive.w(20)),
-        decoration: BoxDecoration(
-          // 1. Give the gradient a premium diagonal direction
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: status.gradient,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.20),
-              // Slightly softer shadow
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            // 2. Translucent white circles for elegant contrast (instead of more status color)
-            // Positioned(
-            //   top: -Responsive.w(40),
-            //   right: -Responsive.w(30),
-            //   child: IgnorePointer(
-            //     child: Container(
-            //       width: Responsive.w(140),
-            //       height: Responsive.w(140),
-            //       decoration: BoxDecoration(
-            //         shape: BoxShape.circle,
-            //         color: Colors.white.withValues(alpha: 0.10),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Positioned(
-            //   bottom: -Responsive.w(50),
-            //   left: -Responsive.w(40),
-            //   child: IgnorePointer(
-            //     child: Container(
-            //       width: Responsive.w(150),
-            //       height: Responsive.w(150),
-            //       decoration: BoxDecoration(
-            //         shape: BoxShape.circle,
-            //         color: Colors.white.withValues(alpha: 0.06),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // // Faint watermark shield icon for a "certified membership" feel
-            // Positioned(
-            //   right: Responsive.w(4),
-            //   bottom: Responsive.h(4),
-            //   child: IgnorePointer(
-            //     child: Icon(
-            //       Icons.shield_moon_outlined,
-            //       size: Responsive.sp(90),
-            //       color: Colors.white.withValues(
-            //         alpha: 0.08,
-            //       ), // Slightly more visible
-            //     ),
-            //   ),
-            // ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            policy.title.toUpperCase(),
-                            style: customTextStyle(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              // Smoother than white70
-                              fontSize: Responsive.sp(11),
-                              fontWeight: FontWeight.w700,
-                            ).copyWith(letterSpacing: 1.2),
-                          ),
-                          height(Responsive.h(6)),
-                          Text(
-                            policy.planName,
-                            style: customTextStyle(
-                              color: Colors.white,
-                              fontSize: Responsive.sp(14),
-                              // Slightly larger for hierarchy
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Responsive.w(10),
-                        vertical: Responsive.h(6),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        // Translucent overlay
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(Responsive.w(20)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            status.icon,
-                            size: Responsive.sp(12),
-                            color: Colors.white,
-                          ),
-                          width(Responsive.w(4)),
-                          Text(
-                            status.name[0].toUpperCase() +
-                                status.name.substring(1),
-                            style: customTextStyle(
-                              color: Colors.white,
-                              fontSize: Responsive.sp(11),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                height(Responsive.h(4)),
-                Text(
-                  policy.policyType,
-                  style: customTextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: Responsive.sp(12.5),
-                  ),
-                ),
-                height(Responsive.h(22)),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: Responsive.w(25),
-                      height: Responsive.w(25),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
-                        ),
-                        borderRadius: BorderRadius.circular(Responsive.w(6)),
-                      ),
-                    ),
-                    width(Responsive.w(12)),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'POLICY NUMBER',
-                            style: customTextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              fontSize: Responsive.sp(9.5),
-                              fontWeight: FontWeight.w600,
-                            ).copyWith(letterSpacing: 1.1),
-                          ),
-                          height(Responsive.h(3)),
-                          Text(
-                            policy.policyNumber,
-                            style: customTextStyle(
-                              color: Colors.white,
-                              fontSize: Responsive.sp(12),
-                              fontWeight: FontWeight.w600,
-                            ).copyWith(letterSpacing: 1.5),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                height(Responsive.h(20)),
-                Container(
-                  height: 1,
-                  color: Colors.white.withValues(
-                    alpha: 0.15,
-                  ), // Slightly brighter divider
-                ),
-                height(Responsive.h(18)),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _cardStat(
-                        icon: Icons.security_rounded,
-                        label: 'Coverage',
-                        value: policy.coverageAmount,
-                      ),
-                    ),
-                    Expanded(
-                      child: _cardStat(
-                        icon: Icons.timelapse_rounded,
-                        label: 'Duration',
-                        value: policy.duration,
-                      ),
-                    ),
-                  ],
-                ),
-                height(Responsive.h(16)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _cardStat(
-                        icon: Icons.calendar_today_rounded,
-                        label: 'Valid From',
-                        value: policy.validFrom,
-                      ),
-                    ),
-                    Expanded(
-                      child: _cardStat(
-                        icon: Icons.event_busy_rounded,
-                        label: 'Valid To',
-                        value: policy.validTo,
-                      ),
-                    ),
-                  ],
-                ),
-
-                if (policy.canRenew) ...[
-                  height(Responsive.h(22)),
-                  SizedBox(
-                    width: double.infinity,
-                    child: PrimaryButton(
-                      height: Responsive.h(44),
-                      text: status == PolicyStatus.expired
-                          ? 'Renew Now'
-                          : 'Renew Early',
-                      fontSize: Responsive.sp(13),
-                      fontWeight: FontWeight.w700,
-                      backgroundColor: Colors.white,
-                      textColor: status.gradient.last,
-                      onPressed: () => context.push(Routes.myPlans),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _cardStat({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: Responsive.sp(15), color: Colors.white38),
-        width(Responsive.w(8)),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label.toUpperCase(),
-                style: customTextStyle(
-                  color: Colors.white70,
-                  fontSize: Responsive.sp(9.5),
-                  fontWeight: FontWeight.w600,
-                ).copyWith(letterSpacing: 0.8),
-              ),
-              height(Responsive.h(3)),
-              Text(
-                value,
-                style: customTextStyle(
-                  color: Colors.white,
-                  fontSize: Responsive.sp(13),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildFAQCard() {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -1099,9 +1370,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 );
                               },
                               height: Responsive.h(42),
-                              // backgroundColor: avail
-                              //     ? AppColors.primary
-                              //     : AppColors.homeBorder,
                               gradientColors: avail
                                   ? [AppColors.newPri, AppColors.primary]
                                   : [AppColors.lightGray, AppColors.grey],
