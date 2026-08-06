@@ -126,107 +126,104 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
               ),
-              Container(
-                // color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(Responsive.sp(24)),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Text(
-                            'Sign In',
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(25),
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.newPri,
-                            ),
+              Padding(
+                padding: EdgeInsets.all(Responsive.sp(24)),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          'Sign In',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(25),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.newPri,
                           ),
                         ),
-                        height(Responsive.h(30)),
-                        CustomTextField(
-                          label: 'Email Address',
-                          hint: 'Enter email address',
-                          controller: _mobileNoController,
-                          validator: notEmptyPhoneValidator,
-                          isRequired: true,
-                          maxLength: 10,
-                        ),
-                        height(Responsive.h(12)),
-                        CustomTextField(
-                          label: 'Password',
-                          hint: 'Enter password',
-                          controller: _passwordController,
-                          isRequired: true,
-                          obscureText: !_isPasswordVisible,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: AppColors.newPri,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
+                      ),
+                      height(Responsive.h(30)),
+                      CustomTextField(
+                        label: 'Email Address',
+                        hint: 'Enter email address',
+                        controller: _mobileNoController,
+                        validator: notEmptyPhoneValidator,
+                        isRequired: true,
+                        maxLength: 10,
+                      ),
+                      height(Responsive.h(12)),
+                      CustomTextField(
+                        label: 'Password',
+                        hint: 'Enter password',
+                        controller: _passwordController,
+                        isRequired: true,
+                        obscureText: !_isPasswordVisible,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: AppColors.newPri,
                           ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return LocaleKeys.validator_required_field.tr();
-                            }
-                            return null;
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
                           },
                         ),
-                        height(Responsive.h(8)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                  activeColor: AppColors.primary,
-                                ),
-                                Text(
-                                  'Remember Me',
-                                  style: AppTheme.label12.copyWith(
-                                    color: AppColors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                context.push(Routes.forgotPassword);
-                              },
-                              child: Text(
-                                'Forgot Password?',
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return LocaleKeys.validator_required_field.tr();
+                          }
+                          return null;
+                        },
+                      ),
+                      height(Responsive.h(8)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                                activeColor: AppColors.primary,
+                              ),
+                              Text(
+                                'Remember Me',
                                 style: AppTheme.label12.copyWith(
                                   color: AppColors.grey,
                                 ),
                               ),
+                            ],
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              context.push(Routes.forgotPassword);
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: AppTheme.label12.copyWith(
+                                color: AppColors.grey,
+                              ),
                             ),
-                          ],
-                        ),
-                        height(Responsive.h(24)),
-                        PrimaryButton(
-                          text: 'Login',
-                          backgroundColor: AppColors.newPri,
-                          isLoading: authState.isLoading,
-                          onPressed: authState.isLoading ? null : _login,
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      height(Responsive.h(24)),
+                      PrimaryButton(
+                        text: 'Login',
+                        backgroundColor: AppColors.newPri,
+                        isLoading: authState.isLoading,
+                        onPressed: authState.isLoading ? null : _login,
+                      ),
+                    ],
                   ),
                 ),
               ),
