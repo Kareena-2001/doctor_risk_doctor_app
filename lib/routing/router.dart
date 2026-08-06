@@ -19,6 +19,7 @@ import 'package:Doctors_App/features/legal/ui/legal_notice_view.dart';
 import 'package:Doctors_App/features/legal/ui/legal_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_details_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_screen.dart';
+import 'package:Doctors_App/features/onboarding/ui/onboarding_view.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
@@ -113,6 +114,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.appDrawer,
       pageBuilder: (context, state) => state.slidePage(const AppDrawer()),
+    ),
+    GoRoute(
+      path: Routes.onboarding,
+      pageBuilder: (context, state) => state.slidePage(const OnboardingView()),
     ),
     GoRoute(
       path: Routes.register,
@@ -360,10 +365,10 @@ final GoRouter router = GoRouter(
       path: Routes.addLegalNotice,
       pageBuilder: (context, state) =>
           state.slidePage(const AddLegalNoticeForm()),
-    ),    GoRoute(
+    ),
+    GoRoute(
       path: Routes.scanScreen,
-      pageBuilder: (context, state) =>
-          state.slidePage(const ScanScreen()),
+      pageBuilder: (context, state) => state.slidePage(const ScanScreen()),
     ),
   ],
 );

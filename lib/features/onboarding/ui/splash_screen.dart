@@ -1,3 +1,4 @@
+import 'package:Doctors_App/features/onboarding/repository/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,21 +70,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (needsForceUpdate) return;
 
-    final repo = ref.read(authenticationRepositoryProvider);
-    final isLoggedIn = await repo.isLogin();
-
-    debugPrint(
-      '${AppConstants.tag} [SplashScreen._checkLoginStatus] isLoggedIn = $isLoggedIn',
-    );
-
     await Future.delayed(const Duration(seconds: 1));
 
     if (!mounted) return;
 
+    // final onboardingRepo = ref.read(onboardingRepositoryProvider);
+
+    final onboardingCompleted = await ref
+        .read(onboardingRepositoryProvider)
+        .isCompleted();
+
+    debugPrint("Onboarding Completed : $onboardingCompleted");
+
+    if (!onboardingCompleted) {
+      context.go(Routes.onboarding);
+      return;
+    }
+
+    final authRepo = ref.read(authenticationRepositoryProvider);
+
+    final isLoggedIn = await authRepo.isLogin();
+
+    debugPrint('${AppConstants.tag} [SplashScreen] isLoggedIn = $isLoggedIn');
+
+    if (!mounted) return;
+
     if (isLoggedIn) {
-      context.pushReplacement(Routes.main);
+      context.go(Routes.main);
     } else {
-      context.pushReplacement(Routes.login);
+      context.go(Routes.login);
     }
   }
 }
