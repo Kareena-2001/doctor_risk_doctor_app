@@ -31,8 +31,10 @@ final policyModel = PolicyModel(
   duration: '1 Year',
   validFrom: '01/09/2024',
   validTo: '31/08/2025',
-  status: PolicyStatus.expired,
+  status: PolicyStatus.renewal,
 );
+
+const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
 
 final List<PolicyModel> personalPlansList = [
   const PolicyModel(
@@ -144,9 +146,84 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(16),
+        vertical: Responsive.h(11),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(Responsive.w(12)),
+        border: Border.all(color: AppColors.greyLight),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              "Good morning, Dr. Paresh Mathur · here's your membership at a glance",
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                fontWeight: FontWeight.w500,
+                color: AppColors.textColor,
+              ).copyWith(height: 1.4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBanner(PolicyStatus status) {
+    final message = status.bannerMessage;
+    if (message == null) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(16),
+        vertical: Responsive.h(11),
+      ),
+      decoration: BoxDecoration(
+        color: status.heroBg,
+        borderRadius: BorderRadius.circular(Responsive.w(12)),
+        border: Border.all(color: status.heroBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            status.bannerIcon,
+            size: Responsive.sp(16),
+            color: status.bannerText,
+          ),
+          width(Responsive.w(10)),
+          Expanded(
+            child: Text(
+              message,
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                fontWeight: FontWeight.w600,
+                color: status.bannerText,
+              ).copyWith(height: 1.4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentPlans = _filterPlansByPriorityStatus(personalPlansList);
+    // final currentStatus = currentPlans.isNotEmpty
+    //     ? currentPlans.first.status
+    //     : PolicyStatus.noPlan;
 
     return Stack(
       children: [
@@ -182,6 +259,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
+
                 ),
                 child: Column(
                   children: [
@@ -197,17 +275,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       ),
                     ),
                     height(Responsive.h(8)),
-                    _buildCompactProfileHeader(isDark, policyModel),
+                    _buildHeader(),
+                    height(Responsive.h(8)),
+                    _buildStatusBanner(kCurrentDashboardStatus),
+                    if (kCurrentDashboardStatus.bannerMessage != null)
+                      height(Responsive.h(10)),
+                    _buildCompactProfileHeader(isDark, kCurrentDashboardStatus),
                     height(Responsive.h(20)),
-                    _buildMainContent(isDark, policyModel),
+                    _buildMainContent(isDark, currentPlans),
                     height(Responsive.h(100)),
+
+
+
                   ],
                 ),
               ),
             ),
           ),
         ),
-        const FloatingChatBubble(),
+        FloatingChatBubble(),
       ],
     );
   }
@@ -218,8 +304,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   // status tag, profile completion, and the Med Reg/Membership
   // ID/Coverage/Renews meta grid.
   // ═══════════════════════════════════════════════════════════
-  Widget _buildCompactProfileHeader(bool isDark, PolicyModel policy) {
-    final status = policy.status;
+
+  Widget _buildCompactProfileHeader(bool isDark, PolicyStatus status) {
     final noPlan = status == PolicyStatus.noPlan;
 
     return Container(
@@ -231,16 +317,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Responsive.w(28)),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [const Color(0xFF1A1A1D), const Color(0xFF232326)]
-              : [Colors.white, const Color(0xFFF3F4FF)],
+        color: isDark ? const Color(0xFF1A1A1D) : status.heroBg,
+        border: Border.all(
+          color: isDark ? Colors.transparent : status.heroBorder,
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.newPri.withValues(alpha: 0.08),
+            color: status.color.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
@@ -314,30 +398,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ],
           ),
           height(Responsive.h(18)),
-          _buildHeroMetaGrid(policy, noPlan),
+          _buildHeroMetaGrid(currentPlanForStatus(status), noPlan),
           height(Responsive.h(14)),
-
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Icon(
-          //       Icons.gavel_outlined,
-          //       size: Responsive.sp(16),
-          //       color: AppColors.primary,
-          //     ),
-          //     width(Responsive.w(6)),
-          //     Text(
-          //       'Doctors Risk Medico Legal Services',
-          //       style: customTextStyle(
-          //         color: AppColors.newPri,
-          //         fontSize: Responsive.sp(13),
-          //         fontWeight: FontWeight.w700,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
+    );
+  }
+
+  PolicyModel currentPlanForStatus(PolicyStatus status) {
+    return personalPlansList.firstWhere(
+      (p) => p.status == status,
+      orElse: () => policyModel,
     );
   }
 
@@ -507,25 +578,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   List<PolicyModel> _filterPlansByPriorityStatus(List<PolicyModel> plans) {
-    if (plans.isEmpty) return [];
-
-    final expired = plans
-        .where((p) => p.status == PolicyStatus.expired)
-        .toList();
-
-    if (expired.isNotEmpty) return expired;
-
-    final renewal = plans
-        .where((p) => p.status == PolicyStatus.renewal)
-        .toList();
-
-    if (renewal.isNotEmpty) return renewal;
-
-    final active = plans.where((p) => p.status == PolicyStatus.active).toList();
-
-    if (active.isNotEmpty) return active;
-
-    return [];
+    return plans.where((p) => p.status == kCurrentDashboardStatus).toList();
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -587,9 +640,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildSinglePolicyCard(PolicyModel policy) {
     final status = policy.status;
-    final isActive = policy.status == PolicyStatus.active;
-    final isExpired = policy.status == PolicyStatus.expired;
-    final noPlan = policy.status == PolicyStatus.noPlan;
 
     return Container(
       width: double.infinity,
@@ -896,13 +946,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildMainContent(bool isDark, PolicyModel policyModel) {
+  Widget _buildMainContent(bool isDark, List<PolicyModel> plans) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPolicyCard(_filterPlansByPriorityStatus(personalPlansList)),
+          _buildPolicyCard(plans),
           height(Responsive.h(24)),
           HeadingWidget(
             headingTitle: 'My Products',
@@ -1004,37 +1054,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           SocialLinkWidget(),
           height(Responsive.h(30)),
         ],
-      ),
-    );
-  }
-
-  Widget _socialIconButton({
-    required IconData icon,
-    required List<Color> bgColors,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(Responsive.w(30)),
-      onTap: onTap,
-      child: Container(
-        width: Responsive.w(40),
-        height: Responsive.w(48),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: bgColors,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: bgColors.last.withValues(alpha: 0.35),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: Colors.white, size: Responsive.sp(20)),
       ),
     );
   }

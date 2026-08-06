@@ -33,7 +33,10 @@ extension PolicyStatusX on PolicyStatus {
   List<Color> get gradient {
     switch (this) {
       case PolicyStatus.active:
-        return [const Color(0xFF1F8B4C), const Color(0xFF124430)]; // brand-600 -> brand-800
+        return [
+          const Color(0xFF1F8B4C),
+          const Color(0xFF124430),
+        ]; // brand-600 -> brand-800
       case PolicyStatus.expired:
         return [const Color(0xFFE15C48), const Color(0xFFA13A29)];
       case PolicyStatus.renewal:
@@ -116,6 +119,22 @@ extension PolicyStatusX on PolicyStatus {
     }
   }
 
+  Color get bannerText {
+    switch (this) {
+      case PolicyStatus.active:
+        return const Color(0xFF2E7D32);
+
+      case PolicyStatus.renewal:
+        return const Color(0xFFF57C00);
+
+      case PolicyStatus.expired:
+        return const Color(0xFFC62828);
+
+      case PolicyStatus.noPlan:
+        return const Color(0xFF616161);
+    }
+  }
+
   Color get lightBorder {
     switch (this) {
       case PolicyStatus.active:
@@ -142,6 +161,32 @@ extension PolicyStatusX on PolicyStatus {
       case 'active':
       default:
         return PolicyStatus.active;
+    }
+  }
+
+  String? get bannerMessage {
+    switch (this) {
+      case PolicyStatus.active:
+        return null;
+      case PolicyStatus.renewal:
+        return 'Your membership renews in 12 days. Renew now to avoid a lapse in coverage.';
+      case PolicyStatus.expired:
+        return 'Your membership expired on 31 Jul 2026. You can still renew within the grace period (60 days) with a 25% late fee.';
+      case PolicyStatus.noPlan:
+        return "You don't have an active membership yet. Secure coverage to unlock policies, documents and legal support.";
+    }
+  }
+
+  IconData get bannerIcon {
+    switch (this) {
+      case PolicyStatus.active:
+        return Icons.check_circle_outline_rounded;
+      case PolicyStatus.renewal:
+        return Icons.warning_amber_rounded; // triangle-alert, like prototype
+      case PolicyStatus.expired:
+        return Icons.cancel_outlined; // circle with X, like prototype
+      case PolicyStatus.noPlan:
+        return Icons.info_outline_rounded; // circle with i, like prototype
     }
   }
 }
