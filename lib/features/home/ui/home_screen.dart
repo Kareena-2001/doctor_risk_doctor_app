@@ -159,20 +159,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         borderRadius: BorderRadius.circular(Responsive.w(12)),
         border: Border.all(color: AppColors.greyLight),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Text(
-              "Good morning, Dr. Paresh Mathur · here's your membership at a glance",
+      child: RichText(
+        text: TextSpan(
+          style: customTextStyle(
+            fontSize: Responsive.sp(12.5),
+            fontWeight: FontWeight.w500,
+            color: AppColors.textColor,
+          ).copyWith(height: 1.4),
+          children: [
+            const TextSpan(text: "Good morning, "),
+            TextSpan(
+              text: "Dr. Paresh Mathur",
               style: customTextStyle(
                 fontSize: Responsive.sp(12.5),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
                 color: AppColors.textColor,
               ).copyWith(height: 1.4),
             ),
-          ),
-        ],
+            const TextSpan(text: " · here's your membership at a glance"),
+          ],
+        ),
       ),
     );
   }
