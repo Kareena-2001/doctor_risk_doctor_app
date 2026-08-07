@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
@@ -51,7 +52,7 @@ final List<PolicyModel> personalPlansList = [
   const PolicyModel(
     title: 'Personal Plan',
     planName: 'Clinic Liability Cover',
-    policyType: 'Clinical Establishment',
+    policyType: 'Medical Establishment',
     coverageAmount: '₹ 25,00,000',
     policyNumber: '03303387998821',
     duration: '1 Year',
@@ -62,7 +63,7 @@ final List<PolicyModel> personalPlansList = [
   const PolicyModel(
     title: 'Personal Plan',
     planName: 'Locum Cover',
-    policyType: 'Locum Indemnity',
+    policyType: 'Medical Establishment',
     coverageAmount: '₹ 10,00,000',
     policyNumber: '03303387112233',
     duration: '1 Year',
@@ -89,7 +90,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   late Animation<double> _fadeAnimation;
   Timer? _sessionTimer;
 
-  // Carousel state for the personal-plans pager inside _buildPolicyCard
   final PageController _planPageController = PageController();
   int _currentPlanPage = 0;
 
@@ -154,11 +154,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         horizontal: Responsive.w(16),
         vertical: Responsive.h(11),
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: AppColors.greyLight),
-      ),
       child: RichText(
         text: TextSpan(
           style: customTextStyle(
@@ -167,7 +162,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             color: AppColors.textColor,
           ).copyWith(height: 1.4),
           children: [
-            const TextSpan(text: "Good morning, "),
+            TextSpan(
+              text: "Good morning, ",
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                color: AppColors.mono60,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
             TextSpan(
               text: "Dr. Paresh Mathur",
               style: customTextStyle(
@@ -176,7 +178,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 color: AppColors.textColor,
               ).copyWith(height: 1.4),
             ),
-            const TextSpan(text: " · here's your membership at a glance"),
+            TextSpan(
+              text: " · here's your membership at a glance",
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                color: AppColors.mono60,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
           ],
         ),
       ),
@@ -227,9 +236,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentPlans = _filterPlansByPriorityStatus(personalPlansList);
-    // final currentStatus = currentPlans.isNotEmpty
-    //     ? currentPlans.first.status
-    //     : PolicyStatus.noPlan;
 
     return Stack(
       children: [
@@ -281,7 +287,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     ),
                     height(Responsive.h(8)),
                     _buildHeader(),
-                    height(Responsive.h(8)),
+                    height(Responsive.h(4)),
+                    _buildQuickActionsRow(),
+                    height(Responsive.h(12)),
                     _buildStatusBanner(kCurrentDashboardStatus),
                     if (kCurrentDashboardStatus.bannerMessage != null)
                       height(Responsive.h(10)),
@@ -301,110 +309,400 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   // ═══════════════════════════════════════════════════════════
+  // QUICK ACTIONS — Emergency / Legal / Appointments pills.
+  // Matches the prototype's `.emergency-pill` (pulsing coral,
+  // top bar) + `.quick-shortcuts` (sky Legal / amber Appointments,
+  // each with a `.pill-badge` count).
+  // ═══════════════════════════════════════════════════════════
+
+  Widget _buildQuickActionsRow() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            _emergencyPill(),
+            width(Responsive.w(10)),
+            _shortcutPill(
+              label: 'Legal',
+              icon: Icons.gavel_rounded,
+              badgeCount: 1,
+              bg: const Color(0xFFE4F0FA),
+              // sky-100
+              fg: const Color(0xFF3E8FD0),
+              // sky-500
+              onTap: () => context.push(Routes.notification),
+            ),
+            width(Responsive.w(10)),
+            _shortcutPill(
+              label: 'Appointments',
+              icon: Icons.calendar_month_rounded,
+              badgeCount: 1,
+              bg: const Color(0xFFFCEFD9),
+              // amber-100
+              fg: const Color(0xFFEF9F2E),
+              // amber-500
+              onTap: () => context.push(Routes.notification),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _emergencyPill() {
+    const emergencyRed = Color(0xFFE15C48);
+    return InkWell(
+      borderRadius: BorderRadius.circular(100),
+      onTap: () => context.push(Routes.emergency),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: Responsive.w(16),
+          vertical: Responsive.h(10),
+        ),
+        decoration: BoxDecoration(
+          color: emergencyRed,
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: [
+            BoxShadow(
+              color: emergencyRed.withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.phone_in_talk_rounded,
+              size: Responsive.sp(13),
+              color: Colors.white,
+            ),
+            width(Responsive.w(8)),
+            Text(
+              'Emergency',
+              style: customTextStyle(
+                fontSize: Responsive.sp(10.5),
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _shortcutPill({
+    required String label,
+    required IconData icon,
+    required int badgeCount,
+    required Color bg,
+    required Color fg,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(100),
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.only(top: Responsive.h(6), right: Responsive.w(6)),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.w(14),
+            vertical: Responsive.h(10),
+          ),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: Responsive.sp(13), color: fg),
+                  width(Responsive.w(6)),
+                  Text(
+                    label,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(10.5),
+                      fontWeight: FontWeight.w700,
+                      color: fg,
+                    ),
+                  ),
+                ],
+              ),
+              if (badgeCount > 0)
+                Positioned(
+                  top: -Responsive.h(10),
+                  right: -Responsive.w(8),
+                  child: Container(
+                    width: Responsive.w(17),
+                    height: Responsive.w(17),
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE15C48),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '$badgeCount',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(9.5),
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
   // HERO / COMPACT PROFILE HEADER — matches the prototype's
-  // hero-left content: avatar, name, points, role, tier badge,
-  // status tag, profile completion, and the Med Reg/Membership
-  // ID/Coverage/Renews meta grid.
+  // hero-card-wrap: blurred colored "blobs" glowing behind a
+  // glassy translucent card, tinted per membership status.
   // ═══════════════════════════════════════════════════════════
 
   Widget _buildCompactProfileHeader(bool isDark, PolicyStatus status) {
     final noPlan = status == PolicyStatus.noPlan;
+    final radius = BorderRadius.circular(Responsive.w(28));
 
     return Container(
-      width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
-      padding: EdgeInsets.symmetric(
-        vertical: Responsive.h(24),
-        horizontal: Responsive.w(20),
-      ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Responsive.w(28)),
-        color: isDark ? const Color(0xFF1A1A1D) : status.heroBg,
-        border: Border.all(
-          color: isDark ? Colors.transparent : status.heroBorder,
-          width: 1.2,
-        ),
+        borderRadius: radius,
         boxShadow: [
           BoxShadow(
-            color: status.color.withValues(alpha: 0.08),
+            color: status.color.withValues(alpha: 0.10),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            onTap: () => context.push(Routes.editProfile),
-            child: Container(
-              padding: EdgeInsets.all(Responsive.w(4)),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [AppColors.newPri, AppColors.primary],
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(
+              color: isDark ? Colors.transparent : status.heroBorder,
+              width: 1.2,
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Base glass wash — this is what shows through as the
+              // vibrant tint once the blobs glow behind it.
+              Positioned.fill(
+                child: Container(
+                  color: isDark
+                      ? const Color(0xFF1A1A1D)
+                      : status.heroBg.withValues(alpha: 0.55),
                 ),
               ),
-              child: Hero(
-                tag: 'user_avatar',
-                child: CircleAvatar(
-                  radius: Responsive.w(38),
-                  backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
-                  child: CircleAvatar(
-                    radius: Responsive.w(35),
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    backgroundImage: AssetImage(Assets.user),
+              // Blurred color blobs — intensity/spread driven by status,
+              // so active glows green, expired washes red, renewal is
+              // a single soft amber glow.
+              ..._heroBlobsForStatus(status),
+              // Soft diagonal sheen, like the prototype's ::before.
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withValues(alpha: isDark ? 0.04 : 0.35),
+                        // Colors.white.withValues(alpha: 0.8),
+                        Colors.white,
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          height(Responsive.h(12)),
 
-          // Name + points badge
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  'Dr. Paresh Mathur',
-                  textAlign: TextAlign.center,
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(16),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
-                  ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: Responsive.h(24),
+                  horizontal: Responsive.w(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InkWell(
+                      onTap: () => context.push(Routes.editProfile),
+                      child: Container(
+                        padding: EdgeInsets.all(Responsive.w(4)),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          // gradient: LinearGradient(
+                          //   colors: [AppColors.newPri, AppColors.primary],
+                          // ),
+                          color: status.color.withValues(alpha: 0.5),
+                        ),
+                        child: Hero(
+                          tag: 'user_avatar',
+                          child: CircleAvatar(
+                            radius: Responsive.w(38),
+                            backgroundColor: isDark
+                                ? Colors.grey.shade900
+                                : Colors.white,
+                            child: CircleAvatar(
+                              radius: Responsive.w(35),
+                              backgroundColor: AppColors.primary.withValues(
+                                alpha: 0.1,
+                              ),
+                              backgroundImage: AssetImage(Assets.user),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    height(Responsive.h(12)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Dr. Paresh Mathur',
+                            textAlign: TextAlign.center,
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(16),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textColor,
+                            ),
+                          ),
+                        ),
+                        if (!noPlan) ...[
+                          width(Responsive.w(8)),
+                          _pointsBadge('320'),
+                        ],
+                      ],
+                    ),
+                    height(Responsive.h(4)),
+                    Text(
+                      'General Practitioner · B.A.M.S.',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11.5),
+                        color: AppColors.homeTextMuted,
+                      ),
+                    ),
+                    height(Responsive.h(12)),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: Responsive.w(8),
+                      runSpacing: Responsive.h(8),
+                      children: [
+                        if (!noPlan) _tierBadge('Gold II · Premium'),
+                        _statusTag(status),
+                        _profileCompletionTag(noPlan ? '48' : '92'),
+                      ],
+                    ),
+                    height(Responsive.h(18)),
+                    _buildHeroMetaGrid(currentPlanForStatus(status), noPlan),
+                    height(Responsive.h(14)),
+                  ],
                 ),
               ),
-              if (!noPlan) ...[width(Responsive.w(8)), _pointsBadge('320')],
             ],
           ),
-          height(Responsive.h(4)),
-          Text(
-            'General Practitioner · B.A.M.S.',
-            style: customTextStyle(
-              fontSize: Responsive.sp(11.5),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(12)),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: Responsive.w(8),
-            runSpacing: Responsive.h(8),
-            children: [
-              if (!noPlan) _tierBadge('Gold II · Premium'),
-              _statusTag(status),
-              _profileCompletionTag(noPlan ? '48' : '92'),
-            ],
-          ),
-          height(Responsive.h(18)),
-          _buildHeroMetaGrid(currentPlanForStatus(status), noPlan),
-          height(Responsive.h(14)),
-        ],
+        ),
       ),
     );
+  }
+
+  /// A single blurred, glowing color circle — the building block behind
+  /// the prototype's vibrant hero-card look (`.hero-blob { filter:
+  /// blur(50px) }`). ImageFiltered gives us the same soft-glow blur.
+  Widget _statusBlob({
+    required double size,
+    required Color color,
+    required double opacity,
+    double? top,
+    double? bottom,
+    double? left,
+    double? right,
+  }) {
+    return Positioned(
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: opacity),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Per-status blob recipe — this is where the "how vibrant / how much
+  /// color" difference between Active, Renewal and Expired lives.
+  /// Only a single top-left glow, matching the prototype's `.hero-blob.b1`
+  /// — no bottom-right spread.
+  List<Widget> _heroBlobsForStatus(PolicyStatus status) {
+    switch (status) {
+      case PolicyStatus.active:
+        // Vibrant green glow, top-left only.
+        return [
+          _statusBlob(
+            size: Responsive.w(210),
+            color: const Color(0xFF57C97E),
+            opacity: 0.28,
+            top: -Responsive.h(80),
+            left: -Responsive.w(50),
+          ),
+        ];
+      case PolicyStatus.renewal:
+        // Just a little amber glow, lower opacity, top-left only.
+        return [
+          _statusBlob(
+            size: Responsive.w(170),
+            color: const Color(0xFFEF9F2E),
+            // amber-500
+            opacity: 0.28,
+            top: -Responsive.h(70),
+            left: -Responsive.w(50),
+          ),
+        ];
+      case PolicyStatus.expired:
+        // Full, saturated red glow, top-left only.
+        return [
+          _statusBlob(
+            size: Responsive.w(230),
+            color: const Color(0xFFE15C48),
+            // coral-500
+            opacity: 0.22,
+            top: -Responsive.h(80),
+            left: -Responsive.w(50),
+          ),
+        ];
+      case PolicyStatus.noPlan:
+        return [
+          _statusBlob(
+            size: Responsive.w(150),
+            color: Colors.grey.shade400,
+            opacity: 0.22,
+            top: -Responsive.h(60),
+            left: -Responsive.w(40),
+          ),
+        ];
+    }
   }
 
   PolicyModel currentPlanForStatus(PolicyStatus status) {
@@ -432,7 +730,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           Icon(
             Icons.star_rounded,
             size: Responsive.sp(13),
-
             color: AppColors.white,
           ),
           width(Responsive.w(3)),
@@ -483,7 +780,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  // Light-color status pill — green/red/yellow/white per status, as requested.
   Widget _statusTag(PolicyStatus status) {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -520,6 +816,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         vertical: Responsive.h(5),
       ),
       decoration: BoxDecoration(
+        border: Border.all(color: AppColors.fieldGrey),
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(Responsive.w(20)),
       ),
@@ -527,8 +824,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         'Profile $percent% complete',
         style: customTextStyle(
           fontSize: Responsive.sp(11.5),
-          fontWeight: FontWeight.w600,
-          color: AppColors.homeTextMuted,
+          fontWeight: FontWeight.w700,
+          color: AppColors.grey,
         ),
       ),
     );
@@ -536,8 +833,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   Widget _buildHeroMetaGrid(PolicyModel policy, bool noPlan) {
     final items = <Widget>[
-      _heroMetaItem('Med. Reg. No.', '48578'),
       if (!noPlan) ...[
+        _heroMetaItem('Med. Reg. No.', '48578'),
         _heroMetaItem('Membership ID', 'DR-2026-084213'),
         _heroMetaItem('Coverage', policy.coverageAmount),
         _heroMetaItem(
@@ -591,10 +888,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget _buildPolicyCard(List<PolicyModel> plans) {
     if (plans.isEmpty) return _buildNoPlanCard();
 
+    final currentPlan = plans[_currentPlanPage];
+
+    final bool isNoPlan = currentPlan.status == PolicyStatus.noPlan;
+    final bool isActive = currentPlan.status == PolicyStatus.active;
+
+    final double cardHeight = isActive ? Responsive.h(270) : Responsive.h(350);
+
+    // if (plans.isEmpty) return _buildNoPlanCard();
+
     return Column(
       children: [
         SizedBox(
-          height: Responsive.h(370),
+          height: cardHeight,
           child: PageView.builder(
             controller: _planPageController,
             itemCount: plans.length,
@@ -665,59 +971,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     Text(
                       policy.title.toUpperCase(),
                       style: customTextStyle(
-                        color: AppColors.homeTextMuted,
+                        color: AppColors.textColorGrey,
                         fontSize: Responsive.sp(11),
                         fontWeight: FontWeight.w700,
                       ).copyWith(letterSpacing: 1.2),
                     ),
-                    height(Responsive.h(6)),
-                    Text(
-                      policy.planName,
-                      style: customTextStyle(
-                        color: AppColors.textColor,
-                        fontSize: Responsive.sp(15),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    // height(Responsive.h(6)),
+                    // Text(
+                    //   policy.planName,
+                    //   style: customTextStyle(
+                    //     color: AppColors.textColor,
+                    //     fontSize: Responsive.sp(15),
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.w(10),
-                  vertical: Responsive.h(6),
-                ),
-                decoration: BoxDecoration(
-                  color: status.color.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(Responsive.w(20)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      status.icon,
-                      size: Responsive.sp(12),
-                      color: status.color,
-                    ),
-                    width(Responsive.w(4)),
-                    Text(
-                      status.name[0].toUpperCase() + status.name.substring(1),
-                      style: customTextStyle(
-                        color: status.color,
-                        fontSize: Responsive.sp(11),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(
+              //     horizontal: Responsive.w(10),
+              //     vertical: Responsive.h(6),
+              //   ),
+              //   decoration: BoxDecoration(
+              //     color: status.color.withValues(alpha: 0.14),
+              //     borderRadius: BorderRadius.circular(Responsive.w(20)),
+              //   ),
+              //   child: Row(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       Icon(
+              //         status.icon,
+              //         size: Responsive.sp(12),
+              //         color: status.color,
+              //       ),
+              //       width(Responsive.w(4)),
+              //       Text(
+              //         status.name[0].toUpperCase() + status.name.substring(1),
+              //         style: customTextStyle(
+              //           color: status.color,
+              //           fontSize: Responsive.sp(11),
+              //           fontWeight: FontWeight.w700,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
           height(Responsive.h(4)),
           Text(
             policy.policyType,
             style: customTextStyle(
-              color: AppColors.homeTextMuted,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textColor,
               fontSize: Responsive.sp(12.5),
             ),
           ),
@@ -929,20 +1236,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               onPressed: () => context.push(Routes.productHub),
             ),
           ),
-          height(Responsive.h(10)),
-          Center(
-            child: TextButton(
-              onPressed: () => context.push(Routes.myPlans),
-              child: Text(
-                'View My Plans',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(12.5),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.newPri,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -955,7 +1248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPolicyCard(plans),
-          height(Responsive.h(24)),
+          height(Responsive.h(20)),
           HeadingWidget(
             headingTitle: 'My Products',
             buttonText: 'View All',
@@ -968,50 +1261,78 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: Container(
               padding: EdgeInsets.all(Responsive.w(16)),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.white.withValues(alpha: 0.22),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(Responsive.w(18)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 14,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+                border: Border.all(
+                  color: AppColors.iconPink.withValues(alpha: 0.10),
+                ),
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(Responsive.w(8)),
+                    width: Responsive.w(46),
+                    height: Responsive.w(46),
                     decoration: BoxDecoration(
-                      color: AppColors.newPri.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(Responsive.w(12)),
+                      color: AppColors.homeProductBg,
+                      borderRadius: BorderRadius.circular(Responsive.w(14)),
                     ),
                     child: Icon(
-                      Icons.grid_view_rounded,
-                      color: AppColors.newPri,
-                      size: Responsive.sp(20),
+                      Icons.shield_outlined,
+                      color: AppColors.homeProduct,
+                      size: Responsive.sp(23),
                     ),
                   ),
-                  width(Responsive.w(12)),
+                  width(Responsive.w(14)),
                   Expanded(
-                    child: Text(
-                      'Browse plans, manage your policies & more',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(13),
-                        color: AppColors.textColor,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Explore Your Protection',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(13.5),
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textColor,
+                          ),
+                        ),
+                        height(Responsive.h(4)),
+                        Text(
+                          'Browse plans & manage your policies',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(12),
+                            color: AppColors.homeTextMuted,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: Responsive.sp(14),
-                    color: AppColors.homeTextMuted,
+                  Container(
+                    width: Responsive.w(32),
+                    height: Responsive.w(32),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      size: Responsive.sp(17),
+                      color: AppColors.textColor,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           height(Responsive.h(28)),
+
           HeadingWidget(
             headingTitle: 'News & Advisories',
             buttonText: "View All",
@@ -1051,11 +1372,155 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           height(Responsive.h(10)),
           _buildEvents(),
           height(Responsive.h(28)),
+          _buildFeatureWidgetsRow(),
+          height(Responsive.h(24)),
+          _buildSupportHubFeatureWidgetsRow(),
+          height(Responsive.h(24)),
           _buildFAQCard(),
           height(Responsive.h(24)),
           SocialLinkWidget(),
           height(Responsive.h(30)),
         ],
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // FEATURE WIDGETS — Support Hub / Document Vault cards.
+  // Matches the prototype's `.widget-grid` (`.widget` cards with
+  // ic-mint / ic-sky icon chips), including its copy verbatim.
+  // ═══════════════════════════════════════════════════════════
+  Widget _buildFeatureWidgetsRow() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _featureWidgetCard(
+              icon: Icons.support_agent_rounded,
+              iconBg: const Color(0xFFE9F7EC),
+              iconFg: const Color(0xFF166C3F),
+              title: 'Support Hub',
+              subtitle: '2 open tickets · avg response 4 hrs',
+              ctaLabel: 'Raise a query',
+              ctaColor: const Color(0xFF166C3F),
+              onTap: () => context.push(Routes.supportHub),
+            ),
+          ),
+          width(Responsive.w(14)),
+          Expanded(
+            child: _featureWidgetCard(
+              icon: Icons.folder_special_rounded,
+              iconBg: const Color(0xFFE4F0FA),
+              iconFg: const Color(0xFF3E8FD0),
+              title: 'Document Vault',
+              subtitle: '12 files · certificate expires in 34 days',
+              ctaLabel: 'View documents',
+              ctaColor: const Color(0xFF3E8FD0),
+              onTap: () => context.push(Routes.documentVault),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportHubFeatureWidgetsRow() {
+    return IntrinsicHeight(
+      child: _featureWidgetCard(
+        icon: Icons.star,
+        iconBg: AppColors.secondary.withValues(alpha: 0.5),
+        iconFg: AppColors.secondary,
+        title: 'Rewards Points',
+        subtitle:
+            '320 pts · earn more by sharing experiences, testimonials, referrals & events',
+        ctaLabel: 'Redeem at renewal or purchase',
+        ctaColor: const Color(0xFF166C3F),
+        onTap: () => context.push(Routes.supportHub),
+      ),
+    );
+  }
+
+  Widget _featureWidgetCard({
+    required IconData icon,
+    required Color iconBg,
+    required Color iconFg,
+    required String title,
+    required String subtitle,
+    required String ctaLabel,
+    required Color ctaColor,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(Responsive.w(18)),
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(Responsive.w(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(Responsive.w(18)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: Responsive.w(38),
+              height: Responsive.w(38),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(Responsive.w(11)),
+              ),
+              child: Icon(icon, size: Responsive.sp(18), color: iconFg),
+            ),
+            height(Responsive.h(12)),
+            Text(
+              title,
+              style: customTextStyle(
+                fontSize: Responsive.sp(13.5),
+                fontWeight: FontWeight.w700,
+                color: AppColors.textColor,
+              ),
+            ),
+            height(Responsive.h(5)),
+            Text(
+              subtitle,
+              style: customTextStyle(
+                fontSize: Responsive.sp(11),
+                color: AppColors.homeTextMuted,
+              ).copyWith(height: 1.4),
+            ),
+            height(Responsive.h(12)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    ctaLabel,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11.5),
+                      fontWeight: FontWeight.w700,
+                      color: ctaColor,
+                    ),
+                  ),
+                ),
+                width(Responsive.w(4)),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: Responsive.sp(13),
+                  color: ctaColor,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1133,13 +1598,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           vertical: Responsive.h(4),
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.newPri.withValues(alpha: .10),
+                          color: AppColors.homeBlogBg,
                           borderRadius: BorderRadius.circular(Responsive.w(30)),
                         ),
                         child: Text(
                           blog['category']!,
                           style: customTextStyle(
-                            color: AppColors.newPri,
+                            color: AppColors.homeBlog,
                             fontSize: Responsive.sp(10),
                             fontWeight: FontWeight.w600,
                           ),
@@ -1190,13 +1655,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           Container(
                             padding: EdgeInsets.all(Responsive.w(6)),
                             decoration: BoxDecoration(
-                              color: AppColors.newPri.withValues(alpha: .10),
+                              color: AppColors.homeBlogBg,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.arrow_forward_ios,
-                              size: Responsive.sp(14),
-                              color: AppColors.newPri,
+                              size: Responsive.sp(12),
+                              color: AppColors.homeBlog,
                             ),
                           ),
                         ],
@@ -1442,9 +1907,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
+        border: Border.all(color: AppColors.homeNews.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.035),
             blurRadius: 12,
             offset: const Offset(0, 5),
           ),
@@ -1452,12 +1918,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: Responsive.w(20),
-            backgroundColor: AppColors.newPri.withValues(alpha: 0.1),
-            child: Icon(icon, color: AppColors.newPri, size: Responsive.sp(18)),
+          Container(
+            width: Responsive.w(40),
+            height: Responsive.w(40),
+            decoration: BoxDecoration(
+              color: AppColors.homeNewsBg,
+              borderRadius: BorderRadius.circular(Responsive.w(12)),
+            ),
+            child: Icon(
+              icon,
+              color: AppColors.homeNews,
+              size: Responsive.sp(18),
+            ),
           ),
+
           width(Responsive.w(14)),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1472,16 +1948,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     fontSize: Responsive.sp(12),
                   ),
                 ),
-                height(Responsive.h(4)),
+
+                height(Responsive.h(5)),
+
                 Text(
                   date,
                   style: customTextStyle(
-                    color: Colors.grey.shade600,
+                    color: AppColors.homeTextMuted,
                     fontSize: Responsive.sp(11),
                   ),
                 ),
               ],
             ),
+          ),
+
+          width(Responsive.w(8)),
+
+          Icon(
+            Icons.chevron_right_rounded,
+            size: Responsive.sp(20),
+            color: AppColors.homeNews,
           ),
         ],
       ),

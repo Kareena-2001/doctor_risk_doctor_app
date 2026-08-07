@@ -1,7 +1,7 @@
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
-import '../../../extensions/build_context_extension.dart';
+import '../../extensions/build_context_extension.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});

@@ -5,6 +5,8 @@ import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
+import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dart';
+import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
@@ -25,10 +27,9 @@ import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
 import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
-import 'package:Doctors_App/features/profile/ui/contact_us.dart';
 import 'package:Doctors_App/features/profile/ui/edit_profile_screen.dart';
 import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
-import 'package:Doctors_App/features/profile/ui/terms_conditions_screen.dart';
+import 'package:Doctors_App/features/rewards/ui/rewards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_drawer.dart';
@@ -45,9 +46,11 @@ import '../features/product/model/product_model.dart';
 import '../features/product/ui/my_plans_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
-import '../features/profile/ui/about_us_screen.dart';
 import '../features/profile/ui/languages_screen.dart';
-import '../features/profile/ui/privacy_policy_screen.dart';
+import '../features/setting/about_us_screen.dart';
+import '../features/setting/contact_us.dart';
+import '../features/setting/privacy_policy_screen.dart';
+import '../features/setting/terms_conditions_screen.dart';
 import 'routes.dart';
 
 enum SlideDirection { right, left, up, down }
@@ -127,7 +130,20 @@ final GoRouter router = GoRouter(
       path: Routes.main,
       pageBuilder: (context, state) => state.slidePage(const MainScreen()),
     ),
-
+    GoRoute(
+      path: Routes.documentVault,
+      pageBuilder: (context, state) =>
+          state.slidePage(const DocumentVaultScreen()),
+    ),
+    GoRoute(
+      path: Routes.emergency,
+      pageBuilder: (context, state) =>
+          state.slidePage(const EmergencyAssistanceScreen()),
+    ),
+    GoRoute(
+      path: Routes.rewards,
+      pageBuilder: (context, state) => state.slidePage(const RewardsScreen()),
+    ),
     GoRoute(
       path: Routes.planListScreen,
       pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
@@ -225,7 +241,6 @@ final GoRouter router = GoRouter(
       path: Routes.adminDocs,
       pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
     ),
-
     GoRoute(
       path: Routes.supportHub,
       pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),

@@ -458,7 +458,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                       ],
-
                       height(Responsive.h(12)),
                       CustomTextField(
                         label: 'Confirm password ',
@@ -520,7 +519,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onPressed: authState.isLoading
                             ? null
                             : _onSignUpPressed,
-                        backgroundColor: AppColors.brandGreen,
+                        gradient: LinearGradient(
+                          colors: [AppColors.newPri, AppColors.primary],
+                        ),
+                        // backgroundColor: AppColors.brandGreen,
                       ),
                       height(Responsive.h(16)),
 

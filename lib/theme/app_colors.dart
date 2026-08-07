@@ -86,10 +86,24 @@ class AppColors {
   // static const Color newPri = Color(0xFF669b98);
   static const Color newPri = Color(0xFF166C3F);
 
+  // static const Color newPri = Color(0xFF166C3F);
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
   static const Color newBg = Color(0xffF6F7FB);
+  static const Color homeProduct = Color(0xFF166C3F);
+  static const Color homeProductBg = Color(0xFFEAF5EF);
 
+  static const Color homeNews = Color(0xFF2563A8);
+  static const Color homeNewsBg = Color(0xFFEEF6FD);
+
+  static const Color homeBlog = Color(0xFF166C3F);
+  static const Color homeBlogBg = Color(0xFFEAF5EF);
+
+  static const Color homeEvent = Color(0xFFC27A16);
+  static const Color homeEventBg = Color(0xFFFFF7E8);
+
+  static const Color homeFaq = Color(0xFF166C3F);
+  static const Color homeFaqBg = Color(0xFFEAF5EF);
   static const Color primary = Color(0xFF339D5C);
   static const Color secondaryColor = Color(0xff0A5EB0);
   static const Color sec = Color(0xFFf6c989);

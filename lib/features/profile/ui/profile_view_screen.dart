@@ -4,7 +4,7 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
 import 'package:Doctors_App/features/profile/model/certificate_model.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
-import 'package:Doctors_App/features/profile/model/policy_model.dart';
+import 'package:Doctors_App/features/rewards/ui/rewards_screen.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +16,8 @@ import '../../../theme/app_colors.dart';
 
 class ProfileViewScreen extends StatelessWidget {
   final DoctorProfileData data;
-  // final List<PolicyModel> policies;
 
-  const ProfileViewScreen({
-    super.key,
-    required this.data,
-    // this.policies = const [],
-  });
+  const ProfileViewScreen({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +170,11 @@ class ProfileViewScreen extends StatelessWidget {
               children: [
                 _CertificateList(certificates: data.organisationCertificates),
               ],
+            ),
+            SectionCard(
+              title: 'Rewards & Points',
+              icon: Icons.star,
+              children: [RewardsScreen()],
             ),
             // height(10),
             // SectionCard(

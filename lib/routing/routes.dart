@@ -17,7 +17,10 @@ class Routes {
   static const forgotPassword = '/forgotPassword';
   static const otpVerification = '/otpVerification';
   static const createNewPassword = '/createNewPassword';
+  static const documentVault = '/documentVault';
 
+  static const emergency = '/emergency';
+  static const rewards = '/rewards';
   static const main = '/main';
   static const accountInformation = '/accountInformation';
   static const appearances = '/appearances';

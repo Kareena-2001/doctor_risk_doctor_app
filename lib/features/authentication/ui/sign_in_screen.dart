@@ -114,7 +114,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   vertical: Responsive.h(24),
                 ),
                 decoration: BoxDecoration(
-                  gradient: AppColors.brandLinearGradient,
+                  gradient: LinearGradient(
+                    colors: [AppColors.newPri, AppColors.primary],
+                  ),
+                  // gradient: AppColors.brandLinearGradient,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
@@ -382,7 +385,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       height(Responsive.h(28)),
                       PrimaryButton(
                         text: 'Sign In to Dashboard',
-                        gradient: AppColors.brandLinearGradient,
+                        // gradient: AppColors.brandLinearGradient,
+                        gradient: LinearGradient(
+                          colors: [AppColors.newPri, AppColors.primary],
+                        ),
                         isLoading: authState.isLoading,
                         onPressed: authState.isLoading ? null : _login,
                       ),

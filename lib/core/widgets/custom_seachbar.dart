@@ -31,12 +31,12 @@ class CustomSearchBar extends ConsumerWidget {
       ),
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(color: AppColors.fieldBorder, width: 2),
         ),
         hintText: hint,
         hintStyle: customTextStyle(
-          fontSize: 14,
+          fontSize: 13,
           color: const Color(0xFFAAAAAA),
         ),
         prefixIcon: const Icon(Icons.search, color: Color(0xFF757575)),
@@ -47,15 +47,15 @@ class CustomSearchBar extends ConsumerWidget {
           vertical: 12,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(
-            color: AppColors.fieldBorder,
+            color: AppColors.fieldGrey,
             // width: 1.5,
           ),
         ),
 
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(
             color: AppColors.fieldBorder,
             // width: 1.5,
@@ -69,11 +69,11 @@ class CustomSearchBar extends ConsumerWidget {
         //   ),
         // ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: Colors.red),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
       ),
