@@ -57,11 +57,13 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
       _tickets = [
         SupportTicket(
           ref: 'LS-2026-0146',
-          typeLabel: 'Register / Request a Query — Query on Consent Form Wording',
+          typeLabel:
+              'Register / Request a Query — Query on Consent Form Wording',
           category: 'Consultation',
           priority: 'Normal',
           status: TicketStatus.open,
-          description: 'Need clarification on consent wording for a new procedure.',
+          description:
+              'Need clarification on consent wording for a new procedure.',
           raisedAt: DateTime.now().subtract(const Duration(hours: 5)),
         ),
         SupportTicket(
@@ -75,16 +77,19 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
         ),
         SupportTicket(
           ref: 'LS-2026-0139',
-          typeLabel: 'On‑Call Support — Emergency — Police at Clinic / Hospital',
+          typeLabel:
+              'On‑Call Support — Emergency — Police at Clinic / Hospital',
           category: 'Consultation',
           priority: 'Urgent',
           status: TicketStatus.escalated,
-          description: 'Immediate guidance needed — police visited the clinic today.',
+          description:
+              'Immediate guidance needed — police visited the clinic today.',
           raisedAt: DateTime.now().subtract(const Duration(hours: 20)),
         ),
         SupportTicket(
           ref: 'LS-2026-0151',
-          typeLabel: 'Register / Request a Query — Notice Received — Need to Reply',
+          typeLabel:
+              'Register / Request a Query — Notice Received — Need to Reply',
           category: 'Notice',
           priority: 'High',
           status: TicketStatus.open,
@@ -115,8 +120,10 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
 
   List<SupportTicket> _filtered(bool Function(TicketStatus) statusMatch) {
     return _tickets.where((t) {
-      final catOk = _categoryFilter == 'All Categories' ||
-          (_categoryFilter == 'Legal Consultation' && t.category == 'Consultation') ||
+      final catOk =
+          _categoryFilter == 'All Categories' ||
+          (_categoryFilter == 'Legal Consultation' &&
+              t.category == 'Consultation') ||
           (_categoryFilter == 'Legal Notice' && t.category == 'Notice') ||
           (_categoryFilter == 'Legal Case' && t.category == 'Case');
       return catOk && statusMatch(t.status);
@@ -124,7 +131,9 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
   }
 
   Future<void> _callNow(bool isMedicoLegal) async {
-    final uri = Uri.parse('tel:${isMedicoLegal ? _medicoLegalCallNumber : _legalCallNumber}');
+    final uri = Uri.parse(
+      'tel:${isMedicoLegal ? _medicoLegalCallNumber : _legalCallNumber}',
+    );
     if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 
@@ -141,7 +150,9 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Legal ticket raised — reference #${ticket.ref}')),
+          SnackBar(
+            content: Text('Legal ticket raised — reference #${ticket.ref}'),
+          ),
         );
       }
     }
@@ -151,71 +162,83 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'Legal Support'),
+
+      body: _isLoading
+          ? const Loading()
+          : Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   'Medico‑legal queries, notices, negligence allegations, consultations and appointment booking.',
+                  //   style: AppTheme.label12,
+                  // ),
+                  // height(14),
+                  // _infoBanner(
+                  //   'Support is included with your membership — Legal Support is non‑payable, based on your plan type.',
+                  // ),
+                  // height(16),
+                  // _quickCallCard(),
+                  // height(24),
+                  Text('My Legal Tickets', style: AppTheme.title14),
+                  height(12),
+                  _chipRow(
+                    options: _categories,
+                    selected: _categoryFilter,
+                    onSelected: (v) => setState(() => _categoryFilter = v),
+                  ),
+                  height(8),
+                  TabBar(
+                    controller: _statusTabController,
+                    isScrollable: true,
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: AppColors.primary,
+                    tabs: [
+                      Tab(text: 'All (${_tickets.length})'),
+                      Tab(
+                        text: 'Open (${_filtered((s) => s.isOpenish).length})',
+                      ),
+                      Tab(
+                        text:
+                            'Closed (${_filtered((s) => s == TicketStatus.closed).length})',
+                      ),
+                      Tab(
+                        text:
+                            'Cancelled (${_filtered((s) => s == TicketStatus.cancelled).length})',
+                      ),
+                    ],
+                  ),
+                  height(12),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _statusTabController,
+                      children: [
+                        _ticketList(_filtered((_) => true)),
+                        _ticketList(_filtered((s) => s.isOpenish)),
+                        _ticketList(_filtered((s) => s == TicketStatus.closed)),
+                        _ticketList(
+                          _filtered((s) => s == TicketStatus.cancelled),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddTicket,
         backgroundColor: AppColors.newPri,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           'Raise Ticket',
-          style: customTextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: _isLoading
-          ? const Loading()
-          : RefreshIndicator(
-        onRefresh: _loadTickets,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Medico‑legal queries, notices, negligence allegations, consultations and appointment booking.',
-                style: AppTheme.label12,
-              ),
-              height(14),
-              _infoBanner(
-                'Support is included with your membership — Legal Support is non‑payable, based on your plan type.',
-              ),
-              height(16),
-              _quickCallCard(),
-              height(24),
-              Text('My Legal Tickets', style: AppTheme.title16),
-              height(12),
-              _chipRow(
-                options: _categories,
-                selected: _categoryFilter,
-                onSelected: (v) => setState(() => _categoryFilter = v),
-              ),
-              height(8),
-              TabBar(
-                controller: _statusTabController,
-                isScrollable: true,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: AppColors.primary,
-                tabs: [
-                  Tab(text: 'All (${_tickets.length})'),
-                  Tab(text: 'Open (${_filtered((s) => s.isOpenish).length})'),
-                  Tab(text: 'Closed (${_filtered((s) => s == TicketStatus.closed).length})'),
-                  Tab(text: 'Cancelled (${_filtered((s) => s == TicketStatus.cancelled).length})'),
-                ],
-              ),
-              height(12),
-              SizedBox(
-                height: 520,
-                child: TabBarView(
-                  controller: _statusTabController,
-                  children: [
-                    _ticketList(_filtered((_) => true)),
-                    _ticketList(_filtered((s) => s.isOpenish)),
-                    _ticketList(_filtered((s) => s == TicketStatus.closed)),
-                    _ticketList(_filtered((s) => s == TicketStatus.cancelled)),
-                  ],
-                ),
-              ),
-            ],
+          style: customTextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -266,7 +289,10 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
               children: [
                 Text('Need to talk right now?', style: AppTheme.title14),
                 height(2),
-                Text('Emergency? Call our on-call line directly.', style: AppTheme.label12),
+                Text(
+                  'Emergency? Call our on-call line directly.',
+                  style: AppTheme.label12,
+                ),
               ],
             ),
           ),
@@ -282,7 +308,10 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
                 color: AppColors.newPri,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text('Call Now', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Call Now',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ],
@@ -303,7 +332,7 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(o, style: const TextStyle(fontSize: 12)),
+              label: Text(o, style: customTextStyle(fontSize: 12)),
               selected: isSelected,
               selectedColor: AppColors.primary.withValues(alpha: 0.15),
               onSelected: (_) => onSelected(o),
@@ -322,6 +351,7 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
         message: 'Raise a ticket to get started',
       );
     }
+
     return ListView.builder(
       itemCount: tickets.length,
       itemBuilder: (context, i) {
@@ -331,31 +361,36 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
           onView: () => showTicketDetailSheet(context, t),
           onRemarks: () => showRemarksSheet(context, t, (msg) {
             setState(() {
-              t.remarks.add(TicketRemark(
-                author: 'You',
-                isTeam: false,
-                timestamp: DateTime.now(),
-                message: msg,
-              ));
+              t.remarks.add(
+                TicketRemark(
+                  author: 'You',
+                  isTeam: false,
+                  timestamp: DateTime.now(),
+                  message: msg,
+                ),
+              );
             });
           }),
           onEdit: !t.isEditable
               ? null
-              : () => showTicketEditSheet(context, t, _priorities, (priority, desc) {
-            setState(() {
-              final idx = _tickets.indexOf(t);
-              _tickets[idx] = SupportTicket(
-                ref: t.ref,
-                typeLabel: t.typeLabel,
-                category: t.category,
-                priority: priority,
-                status: t.status,
-                description: desc,
-                raisedAt: t.raisedAt,
-                remarks: t.remarks,
-              );
-            });
-          }),
+              : () => showTicketEditSheet(context, t, _priorities, (
+                  priority,
+                  desc,
+                ) {
+                  setState(() {
+                    final idx = _tickets.indexOf(t);
+                    _tickets[idx] = SupportTicket(
+                      ref: t.ref,
+                      typeLabel: t.typeLabel,
+                      category: t.category,
+                      priority: priority,
+                      status: t.status,
+                      description: desc,
+                      raisedAt: t.raisedAt,
+                      remarks: t.remarks,
+                    );
+                  });
+                }),
           onCancel: !t.isEditable
               ? null
               : () => setState(() => t.status = TicketStatus.cancelled),

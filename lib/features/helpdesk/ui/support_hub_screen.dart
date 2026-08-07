@@ -14,7 +14,7 @@ class SupportHubScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(title: 'Support Hub'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

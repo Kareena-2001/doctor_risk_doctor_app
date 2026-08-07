@@ -20,8 +20,8 @@ extension TicketStatusX on TicketStatus {
 
   bool get isOpenish =>
       this == TicketStatus.open ||
-          this == TicketStatus.inProgress ||
-          this == TicketStatus.escalated;
+      this == TicketStatus.inProgress ||
+      this == TicketStatus.escalated;
 
   Color get color {
     switch (this) {
@@ -74,8 +74,8 @@ class TicketRemark {
 
 class SupportTicket {
   final String ref;
-  final String typeLabel; // e.g. "Register / Request a Query — Notice Received"
-  final String? category; // Legal only: Consultation / Notice / Case
+  final String typeLabel;
+  final String? category;
   final String priority;
   TicketStatus status;
   final String description;
@@ -95,7 +95,7 @@ class SupportTicket {
 
   bool get isEditable =>
       status == TicketStatus.open &&
-          DateTime.now().difference(raisedAt).inHours < 36;
+      DateTime.now().difference(raisedAt).inHours < 36;
 
   int get editableHoursLeft =>
       (36 - DateTime.now().difference(raisedAt).inHours).clamp(0, 36);
