@@ -6,7 +6,6 @@ import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
-import '../../testimonial/ui/widget/community_testimonial_list.dart';
 
 class PeerForumTab extends ConsumerStatefulWidget {
   const PeerForumTab({super.key});
@@ -20,7 +19,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
 
   final List<ForumPost> _posts = [
     const ForumPost(
-      type: ForumContentType.advisory,
+      type: ForumContentType.circular,
       title: 'Supreme Court Ruling on Post-Operative Negligence Claims',
       snippet:
           'A recent judgment clarifies documentation standards expected during post-op monitoring...',
@@ -39,7 +38,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
       likedByMe: true,
     ),
     const ForumPost(
-      type: ForumContentType.video,
+      type: ForumContentType.experience,
       title: 'Telemedicine Laws Explained in 5 Minutes',
       snippet: 'Quick-watch summary from our last webinar session',
       source: 'Doctors Risk Team',

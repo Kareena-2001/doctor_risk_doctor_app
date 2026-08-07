@@ -1,43 +1,67 @@
 import 'package:flutter/material.dart';
 
-enum ForumContentType { blog, advisory, video }//, testimonial
+enum ForumContentType {
+  experience,
+  blog,
+  news,
+  circular,
+  notification,
+}
 
 extension ForumContentTypeX on ForumContentType {
   String get label {
     switch (this) {
+      case ForumContentType.experience:
+        return 'Experience';
+
       case ForumContentType.blog:
         return 'Blog';
-      case ForumContentType.advisory:
-        return 'Advisory';
-      // case ForumContentType.testimonial:
-      //   return 'Testimonial';
-      case ForumContentType.video:
-        return 'Video';
+
+      case ForumContentType.news:
+        return 'News';
+
+      case ForumContentType.circular:
+        return 'Circulars';
+
+      case ForumContentType.notification:
+        return 'Notifications';
     }
   }
 
   IconData get icon {
     switch (this) {
+      case ForumContentType.experience:
+        return Icons.auto_stories_rounded;
+
       case ForumContentType.blog:
         return Icons.article_rounded;
-      case ForumContentType.advisory:
-        return Icons.campaign_rounded;
-      // case ForumContentType.testimonial:
-      //   return Icons.format_quote_rounded;
-      case ForumContentType.video:
-        return Icons.play_circle_fill_rounded;
+
+      case ForumContentType.news:
+        return Icons.newspaper_rounded;
+
+      case ForumContentType.circular:
+        return Icons.description_rounded;
+
+      case ForumContentType.notification:
+        return Icons.notifications_rounded;
     }
   }
 
   Color get color {
     switch (this) {
+      case ForumContentType.experience:
+        return const Color(0xFFE67E22);
+
       case ForumContentType.blog:
         return const Color(0xFF6C63FF);
-      case ForumContentType.advisory:
-        return const Color(0xFFE67E22);
-      // case ForumContentType.testimonial:
-      //   return const Color(0xFF27AE60);
-      case ForumContentType.video:
+
+      case ForumContentType.news:
+        return const Color(0xFF3498DB);
+
+      case ForumContentType.circular:
+        return const Color(0xFF27AE60);
+
+      case ForumContentType.notification:
         return const Color(0xFFE74C3C);
     }
   }
