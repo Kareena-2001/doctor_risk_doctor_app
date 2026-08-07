@@ -259,7 +259,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
-
                 ),
                 child: Column(
                   children: [
@@ -284,9 +283,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     height(Responsive.h(20)),
                     _buildMainContent(isDark, currentPlans),
                     height(Responsive.h(100)),
-
-
-
                   ],
                 ),
               ),
