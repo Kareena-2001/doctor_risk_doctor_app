@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/assets.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
@@ -200,10 +201,7 @@ class AppDrawer extends ConsumerWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.newPri,
-                AppColors.newPri.withValues(alpha: 0.85),
-              ],
+              colors: [AppColors.primary, AppColors.newPri],
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
@@ -225,19 +223,16 @@ class AppDrawer extends ConsumerWidget {
                     width: 2,
                   ),
                 ),
-                child: CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    "P",
-                    style: customTextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.newPri,
-                    ),
+                child: ClipOval(
+                  child: Image.asset(
+                    Assets.user,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
+
               width(14),
               Expanded(
                 child: Column(

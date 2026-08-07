@@ -1,12 +1,9 @@
-import 'package:Doctors_App/core/constants/values/app_text_style.dart';
-import 'package:Doctors_App/features/helpdesk/ui/registery_query_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/widgets/custom_app_bar.dart';
-import '../../../routing/routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_theme.dart';
+import 'service_support_screen.dart';
 import 'legal_support_screen.dart';
 
 class SupportHubScreen extends StatelessWidget {
@@ -29,42 +26,24 @@ class SupportHubScreen extends StatelessWidget {
             ),
             height(20),
             _SupportCard(
-              icon: Icons.support_agent_rounded,
-              title: 'Register / Request a Query',
-              subtitle:
-                  'Raise a Medico Legal or Legal query, consultation, notice or pre-existing case',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RegisterQueryScreen()),
-              ),
-            ),
-            height(16),
-            _SupportCard(
               icon: Icons.gavel_rounded,
               title: 'Legal Support',
-              subtitle: 'Book an appointment or get expert support on call',
+              subtitle:
+                  'Medico‑legal queries, notices, negligence allegations, consultations and appointment booking',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const LegalSupportScreen()),
               ),
             ),
-
-            height(24),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => context.push(Routes.myQueries),
-                icon: Icon(Icons.list_alt_rounded, color: AppColors.textColor),
-                label: Text(
-                  'View My Queries',
-                  style: customTextStyle(fontSize: 14),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+            height(16),
+            _SupportCard(
+              icon: Icons.support_agent_rounded,
+              title: 'Service Support',
+              subtitle:
+                  'Admin & customer service — renewals, documents, payments, endorsements and upgrades',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ServiceSupportScreen()),
               ),
             ),
           ],

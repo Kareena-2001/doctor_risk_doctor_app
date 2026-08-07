@@ -308,13 +308,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // QUICK ACTIONS — Emergency / Legal / Appointments pills.
-  // Matches the prototype's `.emergency-pill` (pulsing coral,
-  // top bar) + `.quick-shortcuts` (sky Legal / amber Appointments,
-  // each with a `.pill-badge` count).
-  // ═══════════════════════════════════════════════════════════
-
   Widget _buildQuickActionsRow() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
@@ -465,12 +458,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // HERO / COMPACT PROFILE HEADER — matches the prototype's
-  // hero-card-wrap: blurred colored "blobs" glowing behind a
-  // glassy translucent card, tinted per membership status.
-  // ═══════════════════════════════════════════════════════════
-
   Widget _buildCompactProfileHeader(bool isDark, PolicyStatus status) {
     final noPlan = status == PolicyStatus.noPlan;
     final radius = BorderRadius.circular(Responsive.w(28));
@@ -499,8 +486,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
           child: Stack(
             children: [
-              // Base glass wash — this is what shows through as the
-              // vibrant tint once the blobs glow behind it.
               Positioned.fill(
                 child: Container(
                   color: isDark
@@ -508,11 +493,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       : status.heroBg.withValues(alpha: 0.55),
                 ),
               ),
-              // Blurred color blobs — intensity/spread driven by status,
-              // so active glows green, expired washes red, renewal is
-              // a single soft amber glow.
               ..._heroBlobsForStatus(status),
-              // Soft diagonal sheen, like the prototype's ::before.
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
@@ -521,7 +502,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.white.withValues(alpha: isDark ? 0.04 : 0.35),
-                        // Colors.white.withValues(alpha: 0.8),
                         Colors.white,
                       ],
                     ),
@@ -543,9 +523,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         padding: EdgeInsets.all(Responsive.w(4)),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          // gradient: LinearGradient(
-                          //   colors: [AppColors.newPri, AppColors.primary],
-                          // ),
                           color: status.color.withValues(alpha: 0.5),
                         ),
                         child: Hero(
@@ -620,9 +597,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  /// A single blurred, glowing color circle — the building block behind
-  /// the prototype's vibrant hero-card look (`.hero-blob { filter:
-  /// blur(50px) }`). ImageFiltered gives us the same soft-glow blur.
   Widget _statusBlob({
     required double size,
     required Color color,
@@ -651,14 +625,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  /// Per-status blob recipe — this is where the "how vibrant / how much
-  /// color" difference between Active, Renewal and Expired lives.
-  /// Only a single top-left glow, matching the prototype's `.hero-blob.b1`
-  /// — no bottom-right spread.
   List<Widget> _heroBlobsForStatus(PolicyStatus status) {
     switch (status) {
       case PolicyStatus.active:
-        // Vibrant green glow, top-left only.
         return [
           _statusBlob(
             size: Responsive.w(210),
@@ -669,24 +638,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ];
       case PolicyStatus.renewal:
-        // Just a little amber glow, lower opacity, top-left only.
         return [
           _statusBlob(
             size: Responsive.w(170),
             color: const Color(0xFFEF9F2E),
-            // amber-500
             opacity: 0.28,
             top: -Responsive.h(70),
             left: -Responsive.w(50),
           ),
         ];
       case PolicyStatus.expired:
-        // Full, saturated red glow, top-left only.
         return [
           _statusBlob(
             size: Responsive.w(230),
             color: const Color(0xFFE15C48),
-            // coral-500
             opacity: 0.22,
             top: -Responsive.h(80),
             left: -Responsive.w(50),
@@ -880,22 +845,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return plans.where((p) => p.status == kCurrentDashboardStatus).toList();
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // POLICY CARD — carousel + pagination when multiple plans.
-  // Single static card when there's only one. Light-color card
-  // per status (green/red/yellow/white), matching the prototype.
-  // ═══════════════════════════════════════════════════════════
   Widget _buildPolicyCard(List<PolicyModel> plans) {
     if (plans.isEmpty) return _buildNoPlanCard();
 
     final currentPlan = plans[_currentPlanPage];
 
-    final bool isNoPlan = currentPlan.status == PolicyStatus.noPlan;
     final bool isActive = currentPlan.status == PolicyStatus.active;
 
-    final double cardHeight = isActive ? Responsive.h(270) : Responsive.h(350);
-
-    // if (plans.isEmpty) return _buildNoPlanCard();
+    final double cardHeight = isActive ? Responsive.h(280) : Responsive.h(350);
 
     return Column(
       children: [
@@ -976,47 +933,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         fontWeight: FontWeight.w700,
                       ).copyWith(letterSpacing: 1.2),
                     ),
-                    // height(Responsive.h(6)),
-                    // Text(
-                    //   policy.planName,
-                    //   style: customTextStyle(
-                    //     color: AppColors.textColor,
-                    //     fontSize: Responsive.sp(15),
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
-              // Container(
-              //   padding: EdgeInsets.symmetric(
-              //     horizontal: Responsive.w(10),
-              //     vertical: Responsive.h(6),
-              //   ),
-              //   decoration: BoxDecoration(
-              //     color: status.color.withValues(alpha: 0.14),
-              //     borderRadius: BorderRadius.circular(Responsive.w(20)),
-              //   ),
-              //   child: Row(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: [
-              //       Icon(
-              //         status.icon,
-              //         size: Responsive.sp(12),
-              //         color: status.color,
-              //       ),
-              //       width(Responsive.w(4)),
-              //       Text(
-              //         status.name[0].toUpperCase() + status.name.substring(1),
-              //         style: customTextStyle(
-              //           color: status.color,
-              //           fontSize: Responsive.sp(11),
-              //           fontWeight: FontWeight.w700,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
           height(Responsive.h(4)),
@@ -1332,7 +1251,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
           height(Responsive.h(28)),
-
           HeadingWidget(
             headingTitle: 'News & Advisories',
             buttonText: "View All",
@@ -1385,11 +1303,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // FEATURE WIDGETS — Support Hub / Document Vault cards.
-  // Matches the prototype's `.widget-grid` (`.widget` cards with
-  // ic-mint / ic-sky icon chips), including its copy verbatim.
-  // ═══════════════════════════════════════════════════════════
   Widget _buildFeatureWidgetsRow() {
     return IntrinsicHeight(
       child: Row(
@@ -1399,11 +1312,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: _featureWidgetCard(
               icon: Icons.support_agent_rounded,
               iconBg: const Color(0xFFE9F7EC),
-              iconFg: const Color(0xFF166C3F),
+              iconFg: AppColors.brand800,
               title: 'Support Hub',
               subtitle: '2 open tickets · avg response 4 hrs',
               ctaLabel: 'Raise a query',
-              ctaColor: const Color(0xFF166C3F),
+              ctaColor: AppColors.brand800,
               onTap: () => context.push(Routes.supportHub),
             ),
           ),
@@ -1435,7 +1348,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         subtitle:
             '320 pts · earn more by sharing experiences, testimonials, referrals & events',
         ctaLabel: 'Redeem at renewal or purchase',
-        ctaColor: const Color(0xFF166C3F),
+        ctaColor: AppColors.brand800,
         onTap: () => context.push(Routes.supportHub),
       ),
     );
@@ -1931,9 +1844,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               size: Responsive.sp(18),
             ),
           ),
-
           width(Responsive.w(14)),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1948,9 +1859,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     fontSize: Responsive.sp(12),
                   ),
                 ),
-
                 height(Responsive.h(5)),
-
                 Text(
                   date,
                   style: customTextStyle(
@@ -1961,9 +1870,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ],
             ),
           ),
-
           width(Responsive.w(8)),
-
           Icon(
             Icons.chevron_right_rounded,
             size: Responsive.sp(20),

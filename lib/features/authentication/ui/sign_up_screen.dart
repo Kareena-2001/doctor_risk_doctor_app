@@ -214,13 +214,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             ),
                           ],
                         ),
-                        // Text(
-                        //   'Takes ~ 3 mins',
-                        //   style: customTextStyle(
-                        //     fontSize: Responsive.sp(10),
-                        //     color: const Color(0xFF64748B),
-                        //   ),
-                        // ),
+                        Text(
+                          'Takes ~ 3 mins',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(10),
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
                       ],
                     ),
                     const Divider(height: 20, color: Color(0xFFE2E8F0)),

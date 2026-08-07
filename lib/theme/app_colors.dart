@@ -17,9 +17,6 @@ class AppColors {
   static const blueberry90 = Color(0xFF1A9EFF);
   static const blueberry100 = Color(0xFF0093FF);
 
-  static const Color fieldBorder = Color(0xFFAECDCD);
-  static const Color brown = Color(0xFFAE7C51);
-  static const Color iconPink = Color(0xFFFF8C93);
   static const watermelon1 = Color(0xFFCAE6D5);
   static const watermelon10 = Color(0xFFE6F3F0);
   static const watermelon20 = Color(0xFFCDE7E0);
@@ -54,7 +51,6 @@ class AppColors {
   static const rambutan90 = Color(0xFFE82754);
   static const rambutan100 = Color(0xFFE60F41);
 
-  static const whiteBg = Color(0xFFFFF5EE);
   static const mono0 = Color(0xFFFFFFFF);
   static const mono20 = Color(0xFFEFEFEF);
   static const mono40 = Color(0xFFBEBEBE);
@@ -62,7 +58,6 @@ class AppColors {
   static const mono80 = Color(0xFF606060);
   static const mono90 = Color(0xFF404040);
   static const mono100 = Color(0xFF222222);
-  static const Color brandGreen = Color(0xFF0D4B34);
 
   static const gradient0 = Color(0x00000000);
   static const gradient10 = Color(0x1A000000);
@@ -77,16 +72,16 @@ class AppColors {
 
   static const Color brand600 = Color(0xFF16A34A);
   static const Color brand800 = Color(0xFF166C3F);
+
   static const LinearGradient brandLinearGradient = LinearGradient(
-    colors: [Color(0xFF16A34A), Color(0xFF166C3F)],
-    transform: GradientRotation(0.785398), // 45° rotation
+    colors: [brand600, brand800],
+    transform: GradientRotation(0.785398),
   );
+
+  static const Color brandGreen = Color(0xFF0D4B34);
+  static const whiteBg = Color(0xFFFFF5EE);
   static const premiumBackground = Color(0xFF000000);
-
-  // static const Color newPri = Color(0xFF669b98);
   static const Color newPri = Color(0xFF166C3F);
-
-  // static const Color newPri = Color(0xFF166C3F);
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
   static const Color newBg = Color(0xffF6F7FB);
@@ -102,6 +97,10 @@ class AppColors {
   static const Color homeEvent = Color(0xFFC27A16);
   static const Color homeEventBg = Color(0xFFFFF7E8);
 
+  static const Color fieldBorder = Color(0xFFAECDCD);
+  static const Color brown = Color(0xFFAE7C51);
+  static const Color iconPink = Color(0xFFFF8C93);
+
   static const Color homeFaq = Color(0xFF166C3F);
   static const Color homeFaqBg = Color(0xFFEAF5EF);
   static const Color primary = Color(0xFF339D5C);
@@ -115,7 +114,6 @@ class AppColors {
   static const Color orange = Color(0xFFF16723);
 
   static const Color activeGreen = Color(0xFFe5fbed);
-
 
   static const Color homeBorder = Color(0xFFE2ECEA);
   static const Color border = Color(0xFFE8E8E8);
@@ -163,7 +161,6 @@ class AppColors {
     return isDark ? accent : const Color(0xFFFFFFFF);
   }
 
-  // Text colors
   static Color textAccent(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? const Color(0xFFB0C4DE) : const Color(0xFF2C3E50);
@@ -189,7 +186,6 @@ class AppColors {
     return isDark ? const Color(0xFF757575) : const Color(0xFF2D2D2D);
   }
 
-  // App Bar colors
   static Color appBarBackground(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? const Color(0xFF1E1E1E) : Colors.white;
@@ -205,7 +201,6 @@ class AppColors {
     return isDark ? grey : const Color(0xFF212121);
   }
 
-  // Bottom Nav colors
   static Color bottomNavBackground(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? const Color(0xFF1E1E1E) : Colors.white;
@@ -218,7 +213,6 @@ class AppColors {
     return isDark ? const Color(0xFF808080) : const Color(0xFF757575);
   }
 
-  // Card colors
   static const Color labelColor = Color(0xFF383838);
 
   static const Color textColorGrey = Color(0XFF6B6B6B);
@@ -236,7 +230,6 @@ class AppColors {
     return isDark ? orange : const Color(0xFF2D2D2D);
   }
 
-  // Border colors
   static Color borderColor(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
