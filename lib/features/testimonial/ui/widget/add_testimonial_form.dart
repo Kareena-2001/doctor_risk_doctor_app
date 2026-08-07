@@ -6,14 +6,15 @@ import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/testimonial/model/experience_model.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/constants/dimensions.dart';
-import '../../../../core/constants/values/app_text_style.dart';
-import '../../../../theme/app_colors.dart';
-import '../../testimonial/ui/testimonial_screen.dart';
+import '../../../../../core/constants/dimensions.dart';
+import '../../../../../core/constants/values/app_text_style.dart';
+import '../../../../../theme/app_colors.dart';
+import '../testimonial_screen.dart';
 
 class AddTestimonialForm extends StatefulWidget {
   final String authorName;
@@ -30,6 +31,9 @@ class AddTestimonialForm extends StatefulWidget {
 }
 
 class _AddTestimonialFormState extends State<AddTestimonialForm> {
+  bool _rememberMe = false;
+  File? _pdfFile;
+  String? _pdfName;
   final TextEditingController _textController = TextEditingController();
   TestimonialMode _mode = TestimonialMode.text;
   File? _videoFile;
@@ -43,6 +47,28 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
     _textController.dispose();
     _videoController?.dispose();
     super.dispose();
+  }
+
+  Widget _infoBanner(
+    String text, {
+    IconData icon = Icons.info_outline_rounded,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          width(10),
+          Expanded(child: Text(text, style: AppTheme.label12)),
+        ],
+      ),
+    );
   }
 
   Future<void> _pickVideo() async {
@@ -193,12 +219,52 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
         children: [
           _buildHeader(),
           height(Responsive.h(20)),
-          _buildModeToggle(),
+          _infoBanner(
+            icon: Icons.lock,
+            'Approved testimonials are published under Community → Testimonials, open for members and non‑members to view.',
+          ),
           height(Responsive.h(20)),
           if (_mode == TestimonialMode.text)
             _buildTextInput()
+          else if (_mode == TestimonialMode.video)
+            _buildVideoInput()
           else
-            _buildVideoInput(),
+            _buildPdfInput(),
+          height(Responsive.h(15)),
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: Checkbox(
+                  value: _rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      _rememberMe = value ?? false;
+                    });
+                  },
+                  activeColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'I agree to share this content within the DoctorsRisk community for publishing and viewing purposes among my medical peers.',
+                  style: AppTheme.label12.copyWith(
+                    color: Color(0xFF475569),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          height(Responsive.h(15)),
+          _infoBanner(
+            'All submissions are reviewed by our medico‑legal experts and may be lightly edited for accuracy or clarity before publishing, for your protection. To request removal of a submission, please raise a ticket with Service Support in the Support Hub, or contact our helpline.',
+          ),
           height(Responsive.h(28)),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
@@ -206,20 +272,105 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
             onPressed: _isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
-          height(Responsive.h(12)),
-          Center(
-            child: Text(
-              'Your story helps other doctors make informed decisions',
+          height(Responsive.h(50)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPdfInput() {
+    if (_pdfFile != null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.picture_as_pdf, size: 60, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(
+              _pdfName ?? '',
               textAlign: TextAlign.center,
-              style: customTextStyle(
-                fontSize: Responsive.sp(11.5),
-                color: Colors.grey.shade500,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _removePdf,
+                    icon: const Icon(Icons.delete),
+                    label: const Text("Remove"),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _pickPdf,
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Change"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.picture_as_pdf, size: 40, color: Colors.red),
+          const SizedBox(height: 12),
+          const Text("No PDF selected"),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            style: ButtonStyle(),
+            onPressed: _pickPdf,
+            icon: Icon(Icons.upload_file, color: AppColors.textPri),
+            label: Text("Upload PDF", style: customTextStyle()),
           ),
         ],
       ),
     );
+  }
+
+  void _removePdf() {
+    setState(() {
+      _pdfFile = null;
+      _pdfName = null;
+    });
+  }
+
+  Future<void> _pickPdf() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+
+      if (result == null) return;
+
+      setState(() {
+        _pdfFile = File(result.files.single.path!);
+        _pdfName = result.files.single.name;
+      });
+    } catch (e) {
+      if (mounted) {
+        context.showWarningSnackBar("Unable to pick PDF");
+      }
+    }
   }
 
   Widget _buildHeader() {
@@ -292,13 +443,18 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
         children: [
           _toggleOption(
             label: 'Text',
-            icon: Icons.edit_note_rounded,
+            icon: Icons.edit,
             mode: TestimonialMode.text,
           ),
           _toggleOption(
             label: 'Video',
-            icon: Icons.videocam_rounded,
+            icon: Icons.videocam,
             mode: TestimonialMode.video,
+          ),
+          _toggleOption(
+            label: 'PDF',
+            icon: Icons.picture_as_pdf,
+            mode: TestimonialMode.document,
           ),
         ],
       ),

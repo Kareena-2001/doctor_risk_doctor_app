@@ -1,6 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
-import 'package:Doctors_App/features/community/ui/add_testimonial_form.dart';
+import 'package:Doctors_App/features/testimonial/ui/widget/add_testimonial_form.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';

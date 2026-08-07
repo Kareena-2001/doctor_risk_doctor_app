@@ -6,6 +6,7 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
+import '../../../../theme/app_theme.dart';
 
 class ExperienceListScreen extends StatefulWidget {
   const ExperienceListScreen({super.key});
@@ -38,9 +39,6 @@ class _ExperienceListScreenState extends State<ExperienceListScreen> {
       context,
       MaterialPageRoute(builder: (_) => const ShareExperienceForm()),
     );
-
-    // If ShareTestimonialForm returns the newly created testimonial,
-    // add it to the list and refresh the UI.
     if (result != null) {
       setState(() {
         experiences.insert(0, result);

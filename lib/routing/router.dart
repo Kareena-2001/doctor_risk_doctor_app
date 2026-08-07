@@ -9,6 +9,7 @@ import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dar
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
+import 'package:Doctors_App/features/faq/ui/medico_legal_faq_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
 import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
@@ -29,6 +30,7 @@ import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
 import 'package:Doctors_App/features/profile/ui/edit_profile_screen.dart';
 import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
+import 'package:Doctors_App/features/renewal_centre/ui/renewal_centre_screen.dart';
 import 'package:Doctors_App/features/rewards/ui/rewards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -253,6 +255,14 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.faqScreen,
       pageBuilder: (context, state) => state.slidePage(FaqScreen()),
+    ),
+    GoRoute(
+      path: Routes.medicoLawFaq,
+      pageBuilder: (context, state) => state.slidePage(MedicoLegalFaqScreen()),
+    ),
+    GoRoute(
+      path: Routes.renewCentre,
+      pageBuilder: (context, state) => state.slidePage(RenewalCentreScreen()),
     ),
     GoRoute(
       path: Routes.queryDetails,

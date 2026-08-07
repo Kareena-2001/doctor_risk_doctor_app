@@ -1,5 +1,8 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/values/app_text_style.dart';
@@ -29,6 +32,7 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
   List<SupportTicket> _tickets = [];
 
   static const _priorities = ['Normal', 'High', 'Urgent'];
+
   static const _categories = [
     'All Categories',
     'Legal Consultation',
@@ -149,10 +153,8 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
         _statusTabController.animateTo(0);
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Legal ticket raised — reference #${ticket.ref}'),
-          ),
+        context.showSuccessSnackBar(
+          'Legal ticket raised — reference #${ticket.ref}',
         );
       }
     }
@@ -162,7 +164,6 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'Legal Support'),
-
       body: _isLoading
           ? const Loading()
           : Padding(
@@ -232,8 +233,8 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddTicket,
-        backgroundColor: AppColors.newPri,
-        icon: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppColors.primary,
+        icon: Icon(Icons.add, color: Colors.white),
         label: Text(
           'Raise Ticket',
           style: customTextStyle(

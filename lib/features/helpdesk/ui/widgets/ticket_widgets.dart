@@ -37,7 +37,6 @@ class TicketStatusBadge extends StatelessWidget {
   }
 }
 
-/// One row in "My Legal Tickets" / "My Service Tickets".
 class TicketCard extends StatelessWidget {
   final SupportTicket ticket;
   final VoidCallback onView;
@@ -75,7 +74,7 @@ class TicketCard extends StatelessWidget {
               alpha: 0.25,
             ),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -85,7 +84,7 @@ class TicketCard extends StatelessWidget {
           Row(
             children: [
               TicketStatusBadge(status: ticket.status),
-              const Spacer(),
+              Spacer(),
               Text(
                 ticket.ref,
                 style: customTextStyle(
@@ -118,7 +117,7 @@ class TicketCard extends StatelessWidget {
           Text(
             ticket.typeLabel,
             style: customTextStyle(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: isDark ? Colors.white : Colors.black87,
             ),
@@ -129,7 +128,7 @@ class TicketCard extends StatelessWidget {
           Text(
             '${ticket.priority} Priority',
             style: customTextStyle(
-              fontSize: 12,
+              fontSize: 11,
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
           ),
@@ -137,7 +136,7 @@ class TicketCard extends StatelessWidget {
           Text(
             ticket.description,
             style: customTextStyle(
-              fontSize: 13,
+              fontSize: 12,
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
             maxLines: 2,
@@ -154,45 +153,102 @@ class TicketCard extends StatelessWidget {
               ),
             ),
           ],
-          height(10),
+          height(5),
           Divider(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
-          height(6),
+          // height(5),
           Row(
             children: [
-              Icon(
-                Icons.access_time_rounded,
-                size: 14,
-                color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
-              ),
-              width(6),
-              Text(
-                ticket.raisedAgo,
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
-                ),
-              ),
-              const Spacer(),
+              // Icon(
+              //   Icons.access_time_rounded,
+              //   size: 14,
+              //   color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+              // ),
+              // width(6),
+              // Text(
+              //   ticket.raisedAgo,
+              //   style: customTextStyle(
+              //     fontSize: 12,
+              //     color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+              //   ),
+              // ),
+              // Spacer(),
               Wrap(
-                spacing: 4,
+                spacing: 10,
+                // crossAxisAlignment: CrossAxisAlignment.space,
+                runSpacing: 4,
                 children: [
-                  TextButton(onPressed: onView, child: const Text('View')),
                   TextButton(
+                    style: TextButton.styleFrom(
+                      side: BorderSide(
+                        color: AppColors.fieldGrey.withValues(alpha: 0.6),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                    ),
+                    onPressed: onView,
+                    child: Text('View', style: customTextStyle()),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      side: BorderSide(
+                        color: AppColors.fieldGrey.withValues(alpha: 0.6),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                    ),
                     onPressed: onRemarks,
                     child: Text(
                       ticket.remarks.isEmpty
                           ? 'Remarks'
                           : 'Remarks (${ticket.remarks.length})',
+                      style: customTextStyle(),
                     ),
                   ),
                   if (editable && onEdit != null)
-                    TextButton(onPressed: onEdit, child: const Text('Edit')),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.fieldGrey.withValues(alpha: 0.6),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                      ),
+                      onPressed: onEdit,
+                      child: Text('Edit', style: customTextStyle()),
+                    ),
                   if (editable && onCancel != null)
                     TextButton(
+                      style: TextButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.fieldGrey.withValues(alpha: 0.6),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                      ),
                       onPressed: onCancel,
                       child: Text(
                         'Cancel',
-                        style: TextStyle(color: Colors.red.shade400),
+                        style: customTextStyle(color: Colors.red.shade400),
                       ),
                     ),
                 ],

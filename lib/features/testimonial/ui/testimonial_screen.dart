@@ -7,11 +7,8 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
-enum TestimonialMode {
-  text,
-  video,
-  document,
-}
+
+enum TestimonialMode { text, video, document }
 
 class TestimonialScreen extends StatefulWidget {
   const TestimonialScreen({super.key});
@@ -44,7 +41,6 @@ class _TestimonialScreenState extends State<TestimonialScreen>
       body: Column(
         children: [
           // Expanded(child: ExperienceListScreen()),
-
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
@@ -58,8 +54,6 @@ class _TestimonialScreenState extends State<TestimonialScreen>
                 fontWeight: FontWeight.bold,
               ),
               tabs: const [
-                // Tab(text: 'Share Testimonial'),
-                // Tab(text: 'Community Stories'),
                 Tab(text: 'Experience'),
                 Tab(text: 'Testimonial'),
               ],

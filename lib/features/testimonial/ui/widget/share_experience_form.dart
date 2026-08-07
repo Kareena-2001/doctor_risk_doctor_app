@@ -41,6 +41,7 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
   ExperienceModel? _createdExperience;
   File? _pdfFile;
   String? _pdfName;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -97,6 +98,28 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
         context.showWarningSnackBar('Could not record video: $e');
       }
     }
+  }
+
+  Widget _infoBanner(
+    String text, {
+    IconData icon = Icons.info_outline_rounded,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          width(10),
+          Expanded(child: Text(text, style: AppTheme.label12)),
+        ],
+      ),
+    );
   }
 
   void _removeVideo() {
@@ -197,6 +220,11 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
         children: [
           _buildHeader(),
           height(Responsive.h(20)),
+          _infoBanner(
+            icon: Icons.lock,
+            'Approved experiences are published to Peer Forum — a feature only visible to active DoctorsRisk members.',
+          ),
+          height(Responsive.h(20)),
           _buildModeToggle(),
           height(Responsive.h(20)),
           if (_mode == TestimonialMode.text)
@@ -205,6 +233,41 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
             _buildVideoInput()
           else
             _buildPdfInput(),
+          height(Responsive.h(15)),
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: Checkbox(
+                  value: _rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      _rememberMe = value ?? false;
+                    });
+                  },
+                  activeColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'I agree to share this content within the DoctorsRisk community for publishing and viewing purposes among my medical peers.',
+                  style: AppTheme.label12.copyWith(
+                    color: Color(0xFF475569),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          height(Responsive.h(15)),
+          _infoBanner(
+            'All submissions are reviewed by our medico‑legal experts and may be lightly edited for accuracy or clarity before publishing, for your protection. To request removal of a submission, please raise a ticket with Service Support in the Support Hub, or contact our helpline.',
+          ),
           height(Responsive.h(28)),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
@@ -212,17 +275,7 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
             onPressed: _isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
-          height(Responsive.h(12)),
-          Center(
-            child: Text(
-              'Your story helps other doctors make informed decisions',
-              textAlign: TextAlign.center,
-              style: customTextStyle(
-                fontSize: Responsive.sp(11.5),
-                color: Colors.grey.shade500,
-              ),
-            ),
-          ),
+          height(Responsive.h(50)),
         ],
       ),
     );
@@ -466,7 +519,7 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(Responsive.w(16)),
           hintText:
-              'Share how our service helped you — a case resolved, guidance you received, or peace of mind you gained...',
+              'Share the case context, what you learned, and how it could help a peer facing something similar…',
           hintStyle: customTextStyle(
             fontSize: Responsive.sp(12),
             color: Colors.grey.shade400,

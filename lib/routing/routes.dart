@@ -52,8 +52,12 @@ class Routes {
   static const idCard = '/idCard';
   static const helpSupport = '/helpSupport';
   static const faqScreen = '/faqScreen';
+  static const medicoLawFaq = '/medicoLawFaq';
+
 
   static const addSupport = '/addSupport';
+  static const renewCentre = '/renewCentre';
+
   static const supportHub = '/supportHub';
   static const myQueries = '/myQueries';
   static const queryDetails = '/queryDetails';

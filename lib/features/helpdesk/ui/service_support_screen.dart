@@ -121,62 +121,57 @@ class _ServiceSupportScreenState extends State<ServiceSupportScreen>
       ),
       body: _isLoading
           ? const Loading()
-          : RefreshIndicator(
-              onRefresh: _loadTickets,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Admin & customer service — renewals, documents, payments, endorsements, upgrades and membership clarifications.',
-                      style: AppTheme.label12,
-                    ),
-                    height(20),
-                    Text('My Service Tickets', style: AppTheme.title16),
-                    height(12),
-                    TabBar(
+          : Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   'Admin & customer service — renewals, documents, payments, endorsements, upgrades and membership clarifications.',
+                  //   style: AppTheme.label12,
+                  // ),
+                  // height(20),
+                  // Text('My Service Tickets', style: AppTheme.title16),
+                  // height(12),
+                  TabBar(
+                    controller: _statusTabController,
+                    isScrollable: true,
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: AppColors.primary,
+                    tabs: [
+                      Tab(text: 'All (${_tickets.length})'),
+                      Tab(
+                        text: 'Open (${_filtered((s) => s.isOpenish).length})',
+                      ),
+                      Tab(
+                        text:
+                            'Closed (${_filtered((s) => s == TicketStatus.closed).length})',
+                      ),
+                      Tab(
+                        text:
+                            'Cancelled (${_filtered((s) => s == TicketStatus.cancelled).length})',
+                      ),
+                    ],
+                  ),
+                  height(12),
+                  Expanded(
+                    child: TabBarView(
                       controller: _statusTabController,
-                      isScrollable: true,
-                      labelColor: AppColors.primary,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: AppColors.primary,
-                      tabs: [
-                        Tab(text: 'All (${_tickets.length})'),
-                        Tab(
-                          text:
-                              'Open (${_filtered((s) => s.isOpenish).length})',
-                        ),
-                        Tab(
-                          text:
-                              'Closed (${_filtered((s) => s == TicketStatus.closed).length})',
-                        ),
-                        Tab(
-                          text:
-                              'Cancelled (${_filtered((s) => s == TicketStatus.cancelled).length})',
+                      children: [
+                        _ticketList(_filtered((_) => true)),
+                        _ticketList(_filtered((s) => s.isOpenish)),
+                        _ticketList(_filtered((s) => s == TicketStatus.closed)),
+                        _ticketList(
+                          _filtered((s) => s == TicketStatus.cancelled),
                         ),
                       ],
                     ),
-                    height(12),
-                    SizedBox(
-                      height: 520,
-                      child: TabBarView(
-                        controller: _statusTabController,
-                        children: [
-                          _ticketList(_filtered((_) => true)),
-                          _ticketList(_filtered((s) => s.isOpenish)),
-                          _ticketList(
-                            _filtered((s) => s == TicketStatus.closed),
-                          ),
-                          _ticketList(
-                            _filtered((s) => s == TicketStatus.cancelled),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );

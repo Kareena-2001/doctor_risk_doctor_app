@@ -41,6 +41,25 @@ class AppDrawer extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _sectionLabel('CORE SERVICES', isDark),
+                    _tile(
+                      context,
+                      icon: Icons.shopping_bag_outlined,
+                      title: 'My Products',
+                      subtitle: 'View and manage your purchased plans',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.productList),
+                    ),
+                    _tile(
+                      context,
+                      icon: Icons.quiz_outlined,
+                      title: 'Emergency',
+                      subtitle: 'Something urgent',
+                      isDark: isDark,
+                      onTap: () {
+                        context.push(Routes.faqScreen);
+                      },
+                    ),
                     _tile(
                       context,
                       icon: Icons.support_agent_rounded,
@@ -54,13 +73,33 @@ class AppDrawer extends ConsumerWidget {
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,
-                      title: 'My Appointments',
+                      title: 'Appointments',
                       subtitle: 'View upcoming & past appointments',
                       isDark: isDark,
                       onTap: () {
                         context.push(Routes.viewAppointment);
                       },
                     ),
+                    _tile(
+                      context,
+                      icon: Icons.calendar_month_outlined,
+                      title: 'Renewal Centre',
+                      subtitle:
+                          'Track your renewal window and keep your coverage continuous.',
+                      isDark: isDark,
+                      onTap: () {
+                        context.push(Routes.renewCentre);
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        color: isDark
+                            ? Colors.white10
+                            : Colors.black87.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    _sectionLabel('KNOWLEDGE & COMMUNITY', isDark),
                     _tile(
                       context,
                       icon: Icons.quiz_outlined,
@@ -81,34 +120,24 @@ class AppDrawer extends ConsumerWidget {
                     //     context.push(Routes.legalConsultant);
                     //   },
                     // ),
+                    // _tile(
+                    //   context,
+                    //   icon: Icons.description_outlined,
+                    //   title: 'Legal',
+                    //   subtitle: 'View Legal Services',
+                    //   isDark: isDark,
+                    //   onTap: () {
+                    //     context.push(Routes.legalScreen);
+                    //   },
+                    // ),
                     _tile(
                       context,
-                      icon: Icons.description_outlined,
-                      title: 'Legal',
-                      subtitle: 'View Legal Services',
+                      icon: Icons.article_outlined,
+                      title: 'Medical Law 101',
+                      subtitle: 'Latest medico-legal news and updates',
                       isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.legalScreen);
-                      },
+                      onTap: () => context.push(Routes.medicoLawFaq),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Divider(
-                        color: isDark
-                            ? Colors.white10
-                            : Colors.black87.withValues(alpha: 0.05),
-                      ),
-                    ),
-                    _sectionLabel('GENERAL', isDark),
-                    _tile(
-                      context,
-                      icon: Icons.shopping_bag_outlined,
-                      title: 'My Products',
-                      subtitle: 'View and manage your purchased plans',
-                      isDark: isDark,
-                      onTap: () => context.push(Routes.productList),
-                    ),
-
                     _tile(
                       context,
                       icon: Icons.article_outlined,
