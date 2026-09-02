@@ -6,7 +6,7 @@ TextStyle customTextStyle({
   double fontSize = 12,
   FontWeight fontWeight = FontWeight.w400,
   Color? color,
-  String fontFamily = 'Source Sans 3',
+  String fontFamily = 'Nunito',
   TextColorType colorType = TextColorType.primary,
   WidgetRef? ref,
 }) {

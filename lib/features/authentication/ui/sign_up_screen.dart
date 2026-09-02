@@ -223,7 +223,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ],
                     ),
-                    const Divider(height: 20, color: Color(0xFFE2E8F0)),
+                    Divider(height: 20, color: Color(0xFFE2E8F0)),
                     Text(
                       fullName.isEmpty ? 'Your Full Name' : fullName,
                       style: customTextStyle(
@@ -247,7 +247,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                     ],
-
                     height(Responsive.h(12)),
                     Row(
                       children: [
@@ -267,7 +266,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 : _emailController.text,
                           ),
                         ),
-                        // Show Degree in preview only if Dr. is selected
                         if (isDoctor)
                           Expanded(
                             child: _PreviewDetailTile(
@@ -280,10 +278,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ],
                 ),
               ),
-
-              // ----------------------------------------------------
-              // 2. FORM BODY
-              // ----------------------------------------------------
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: Responsive.sp(20)),
                 child: Form(
@@ -291,19 +285,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'All fields marked * are required.',
-                        style: TextStyle(
-                          fontSize: Responsive.sp(12),
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
-                      height(Responsive.h(16)),
-
-                      // --- PERSONAL DETAILS SECTION ---
+                      // Text(
+                      //   'All fields marked * are required.',
+                      //   style: TextStyle(
+                      //     fontSize: Responsive.sp(12),
+                      //     color: const Color(0xFF64748B),
+                      //   ),
+                      // ),
+                      // height(Responsive.h(16)),
                       const _SectionHeader(title: 'Personal details'),
                       height(Responsive.h(12)),
-
                       CustomDropdownField(
                         label: 'Prefix *',
                         hint: 'Select Prefix',
@@ -312,7 +303,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onChanged: (value) {
                           setState(() {
                             _selectedPrefix = value;
-                            // Clear doctor specific values if prefix changes away from Dr.
                             if (_selectedPrefix != 'Dr.') {
                               _selectedCategory = null;
                               _selectedSpeciality = null;
@@ -364,8 +354,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
                       height(Responsive.h(20)),
-
-                      // --- PROFESSIONAL DETAILS SECTION (CONDITIONAL FOR Dr.) ---
                       if (isDoctor) ...[
                         const _SectionHeader(title: 'Professional details'),
                         height(Responsive.h(12)),

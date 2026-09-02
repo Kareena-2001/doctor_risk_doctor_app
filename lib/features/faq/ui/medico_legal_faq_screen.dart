@@ -1,6 +1,8 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +15,7 @@ class MedicoLegalFaqScreen extends StatefulWidget {
 
 class _MedicoLegalFaqScreenState extends State<MedicoLegalFaqScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+  final String _searchQuery = '';
 
   final List<FaqItem> _faqs = const [
     FaqItem(
@@ -107,99 +109,32 @@ class _MedicoLegalFaqScreenState extends State<MedicoLegalFaqScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Banner Section
             Container(
-              color: AppColors.white,
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  CustomSearchBar(
+                    controller: TextEditingController(),
+                    hint: 'Search legal topics, BNS, consent...',
+                  ),
+                  height(8),
                   Text(
                     'Common medico‑legal questions, answered in plain language for Indian practice.',
                     style: customTextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: Colors.grey[800],
                       fontWeight: FontWeight.w600,
                     ).copyWith(height: 1.4),
-                  ),
-                  height(8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF3C7),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFFCD34D)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: Color(0xFF92400E),
-                        ),
-                        width(8),
-                        Expanded(
-                          child: Text(
-                            'Educational only — not a substitute for legal advice on your specific situation.',
-                            style: customTextStyle(
-                              fontSize: 11,
-                              color: const Color(0xFF92400E),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  height(16),
-
-                  // Search Bar
-                  TextField(
-                    controller: _searchController,
-                    onChanged: (val) => setState(() => _searchQuery = val),
-                    decoration: InputDecoration(
-                      hintText: 'Search legal topics, BNS, consent...',
-                      hintStyle: customTextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[500],
-                      ),
-                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
-                              },
-                            )
-                          : null,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      filled: true,
-                      fillColor: const Color(0xFFF1F5F9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
                   ),
                 ],
               ),
             ),
 
-            Divider(
-              height: 1,
-              color: Theme.of(context).colorScheme.outlineVariant,
-            ),
-
-            // FAQ Accordion List
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: filteredFaqs.isEmpty
                   ? Center(
-                      // padding: const EdgeInsets.symmetric(vertical: 40),
                       child: Text(
                         'No matching legal topics found.',
                         style: customTextStyle(
@@ -219,77 +154,8 @@ class _MedicoLegalFaqScreenState extends State<MedicoLegalFaqScreen> {
                     ),
             ),
 
-            // Urgent Legal Support Callout
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.newPri.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: AppColors.newPri.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: AppColors.newPri,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.gavel,
-                        color: AppColors.white,
-                        size: 20,
-                      ),
-                    ),
-                    width(12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Facing an active notice or police inquiry?',
-                            style: customTextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.newPri,
-                            ),
-                          ),
-                          height(2),
-                          Text(
-                            'Connect with our Medico-Legal Cell directly.',
-                            style: customTextStyle(
-                              fontSize: 11,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Action for Legal Cell Hotline
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.newPri,
-                        foregroundColor: AppColors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                      ),
-                      child: const Text('Contact'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            SocialLinkWidget(),
+            height(50),
           ],
         ),
       ),
@@ -301,11 +167,7 @@ class _MedicoLegalFaqScreenState extends State<MedicoLegalFaqScreen> {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: item.isAlert
-              ? const Color(0xFFFCA5A5)
-              : Theme.of(context).colorScheme.outlineVariant,
-        ),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -316,26 +178,26 @@ class _MedicoLegalFaqScreenState extends State<MedicoLegalFaqScreen> {
             item.number,
             style: customTextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: item.isAlert ? const Color(0xFFDC2626) : AppColors.newPri,
+              fontWeight: FontWeight.w700,
+              color: AppColors.newPri,
             ),
           ),
           title: Text(
             item.question,
             style: customTextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[900],
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textColor,
             ),
           ),
           children: [
-            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            Divider(height: 1, color: Color(0xFFF1F5F9)),
             height(12),
             Text(
               item.answer,
               style: customTextStyle(
                 fontSize: 13,
-                color: Colors.grey[700],
+                color: AppColors.textColor,
               ).copyWith(height: 1.5),
             ),
           ],

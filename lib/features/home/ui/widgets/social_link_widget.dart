@@ -16,22 +16,22 @@ class SocialLinkWidget extends StatefulWidget {
 }
 
 class _SocialLinkWidgetState extends State<SocialLinkWidget> {
-
   static const String _instagramUrl = 'https://instagram.com/doctorsrisk';
   static const String _facebookUrl = 'https://facebook.com/doctorsrisk';
   static const String _youtubeUrl = 'https://youtube.com/@doctorsrisk';
   static const String _linkedin = 'https://facebook.com/doctorsrisk';
+  static const String _x = 'https://twitter.com/doctorsrisk';
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.w(20),
+        horizontal: Responsive.w(0),
         vertical: Responsive.h(22),
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        // color: AppColors.white,
         borderRadius: BorderRadius.circular(Responsive.w(24)),
         boxShadow: [
           BoxShadow(
@@ -43,24 +43,25 @@ class _SocialLinkWidgetState extends State<SocialLinkWidget> {
       ),
       child: Column(
         children: [
-          Text(
-            'Connect With Us',
-            style: customTextStyle(
-              fontSize: Responsive.sp(14),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(6)),
-          Text(
-            'Follow for updates, news & legal advisories',
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(11.5),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(16)),
+          // Text(
+          //   'Connect With Us',
+          //   style: customTextStyle(
+          //     fontSize: Responsive.sp(14),
+          //     fontWeight: FontWeight.bold,
+          //     color: AppColors.textColor,
+          //   ),
+          // ),
+          // height(Responsive.h(6)),
+          // Text(
+          //   'Follow for updates, news & legal advisories',
+          //   textAlign: TextAlign.center,
+          //   style: customTextStyle(
+          //     fontSize: Responsive.sp(11.5),
+          //     color: AppColors.homeTextMuted,
+          //   ),
+          // ),
+          // height(Responsive.h(16)),
+          Divider(), height(Responsive.h(16)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -90,6 +91,15 @@ class _SocialLinkWidgetState extends State<SocialLinkWidget> {
                 icon: FontAwesomeIcons.linkedin,
                 bgColors: [const Color(0xFF0A66C2), const Color(0xFF0A66C2)],
                 onTap: () => _launchSocialUrl(_linkedin),
+              ),
+              width(Responsive.w(18)),
+              _socialIconButton(
+                icon: FontAwesomeIcons.xTwitter,
+                bgColors: [
+                  const Color(0xFF000000),
+                  const Color(0xFF000000),
+                ],
+                onTap: () => _launchSocialUrl(_x),
               ),
             ],
           ),
