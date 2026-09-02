@@ -4,17 +4,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/api_client.dart';
 import '../model/blog_model.dart';
 
-part 'delete_repository.g.dart';
+part 'blog_repository.g.dart';
 
 @riverpod
-DeleteRepository deleteRepository(DeleteRepositoryRef ref) {
-  return DeleteRepository(ref.watch(apiClientProvider));
+BlogRepository blogRepository(BlogRepositoryRef ref) {
+  return BlogRepository(ref.watch(apiClientProvider));
 }
 
-class DeleteRepository {
+class BlogRepository {
   final ApiClient _api;
 
-  const DeleteRepository(this._api);
+  const BlogRepository(this._api);
 
   Future<DeleteAcResponse> deleteAccount() async {
     final prefs = await SharedPreferences.getInstance();
@@ -24,9 +24,7 @@ class DeleteRepository {
     );
 
     try {
-      final response = await _api.post(
-        url: 'delete_profile',
-      );
+      final response = await _api.post(url: 'delete_profile');
 
       debugPrint(' API Response: $response');
 

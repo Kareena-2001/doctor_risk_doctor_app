@@ -1,12 +1,12 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/widgets/custom_app_bar.dart';
 import '../../../routing/routes.dart';
+import '../../home/ui/widgets/social_link_widget.dart';
 
 class AllBlogsTab extends StatelessWidget {
   const AllBlogsTab({super.key});
@@ -14,111 +14,170 @@ class AllBlogsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blogs = [
-      (
-        title: 'Why Every Doctor Needs Professional Indemnity Insurance',
-        category: 'Insurance',
-        date: '12 Jan 2026',
-      ),
-      (
-        title: '5 Ways to Reduce Medico-Legal Risks in Your Practice',
-        category: 'Medico Legal',
-        date: '20 Jan 2026',
-      ),
-      (
-        title: 'Common Reasons Why Insurance Claims Get Rejected',
-        category: 'Claims',
-        date: '28 Jan 2026',
-      ),
-      (
-        title: 'Digital Medical Records: Best Practices for Doctors',
-        category: 'Practice Management',
-        date: '05 Feb 2026',
-      ),
-      (
-        title: 'How to Handle a Legal Notice from a Patient',
-        category: 'Legal',
-        date: '10 Feb 2026',
-      ),
+      {
+        'title':
+            'Documenting Telemedicine Consults for Medico-Legal Defensibility',
+        'content':
+            'A practical guide to documenting telemedicine consultations clearly and safely while reducing medico-legal risks.',
+        'date': '12 Jan 2026',
+        'image': 'https://picsum.photos/600/300?random=1',
+      },
+      {
+        'title': 'Handling Consent Discussions in Clinical Practice',
+        'content':
+            'Important points every doctor should consider while discussing informed consent with patients.',
+        'date': '20 Jan 2026',
+        'image': 'https://picsum.photos/600/300?random=2',
+      },
+      {
+        'title': 'How to Maintain Better Medical Documentation',
+        'content':
+            'Simple documentation practices that can help doctors maintain accurate and useful medical records.',
+        'date': '28 Jan 2026',
+        'image': 'https://picsum.photos/600/300?random=3',
+      },
+      {
+        'title': 'Managing Legal Notices from Patients',
+        'content':
+            'What doctors should know when they receive a legal notice and the steps they should consider taking.',
+        'date': '05 Feb 2026',
+        'image': 'https://picsum.photos/600/300?random=4',
+      },
+      {
+        'title': 'Lessons Learned from a Difficult Patient Interaction',
+        'content':
+            'Sharing practical experience and learnings that may help other doctors handle similar situations.',
+        'date': '10 Feb 2026',
+        'image': 'https://picsum.photos/600/300?random=5',
+      },
     ];
 
-    return Scaffold(
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: blogs.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 14),
-        itemBuilder: (_, index) {
-          final blog = blogs[index];
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+        Responsive.w(16),
+        0,
+        Responsive.w(16),
+        Responsive.h(24),
+      ),
+      itemCount: blogs.length + 1,
+      separatorBuilder: (_, index) {
+        return height(Responsive.h(14));
+      },
+      itemBuilder: (context, index) {
+        if (index == blogs.length) {
+          return Column(
+            children: [SocialLinkWidget(), height(Responsive.h(30))],
+          );
+        }
 
-          return InkWell(
-            onTap: () {
-              context.push(Routes.blogCentralDetails);
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade200),
-                borderRadius: BorderRadius.circular(16),
+        final blog = blogs[index];
+
+        return _buildBlogCard(context, blog);
+      },
+    );
+  }
+
+  Widget _buildBlogCard(BuildContext context, Map<String, String> blog) {
+    return InkWell(
+      onTap: () {
+        context.push(Routes.blogCentralDetails);
+      },
+      borderRadius: BorderRadius.circular(Responsive.w(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(Responsive.w(16)),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cover Image
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(Responsive.w(16)),
               ),
+              child: Image.network(
+                blog['image'] ?? '',
+                width: double.infinity,
+                height: Responsive.h(150),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return Container(
+                    height: Responsive.h(150),
+                    width: double.infinity,
+                    color: Colors.grey.shade100,
+                    child: Icon(
+                      Icons.image_outlined,
+                      size: Responsive.sp(40),
+                      color: Colors.grey.shade400,
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            // Blog Details
+            Padding(
+              padding: EdgeInsets.all(Responsive.w(16)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    child: Image.network(
-                      'https://picsum.photos/600/300?random=$index',
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  Text(
+                    blog['title'] ?? '',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(14),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textColor,
+                    ).copyWith(height: 1.4),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          blog.category,
-                          style: customTextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+
+                  height(Responsive.h(8)),
+
+                  Text(
+                    blog['content'] ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: Colors.grey.shade600,
+                    ).copyWith(height: 1.45),
+                  ),
+
+                  height(Responsive.h(10)),
+
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: Responsive.sp(13),
+                        color: Colors.grey.shade500,
+                      ),
+                      width(Responsive.w(5)),
+                      Text(
+                        blog['date'] ?? '',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(10.5),
+                          color: Colors.grey.shade600,
                         ),
-                        height(8),
-                        Text(
-                          blog.title,
-                          style: customTextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ).copyWith(height: 1.4),
-                        ),
-                        height(10),
-                        Text(
-                          blog.date,
-                          style: customTextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
-      // floatingActionButton: Padding(
-      //   padding: const EdgeInsets.only(bottom: 70),
-      //   child: FloatingActionButton(
-      //     backgroundColor: AppColors.newPri,
-      //     elevation: 8,
-      //     onPressed: () {
-      //       // Open chat screen
-      //     },
-      //     child: const Icon(Icons.add, color: Colors.white),
-      //   ),
-      // ),
     );
   }
 }

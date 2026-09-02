@@ -28,24 +28,24 @@ class BlogDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: .1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Insurance',
-                      style: customTextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  height(16),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(
+                  //     horizontal: 14,
+                  //     vertical: 6,
+                  //   ),
+                  //   decoration: BoxDecoration(
+                  //     color: AppColors.primary.withValues(alpha: .1),
+                  //     borderRadius: BorderRadius.circular(20),
+                  //   ),
+                  //   child: Text(
+                  //     'Insurance',
+                  //     style: customTextStyle(
+                  //       color: AppColors.primary,
+                  //       fontWeight: FontWeight.w600,
+                  //     ),
+                  //   ),
+                  // ),
+                  // height(16),
                   Text(
                     'Why Every Doctor Needs Professional Indemnity Insurance',
                     style: customTextStyle(
@@ -66,13 +66,13 @@ class BlogDetailsScreen extends StatelessWidget {
                         '12 January 2026',
                         style: customTextStyle(color: Colors.grey),
                       ),
-                      Spacer(),
-                      Icon(Icons.person_outline, size: 16, color: Colors.grey),
-                      SizedBox(width: 6),
-                      Text(
-                        'Doctor Risk Team',
-                        style: customTextStyle(color: Colors.grey),
-                      ),
+                      // Spacer(),
+                      // Icon(Icons.person_outline, size: 16, color: Colors.grey),
+                      // SizedBox(width: 6),
+                      // Text(
+                      //   'Doctor Risk Team',
+                      //   style: customTextStyle(color: Colors.grey),
+                      // ),
                     ],
                   ),
                   height(30),
@@ -87,18 +87,18 @@ class BlogDetailsScreen extends StatelessWidget {
                       color: Color(0xff374151),
                     ).copyWith(height: 1.8),
                   ),
-                  height(28),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _chip('Insurance'),
-                      _chip('Doctors'),
-                      _chip('Professional Indemnity'),
-                      _chip('Risk Management'),
-                      _chip('Healthcare'),
-                    ],
-                  ),
+                  // height(28),
+                  // Wrap(
+                  //   spacing: 10,
+                  //   runSpacing: 10,
+                  //   children: [
+                  //     _chip('Insurance'),
+                  //     _chip('Doctors'),
+                  //     _chip('Professional Indemnity'),
+                  //     _chip('Risk Management'),
+                  //     _chip('Healthcare'),
+                  //   ],
+                  // ),
                   height(28),
                 ],
               ),

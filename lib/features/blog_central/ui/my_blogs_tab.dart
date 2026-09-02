@@ -16,185 +16,282 @@ class MyBlogsTab extends StatelessWidget {
     final blogs = [
       {
         "title": "How to Avoid Medico Legal Cases",
+        "content":
+            "Important practices doctors can follow to reduce medico-legal risks and handle clinical situations more effectively.",
+        "image": "https://picsum.photos/600/300?random=11",
         "status": "Pending",
         "date": "12 Jul 2026",
       },
       {
         "title": "Professional Indemnity Insurance",
+        "content":
+            "A practical overview of professional indemnity insurance and why it is important for doctors.",
+        "image": "https://picsum.photos/600/300?random=12",
         "status": "Approved",
         "date": "10 Jul 2026",
       },
       {
         "title": "Medical Documentation Tips",
+        "content":
+            "Simple documentation practices that can help doctors maintain accurate and useful medical records.",
+        "image": "https://picsum.photos/600/300?random=13",
         "status": "Not Approved",
         "date": "08 Jul 2026",
       },
     ];
 
-    return Scaffold(
-      body: ListView.builder(
-        padding: EdgeInsets.all(Responsive.w(16)),
-        itemCount: blogs.length,
-        itemBuilder: (_, index) {
-          if (index == blogs.length) {
-            return Column(children: [SocialLinkWidget(), height(50)]);
-          }
-          final blog = blogs[index];
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+        Responsive.w(16),
+        0,
+        Responsive.w(16),
+        Responsive.h(24),
+      ),
+      itemCount: blogs.length + 1,
+      separatorBuilder: (_, __) => height(Responsive.h(14)),
+      itemBuilder: (context, index) {
+        if (index == blogs.length) {
+          return Column(
+            children: [SocialLinkWidget(), height(Responsive.h(30))],
+          );
+        }
 
-          Color statusColor;
-          switch (blog["status"]) {
-            case "Approved":
-              statusColor = const Color(0xFF10B981);
-              break;
-            case "Not Approved":
-              statusColor = const Color(0xFFEF4444); // Modern rose red
-              break;
-            default:
-              statusColor = const Color(0xFFF59E0B); // Modern amber orange
-          }
+        final blog = blogs[index];
 
-          final isRejected = blog["status"] == "Not Approved";
+        return _buildBlogCard(context, blog);
+      },
+    );
+  }
 
-          return Container(
-            margin: EdgeInsets.only(bottom: Responsive.h(16)),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(Responsive.w(12)),
-              border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+  Widget _buildBlogCard(BuildContext context, Map<String, String> blog) {
+    final status = blog["status"] ?? "Pending";
+
+    Color statusColor;
+
+    switch (status) {
+      case "Approved":
+        statusColor = const Color(0xFF10B981);
+        break;
+
+      case "Not Approved":
+        statusColor = const Color(0xFFEF4444);
+        break;
+
+      default:
+        statusColor = const Color(0xFFF59E0B);
+    }
+
+    final isRejected = status == "Not Approved";
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Cover Image
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(Responsive.w(16)),
             ),
-            child: Padding(
-              padding: EdgeInsets.all(Responsive.w(16)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+            child: Image.network(
+              blog["image"] ?? "",
+              width: double.infinity,
+              height: Responsive.h(150),
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) {
+                return Container(
+                  width: double.infinity,
+                  height: Responsive.h(150),
+                  color: Colors.grey.shade100,
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: Responsive.sp(40),
+                    color: Colors.grey.shade400,
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // Blog Content
+          Padding(
+            padding: EdgeInsets.all(Responsive.w(16)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title + Status
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        blog["title"] ?? "",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(14),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textColor,
+                        ).copyWith(height: 1.4),
+                      ),
+                    ),
+
+                    width(Responsive.w(10)),
+
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.w(9),
+                        vertical: Responsive.h(5),
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(Responsive.w(30)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: Responsive.w(6),
+                            height: Responsive.w(6),
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          width(Responsive.w(5)),
+                          Text(
+                            status,
+                            style: customTextStyle(
+                              color: statusColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: Responsive.sp(9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                height(Responsive.h(8)),
+
+                // Article Preview
+                Text(
+                  blog["content"] ?? "",
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: Colors.grey.shade600,
+                  ).copyWith(height: 1.45),
+                ),
+
+                height(Responsive.h(10)),
+
+                // Submitted Date
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: Responsive.sp(13),
+                      color: Colors.grey.shade500,
+                    ),
+                    width(Responsive.w(5)),
+                    Text(
+                      "Submitted : ${blog["date"]}",
+                      style: customTextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: Responsive.sp(10.5),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Rejected Actions
+                if (isRejected) ...[
+                  height(Responsive.h(14)),
+
+                  Divider(height: 1, thickness: 1, color: Colors.grey.shade100),
+
+                  height(Responsive.h(12)),
+
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Expanded(
-                        child: Text(
-                          blog["title"]!,
-                          style: customTextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                            color: Colors.black87,
+                        child: OutlinedButton.icon(
+                          icon: Icon(
+                            Icons.edit_outlined,
+                            size: Responsive.sp(16),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      width(12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                color: statusColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            width(6),
-                            Text(
-                              blog["status"]!,
-                              style: customTextStyle(
-                                color: statusColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  height(5),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 14,
-                        color: Colors.grey.shade500,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        "Submitted : ${blog["date"]}",
-                        style: customTextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (isRejected) ...[
-                    height(16),
-                    const Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Color(0xFFF3F4F6),
-                    ),
-                    height(12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        OutlinedButton.icon(
-                          icon: const Icon(Icons.edit_outlined, size: 16),
                           onPressed: () {
                             context.push(Routes.addBlog);
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.grey.shade700,
                             side: BorderSide(color: Colors.grey.shade300),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                            minimumSize: Size(
+                              double.infinity,
+                              Responsive.h(40),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Responsive.w(12),
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(
+                                Responsive.w(10),
+                              ),
                             ),
                           ),
                           label: Text(
                             "Edit",
                             style: customTextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 13,
+                              fontSize: Responsive.sp(11),
                             ),
                           ),
                         ),
-                        width(12),
-                        ElevatedButton.icon(
-                          icon: const Icon(
+                      ),
+
+                      width(Responsive.w(10)),
+
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          icon: Icon(
                             Icons.refresh_rounded,
-                            size: 16,
+                            size: Responsive.sp(16),
                             color: Colors.white,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            // TODO: Resubmit blog
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.accent,
+                            foregroundColor: Colors.white,
                             elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                            minimumSize: Size(
+                              double.infinity,
+                              Responsive.h(40),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Responsive.w(12),
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(
+                                Responsive.w(10),
+                              ),
                             ),
                           ),
                           label: Text(
@@ -202,28 +299,18 @@ class MyBlogsTab extends StatelessWidget {
                             style: customTextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 13,
+                              fontSize: Responsive.sp(11),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ],
-              ),
+              ],
             ),
-          );
-        },
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.primary,
-          onPressed: () {
-            context.push(Routes.addBlog);
-          },
-          child: Icon(Icons.add, color: AppColors.white),
-        ),
+          ),
+        ],
       ),
     );
   }

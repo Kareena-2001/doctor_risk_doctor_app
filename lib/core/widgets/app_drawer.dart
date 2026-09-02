@@ -50,46 +50,42 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.productList),
                     ),
+
                     _tile(
                       context,
-                      icon: Icons.quiz_outlined,
+                      icon: Icons.warning_amber_rounded,
                       title: 'Emergency',
-                      subtitle: 'Something urgent',
+                      subtitle: 'Get immediate help for urgent matters',
                       isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.faqScreen);
-                      },
+                      onTap: () => context.push(Routes.faqScreen),
                     ),
+
                     _tile(
                       context,
                       icon: Icons.support_agent_rounded,
                       title: 'Support Hub',
-                      subtitle: 'Contact Support',
+                      subtitle: 'Get help and connect with our support team',
                       isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.supportHub);
-                      },
+                      onTap: () => context.push(Routes.supportHub),
                     ),
+
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,
                       title: 'Appointments',
-                      subtitle: 'View upcoming & past appointments',
+                      subtitle: 'View upcoming and past appointments',
                       isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.viewAppointment);
-                      },
+                      onTap: () => context.push(Routes.viewAppointment),
                     ),
+
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,
                       title: 'Renewal Centre',
                       subtitle:
-                          'Track your renewal window and keep your coverage continuous.',
+                          'Manage your renewal and keep your coverage active',
                       isDark: isDark,
-                      onTap: () {
-                        context.push(Routes.renewCentre);
-                      },
+                      onTap: () => context.push(Routes.renewCentre),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
