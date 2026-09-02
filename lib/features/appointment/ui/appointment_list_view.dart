@@ -30,19 +30,199 @@ class AppointmentListView extends ConsumerWidget {
     }
   }
 
+  void _showAppointmentDetails(BuildContext context, AppointmentModel appt) {
+    final statusColor = _statusColor(appt.status);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).padding.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header & Close Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      appt.subject,
+                      style: customTextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              height(16),
+
+              // Detail Key-Value Rows
+              _buildDetailRow(
+                context,
+                'Status',
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    appt.status.toUpperCase(),
+                    style: customTextStyle(
+                      fontSize: 11,
+                      color: statusColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Linked ticket',
+                Text(
+                  'LS-2026-0142',
+                  // Replace with dynamic field if present: appt.ticketId
+                  style: customTextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Type',
+                Text(
+                  'Legal', // Replace with dynamic field if present: appt.type
+                  style: customTextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Date',
+                Text(
+                  DateFormat('dd MMM yyyy').format(appt.date),
+                  style: customTextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Time',
+                Text(
+                  appt.time.format(context),
+                  style: customTextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Mode',
+                Row(
+                  children: [
+                    Icon(appt.mode.icon, size: 14, color: AppColors.newPri),
+                    width(6),
+                    Text(
+                      appt.mode.label,
+                      style: customTextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _buildDetailRow(
+                context,
+                'Link',
+                Flexible(
+                  child: SelectableText(
+                    'https://meet.doctorsrisk.in/dr-mathur-142',
+                    // Replace with appt.meetingLink
+                    style: customTextStyle(
+                      fontSize: 12,
+                      color: AppColors.newPri,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(
+    BuildContext context,
+    String label,
+    Widget valueWidget,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: customTextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(child: valueWidget),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appointments = ref.watch(appointmentProvider);
 
     final openAppointments = appointments
-        .where((a) =>
-    a.status.toLowerCase() == 'open' ||
-        a.status.toLowerCase() == 'scheduled')
+        .where(
+          (a) =>
+              a.status.toLowerCase() == 'open' ||
+              a.status.toLowerCase() == 'scheduled',
+        )
         .toList();
     final completedAppointments = appointments
-        .where((a) =>
-    a.status.toLowerCase() == 'completed' ||
-        a.status.toLowerCase() == 'closed')
+        .where(
+          (a) =>
+              a.status.toLowerCase() == 'completed' ||
+              a.status.toLowerCase() == 'closed',
+        )
         .toList();
     final cancelledAppointments = appointments
         .where((a) => a.status.toLowerCase() == 'cancelled')
@@ -60,22 +240,6 @@ class AppointmentListView extends ConsumerWidget {
         ),
         body: Column(
           children: [
-            // Sub-header Banner
-            // Container(
-            //   color: AppColors.white,
-            //   padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            //   width: double.infinity,
-            //   child: Text(
-            //     'Scheduled by our team once a Book Appointment ticket is processed. '
-            //         'You can request a reschedule or cancellation here.',
-            //     style: customTextStyle(
-            //       fontSize: 12,
-            //       color: Colors.grey[600],
-            //       fontWeight: FontWeight.w400,
-            //     ),
-            //   ),
-            // ),
-
             // Tab Filters Bar
             Container(
               color: AppColors.white,
@@ -125,9 +289,9 @@ class AppointmentListView extends ConsumerWidget {
   }
 
   Widget _buildAppointmentList(
-      BuildContext context,
-      List<AppointmentModel> items,
-      ) {
+    BuildContext context,
+    List<AppointmentModel> items,
+  ) {
     if (items.isEmpty) {
       return const CommonEmptyState(
         icon: Icons.calendar_month_outlined,
@@ -142,9 +306,11 @@ class AppointmentListView extends ConsumerWidget {
       itemBuilder: (context, index) {
         final appt = items[index];
         final statusColor = _statusColor(appt.status);
+        final isCancelable =
+            appt.status.toLowerCase() == 'open' ||
+            appt.status.toLowerCase() == 'scheduled';
 
         return Container(
-          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(14),
@@ -155,147 +321,127 @@ class AppointmentListView extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: Subject + Status Chip
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    appt.mode.icon,
-                    size: 16,
-                    color: AppColors.newPri,
-                  ),
-                  width(8),
-                  Expanded(
-                    child: Text(
-                      appt.subject,
-                      overflow: TextOverflow.ellipsis,
-                      style: customTextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  width(8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      appt.status,
-                      style: customTextStyle(
-                        fontSize: 10,
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              height(8),
-
-              // Mode, Date, Time Metadata
-              Text(
-                '${appt.mode.label} • ${DateFormat('dd MMM yyyy').format(appt.date)} • ${appt.time.format(context)}',
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-
-              // Description
-              if (appt.description.isNotEmpty) ...[
-                height(8),
-                Text(
-                  appt.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: customTextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-
-              // Attachment Documents Section
-              if (appt.attachments.isNotEmpty) ...[
-                height(12),
-                const Divider(height: 1),
-                height(10),
-                Text(
-                  'Attached Documents (${appt.attachments.length})',
-                  style: customTextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                height(6),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: appt.attachments.map((file) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.insert_drive_file_outlined,
-                            size: 12,
-                            color: Colors.grey,
-                          ),
-                          width(4),
-                          Flexible(
-                            child: Text(
-                              file.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: customTextStyle(
-                                fontSize: 10,
-                                color: Colors.grey[800],
-                              ),
+              // Main Info Padding Section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Row: Title + Status Chip
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            appt.subject,
+                            style: customTextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-
-              // Action Link
-              height(12),
-              const Divider(height: 1),
-              height(8),
-              InkWell(
-                onTap: () {
-                  // Navigate or view appointment details
-                },
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: Text(
-                    'View Details',
-                    style: customTextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.newPri,
+                        ),
+                        width(8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            appt.status,
+                            style: customTextStyle(
+                              fontSize: 11,
+                              color: statusColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                    height(6),
+
+                    // Subtitle Metadata Row: Type · Ticket ID · Date & Time
+                    Text(
+                      'Legal · Ticket ${appt.id ?? "LS-2026-0142"} · ${DateFormat('dd MMM yyyy').format(appt.date)}, ${appt.time.format(context)}',
+                      style: customTextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+
+              // Bottom Action Buttons Strip
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => _showAppointmentDetails(context, appt),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      child: Text(
+                        'View Details',
+                        style: customTextStyle(
+                          fontSize: 12,
+                          color: AppColors.newPri,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (isCancelable) ...[
+                      TextButton(
+                        onPressed: () {
+                          // Trigger Reschedule action/modal
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: Text(
+                          'Request Reschedule',
+                          style: customTextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Trigger Cancel action/modal
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: customTextStyle(
+                            fontSize: 12,
+                            color: Colors.red[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],

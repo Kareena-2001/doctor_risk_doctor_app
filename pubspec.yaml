@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  mobile_scanner: ^5.2.3
   cached_network_image: ^3.4.1
   connectivity_plus: ^6.0.3
   cupertino_icons: ^1.0.6

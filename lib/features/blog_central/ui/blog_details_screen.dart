@@ -4,7 +4,6 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/custom_app_bar.dart';
-import '../../../theme/app_colors.dart';
 
 class BlogDetailsScreen extends StatelessWidget {
   const BlogDetailsScreen({super.key});

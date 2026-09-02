@@ -23,6 +23,35 @@ import '../../notification/ui/viewmodel/notification_view_model.dart';
 import '../model/policy_model.dart';
 import 'floating_chat_bubble.dart';
 
+const legalNotifications = [
+  QuickActionNotification(
+    title: 'New reply on ticket LS-2026-0139',
+    description:
+        'Our legal team has escalated your urgent on-call request — a specialist will call shortly.',
+  ),
+  QuickActionNotification(
+    title: 'Ticket LS-2026-0142 moved to In Progress',
+    description:
+        'Your Legal Support ticket "Book Appointment — Case Discussion" is now being worked on.',
+  ),
+  QuickActionNotification(
+    title: 'New advisory posted: Continuity Options When Switching Insurers',
+    description:
+        'DoctorsRisk Compliance Desk has shared guidance on maintaining coverage continuity — now in Peer Forum.',
+  ),
+];
+
+const appointmentNotifications = [
+  QuickActionNotification(
+    title: 'Appointment reminder: tomorrow at 3:00 PM',
+    description:
+        '"Case Discussion" (Video Call) is scheduled for tomorrow. Join link available in Appointments.',
+  ),
+  QuickActionNotification(
+    title: 'Reschedule request confirmed',
+    description: 'Your requested new time slot has been confirmed by our team.',
+  ),
+];
 final policyModel = PolicyModel(
   title: 'Policy Details',
   planName: 'Medico Legal Services',
@@ -73,6 +102,16 @@ final List<PolicyModel> personalPlansList = [
   ),
 ];
 
+class QuickActionNotification {
+  final String title;
+  final String description;
+
+  const QuickActionNotification({
+    required this.title,
+    required this.description,
+  });
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -83,7 +122,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final LayerLink _legalLink = LayerLink();
+  final LayerLink _appointmentsLink = LayerLink();
+  OverlayEntry? _openDropdown;
   late final String userId;
 
   late AnimationController _animationController;
@@ -108,6 +149,156 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _startSessionCheck();
   }
 
+  void _closeDropdown() {
+    _openDropdown?.remove();
+    _openDropdown = null;
+  }
+
+  @override
+  void dispose() {
+    _closeDropdown();
+    _animationController.dispose();
+    _sessionTimer?.cancel();
+    _planPageController.dispose();
+    super.dispose();
+  }
+
+  void _toggleQuickActionDropdown({
+    required BuildContext context,
+    required LayerLink link,
+    required List<QuickActionNotification> items,
+    required VoidCallback onViewAll,
+  }) {
+    if (_openDropdown != null) {
+      _closeDropdown();
+      return;
+    }
+
+    final overlay = Overlay.of(context);
+
+    _openDropdown = OverlayEntry(
+      builder: (overlayContext) {
+        return Stack(
+          children: [
+            // tap-outside-to-close barrier
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _closeDropdown,
+                child: const SizedBox.shrink(),
+              ),
+            ),
+            CompositedTransformFollower(
+              link: link,
+              showWhenUnlinked: false,
+              targetAnchor: Alignment.bottomRight,
+              followerAnchor: Alignment.topRight,
+              offset: Offset(0, Responsive.h(8)),
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: Responsive.w(280),
+                  constraints: BoxConstraints(maxHeight: Responsive.h(360)),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(Responsive.w(16)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Responsive.w(14),
+                            vertical: Responsive.h(12),
+                          ),
+                          itemCount: items.length,
+                          separatorBuilder: (_, __) => Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: Responsive.h(10),
+                            ),
+                            child: Divider(
+                              height: 1,
+                              color: Colors.grey.shade200,
+                            ),
+                          ),
+                          itemBuilder: (_, i) {
+                            final item = items[i];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: customTextStyle(
+                                    fontSize: Responsive.sp(12),
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textColor,
+                                  ).copyWith(height: 1.3),
+                                ),
+                                height(Responsive.h(4)),
+                                Text(
+                                  item.description,
+                                  style: customTextStyle(
+                                    fontSize: Responsive.sp(11),
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.homeTextMuted,
+                                  ).copyWith(height: 1.35),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(Responsive.w(16)),
+                        ),
+                        onTap: () {
+                          _closeDropdown();
+                          onViewAll();
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: Responsive.h(12),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              top: BorderSide(color: Colors.grey.shade200),
+                            ),
+                          ),
+                          child: Text(
+                            'View all notifications',
+                            textAlign: TextAlign.center,
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(12),
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.newPri,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    overlay.insert(_openDropdown!);
+  }
+
   void _startSessionCheck() {
     _sessionTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       debugPrint('Checking session...');
@@ -115,12 +306,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     });
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _sessionTimer?.cancel();
-    _planPageController.dispose();
-    super.dispose();
+  Widget _buildQuickActionsRow() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            _emergencyPill(),
+            width(Responsive.w(10)),
+            CompositedTransformTarget(
+              link: _legalLink,
+              child: _shortcutPill(
+                label: 'Legal',
+                icon: Icons.gavel_rounded,
+                badgeCount: 1,
+                bg: const Color(0xFFE4F0FA),
+                fg: const Color(0xFF3E8FD0),
+                onTap: () => _toggleQuickActionDropdown(
+                  context: context,
+                  link: _legalLink,
+                  items: legalNotifications,
+                  onViewAll: () => context.push(Routes.notification),
+                ),
+              ),
+            ),
+            width(Responsive.w(10)),
+            CompositedTransformTarget(
+              link: _appointmentsLink,
+              child: _shortcutPill(
+                label: 'Appointments',
+                icon: Icons.calendar_month_rounded,
+                badgeCount: 1,
+                bg: const Color(0xFFFCEFD9),
+                fg: const Color(0xFFEF9F2E),
+                onTap: () => _toggleQuickActionDropdown(
+                  context: context,
+                  link: _appointmentsLink,
+                  items: appointmentNotifications,
+                  onViewAll: () => context.push(Routes.notification),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _refreshUserData() async {
@@ -251,10 +483,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             showDrawer: true,
             showScan: true,
             onScan: () async {
-              final result = await context.push(Routes.scanScreen);
-              if (result != null) {
-                debugPrint('Scanned: $result');
-              }
+              context.push(Routes.scanScreen);
             },
             onDrawer: () {
               context.push(Routes.appDrawer);
@@ -305,43 +534,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ),
         FloatingChatBubble(),
       ],
-    );
-  }
-
-  Widget _buildQuickActionsRow() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: Row(
-          children: [
-            _emergencyPill(),
-            width(Responsive.w(10)),
-            _shortcutPill(
-              label: 'Legal',
-              icon: Icons.gavel_rounded,
-              badgeCount: 1,
-              bg: const Color(0xFFE4F0FA),
-              // sky-100
-              fg: const Color(0xFF3E8FD0),
-              // sky-500
-              onTap: () => context.push(Routes.notification),
-            ),
-            width(Responsive.w(10)),
-            _shortcutPill(
-              label: 'Appointments',
-              icon: Icons.calendar_month_rounded,
-              badgeCount: 1,
-              bg: const Color(0xFFFCEFD9),
-              // amber-100
-              fg: const Color(0xFFEF9F2E),
-              // amber-500
-              onTap: () => context.push(Routes.notification),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -1264,14 +1456,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
           height(Responsive.h(10)),
           _buildNewsTile(
-            'Medical Negligence in Post-Operative Care: Supreme Court...',
-            'Jan 2025 • Legal Update',
-            Icons.gavel,
+            source: 'Supreme Court of India',
+            title:
+                'Independent expert opinion now mandatory before prosecuting doctors',
+            date: 'Jan 2025 • Legal Update',
+            icon: Icons.gavel_rounded,
           ),
           _buildNewsTile(
-            'NMC Junked Negligence Complaints Without Seeking...',
-            'Aug 2025 • Policy Watch',
-            Icons.cancel_outlined,
+            source: 'National Medical Commission',
+            title: 'NMC Junked Negligence Complaints Without Seeking...',
+            date: 'Aug 2025 • Policy Watch',
+            icon: Icons.cancel_outlined,
           ),
           height(Responsive.h(28)),
           HeadingWidget(
@@ -1282,7 +1477,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             },
           ),
           height(Responsive.h(10)),
-          _buildKnowledgeHub(),
+          _buildBlogCentral(),
           height(Responsive.h(28)),
           HeadingWidget(
             headingTitle: 'Events & Learning',
@@ -1438,25 +1633,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildKnowledgeHub() {
+  Widget _buildBlogCentral() {
     final blogs = [
       {
         'title': 'Medical Negligence in Post-Operative Care',
-        'category': 'Legal Update',
+        'description':
+            'Key legal precedents, liability risks, and essential documentation protocols every operating surgeon must maintain.',
         'date': '12 Jul 2026',
         'read': '5 min',
         'image': 'assets/images/blog.png',
       },
       {
         'title': 'Understanding New NMC Guidelines for Doctors',
-        'category': 'Compliance',
+        'description':
+            'A comprehensive breakdown of recent ethical codes, teleconsultation mandates, and compliance updates.',
         'date': '08 Jul 2026',
         'read': '3 min',
         'image': 'assets/images/blog.png',
       },
       {
         'title': 'Professional Indemnity: Common Claim Mistakes',
-        'category': 'Insurance',
+        'description':
+            'Learn about avoidable errors during malpractice claims and how to properly report adverse clinical events.',
         'date': '02 Jul 2026',
         'read': '6 min',
         'image': 'assets/images/blog.png',
@@ -1468,23 +1666,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       itemCount: blogs.length,
-      separatorBuilder: (_, __) => SizedBox(height: Responsive.h(14)),
+      separatorBuilder: (_, __) => SizedBox(height: Responsive.h(12)),
       itemBuilder: (context, index) {
         final blog = blogs[index];
 
         return InkWell(
-          borderRadius: BorderRadius.circular(Responsive.w(18)),
-          onTap: () {},
+          borderRadius: BorderRadius.circular(Responsive.w(20)),
+          onTap: () => context.push(Routes.blogCentral),
           child: Container(
             padding: EdgeInsets.all(Responsive.w(12)),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(Responsive.w(18)),
+              borderRadius: BorderRadius.circular(Responsive.w(20)),
+              border: Border.all(color: Colors.grey.shade200),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
+                  color: Colors.black.withValues(alpha: 0.035),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
@@ -1495,8 +1694,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   borderRadius: BorderRadius.circular(Responsive.w(14)),
                   child: Image.asset(
                     blog['image']!,
-                    width: Responsive.w(90),
-                    height: Responsive.w(90),
+                    width: Responsive.w(84),
+                    height: Responsive.w(84),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -1505,63 +1704,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Responsive.w(10),
-                          vertical: Responsive.h(4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.homeBlogBg,
-                          borderRadius: BorderRadius.circular(Responsive.w(30)),
-                        ),
-                        child: Text(
-                          blog['category']!,
-                          style: customTextStyle(
-                            color: AppColors.homeBlog,
-                            fontSize: Responsive.sp(10),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      height(Responsive.h(8)),
+                      // Title
                       Text(
                         blog['title']!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
-                          fontSize: Responsive.sp(12),
-                          fontWeight: FontWeight.bold,
+                          fontSize: Responsive.sp(13),
+                          fontWeight: FontWeight.w700,
                           color: AppColors.textColor,
-                        ),
+                        ).copyWith(height: 1.3),
+                      ),
+                      height(Responsive.h(4)),
+
+                      // Description
+                      Text(
+                        blog['description']!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(11),
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey.shade600,
+                        ).copyWith(height: 1.3),
                       ),
                       height(Responsive.h(10)),
+
+                      // Read time, Date & Action Arrow
                       Row(
                         children: [
                           Icon(
                             Icons.schedule_outlined,
-                            size: Responsive.sp(14),
+                            size: Responsive.sp(13),
                             color: AppColors.homeTextMuted,
                           ),
                           width(Responsive.w(4)),
                           Text(
                             blog['read']!,
                             style: customTextStyle(
-                              fontSize: Responsive.sp(11),
+                              fontSize: Responsive.sp(10.5),
                               color: AppColors.homeTextMuted,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          width(Responsive.w(12)),
+                          width(Responsive.w(10)),
                           Icon(
                             Icons.calendar_today_outlined,
-                            size: Responsive.sp(14),
+                            size: Responsive.sp(13),
                             color: AppColors.homeTextMuted,
                           ),
                           width(Responsive.w(4)),
                           Text(
                             blog['date']!,
                             style: customTextStyle(
-                              fontSize: Responsive.sp(11),
+                              fontSize: Responsive.sp(10.5),
                               color: AppColors.homeTextMuted,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const Spacer(),
@@ -1572,7 +1770,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.arrow_forward_ios,
+                              Icons.arrow_forward_rounded,
                               size: Responsive.sp(12),
                               color: AppColors.homeBlog,
                             ),
@@ -1813,14 +2011,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildNewsTile(String title, String date, IconData icon) {
+  Widget _buildNewsTile({
+    required String source,
+    required String title,
+    required String date,
+    required IconData icon,
+  }) {
     return Container(
-      margin: EdgeInsets.only(bottom: Responsive.h(10)),
+      margin: EdgeInsets.only(bottom: Responsive.h(12)),
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: AppColors.homeNews.withValues(alpha: 0.08)),
+        borderRadius: BorderRadius.circular(Responsive.w(18)),
+        border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.035),
@@ -1829,54 +2032,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: Responsive.w(40),
-            height: Responsive.w(40),
-            decoration: BoxDecoration(
-              color: AppColors.homeNewsBg,
-              borderRadius: BorderRadius.circular(Responsive.w(12)),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.homeNews,
-              size: Responsive.sp(18),
-            ),
-          ),
-          width(Responsive.w(14)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(Responsive.w(18)),
+        onTap: () => context.push(Routes.newsAdvisory),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: customTextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.mono100,
-                    fontSize: Responsive.sp(12),
-                  ),
-                ),
-                height(Responsive.h(5)),
-                Text(
-                  date,
-                  style: customTextStyle(
-                    color: AppColors.homeTextMuted,
-                    fontSize: Responsive.sp(11),
+                Expanded(
+                  child: Text(
+                    source,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.newPri,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          width(Responsive.w(8)),
-          Icon(
-            Icons.chevron_right_rounded,
-            size: Responsive.sp(20),
-            color: AppColors.homeNews,
-          ),
-        ],
+            height(Responsive.h(10)),
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: customTextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.mono100,
+                fontSize: Responsive.sp(12.5),
+              ).copyWith(height: 1.3),
+            ),
+            height(Responsive.h(10)),
+            Row(
+              children: [
+                Text(
+                  date,
+                  style: customTextStyle(
+                    color: AppColors.homeTextMuted,
+                    fontSize: Responsive.sp(10.5),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  'Read more',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+                width(Responsive.w(4)),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: Responsive.sp(13),
+                  color: AppColors.homeNews,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
