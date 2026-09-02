@@ -7,7 +7,6 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
-import '../../home/ui/chat_panel.dart';
 import '../model/emergency_scenario_model.dart';
 
 class EmergencyAssistanceScreen extends ConsumerStatefulWidget {
