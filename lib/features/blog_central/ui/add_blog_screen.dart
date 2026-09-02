@@ -1,14 +1,16 @@
-import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
-import 'package:Doctors_App/features/common/ui/widgets/secondary_button.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../../../core/constants/dimensions.dart';
-import '../../../core/constants/responsive.dart';
-import '../../../core/constants/values/app_text_style.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../../features/common/ui/widgets/primary_button.dart';
-import '../../../theme/app_colors.dart';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/constants/responsive.dart';
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/common/ui/widgets/secondary_button.dart';
+import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddBlogScreen extends StatefulWidget {
   const AddBlogScreen({super.key});
@@ -19,201 +21,282 @@ class AddBlogScreen extends StatefulWidget {
 
 class _AddBlogScreenState extends State<AddBlogScreen> {
   final titleController = TextEditingController();
-  final summaryController = TextEditingController();
   final contentController = TextEditingController();
 
-  String? category;
-  String visibility = "Public";
-  bool allowComments = true;
+  final ImagePicker _picker = ImagePicker();
 
-  final List<String> categories = [
-    "Medical",
-    "Medico Legal",
-    "Insurance",
-    "Clinical Tips",
-    "Case Study",
-    "Career",
-    "Awareness",
-    "Other",
-  ];
+  File? coverImage;
+  bool isAgreed = false;
 
-  final List<String> tags = [
-    "Medical",
-    "Insurance",
-    "Doctors",
-    "Healthcare",
-    "Legal",
-  ];
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
+  }
 
-  final List<String> selectedTags = [];
+  Future<void> _pickImage() async {
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image != null) {
+      setState(() {
+        coverImage = File(image.path);
+      });
+    }
+  }
+
+  void _submit() {
+    if (titleController.text.trim().isEmpty) {
+      _showMessage('Please enter title');
+      return;
+    }
+
+    if (contentController.text.trim().isEmpty) {
+      _showMessage('Please write your article');
+      return;
+    }
+
+    if (!isAgreed) {
+      _showMessage('Please accept the agreement');
+      return;
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
-      appBar: const CustomAppBar(title: "Add Blog"),
+      appBar: const CustomAppBar(title: 'Write a Blog'),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(Responsive.w(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Cover Image",
+              'Share your experience with the group. Your submission goes '
+              'to admin for review before it\'s published — you\'ll earn '
+              'points once it\'s approved.',
               style: customTextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: Responsive.sp(12),
-              ),
+                fontSize: Responsive.sp(10.5),
+                color: Colors.grey.shade700,
+              ).copyWith(height: 1.5),
             ),
-            height(10),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: Responsive.h(180),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image_outlined,
-                      color: AppColors.newPri,
-                      size: 55,
-                    ),
-                    height(10),
-                    Text(
-                      "Upload Cover Image",
-                      style: customTextStyle(
-                        color: AppColors.newPri,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "Tap to choose image",
-                      style: customTextStyle(
-                        color: Colors.grey,
-                        fontSize: Responsive.sp(11),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            height(25),
+
+            height(24),
+
             CustomTextField(
+              label: 'Subject Line / Title',
               controller: titleController,
-              label: "Blog Title",
-              hint: "Enter blog title",
-            ),
-            height(18),
-            CustomDropdownField(
-              label: 'Category',
-              hint: 'Select Category',
-              items: categories,
-              onChanged: (v) {
-                setState(() {
-                  category = v;
-                });
-              },
-            ),
-            height(18),
-            CustomTextField(
-              controller: summaryController,
-              label: "Short Summary",
-              hint: "Write short description",
-              maxLines: 3,
-            ),
-            height(18),
-            CustomTextField(
-              controller: contentController,
-              label: "Blog Content",
-              hint: "Share your knowledge...",
-              maxLines: 8,
+              hint:
+                  'e.g. Documenting Telemedicine Consults for Medico‑Legal Defensibility',
             ),
             height(22),
-            Text("Tags", style: customTextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Text(
+                  'Add Image',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(12),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                width(10),
+                Text(
+                  'Optional',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(10.5),
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
             height(10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: tags.map((tag) {
-                final selected = selectedTags.contains(tag);
-
-                return FilterChip(
-                  backgroundColor: Colors.white,
-                  label: Text(tag),
-                  selected: selected,
-                  selectedColor: AppColors.newPri.withValues(alpha: .18),
-                  checkmarkColor: AppColors.newPri,
-                  onSelected: (value) {
+            _buildImagePicker(),
+            height(22),
+            CustomTextField(
+              label: 'Your Article',
+              controller: contentController,
+              hint:
+                  'Share the case context, what you learned, and how it could help a peer facing something similar.',
+              maxLines: 10,
+            ),
+            height(18),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Checkbox(
+                  value: isAgreed,
+                  activeColor: AppColors.newPri,
+                  onChanged: (value) {
                     setState(() {
-                      if (value) {
-                        selectedTags.add(tag);
-                      } else {
-                        selectedTags.remove(tag);
-                      }
+                      isAgreed = value ?? false;
                     });
                   },
-                );
-              }).toList(),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'I agree to share this content within the DoctorsRisk '
+                      'community for publishing and viewing purposes among '
+                      'my medical peers.',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(10.5),
+                        color: Colors.grey.shade700,
+                      ).copyWith(height: 1.45),
+                    ),
+                  ),
+                ),
+              ],
             ),
+
+            height(14),
+
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.borderGrey),
+                // color: AppColors.newPri.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 19,
+                    color: AppColors.newPri,
+                  ),
+                  width(8),
+                  Expanded(
+                    child: Text(
+                      'All submissions are reviewed by our medico-legal '
+                      'experts and may be lightly edited for accuracy or '
+                      'clarity before publishing, for your protection. To '
+                      'request removal of a submission, please raise a '
+                      'ticket with Service Support in the Support Hub, '
+                      'or contact our helpline.',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(10.5),
+                        color: AppColors.textColor,
+                      ).copyWith(height: 1.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             height(25),
-            Text(
-              "Attachments",
-              style: customTextStyle(fontWeight: FontWeight.bold),
-            ),
-            height(10),
+
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.picture_as_pdf,
-                      color: AppColors.textColor,
-                    ),
-                    label: Text(
-                      "Upload Pdf",
-                      style: customTextStyle(color: AppColors.textColor),
-                    ),
+                  child: SecondaryButton(
+                    onPressed: () => Navigator.pop(context),
+                    text: 'Cancel',
                   ),
                 ),
                 width(12),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.photo_library, color: AppColors.textColor),
-                    label: Text(
-                      "Images",
-                      style: customTextStyle(color: AppColors.textColor),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            height(35),
-            Row(
-              children: [
-                Expanded(
-                  child: SecondaryButton(onPressed: () {}, text: "Save Draft"),
-                ),
-                width(15),
-                Expanded(
                   child: PrimaryButton(
-                    text: "Publish",
+                    borderRadius: 25,
+                    fontSize: 14,
+                    text: 'Submit for Review',
                     backgroundColor: AppColors.newPri,
-                    onPressed: () {},
+                    onPressed: _submit,
                   ),
                 ),
               ],
             ),
-            height(40),
+            SocialLinkWidget(),
+            height(30),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildImagePicker() {
+    if (coverImage == null) {
+      return InkWell(
+        onTap: _pickImage,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          height: Responsive.h(160),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.image_outlined, color: AppColors.newPri, size: 42),
+              height(8),
+              Text(
+                'Upload Image',
+                style: customTextStyle(
+                  color: AppColors.newPri,
+                  fontWeight: FontWeight.w600,
+                  fontSize: Responsive.sp(12),
+                ),
+              ),
+              height(3),
+              Text(
+                'Add a cover image to make your article stand out',
+                textAlign: TextAlign.center,
+                style: customTextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: Responsive.sp(10),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.file(
+            coverImage!,
+            width: double.infinity,
+            height: Responsive.h(160),
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                coverImage = null;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close, color: Colors.white, size: 18),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

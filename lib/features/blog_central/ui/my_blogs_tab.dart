@@ -6,6 +6,8 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../home/ui/widgets/social_link_widget.dart';
+
 class MyBlogsTab extends StatelessWidget {
   const MyBlogsTab({super.key});
 
@@ -34,13 +36,15 @@ class MyBlogsTab extends StatelessWidget {
         padding: EdgeInsets.all(Responsive.w(16)),
         itemCount: blogs.length,
         itemBuilder: (_, index) {
+          if (index == blogs.length) {
+            return Column(children: [SocialLinkWidget(), height(50)]);
+          }
           final blog = blogs[index];
 
-          // Status color configuration
           Color statusColor;
           switch (blog["status"]) {
             case "Approved":
-              statusColor = const Color(0xFF10B981); // Modern emerald green
+              statusColor = const Color(0xFF10B981);
               break;
             case "Not Approved":
               statusColor = const Color(0xFFEF4444); // Modern rose red
@@ -70,7 +74,6 @@ class MyBlogsTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Header Row: Title & Status
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -86,8 +89,7 @@ class MyBlogsTab extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      // Status Badge
+                      width(12),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -108,7 +110,7 @@ class MyBlogsTab extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                             ),
-                            const SizedBox(width: 6),
+                            width(6),
                             Text(
                               blog["status"]!,
                               style: customTextStyle(
@@ -122,10 +124,7 @@ class MyBlogsTab extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   height(5),
-
-                  // Metadata Row (Date)
                   Row(
                     children: [
                       Icon(
@@ -144,8 +143,6 @@ class MyBlogsTab extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // Action Buttons for Rejected Status
                   if (isRejected) ...[
                     height(16),
                     const Divider(

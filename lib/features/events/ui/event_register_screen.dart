@@ -65,15 +65,6 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
               children: [
                 _buildEventSummaryCard(),
                 height(Responsive.h(24)),
-                Text(
-                  "Enter Attendee Details",
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(14),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
-                  ),
-                ),
-                height(Responsive.h(12)),
                 CustomTextField(
                   label: "Full Name",
                   controller: _nameController,
@@ -106,13 +97,13 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
                   validator: (val) =>
                       val!.isEmpty ? 'Please enter mobile number' : null,
                 ),
-                height(Responsive.h(16)),
-                CustomTextField(
-                  label: "Medical Licence Number (Optional)",
-                  controller: _licenceController,
-                  icon: Icons.badge_outlined,
-                ),
                 height(Responsive.h(32)),
+                // CustomTextField(
+                //   label: "Medical Licence Number (Optional)",
+                //   controller: _licenceController,
+                //   icon: Icons.badge_outlined,
+                // ),
+                // height(Responsive.h(32)),
                 PrimaryButton(
                   text: "Confirm Registration",
                   backgroundColor: AppColors.newPri,
@@ -140,28 +131,8 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: Responsive.w(8),
-              vertical: Responsive.h(4),
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.newPri.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(Responsive.w(6)),
-            ),
-            child: Text(
-              // Changed ! to ?? ''
-              widget.event['speciality'] ?? 'General',
-              style: customTextStyle(
-                fontSize: Responsive.sp(10),
-                fontWeight: FontWeight.bold,
-                color: AppColors.newPri,
-              ),
-            ),
-          ),
-          height(Responsive.h(8)),
+          // Title
           Text(
-            // Changed ! to ?? 'Event'
             widget.event['title'] ?? 'Unnamed Event',
             style: customTextStyle(
               fontSize: Responsive.sp(14),
@@ -169,36 +140,71 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
               color: AppColors.textColor,
             ),
           ),
+
           height(Responsive.h(12)),
-          Row(
+
+          // Date + Time + Type
+          Wrap(
+            spacing: Responsive.w(12),
+            runSpacing: Responsive.h(6),
             children: [
-              Icon(
-                Icons.calendar_today_rounded,
-                size: 14,
-                color: AppColors.homeTextMuted,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: Responsive.sp(14),
+                    color: AppColors.homeTextMuted,
+                  ),
+                  width(Responsive.w(4)),
+                  Text(
+                    '22 Aug 2026',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: AppColors.homeTextMuted,
+                    ),
+                  ),
+                ],
               ),
-              width(4),
-              Text(
-                "${widget.event['day'] ?? ''} ${widget.event['month'] ?? ''}",
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: AppColors.homeTextMuted,
-                ),
+
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: Responsive.sp(14),
+                    color: AppColors.homeTextMuted,
+                  ),
+                  width(Responsive.w(4)),
+                  Text(
+                    ' 6:30 PM IST',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: AppColors.homeTextMuted,
+                    ),
+                  ),
+                ],
               ),
-              width(16),
-              Icon(
-                Icons.access_time_rounded,
-                size: 14,
-                color: AppColors.homeTextMuted,
-              ),
-              width(4),
-              Text(
-                // Changed ! to ?? ''
-                widget.event['time'] ?? '',
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: AppColors.homeTextMuted,
-                ),
+
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    widget.event['type'] == 'Online'
+                        ? Icons.videocam_outlined
+                        : Icons.location_on_outlined,
+                    size: Responsive.sp(14),
+                    color: AppColors.homeTextMuted,
+                  ),
+                  width(Responsive.w(4)),
+                  Text(
+                    widget.event['type'] ?? '',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: AppColors.homeTextMuted,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -206,5 +212,4 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
       ),
     );
   }
-
 }

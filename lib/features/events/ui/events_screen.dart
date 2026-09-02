@@ -1,6 +1,5 @@
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
@@ -21,78 +20,111 @@ class _EventsScreenState extends State<EventsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _typeFilter = 'All';
-  String _collabSubView =
-      'Opportunities'; // Track toggle within Collaborate Tab
 
-  // Base Dataset containing both events and custom user proposals
   final List<Map<String, String>> _events = const [
     {
-      "title": "Medico-Legal Awareness Workshop",
-      "day": "18",
-      "month": "AUG",
-      "time": "10:00 AM",
-      "location": "Mumbai",
-      "type": "Offline",
-      "speciality": "General Practice",
-      "status": "upcoming",
-      "actionType": "register",
+      'title': 'Managing Consent Disputes in Elective Surgery',
+      'day': '14',
+      'month': 'AUG',
+      'date': '14 Aug 2026',
+      'time': '5:00 PM IST',
+      'type': 'Online',
+      'category': 'Informed Consent',
+      'price': 'Free — Included in Membership',
+      'status': 'registered',
+      'eventStatus': 'upcoming',
     },
     {
-      "title": "National Health Summit Partnership",
-      "day": "28",
-      "month": "AUG",
-      "time": "2:00 PM",
-      "location": "Delhi Hub",
-      "type": "Offline",
-      "speciality": "Healthcare Management",
-      "status": "collaborate",
-      "actionType": "collaborate",
-      "collabStatus": "approved", // Moves to Upcoming because it is approved!
+      'title': 'Telemedicine & the New NMC Circular: What Changes for You',
+      'day': '22',
+      'month': 'AUG',
+      'date': '22 Aug 2026',
+      'time': '6:30 PM IST',
+      'type': 'Online',
+      'category': 'Regulatory',
+      'price': 'Free — Included in Membership',
+      'status': 'register',
+      'eventStatus': 'upcoming',
     },
     {
-      "title": "Regional Rural Clinic Initiative",
-      "day": "14",
-      "month": "SEP",
-      "time": "09:00 AM",
-      "location": "Pune Medical Center",
-      "type": "Offline",
-      "speciality": "Public Health",
-      "status": "collaborate",
-      "actionType": "collaborate",
-      "collabStatus": "pending",
+      'title': 'Advanced Workshop: Defensive Documentation for Surgeons',
+      'day': '05',
+      'month': 'SEP',
+      'date': '05 Sep 2026',
+      'time': '10:00 AM IST',
+      'type': 'Offline',
+      'category': 'Documentation',
+      'price': '₹1,499 (Members: 20% off)',
+      'status': 'register',
+      'eventStatus': 'upcoming',
     },
     {
-      "title": "Medical Documentation Best Practices",
-      "day": "02",
-      "month": "JAN",
-      "time": "11:30 AM",
-      "location": "Delhi Auditorium",
-      "type": "Offline",
-      "speciality": "Surgery",
-      "status": "past",
-      "actionType": "know_more",
+      'title': 'Annual Medico-Legal Conclave 2026',
+      'day': '19',
+      'month': 'SEP',
+      'date': '19 Sep 2026',
+      'time': '9:00 AM IST',
+      'type': 'Offline',
+      'category': 'Conclave',
+      'price': '₹2,999',
+      'status': 'register',
+      'eventStatus': 'upcoming',
     },
   ];
 
-  // User's submitted proposals (Simulating historical forms submitted)
-  final List<Map<String, String>> _myProposals = const [
+  final List<Map<String, String>> _pastEvents = const [
     {
-      "title": "Community Health Drive Proposal",
-      "purpose":
-          "To organize free blood pressure checks across local municipal schools.",
-      "city": "Mumbai",
-      "state": "Maharashtra",
-      "status": "pending",
-      "date": "14 July 2026",
+      'title': 'Handling Police Visits: A Practical Walkthrough',
+      'day': '10',
+      'month': 'JUN',
+      'date': '10 Jun 2026',
+      'time': '',
+      'type': 'Online',
+      'category': 'Emergency Response',
+      'status': 'past',
+      'eventStatus': 'past',
+      'recording': 'true',
+      'certificate': 'true',
     },
     {
-      "title": "Rural Telemedicine Collaboration",
-      "purpose":
-          "Setup remote terminal access for specialized pediatric care consults.",
-      "city": "Nagpur",
-      "state": "Maharashtra",
-      "status": "approved",
-      "date": "10 July 2026",
+      'title': "Bail Cost Coverage — What's Actually Included",
+      'day': '22',
+      'month': 'MAY',
+      'date': '22 May 2026',
+      'time': '',
+      'type': 'Online',
+      'category': 'Coverage',
+      'status': 'past',
+      'eventStatus': 'past',
+      'recording': 'true',
+      'certificate': 'true',
+    },
+    {
+      'title': 'Regional Workshop: Clinical Establishment Act Compliance',
+      'day': '02',
+      'month': 'APR',
+      'date': '02 Apr 2026',
+      'time': '',
+      'type': 'Offline',
+      'category': 'Compliance',
+      'status': 'past',
+      'eventStatus': 'past',
+      'recording': 'true',
+      'certificate': 'false',
+    },
+  ];
+  final List<Map<String, String>> _collaborationProposals = const [
+    {
+      'title': 'Joint CME on Surgical Consent — with Apex Hospitals Group',
+      'organisation': 'Apex Hospitals Group',
+      'date': '18 Jul 2026',
+      'status': 'Completed',
+    },
+    {
+      'title': 'Speaker Exchange Proposal — Regional Medical Association',
+      'organisation': 'Regional Medical Association',
+      'date': 'Submitted 02 Aug 2026',
+      'status': 'Under Review',
     },
   ];
 
@@ -100,7 +132,6 @@ class _EventsScreenState extends State<EventsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Refresh FAB state when switching between structural tabs
     _tabController.addListener(() => setState(() {}));
   }
 
@@ -111,36 +142,35 @@ class _EventsScreenState extends State<EventsScreen>
   }
 
   List<Map<String, String>> _getFilteredEvents(String activeTab) {
-    return _events.where((e) {
-      final matchesType = _typeFilter == 'All' || e['type'] == _typeFilter;
+    final source = activeTab == 'past' ? _pastEvents : _events;
+
+    return source.where((event) {
+      final matchesType = _typeFilter == 'All' || event['type'] == _typeFilter;
 
       if (activeTab == 'upcoming') {
-        return (e['status'] == 'upcoming' ||
-                (e['status'] == 'collaborate' &&
-                    e['collabStatus'] == 'approved')) &&
-            matchesType;
-      } else if (activeTab == 'past') {
-        return e['status'] == 'past' && matchesType;
-      } else {
-        return e['status'] == 'collaborate' && matchesType;
+        return event['eventStatus'] == 'upcoming' && matchesType;
       }
+
+      if (activeTab == 'past') {
+        return event['eventStatus'] == 'past' && matchesType;
+      }
+
+      return event['eventStatus'] == 'collaborate' && matchesType;
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
-      appBar: const CustomAppBar(title: "Events Hub"),
-
-      // Floating Action Button rendered strictly when viewing the Collaborate Tab (index == 2)
+      backgroundColor: Color(0xffF6F7FB),
+      appBar: CustomAppBar(title: "Events Hub"),
       floatingActionButton: _tabController.index == 2
           ? FloatingActionButton.extended(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EventCollaborateScreen(
+                    builder: (context) => EventCollaborateScreen(
                       event: {"title": "General Proposition"},
                     ),
                   ),
@@ -149,7 +179,7 @@ class _EventsScreenState extends State<EventsScreen>
               backgroundColor: AppColors.primary,
               icon: const Icon(Icons.add, color: Colors.white),
               label: Text(
-                "Add Collab",
+                "Add Collaboration",
                 style: customTextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -172,7 +202,7 @@ class _EventsScreenState extends State<EventsScreen>
                 fontWeight: FontWeight.bold,
                 fontSize: Responsive.sp(12),
               ),
-              tabs: const [
+              tabs: [
                 Tab(text: "Upcoming"),
                 Tab(text: "Past Events"),
                 Tab(text: "Collaborate"),
@@ -261,76 +291,16 @@ class _EventsScreenState extends State<EventsScreen>
     );
   }
 
-  // Segment View specifically inside the Collaborate Area to separate view / action streams
   Widget _buildCollaborateWorkspace() {
-    return Column(
-      children: [
-        // Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
-        //   child: Row(
-        //     children: [
-        //       _buildSubToggleChip("Opportunities"),
-        //       width(Responsive.w(10)),
-        //       _buildSubToggleChip("View My Forms"),
-        //     ],
-        //   ),
-        // ),
-        // height(Responsive.h(14)),
-        Expanded(
-          child: _collabSubView == 'Opportunities'
-              ? _buildEventList('collaborate')
-              : _buildUserProposalsList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSubToggleChip(String label) {
-    final bool isSelected = _collabSubView == label;
-    return GestureDetector(
-      onTap: () => setState(() => _collabSubView = label),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: Responsive.w(14),
-          vertical: Responsive.h(8),
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.shade800 : Colors.white,
-          borderRadius: BorderRadius.circular(Responsive.w(12)),
-          border: Border.all(
-            color: isSelected ? Colors.transparent : Colors.grey.shade300,
-          ),
-        ),
-        child: Text(
-          label,
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : AppColors.textColor,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Renders the list of custom forms sent by the log-in doctor
-  Widget _buildUserProposalsList() {
-    if (_myProposals.isEmpty) return _buildEmptyState();
-
-    return ListView.separated(
+    return ListView(
       padding: EdgeInsets.fromLTRB(
         Responsive.w(16),
         0,
         Responsive.w(16),
-        Responsive.h(80),
+        Responsive.h(24),
       ),
-      itemCount: _myProposals.length,
-      separatorBuilder: (_, __) => height(Responsive.h(14)),
-      itemBuilder: (context, index) {
-        final form = _myProposals[index];
-        final bool isApproved = form['status'] == 'approved';
-
-        return Container(
+      children: [
+        Container(
           padding: EdgeInsets.all(Responsive.w(16)),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -340,76 +310,111 @@ class _EventsScreenState extends State<EventsScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    form['date']!,
-                    style: customTextStyle(
-                      fontSize: 11,
-                      color: AppColors.homeTextMuted,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isApproved
-                          ? Colors.green.withValues(alpha: 0.1)
-                          : Colors.orange.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      form['status']!.toUpperCase(),
-                      style: customTextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: isApproved ? Colors.green : Colors.orange,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              height(Responsive.h(8)),
               Text(
-                form['title']!,
+                "Want to organise a session with DoctorsRisk — a joint CME, "
+                "workshop, or speaker exchange? Propose it below. "
+                "You'll earn reward points once the collaboration is confirmed "
+                "and successfully completed — even if you're not yet a "
+                "DoctorsRisk member.",
                 style: customTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: Responsive.sp(11),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.newPri,
                 ),
-              ),
-              height(Responsive.h(4)),
-              Text(
-                form['purpose']!,
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: AppColors.textColor,
-                ),
-              ),
-              height(Responsive.h(8)),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.location_on_outlined,
-                    size: 14,
-                    color: AppColors.homeTextMuted,
-                  ),
-                  width(4),
-                  Text(
-                    "${form['city']}, ${form['state']}",
-                    style: customTextStyle(
-                      fontSize: 11,
-                      color: AppColors.homeTextMuted,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
-        );
-      },
+        ),
+
+        height(Responsive.h(18)),
+
+        ..._collaborationProposals.map(
+          (proposal) => Padding(
+            padding: EdgeInsets.only(bottom: Responsive.h(14)),
+            child: _buildCollaborationCard(proposal),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCollaborationCard(Map<String, String> proposal) {
+    final status = proposal['status'] ?? '';
+
+    final bool isCompleted = status == 'Completed';
+
+    return Container(
+      padding: EdgeInsets.all(Responsive.w(16)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            proposal['title'] ?? '',
+            style: customTextStyle(
+              fontSize: Responsive.sp(13),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textColor,
+            ),
+          ),
+
+          height(Responsive.h(7)),
+
+          Row(
+            children: [
+              Icon(
+                Icons.business_outlined,
+                size: Responsive.sp(14),
+                color: AppColors.homeTextMuted,
+              ),
+              width(Responsive.w(5)),
+              Expanded(
+                child: Text(
+                  '${proposal['organisation']} · ${proposal['date']}',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: AppColors.homeTextMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          height(Responsive.h(10)),
+
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.w(9),
+              vertical: Responsive.h(5),
+            ),
+            decoration: BoxDecoration(
+              color: isCompleted
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(Responsive.w(8)),
+            ),
+            child: Text(
+              status,
+              style: customTextStyle(
+                fontSize: Responsive.sp(10),
+                fontWeight: FontWeight.bold,
+                color: isCompleted ? Colors.green : Colors.orange.shade800,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -417,9 +422,7 @@ class _EventsScreenState extends State<EventsScreen>
     final isOnline = event['type'] == 'Online';
     final isPast = event['status'] == 'past';
 
-    Color accent = isPast
-        ? Colors.grey
-        : (isOnline ? Colors.green : Colors.blue);
+    Color accent = (isOnline ? Colors.blue : Colors.orange);
     String buttonText = "Register";
     Color buttonColor = AppColors.newPri;
     VoidCallback onPressedAction = () {};
@@ -428,18 +431,7 @@ class _EventsScreenState extends State<EventsScreen>
       buttonText = "Know More";
       buttonColor = Colors.blueGrey;
       onPressedAction = () => _showEventDetailsDialog(event);
-    }
-    // else if (activeTab == 'collaborate') {
-    //   buttonText = "Propose Collaboration";
-    //   buttonColor = Colors.amber.shade800;
-    //   onPressedAction = () {
-    //     Navigator.push(
-    //       context,
-    //       MaterialPageRoute(builder: (context) => EventCollaborateScreen(event: event)),
-    //     );
-    //   };
-    // }
-    else {
+    } else {
       buttonText = "Register";
       buttonColor = AppColors.newPri;
       onPressedAction = () {
@@ -469,41 +461,6 @@ class _EventsScreenState extends State<EventsScreen>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: Responsive.w(50),
-              padding: EdgeInsets.symmetric(vertical: Responsive.h(8)),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: isPast
-                      ? [Colors.grey.shade400, Colors.grey.shade600]
-                      : [AppColors.newPri, AppColors.primary],
-                ),
-                borderRadius: BorderRadius.circular(Responsive.w(14)),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    event['day']!,
-                    style: customTextStyle(
-                      color: Colors.white,
-                      fontSize: Responsive.sp(11),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    event['month']!,
-                    style: customTextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: Responsive.sp(10),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            width(Responsive.w(14)),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +501,7 @@ class _EventsScreenState extends State<EventsScreen>
                       width(Responsive.w(8)),
                       Expanded(
                         child: Text(
-                          event['speciality']!,
+                          event['speciality'] ?? '',
                           overflow: TextOverflow.ellipsis,
                           style: customTextStyle(
                             fontSize: Responsive.sp(11),
@@ -561,81 +518,164 @@ class _EventsScreenState extends State<EventsScreen>
                     style: customTextStyle(
                       fontSize: Responsive.sp(13),
                       fontWeight: FontWeight.bold,
-                      color: isPast ? Colors.grey : AppColors.textColor,
+                      color: AppColors.textColor,
                     ),
                   ),
                   height(Responsive.h(8)),
-                  Row(
+                  Wrap(
+                    spacing: Responsive.w(6),
+                    runSpacing: Responsive.h(4),
                     children: [
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: Responsive.sp(13),
-                        color: AppColors.homeTextMuted,
-                      ),
-                      width(Responsive.w(4)),
                       Text(
-                        event['time']!,
+                        event['date'] ?? '',
                         style: customTextStyle(
                           fontSize: Responsive.sp(11),
-                          color: AppColors.homeTextMuted,
+                          color: AppColors.grey,
                         ),
                       ),
-                      width(Responsive.w(12)),
-                      Icon(
-                        Icons.place_rounded,
-                        size: Responsive.sp(13),
-                        color: AppColors.homeTextMuted,
-                      ),
-                      width(Responsive.w(4)),
-                      Expanded(
-                        child: Text(
-                          event['location']!,
-                          overflow: TextOverflow.ellipsis,
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(11),
-                            color: AppColors.homeTextMuted,
-                          ),
+                      const Text('·'),
+                      Text(
+                        event['time'] ?? '',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(11),
+                          color: AppColors.grey,
                         ),
                       ),
                     ],
                   ),
+                  height(Responsive.h(6)),
+                  Text(
+                    event['category'] ?? '',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: AppColors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  height(Responsive.h(8)),
+                  Text(
+                    event['price'] ?? '',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      fontWeight: FontWeight.bold,
+                      color:
+                          (event['price'] ?? '').toLowerCase().startsWith(
+                            'free',
+                          )
+                          ? Colors.green
+                          : AppColors.textColor,
+                    ),
+                  ),
                   height(Responsive.h(16)),
-                  if (activeTab != 'collaborate')
+                  if (isPast) ...[
                     Row(
                       children: [
                         Expanded(
                           child: PrimaryButton(
-                            text: buttonText,
-                            backgroundColor: buttonColor,
+                            text: 'Watch Recording',
+                            height: 40,
+                            borderRadius: 25,
                             fontSize: 12,
-                            height: 38,
-                            onPressed: onPressedAction,
+                            borderColor: AppColors.grey,
+                            backgroundColor: AppColors.white,
+                            textColor: AppColors.textColor,
+                            onPressed: () {},
                           ),
                         ),
-                        width(Responsive.w(10)),
-                        InkWell(
-                          onTap: () =>
-                              Share.share('Join initiative: ${event['title']}'),
-                          borderRadius: BorderRadius.circular(Responsive.w(12)),
-                          child: Container(
-                            width: Responsive.w(40),
-                            height: Responsive.h(38),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(
-                                Responsive.w(12),
-                              ),
-                              border: Border.all(color: Colors.grey.shade200),
-                            ),
-                            child: Icon(
-                              Icons.share_outlined,
-                              size: Responsive.sp(16),
-                              color: AppColors.textColor,
+
+                        if (event['certificate'] == 'true') ...[
+                          width(Responsive.w(10)),
+                          Expanded(
+                            child: PrimaryButton(
+                              height: 40,
+                              borderRadius: 25,
+                              fontSize: 12,
+                              borderColor: AppColors.grey,
+                              backgroundColor: AppColors.white,
+                              textColor: AppColors.textColor,
+                              onPressed: () {},
+                              text: 'Certificate',
                             ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
+                  ] else if (activeTab != 'collaborate') ...[
+                    if (event['status'] == 'registered') ...[
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: Responsive.sp(16),
+                            color: Colors.green,
+                          ),
+                          width(Responsive.w(5)),
+                          Text(
+                            "You're registered",
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(11),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else ...[
+                      PrimaryButton(
+                        text: 'Register',
+                        backgroundColor: AppColors.newPri,
+                        fontSize: 12,
+                        height: 40,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EventRegisterScreen(event: event),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
+                  // if (activeTab != 'collaborate')
+                  //   Row(
+                  //     children: [
+                  //       Expanded(
+                  //         child: PrimaryButton(
+                  //           text: buttonText,
+                  //           backgroundColor: buttonColor,
+                  //           fontSize: 12,
+                  //           height: 40,
+                  //           onPressed: onPressedAction,
+                  //         ),
+                  //       ),
+                  //       width(Responsive.w(10)),
+                  //       InkWell(
+                  //         onTap: () =>
+                  //             Share.share('Join initiative: ${event['title']}'),
+                  //         borderRadius: BorderRadius.circular(Responsive.w(12)),
+                  //         child: Container(
+                  //           width: Responsive.w(40),
+                  //           height: Responsive.h(40),
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.grey.shade50,
+                  //             borderRadius: BorderRadius.circular(
+                  //               Responsive.w(12),
+                  //             ),
+                  //             border: Border.all(
+                  //               color: Colors.grey.shade200,
+                  //             ),
+                  //           ),
+                  //           child: Icon(
+                  //             Icons.share_outlined,
+                  //             size: Responsive.sp(16),
+                  //             color: AppColors.textColor,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
                 ],
               ),
             ),

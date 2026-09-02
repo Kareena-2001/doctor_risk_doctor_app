@@ -90,7 +90,6 @@ class _NewsAdvisoryScreenState extends State<NewsAdvisoryScreen> {
           return const SizedBox(height: 12);
         },
         itemBuilder: (context, index) {
-          // Social links after the last news item
           if (index == _news.length) {
             return Column(children: [SocialLinkWidget(), height(50)]);
           }

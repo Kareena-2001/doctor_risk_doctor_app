@@ -3,11 +3,13 @@ import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 
 import 'package:Doctors_App/features/blog_central/ui/all_blogs_tab.dart';
+import '../../home/ui/widgets/social_link_widget.dart';
 import 'my_blogs_tab.dart';
 
 class BlogScreen extends StatefulWidget {
@@ -71,6 +73,8 @@ class _BlogScreenState extends State<BlogScreen>
               children: [AllBlogsTab(), MyBlogsTab()],
             ),
           ),
+          SocialLinkWidget(),
+          height(30),
         ],
       ),
     );
