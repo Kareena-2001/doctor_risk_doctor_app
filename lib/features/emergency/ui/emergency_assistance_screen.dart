@@ -176,68 +176,85 @@ class _EmergencyAssistanceScreenState
   }
 
   Widget _buildEmergencyCallHero(bool isDark) {
-    const emergencyRed = Color(0xFFE15C48);
+    const heroBg = Color(0xFFFFF5F5);
+    const primaryButtonColor = Color(0xFF0F9D58);
 
     return Container(
-      padding: EdgeInsets.all(Responsive.w(16)),
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(24),
+        vertical: Responsive.h(32),
+      ),
       decoration: BoxDecoration(
-        color: emergencyRed.withValues(alpha: 0.08),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+        color: isDark ? const Color(0xFF1E1616) : heroBg,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: emergencyRed.withOpacity(0.3)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: emergencyRed,
-                size: Responsive.sp(22),
-              ),
-              width(Responsive.w(8)),
-              Text(
-                'Facing a medico‑legal emergency?',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(14),
-                  fontWeight: FontWeight.w700,
-                  color: emergencyRed,
-                ),
-              ),
-            ],
+          Container(
+            width: Responsive.w(72),
+            height: Responsive.w(72),
+            decoration: const BoxDecoration(
+              color: Color(0xFFE55B48),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.phone_in_talk_rounded,
+              color: Colors.white,
+              size: Responsive.sp(32),
+            ),
+          ),
+          height(Responsive.h(20)),
+          Text(
+            'Facing a medico‑legal emergency?',
+            textAlign: TextAlign.center,
+            style: customTextStyle(
+              fontSize: Responsive.sp(14),
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF2C3E50),
+            ),
           ),
           height(Responsive.h(8)),
-          Text(
-            'Tap to connect instantly with our on‑call legal team. Available 24×7 for notices, police visits, media enquiries and negligence allegations.',
-            style: customTextStyle(
-              fontSize: Responsive.sp(12),
-              color: AppColors.textColor,
-            ).copyWith(height: 1.4),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 550),
+            child: Text(
+              'Tap to connect instantly with our on‑call legal team. Available 24×7 for notices, police visits, media enquiries and negligence allegations.',
+              textAlign: TextAlign.center,
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                color: AppColors.textColor,
+              ).copyWith(height: 1.4),
+            ),
           ),
-          height(Responsive.h(16)),
+          height(Responsive.h(20)),
           Wrap(
-            spacing: Responsive.w(8),
-            runSpacing: Responsive.h(8),
+            alignment: WrapAlignment.center,
+            spacing: Responsive.w(12),
+            runSpacing: Responsive.h(12),
             children: [
               _callActionButton(
                 label: 'Call Legal Expert',
-                icon: Icons.gavel_rounded,
-                bgColor: emergencyRed,
+                icon: null,
+                bgColor: primaryButtonColor,
                 fgColor: Colors.white,
                 onTap: () => _makePhoneCall('+9118001234567'),
               ),
               _callActionButton(
                 label: 'Call Consultant',
-                icon: Icons.phone_in_talk_rounded,
-                bgColor: isDark ? const Color(0xFF2A2A2D) : Colors.white,
+                icon: null,
+                bgColor: Colors.white,
                 fgColor: AppColors.textColor,
+                showBorder: true,
                 onTap: () => _makePhoneCall('+9118009876543'),
               ),
               _callActionButton(
                 label: 'Chat with Support',
-                icon: Icons.chat_bubble_outline_rounded,
-                bgColor: isDark ? const Color(0xFF2A2A2D) : Colors.white,
+                icon: null,
+                bgColor: Colors.white,
                 fgColor: AppColors.textColor,
+                showBorder: true,
                 onTap: () {
                   setState(() {
                     _isOpen = true;
@@ -246,24 +263,15 @@ class _EmergencyAssistanceScreenState
               ),
             ],
           ),
-          height(Responsive.h(10)),
+          height(Responsive.h(16)),
           Text(
             'Calls are placed through your phone\'s own carrier — standard call rates may apply.',
+            textAlign: TextAlign.center,
             style: customTextStyle(
-              fontSize: Responsive.sp(10.5),
-              color: AppColors.homeTextMuted,
+              fontSize: Responsive.sp(11),
+              color: AppColors.grey,
             ),
           ),
-          if (_isOpen)
-            Positioned.fill(
-              child: ChatPanel(
-                onClose: () {
-                  setState(() {
-                    _isOpen = false;
-                  });
-                },
-              ),
-            ),
         ],
       ),
     );
@@ -271,33 +279,32 @@ class _EmergencyAssistanceScreenState
 
   Widget _callActionButton({
     required String label,
-    required IconData icon,
+    IconData? icon,
     required Color bgColor,
     required Color fgColor,
+    bool showBorder = false,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(Responsive.w(8)),
+      borderRadius: BorderRadius.circular(Responsive.w(25)),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: Responsive.w(12),
-          vertical: Responsive.h(8),
+          horizontal: Responsive.w(20),
+          vertical: Responsive.h(10),
         ),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(Responsive.w(8)),
-          border: Border.all(color: AppColors.fieldGrey.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(Responsive.w(25)),
+          border: showBorder ? Border.all(color: Colors.grey.shade300) : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: Responsive.sp(14), color: fgColor),
-            width(Responsive.w(6)),
             Text(
               label,
               style: customTextStyle(
-                fontSize: Responsive.sp(11.5),
+                fontSize: Responsive.sp(12),
                 fontWeight: FontWeight.w600,
                 color: fgColor,
               ),
@@ -315,58 +322,91 @@ class _EmergencyAssistanceScreenState
   ) {
     return Container(
       margin: EdgeInsets.only(bottom: Responsive.h(12)),
-      padding: EdgeInsets.all(Responsive.w(14)),
+      padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A1A1D) : Colors.white,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: AppColors.fieldGrey.withOpacity(0.5)),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            scenario.title,
-            style: customTextStyle(
-              fontSize: Responsive.sp(13.5),
-              fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(4)),
-          Text(
-            scenario.subtitle,
-            style: customTextStyle(
-              fontSize: Responsive.sp(11.5),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(12)),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              InkWell(
-                onTap: () =>
-                    _showChecklistBottomSheet(context, scenario, isDark),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+              Container(
+                padding: EdgeInsets.all(Responsive.w(8)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(Responsive.w(8)),
+                ),
+                child: Icon(
+                  Icons.shield_outlined,
+                  size: Responsive.sp(18),
+                  color: const Color(0xFF2E7D32),
+                ),
+              ),
+              width(Responsive.w(12)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.checklist_rounded,
-                      size: Responsive.sp(15),
-                      color: AppColors.newPri,
-                    ),
-                    width(Responsive.w(4)),
                     Text(
-                      'View checklist',
+                      scenario.title,
                       style: customTextStyle(
                         fontSize: Responsive.sp(12),
                         fontWeight: FontWeight.w700,
-                        color: AppColors.newPri,
+                        color: AppColors.textColor,
+                      ),
+                    ),
+                    height(Responsive.h(4)),
+                    Text(
+                      scenario.subtitle,
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11.5),
+                        color: AppColors.homeTextMuted,
                       ),
                     ),
                   ],
                 ),
               ),
-              width(Responsive.w(16)),
+            ],
+          ),
+          height(Responsive.h(16)),
+          Wrap(
+            spacing: Responsive.w(16),
+            runSpacing: Responsive.h(8),
+            children: [
+              InkWell(
+                onTap: () =>
+                    _showChecklistBottomSheet(context, scenario, isDark),
+                borderRadius: BorderRadius.circular(Responsive.w(4)),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Responsive.h(4),
+                    horizontal: Responsive.w(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.fact_check_outlined,
+                        size: Responsive.sp(15),
+                        color: AppColors.textColor,
+                      ),
+                      width(Responsive.w(6)),
+                      Text(
+                        'View checklist',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(12),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               InkWell(
                 onTap: () async {
                   final Uri url = Uri.parse(scenario.sopPdfUrl);
@@ -374,24 +414,31 @@ class _EmergencyAssistanceScreenState
                     await launchUrl(url);
                   }
                 },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.download_rounded,
-                      size: Responsive.sp(15),
-                      color: AppColors.homeTextMuted,
-                    ),
-                    width(Responsive.w(4)),
-                    Text(
-                      'Download SOP',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(12),
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.homeTextMuted,
+                borderRadius: BorderRadius.circular(Responsive.w(4)),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: Responsive.h(4),
+                    horizontal: Responsive.w(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.file_download_outlined,
+                        size: Responsive.sp(15),
+                        color: AppColors.textColor,
                       ),
-                    ),
-                  ],
+                      width(Responsive.w(6)),
+                      Text(
+                        'Download SOP',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(12),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -57,7 +57,7 @@ class AppDrawer extends ConsumerWidget {
                       title: 'Emergency',
                       subtitle: 'Get immediate help for urgent matters',
                       isDark: isDark,
-                      onTap: () => context.push(Routes.faqScreen),
+                      onTap: () => context.push(Routes.emergency),
                     ),
 
                     _tile(

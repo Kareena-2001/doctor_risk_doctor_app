@@ -1,8 +1,6 @@
 import 'package:Doctors_App/extensions/build_context_extension.dart';
-import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/values/app_text_style.dart';
@@ -333,9 +331,24 @@ class _LegalSupportScreenState extends State<LegalSupportScreen>
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(o, style: customTextStyle(fontSize: 12)),
+              label: Text(o),
               selected: isSelected,
-              selectedColor: AppColors.primary.withValues(alpha: 0.15),
+              backgroundColor: Colors.white,
+              selectedColor: AppColors.primary.withValues(alpha: 0.9),
+              labelStyle: customTextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? AppColors.white : AppColors.textColor,
+              ),
+              side: BorderSide(
+                color: isSelected ? AppColors.primary : Colors.grey.shade300,
+                width: 1,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 0,
+              pressElevation: 0,
               onSelected: (_) => onSelected(o),
             ),
           );
