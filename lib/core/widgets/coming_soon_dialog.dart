@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -16,18 +17,18 @@ void showComingSoonDialog(BuildContext context, String title) {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.construction_rounded, size: 48, color: AppColors.primary),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(title, style: AppTheme.title18),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'This feature is currently under development and will be available soon.',
             textAlign: TextAlign.center,
             style: AppTheme.title12,
           ),
-          const SizedBox(height: 20),
+          height(20),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
+            child: Text("OK"),
           ),
         ],
       ),
