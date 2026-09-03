@@ -53,6 +53,7 @@ class MyPlansView extends ConsumerWidget {
                                   MyPlanDetailsScreen(plan: selectedPlan),
                             ),
                           );
+                          // context.push(Routes.myPlanDetails);
                         },
                         child: _MyPlanCard(plan: selectedPlan),
                       );
