@@ -121,10 +121,13 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final LayerLink _legalLink = LayerLink();
-  final LayerLink _appointmentsLink = LayerLink();
+  final GlobalKey _legalKey = GlobalKey();
+  final GlobalKey _appointmentsKey = GlobalKey();
   OverlayEntry? _openDropdown;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // OverlayEntry? _openDropdown;
   late final String userId;
 
   late AnimationController _animationController;
@@ -163,9 +166,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
+  // --- replace _toggleQuickActionDropdown entirely ---
   void _toggleQuickActionDropdown({
     required BuildContext context,
-    required LayerLink link,
+    required GlobalKey anchorKey,
     required List<QuickActionNotification> items,
     required VoidCallback onViewAll,
   }) {
@@ -174,13 +178,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
+    final renderBox =
+        anchorKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
     final overlay = Overlay.of(context);
+    final screenSize = MediaQuery.of(context).size;
+    final screenPadding = MediaQuery.of(context).padding;
+
+    final targetPosition = renderBox.localToGlobal(Offset.zero);
+    final targetSize = renderBox.size;
+
+    const panelWidth = 280.0;
+    const edgeMargin = 12.0;
+
+    // Anchor panel's right edge under the pill's right edge, then clamp
+    // so it never runs off either side of the screen.
+    double left = targetPosition.dx + targetSize.width - panelWidth;
+    left = left.clamp(edgeMargin, screenSize.width - panelWidth - edgeMargin);
+
+    double top = targetPosition.dy + targetSize.height + Responsive.h(8);
+    final maxHeight = Responsive.h(360);
+
+    if (top + maxHeight > screenSize.height - screenPadding.bottom) {
+      final spaceAbove = targetPosition.dy - screenPadding.top;
+      if (spaceAbove > maxHeight) {
+        top = targetPosition.dy - maxHeight - Responsive.h(8);
+      }
+    }
 
     _openDropdown = OverlayEntry(
       builder: (overlayContext) {
         return Stack(
           children: [
-            // tap-outside-to-close barrier
             Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -188,17 +218,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: const SizedBox.shrink(),
               ),
             ),
-            CompositedTransformFollower(
-              link: link,
-              showWhenUnlinked: false,
-              targetAnchor: Alignment.bottomRight,
-              followerAnchor: Alignment.topRight,
-              offset: Offset(0, Responsive.h(8)),
+            Positioned(
+              left: left,
+              top: top,
+              width: panelWidth,
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  width: Responsive.w(280),
-                  constraints: BoxConstraints(maxHeight: Responsive.h(360)),
+                  constraints: BoxConstraints(maxHeight: maxHeight),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(Responsive.w(16)),
@@ -306,6 +333,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     });
   }
 
+  // --- update _buildQuickActionsRow: swap CompositedTransformTarget for keyed Container ---
   Widget _buildQuickActionsRow() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
@@ -316,8 +344,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           children: [
             _emergencyPill(),
             width(Responsive.w(10)),
-            CompositedTransformTarget(
-              link: _legalLink,
+            Container(
+              key: _legalKey,
               child: _shortcutPill(
                 label: 'Legal',
                 icon: Icons.gavel_rounded,
@@ -326,15 +354,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 fg: const Color(0xFF3E8FD0),
                 onTap: () => _toggleQuickActionDropdown(
                   context: context,
-                  link: _legalLink,
+                  anchorKey: _legalKey,
                   items: legalNotifications,
                   onViewAll: () => context.push(Routes.notification),
                 ),
               ),
             ),
             width(Responsive.w(10)),
-            CompositedTransformTarget(
-              link: _appointmentsLink,
+            Container(
+              key: _appointmentsKey,
               child: _shortcutPill(
                 label: 'Appointments',
                 icon: Icons.calendar_month_rounded,
@@ -343,7 +371,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 fg: const Color(0xFFEF9F2E),
                 onTap: () => _toggleQuickActionDropdown(
                   context: context,
-                  link: _appointmentsLink,
+                  anchorKey: _appointmentsKey,
                   items: appointmentNotifications,
                   onViewAll: () => context.push(Routes.notification),
                 ),

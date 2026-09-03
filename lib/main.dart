@@ -10,7 +10,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ProviderScope(
-      child: const MainApp(),
+      child: MainApp(),
       // child: DevicePreview(builder: (context) => const MainApp()),
     ),
   );
