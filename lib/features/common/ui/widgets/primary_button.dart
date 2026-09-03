@@ -40,11 +40,7 @@ class PrimaryButton extends StatelessWidget {
     this.fontWeight = FontWeight.w600,
     this.icon,
     this.iconAfterText = true,
-
-    // Existing
     this.gradientColors,
-
-    // New
     this.gradient,
   });
 

@@ -46,6 +46,8 @@ import '../features/notification/ui/notification_screen.dart';
 import '../features/onboarding/ui/splash_screen.dart';
 import '../features/product/model/product_model.dart';
 import '../features/product/ui/my_plans_view.dart';
+import '../features/product/ui/plan_category_view.dart';
+import '../features/product/ui/plan_finder_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
 import '../features/profile/ui/languages_screen.dart';
@@ -131,6 +133,24 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.main,
       pageBuilder: (context, state) => state.slidePage(const MainScreen()),
+    ),
+    GoRoute(
+      path: Routes.planCategory,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return PlanCategoryView(orgName: extra['orgName'], staffCode: extra['staffCode']);
+      },
+    ),
+    GoRoute(
+      path: Routes.planFinder,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return PlanFinderView(
+          orgName: extra['orgName'],
+          staffCode: extra['staffCode'],
+          category: extra['category'] as ProductType,
+        );
+      },
     ),
     GoRoute(
       path: Routes.documentVault,

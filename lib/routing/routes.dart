@@ -53,7 +53,9 @@ class Routes {
   static const helpSupport = '/helpSupport';
   static const faqScreen = '/faqScreen';
   static const medicoLawFaq = '/medicoLawFaq';
-
+  static const productSource = '/product/source';
+  static const planCategory = '/product/category';
+  static const planFinder = '/product/finder';
 
   static const addSupport = '/addSupport';
   static const renewCentre = '/renewCentre';

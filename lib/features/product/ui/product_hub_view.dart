@@ -1,5 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,27 +15,30 @@ class ProductHubView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF8FAFC),
-      appBar: CustomAppBar(title: 'My Products'),
+      appBar: CustomAppBar(
+        title: 'My Products',
+        subTitle: 'Everything covered under your medico-legal membership.',
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'My Products',
-                style: customTextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF0F172A),
-                ),
-              ),
-              height(4),
-              Text(
-                'Everything covered under your medico-legal membership.',
-                style: customTextStyle(fontSize: 12, color: Color(0xFF64748B)),
-              ),
-              height(16),
+              // Text(
+              //   'My Products',
+              //   style: customTextStyle(
+              //     fontSize: 20,
+              //     fontWeight: FontWeight.w700,
+              //     color: const Color(0xFF0F172A),
+              //   ),
+              // ),
+              // height(4),
+              // Text(
+              //   'Everything covered under your medico-legal membership.',
+              //   style: customTextStyle(fontSize: 12, color: Color(0xFF64748B)),
+              // ),
+              // height(16),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -45,13 +50,13 @@ class ProductHubView extends StatelessWidget {
                           'Compare coverage by sum assured and duration, then get instant premium quotes.',
                       buttonText: 'Browse Plan List',
                       isPrimaryButton: true,
-                      onTap: () => context.push(Routes.productList),
+                      onTap: () => context.push(Routes.productSource),
                     ),
                   ),
                   width(12),
                   Expanded(
                     child: _EntryCard(
-                      icon: Icons.access_time_rounded,
+                      icon: Icons.verified_sharp,
                       title: 'View My Plans',
                       subtitle:
                           'Track status, download certificates, and renew before they expire.',
@@ -69,12 +74,10 @@ class ProductHubView extends StatelessWidget {
                 style: customTextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF0F172A),
+                  color: AppColors.textColor,
                 ),
               ),
               height(12),
-
-              // Services Grid (App vertical icon card structure + Web items)
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -88,7 +91,7 @@ class ProductHubView extends StatelessWidget {
                     label: 'Auditing\nMedical Records',
                   ),
                   _ServiceIcon(
-                    icon: Icons.access_time,
+                    icon: Icons.add_box,
                     label: 'Social Media\nDefamation',
                   ),
                   _ServiceIcon(
@@ -153,7 +156,7 @@ class _EntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -162,22 +165,21 @@ class _EntryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top Icon Badge
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: const Color(0xFFECFDF5),
+              color: Color(0xFFECFDF5),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF10B981), size: 20),
+            child: Icon(icon, color: AppColors.newPri, size: 20),
           ),
           height(10),
           Text(
             title,
             style: customTextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0F172A),
+              fontWeight: FontWeight.w800,
+              color: AppColors.textColor,
             ),
           ),
           height(4),
@@ -185,41 +187,29 @@ class _EntryCard extends StatelessWidget {
             subtitle,
             style: customTextStyle(
               fontSize: 11,
-              color: const Color(0xFF64748B),
+              color: AppColors.grey,
             ).copyWith(height: 1.3),
           ),
           height(14),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: PrimaryButton(
               onPressed: onTap,
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: isPrimaryButton
-                    ? const Color(0xFF065F46) // Dark green background
-                    : Colors.white,
-                foregroundColor: isPrimaryButton
-                    ? Colors
-                          .white // Text color set to White
-                    : const Color(0xFF1E293B),
-                side: isPrimaryButton
-                    ? BorderSide.none
-                    : const BorderSide(color: Color(0xFFE2E8F0)),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                buttonText,
-                style: customTextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isPrimaryButton
-                      ? Colors.white
-                      : const Color(0xFF1E293B),
-                ),
-              ),
+              text: buttonText,
+              height: 36,
+              borderRadius: 20,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              gradientColors: isPrimaryButton
+                  ? [AppColors.primary, AppColors.newPri]
+                  : null,
+              backgroundColor: isPrimaryButton ? null : Colors.white,
+              textColor: isPrimaryButton
+                  ? Colors.white
+                  : const Color(0xFF1E293B),
+              borderColor: isPrimaryButton
+                  ? Colors.transparent
+                  : const Color(0xFFE2E8F0),
             ),
           ),
         ],
@@ -249,14 +239,13 @@ class _ServiceIcon extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Circular light green icon container on top
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Color(0xFFECFDF5),
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.newPri.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: const Color(0xFF10B981), size: 18),
+              child: Icon(icon, color: AppColors.newPri, size: 18),
             ),
             height(6),
             Text(
@@ -267,7 +256,7 @@ class _ServiceIcon extends StatelessWidget {
               style: customTextStyle(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF475569),
+                color: AppColors.textColor,
               ),
             ),
           ],
