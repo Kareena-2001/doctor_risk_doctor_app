@@ -50,6 +50,7 @@ import '../features/product/ui/plan_category_view.dart';
 import '../features/product/ui/plan_finder_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
+import '../features/product/ui/source_details_view.dart';
 import '../features/profile/ui/languages_screen.dart';
 import '../features/setting/about_us_screen.dart';
 import '../features/setting/contact_us.dart';
@@ -135,10 +136,17 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) => state.slidePage(const MainScreen()),
     ),
     GoRoute(
+      path: Routes.productSource,
+      builder: (context, state) => const SourceDetailsView(),
+    ),
+    GoRoute(
       path: Routes.planCategory,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
-        return PlanCategoryView(orgName: extra['orgName'], staffCode: extra['staffCode']);
+        return PlanCategoryView(
+          orgName: extra['orgName'],
+          staffCode: extra['staffCode'],
+        );
       },
     ),
     GoRoute(

@@ -42,15 +42,29 @@ class PlanCategoryView extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.home_work_outlined, size: 16, color: AppColors.newPri),
+                      Icon(
+                        Icons.home_work_outlined,
+                        size: 16,
+                        color: AppColors.newPri,
+                      ),
                       width(8),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            style: customTextStyle(fontSize: 12, color: const Color(0xFF065F46)),
+                            style: customTextStyle(
+                              fontSize: 12,
+                              color: const Color(0xFF065F46),
+                            ),
                             children: [
-                              const TextSpan(text: "You're viewing plans as a "),
-                              TextSpan(text: orgName, style: const TextStyle(fontWeight: FontWeight.w700)),
+                              const TextSpan(
+                                text: "You're viewing plans as a ",
+                              ),
+                              TextSpan(
+                                text: orgName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                               const TextSpan(text: ' member.'),
                             ],
                           ),
@@ -77,7 +91,8 @@ class PlanCategoryView extends StatelessWidget {
                     child: _CategoryCard(
                       icon: Icons.person_outline,
                       title: 'Professional',
-                      subtitle: 'Individual doctors & consultants — personal indemnity cover',
+                      subtitle:
+                          'Individual doctors & consultants — personal indemnity cover',
                       onTap: () => _select(context, ProductType.individual),
                     ),
                   ),
@@ -86,8 +101,10 @@ class PlanCategoryView extends StatelessWidget {
                     child: _CategoryCard(
                       icon: Icons.home_work_outlined,
                       title: 'Medical Establishment',
-                      subtitle: 'Clinics & hospitals — institutional & staff liability cover',
-                      onTap: () => _select(context, ProductType.medicalEstablishment),
+                      subtitle:
+                          'Clinics & hospitals — institutional & staff liability cover',
+                      onTap: () =>
+                          _select(context, ProductType.medicalEstablishment),
                     ),
                   ),
                 ],
@@ -137,9 +154,22 @@ class _CategoryCard extends StatelessWidget {
               child: Icon(icon, color: AppColors.newPri, size: 20),
             ),
             height(10),
-            Text(title, style: customTextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textColor)),
+            Text(
+              title,
+              style: customTextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textColor,
+              ),
+            ),
             height(4),
-            Text(subtitle, style: customTextStyle(fontSize: 11, color: AppColors.grey).copyWith(height: 1.3)),
+            Text(
+              subtitle,
+              style: customTextStyle(
+                fontSize: 11,
+                color: AppColors.grey,
+              ).copyWith(height: 1.3),
+            ),
           ],
         ),
       ),

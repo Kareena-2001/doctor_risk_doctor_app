@@ -1,6 +1,8 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -31,8 +33,9 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
       Routes.planCategory,
       extra: {
         'orgName': _orgCtrl.text.trim().isEmpty ? null : _orgCtrl.text.trim(),
-        'staffCode':
-        _codeCtrl.text.trim().isEmpty ? null : _codeCtrl.text.trim(),
+        'staffCode': _codeCtrl.text.trim().isEmpty
+            ? null
+            : _codeCtrl.text.trim(),
       },
     );
   }
@@ -40,17 +43,17 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: const CustomAppBar(title: 'Browse Plans'),
+      // backgroundColor: Color(0xFFF8FAFC),
+      appBar: CustomAppBar(title: 'Browse Plans'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              // border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,12 +87,12 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                 LayoutBuilder(
                   builder: (context, c) {
                     final narrow = c.maxWidth < 520;
-                    final orgField = _LabeledField(
+                    final orgField = CustomTextField(
                       label: 'Enter your organisation name',
                       hint: 'e.g. OrthoSquare',
                       controller: _orgCtrl,
                     );
-                    final codeField = _LabeledField(
+                    final codeField = CustomTextField(
                       label: 'Enter your staff or associate code',
                       hint: 'If referred by a staff member',
                       controller: _codeCtrl,
@@ -111,9 +114,10 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                 ),
                 height(16),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
+                    border: Border.all(color: AppColors.blueberry10),
+                    color: Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -122,18 +126,18 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                       const Icon(
                         Icons.info_outline_rounded,
                         size: 16,
-                        color: Color(0xFF3B82F6),
+                        color: AppColors.cardBlue,
                       ),
                       width(8),
                       Expanded(
                         child: Text(
                           "Both fields are optional. Once you proceed, your "
-                              "organisation is locked to your account — to change "
-                              "it later, you'll need to contact Support or raise "
-                              "a ticket.",
+                          "organisation is locked to your account — to change "
+                          "it later, you'll need to contact Support or raise "
+                          "a ticket.",
                           style: customTextStyle(
                             fontSize: 12,
-                            color: const Color(0xFF1E3A8A),
+                            color: AppColors.textColor,
                           ).copyWith(height: 1.4),
                         ),
                       ),
@@ -147,14 +151,17 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                     width: 160,
                     child: PrimaryButton(
                       height: 44,
-                      borderRadius: 12,
+                      borderRadius: 25,
                       fontSize: 14,
                       text: 'Proceed',
-                      backgroundColor: AppColors.newPri,
+                      gradient: LinearGradient(
+                        colors: [AppColors.newPri, AppColors.primary],
+                      ),
                       onPressed: _proceed,
                     ),
                   ),
                 ),
+                SocialLinkWidget(),
               ],
             ),
           ),
@@ -213,7 +220,10 @@ class _LabeledField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF6366F1),
+                width: 1.5,
+              ),
             ),
           ),
         ),

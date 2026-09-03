@@ -67,7 +67,6 @@ class ProductHubView extends StatelessWidget {
                   ),
                 ],
               ),
-
               height(24),
               Text(
                 "What's covered",
