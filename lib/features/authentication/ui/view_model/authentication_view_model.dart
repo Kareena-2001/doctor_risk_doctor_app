@@ -38,9 +38,6 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
   }
 
   Future<void> signOut() async {
-
-
-
     try {
       final repo = ref.read(authenticationRepositoryProvider);
       await repo.signOut();
