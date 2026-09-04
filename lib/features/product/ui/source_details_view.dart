@@ -43,7 +43,6 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Color(0xFFF8FAFC),
       appBar: CustomAppBar(title: 'Browse Plans'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -53,7 +52,6 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              // border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +121,7 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline_rounded,
                         size: 16,
                         color: AppColors.cardBlue,
@@ -167,67 +165,6 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _LabeledField extends StatelessWidget {
-  final String label;
-  final String hint;
-  final TextEditingController controller;
-
-  const _LabeledField({
-    required this.label,
-    required this.hint,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: customTextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF475569),
-          ),
-        ),
-        height(6),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: customTextStyle(
-              color: const Color(0xFFCBD5E1),
-              fontSize: 13,
-            ),
-            filled: true,
-            fillColor: const Color(0xFFF8F9FC),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Color(0xFF6366F1),
-                width: 1.5,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
