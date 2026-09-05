@@ -26,9 +26,7 @@ import 'package:Doctors_App/features/product/model/product_tier.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_list_widgets.dart';
 import 'package:Doctors_App/features/product/ui/product_view.dart';
 import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
-import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
 import 'package:Doctors_App/features/profile/ui/edit_profile_screen.dart';
-import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
 import 'package:Doctors_App/features/renewal_centre/ui/renewal_centre_screen.dart';
 import 'package:Doctors_App/features/rewards/ui/rewards_screen.dart';
 import 'package:Doctors_App/features/scan/ui/scan_screen.dart';
@@ -45,7 +43,6 @@ import '../features/main/ui/main_screen.dart';
 import '../features/notification/ui/notification_screen.dart';
 import '../features/onboarding/ui/splash_screen.dart';
 import '../features/product/model/product_model.dart';
-import '../features/product/ui/my_plan_details_screen.dart';
 import '../features/product/ui/my_plans_view.dart';
 import '../features/product/ui/plan_category_view.dart';
 import '../features/product/ui/plan_finder_view.dart';
@@ -63,9 +60,9 @@ enum SlideDirection { right, left, up, down }
 
 extension GoRouterStateExtension on GoRouterState {
   SlideRouteTransition slidePage(
-      Widget child, {
-        SlideDirection direction = SlideDirection.left,
-      }) {
+    Widget child, {
+    SlideDirection direction = SlideDirection.left,
+  }) {
     return SlideRouteTransition(
       key: pageKey,
       child: child,
@@ -80,33 +77,33 @@ class SlideRouteTransition extends CustomTransitionPage<void> {
     required super.child,
     SlideDirection direction = SlideDirection.left,
   }) : super(
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curve = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeInOut,
-      );
+         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+           final curve = CurvedAnimation(
+             parent: animation,
+             curve: Curves.easeInOut,
+           );
 
-      Offset begin;
-      switch (direction) {
-        case SlideDirection.right:
-          begin = const Offset(-1.0, 0.0);
-          break;
-        case SlideDirection.left:
-          begin = const Offset(1.0, 0.0);
-          break;
-        case SlideDirection.up:
-          begin = const Offset(0.0, 1.0);
-          break;
-        case SlideDirection.down:
-          begin = const Offset(0.0, -1.0);
-          break;
-      }
-      final tween = Tween(begin: begin, end: Offset.zero);
-      final offsetAnimation = tween.animate(curve);
+           Offset begin;
+           switch (direction) {
+             case SlideDirection.right:
+               begin = const Offset(-1.0, 0.0);
+               break;
+             case SlideDirection.left:
+               begin = const Offset(1.0, 0.0);
+               break;
+             case SlideDirection.up:
+               begin = const Offset(0.0, 1.0);
+               break;
+             case SlideDirection.down:
+               begin = const Offset(0.0, -1.0);
+               break;
+           }
+           final tween = Tween(begin: begin, end: Offset.zero);
+           final offsetAnimation = tween.animate(curve);
 
-      return SlideTransition(position: offsetAnimation, child: child);
-    },
-  );
+           return SlideTransition(position: offsetAnimation, child: child);
+         },
+       );
 }
 
 final GoRouter router = GoRouter(
@@ -206,11 +203,12 @@ final GoRouter router = GoRouter(
         // record. If whatever navigated here forgot to pass it (or passed
         // the wrong shape), don't crash the whole app on a bad cast —
         // bounce back to the previous screen instead.
+
         if (extra is! (Product, TierPlan, String, double, double)) {
           debugPrint(
             'purchaseWizard route reached without valid extra args '
-                '(got: ${extra.runtimeType}). Check the caller is passing '
-                'extra: (product, tier, duration, sumAssured, premium).',
+            '(got: ${extra.runtimeType}). Check the caller is passing '
+            'extra: (product, tier, duration, sumAssured, premium).',
           );
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (context.mounted && context.canPop()) {
@@ -243,6 +241,7 @@ final GoRouter router = GoRouter(
       path: Routes.homeScreen,
       pageBuilder: (context, state) => state.slidePage(HomeScreen()),
     ),
+
     GoRoute(
       path: Routes.aboutUs,
       pageBuilder: (context, state) {
@@ -363,19 +362,36 @@ final GoRouter router = GoRouter(
           state.slidePage(const EditProfileScreen()),
     ),
     GoRoute(
-      path: Routes.profileView,
-      pageBuilder: (context, state) => state.slidePage(
-        const ProfileViewScreen(
-          data: DoctorProfileData(
-            prefix: 'Dr',
-            firstName: 'Arun',
-            lastName: 'Mishra',
-            degree: 'MBBS',
-            email: 'arun@gmail.com',
-            mobile: '9326481596',
-          ),
-        ),
-      ),
+      path: Routes.purchaseWizard,
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra is! (Product, TierPlan, String, double, double)) {
+          debugPrint(
+            'purchaseWizard route reached without valid extra args '
+            '(got: ${extra.runtimeType}). Check the caller is passing '
+            'extra: (product, tier, duration, sumAssured, premium).',
+          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted && context.canPop()) {
+              context.pop();
+            } else if (context.mounted) {
+              context.go(Routes.productList);
+            }
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return PurchaseWizardScreen(
+          product: extra.$1,
+          tier: extra.$2,
+          // Matches TierPlan
+          duration: extra.$3,
+          sumAssured: extra.$4,
+          premium: extra.$5,
+        );
+      },
     ),
     GoRoute(
       path: Routes.addAppointment,

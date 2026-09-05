@@ -14,6 +14,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../model/plan_finder_models.dart';
 import '../model/product_model.dart';
+import '../model/product_tier.dart';
+import '../widgets/tier_helper.dart';
 
 class PlanFinderView extends ConsumerWidget {
   final String? orgName;
@@ -605,14 +607,14 @@ class _QuoteResultCard extends StatelessWidget {
                   style: customTextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF94A3B8),
+                    color: Color(0xFF94A3B8),
                   ).copyWith(letterSpacing: 0.5),
                 ),
                 height(6),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check, size: 14, color: Color(0xFF059669)),
+                    Icon(Icons.check, size: 14, color: Color(0xFF059669)),
                     width(6),
                     Expanded(
                       child: Text(
@@ -642,8 +644,41 @@ class _QuoteResultCard extends StatelessWidget {
               onPressed: state.hasActivePolicy
                   ? null
                   : () {
-                      context.push(Routes.purchaseWizard);
-                    },
+                final q = state.quote!;
+
+                final product = Product(
+                  id: 1,
+                  type: state.category,
+                  productNames: [q.membership.label],
+                  shortDescription: '${q.membership.label} Membership Plan',
+                  fullDescription: '${q.membership.label} Membership with ${q.plan.label} tier.',
+                  tiers: [],
+                  createdDate: DateTime.now(),
+                );
+
+                // TierStyles.standard assign karein blank TierStyle() ki jagah
+                final tierPlan = TierPlan(
+                  name: q.plan.label,
+                  tagline: '${q.plan.label} Protection Plan',
+                  premiumPerYear: q.premium,
+                  sumInsured: q.sumAssured.amount,
+                  maxMembers: 1,
+                  validityYears: 1,
+                  features: const [],
+                  style: TierStyles.standard,
+                );
+
+                context.push(
+                  Routes.purchaseWizard,
+                  extra: (
+                  product,
+                  tierPlan,
+                  q.duration.label,
+                  q.sumAssured.amount,
+                  q.premium,
+                  ),
+                );
+              },
             ),
           ),
           if (state.hasActivePolicy) ...[
@@ -651,10 +686,7 @@ class _QuoteResultCard extends StatelessWidget {
             Text(
               "You already have an active ${state.category == ProductType.individual ? 'Individual' : 'Establishment'} "
               "policy — this can't be purchased again until it lapses.",
-              style: customTextStyle(
-                fontSize: 11,
-                color: const Color(0xFFDC2626),
-              ),
+              style: customTextStyle(fontSize: 11, color: Color(0xFFDC2626)),
             ),
           ],
         ],
@@ -685,10 +717,7 @@ class _SummaryRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: customTextStyle(
-              fontSize: 13,
-              color: const Color(0xFF64748B),
-            ),
+            style: customTextStyle(fontSize: 13, color: Color(0xFF64748B)),
           ),
           Text(
             value,

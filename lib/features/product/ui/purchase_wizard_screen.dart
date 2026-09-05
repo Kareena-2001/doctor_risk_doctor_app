@@ -70,6 +70,7 @@ class _PurchaseWizardScreenState extends ConsumerState<PurchaseWizardScreen> {
       widget.sumAssured,
       widget.premium,
     );
+
     final isEstab = widget.product.type == ProductType.medicalEstablishment;
     // Animate the PageView whenever the controller's step changes
     // (e.g. after a step widget calls nextStep()/previousStep()).
