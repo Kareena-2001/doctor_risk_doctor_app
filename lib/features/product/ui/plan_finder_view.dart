@@ -1,12 +1,15 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/state/plan_finder_state.dart';
 import 'package:Doctors_App/features/product/ui/view_model/plan_finder_view_model.dart';
 import 'package:Doctors_App/features/product/ui/widgets/plan_comparison_tool.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/values/app_text_style.dart';
 import '../model/plan_finder_models.dart';
@@ -31,15 +34,16 @@ class PlanFinderView extends ConsumerWidget {
       staffCode: staffCode,
       category: category,
     );
+
     final state = ref.watch(planFinderViewModelProvider(args));
     final vm = ref.read(planFinderViewModelProvider(args).notifier);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: const CustomAppBar(title: 'Browse Plans'),
+      backgroundColor: Color(0xFFF8FAFC),
+      appBar: CustomAppBar(title: 'Browse Plans'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,10 +59,39 @@ class PlanFinderView extends ConsumerWidget {
                 onChangeCategory: () => Navigator.pop(context),
               ),
               height(16),
-              if (state.quote != null)
-                _QuoteResultCard(state: state)
-              else
-                _EmptyHelperCard(vm: vm),
+              LayoutBuilder(
+                builder: (context, c) {
+                  final isNarrow = c.maxWidth < 640;
+
+                  final left = state.quote != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _QuoteResultCard(state: state),
+                            height(16),
+                            _OtherPlansStrip(state: state, vm: vm),
+                          ],
+                        )
+                      : const _IntroCard();
+
+                  final right = _ComparePlansCard(vm: vm);
+
+                  if (isNarrow) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [left, height(16), right],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 2, child: left),
+                      width(16),
+                      Expanded(child: right),
+                    ],
+                  );
+                },
+              ),
               if (state.showComparison) ...[
                 height(16),
                 PlanComparisonTool(
@@ -185,7 +218,7 @@ class _FilterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -198,39 +231,44 @@ class _FilterCard extends StatelessWidget {
             builder: (context, c) {
               final isNarrow = c.maxWidth < 640;
               final fields = [
-                _Dropdown<MembershipType>(
+                CustomDropdownField<MembershipType>(
                   label: 'Membership',
                   hint: 'Select Membership',
                   value: state.membership,
                   items: MembershipType.values,
-                  labelOf: (m) => m.label,
+                  itemBuilder: (m) => m.label,
                   onChanged: vm.selectMembership,
+                  isRequired: true,
                 ),
-                _Dropdown<PlanTier>(
+                CustomDropdownField<PlanTier>(
                   label: 'Plan',
                   hint: 'Select Plan',
                   value: state.plan,
                   items: PlanTier.values,
-                  labelOf: (p) => p.label,
+                  itemBuilder: (p) => p.label,
                   onChanged: vm.selectPlan,
+                  isRequired: true,
                 ),
-                _Dropdown<PolicyDuration>(
+                CustomDropdownField<PolicyDuration>(
                   label: 'Duration',
                   hint: 'Select Duration',
                   value: state.duration,
                   items: PolicyDuration.values,
-                  labelOf: (d) => d.label,
+                  itemBuilder: (d) => d.label,
                   onChanged: vm.selectDuration,
+                  isRequired: true,
                 ),
-                _Dropdown<SumAssured>(
+                CustomDropdownField<SumAssured>(
                   label: 'Sum Assured',
                   hint: 'Select Sum Assured',
                   value: state.sumAssured,
                   items: SumAssured.values,
-                  labelOf: (s) => s.label,
+                  itemBuilder: (s) => s.label,
                   onChanged: vm.selectSumAssured,
+                  isRequired: true,
                 ),
               ];
+
               if (isNarrow) {
                 return Column(
                   children: [
@@ -254,44 +292,43 @@ class _FilterCard extends StatelessWidget {
               SizedBox(
                 width: 120,
                 child: PrimaryButton(
-                  height: 44,
-                  borderRadius: 12,
+                  height: 40,
+                  borderRadius: 25,
                   fontSize: 14,
                   text: 'Search',
-                  backgroundColor: AppColors.newPri,
+                  gradientColors: [
+                    AppColors.buttonColor1,
+                    AppColors.buttonColor2,
+                  ],
                   onPressed: state.canSearch ? vm.search : null,
                 ),
               ),
-              OutlinedButton(
-                onPressed: vm.clear,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  side: const BorderSide(color: Color(0xFFE2E8F0)),
-                ),
-                child: Text(
-                  'Clear',
-                  style: customTextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF475569),
-                  ),
+              SizedBox(
+                width: 120,
+                child: PrimaryButton(
+                  borderColor: AppColors.border,
+                  height: 40,
+                  borderRadius: 25,
+                  fontSize: 14,
+                  onPressed: vm.clear,
+                  backgroundColor: AppColors.white,
+                  text: '',
+                  child: const Text('Clear'),
                 ),
               ),
               TextButton.icon(
                 onPressed: onChangeCategory,
-                icon: const Icon(Icons.arrow_back, size: 15),
+                style: TextButton.styleFrom(
+                  side: BorderSide(color: AppColors.border),
+                ),
+                icon: Icon(
+                  Icons.arrow_back,
+                  size: 15,
+                  color: AppColors.textColor,
+                ),
                 label: Text(
                   'Change category',
-                  style: customTextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: AppColors.textColor),
                 ),
               ),
             ],
@@ -302,192 +339,213 @@ class _FilterCard extends StatelessWidget {
   }
 }
 
-class _Dropdown<T> extends StatelessWidget {
-  final String label;
-  final String hint;
-  final T? value;
-  final List<T> items;
-  final String Function(T) labelOf;
-  final ValueChanged<T?> onChanged;
-
-  const _Dropdown({
-    required this.label,
-    required this.hint,
-    required this.value,
-    required this.items,
-    required this.labelOf,
-    required this.onChanged,
-  });
+/// Shown on the left while no quote has been fetched yet.
+class _IntroCard extends StatelessWidget {
+  const _IntroCard();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Text.rich(
+        TextSpan(
           style: customTextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+            fontSize: 13,
             color: const Color(0xFF475569),
-          ),
+          ).copyWith(height: 1.6),
+          children: [
+            const TextSpan(
+              text:
+                  "Welcome! We're excited that you're considering securing your membership.\n\n",
+            ),
+            const TextSpan(
+              text:
+                  'Select the plan, duration and sum assured above, then click ',
+            ),
+            const TextSpan(
+              text: 'Search',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const TextSpan(text: ". Once you've found the right fit, click "),
+            const TextSpan(
+              text: 'Secure Coverage Now',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const TextSpan(text: ' to continue.\n\n'),
+            const TextSpan(
+              text:
+                  "You'll be asked to confirm a few personal and practice details, then "
+                  'proceed to secure your payment. A confirmation email follows automatically.',
+            ),
+          ],
         ),
-        height(6),
-        DropdownButtonFormField<T>(
-          value: value,
-          hint: Text(
-            hint,
-            style: customTextStyle(
-              fontSize: 13,
-              color: const Color(0xFFCBD5E1),
-            ),
-          ),
-          isExpanded: true,
-          icon: const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Color(0xFF94A3B8),
-          ),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color(0xFFF8F9FC),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Color(0xFF6366F1),
-                width: 1.5,
-              ),
-            ),
-          ),
-          items: items
-              .map(
-                (e) => DropdownMenuItem(
-                  value: e,
-                  child: Text(labelOf(e), style: customTextStyle(fontSize: 13)),
-                ),
-              )
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _EmptyHelperCard extends StatelessWidget {
+/// Always visible — before AND after a quote is found — so the user can
+/// jump into the full comparison tool at any point in the flow.
+class _ComparePlansCard extends StatelessWidget {
   final PlanFinderViewModel vm;
 
-  const _EmptyHelperCard({required this.vm});
+  const _ComparePlansCard({required this.vm});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, c) {
-        final isNarrow = c.maxWidth < 640;
-        final intro = Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
-          child: Text.rich(
-            TextSpan(
-              style: customTextStyle(
-                fontSize: 13,
-                color: const Color(0xFF475569),
-              ).copyWith(height: 1.6),
-              children: [
-                const TextSpan(
-                  text:
-                      "Welcome! We're excited that you're considering securing your membership.\n\n",
-                ),
-                const TextSpan(
-                  text:
-                      'Select the plan, duration and sum assured above, then click ',
-                ),
-                const TextSpan(
-                  text: 'Search',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const TextSpan(
-                  text: ". Once you've found the right fit, click ",
-                ),
-                const TextSpan(
-                  text: 'Secure Coverage Now',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                const TextSpan(text: ' to continue.\n\n'),
-                const TextSpan(
-                  text:
-                      "You'll be asked to confirm a few personal and practice details, then "
-                      'proceed to secure your payment. A confirmation email follows automatically.',
-                ),
-              ],
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Color(0xFFECFDF5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Not sure which plan to choose?',
+            style: customTextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textColor,
             ),
           ),
-        );
-        final compare = Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFECFDF5),
-            borderRadius: BorderRadius.circular(16),
+          height(6),
+          Text(
+            'Compare all three plans side by side, or check Recommended Plans based on your speciality.',
+            style: customTextStyle(
+              fontSize: 12,
+              color: Color(0xFF64748B),
+            ).copyWith(height: 1.4),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Not sure which plan to choose?',
-                style: customTextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textColor,
-                ),
-              ),
-              height(6),
-              Text(
-                'Compare all three plans side by side, or check Recommended Plans based on your speciality.',
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: const Color(0xFF64748B),
-                ).copyWith(height: 1.4),
-              ),
-              height(12),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  height: 40,
-                  borderRadius: 20,
-                  fontSize: 13,
-                  text: 'Compare Plans',
-                  backgroundColor: AppColors.newPri,
-                  onPressed: vm.toggleComparison,
-                ),
-              ),
-            ],
+          height(12),
+          SizedBox(
+            width: double.infinity,
+            child: PrimaryButton(
+              height: 40,
+              borderRadius: 20,
+              fontSize: 13,
+              text: 'Compare Plans',
+              backgroundColor: AppColors.newPri,
+              onPressed: vm.toggleComparison,
+            ),
           ),
-        );
-        if (isNarrow) return Column(children: [intro, height(16), compare]);
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(flex: 2, child: intro),
-            width(16),
-            Expanded(child: compare),
-          ],
-        );
-      },
+        ],
+      ),
+    );
+  }
+}
+
+/// Shown below the quote card once a plan is found — lets the user switch
+/// between the other tiers (Starter / Standard / Premium) within the same
+/// membership without leaving the page or opening the full comparison tool.
+class _OtherPlansStrip extends StatelessWidget {
+  final PlanFinderState state;
+  final PlanFinderViewModel vm;
+
+  const _OtherPlansStrip({required this.state, required this.vm});
+
+  @override
+  Widget build(BuildContext context) {
+    final q = state.quote!;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Other plans in ${q.membership.label} Membership',
+            style: customTextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textColor,
+            ),
+          ),
+          height(4),
+          Text(
+            'Same duration and sum assured — tap to switch.',
+            style: customTextStyle(
+              fontSize: 11,
+              color: const Color(0xFF94A3B8),
+            ),
+          ),
+          height(12),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: PlanTier.values.map((tier) {
+              final selected = tier == q.plan;
+              final premium = calculatePremium(
+                membership: q.membership,
+                plan: tier,
+                duration: q.duration,
+                sumAssured: q.sumAssured,
+              );
+              return GestureDetector(
+                onTap: selected ? null : () => vm.switchPlan(tier),
+                child: Container(
+                  width: 150,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: selected ? const Color(0xFFECFDF5) : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.newPri
+                          : const Color(0xFFE2E8F0),
+                      width: selected ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tier.label,
+                            style: customTextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textColor,
+                            ),
+                          ),
+                          if (selected)
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              size: 16,
+                              color: Color(0xFF059669),
+                            ),
+                        ],
+                      ),
+                      height(4),
+                      Text(
+                        '₹${formatRupees(premium)} / yr',
+                        style: customTextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.newPri,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -584,7 +642,7 @@ class _QuoteResultCard extends StatelessWidget {
               onPressed: state.hasActivePolicy
                   ? null
                   : () {
-                      // TODO: push into purchase wizard with this quote.
+                      context.push(Routes.purchaseWizard);
                     },
             ),
           ),
@@ -621,7 +679,7 @@ class _SummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

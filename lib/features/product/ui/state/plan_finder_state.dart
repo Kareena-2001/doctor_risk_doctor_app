@@ -6,11 +6,19 @@ class PlanFinderArgs {
   final String? staffCode;
   final ProductType category;
 
-  const PlanFinderArgs({
-    this.orgName,
-    this.staffCode,
-    required this.category,
-  });
+  const PlanFinderArgs({this.orgName, this.staffCode, required this.category});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlanFinderArgs &&
+          runtimeType == other.runtimeType &&
+          orgName == other.orgName &&
+          staffCode == other.staffCode &&
+          category == other.category;
+
+  @override
+  int get hashCode => Object.hash(orgName, staffCode, category);
 }
 
 class PlanFinderState {
@@ -26,7 +34,6 @@ class PlanFinderState {
   final PlanQuote? quote;
   final bool showComparison;
 
-  /// TODO: wire to real membership/policy-status API.
   final bool hasActivePolicy;
 
   const PlanFinderState({
@@ -43,7 +50,10 @@ class PlanFinderState {
   });
 
   bool get canSearch =>
-      membership != null && plan != null && duration != null && sumAssured != null;
+      membership != null &&
+      plan != null &&
+      duration != null &&
+      sumAssured != null;
 
   PlanFinderState copyWith({
     MembershipType? membership,

@@ -7,7 +7,8 @@ import '../../model/plan_finder_models.dart';
 
 class PlanComparisonTool extends StatefulWidget {
   final MembershipType initialMembership;
-  final void Function(MembershipType, PlanTier, PolicyDuration, SumAssured) onSelect;
+  final void Function(MembershipType, PlanTier, PolicyDuration, SumAssured)
+  onSelect;
   final VoidCallback onClose;
 
   const PlanComparisonTool({
@@ -40,6 +41,13 @@ class _PlanComparisonToolState extends State<PlanComparisonTool> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,76 +55,154 @@ class _PlanComparisonToolState extends State<PlanComparisonTool> {
           Row(
             children: [
               Expanded(
-                child: Text('Plan Comparison Tool',
-                    style: customTextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textColor)),
+                child: Text(
+                  'Plan Comparison Tool',
+                  style: customTextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textColor,
+                  ),
+                ),
               ),
-              IconButton(
-                onPressed: widget.onClose,
-                icon: const Icon(Icons.close_rounded, size: 18),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+              InkWell(
+                onTap: widget.onClose,
+                borderRadius: BorderRadius.circular(20),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
               ),
             ],
           ),
+          height(2),
           Text(
             'Pick a membership, then compare Starter / Standard / Premium plans within it.',
-            style: customTextStyle(fontSize: 12, color: const Color(0xFF64748B)),
+            style: customTextStyle(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
           height(14),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Membership:', style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF475569))),
+              Text(
+                'Membership:',
+                style: customTextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF475569),
+                ),
+              ),
               width(8),
               Wrap(
                 spacing: 6,
+                runSpacing: 6,
                 children: MembershipType.values
-                    .map((m) => _Chip(label: m.label, selected: m == _membership, onTap: () => setState(() => _membership = m)))
+                    .map(
+                      (m) => _Chip(
+                    label: m.label,
+                    selected: m == _membership,
+                    onTap: () => setState(() => _membership = m),
+                  ),
+                )
                     .toList(),
               ),
             ],
           ),
           height(6),
-          Text(_membership.tagline, style: customTextStyle(fontSize: 12, color: const Color(0xFF64748B))),
-          height(14),
-          Wrap(
-            spacing: 24,
-            runSpacing: 12,
-            children: [
-              Row(
+          Text(
+            _membership.tagline,
+            style: customTextStyle(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          height(16),
+          LayoutBuilder(
+            builder: (context, c) {
+              final compareAt = Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Compare at:', style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF475569))),
+                  Text(
+                    'Compare at:',
+                    style: customTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
                   width(8),
                   Wrap(
                     spacing: 6,
+                    runSpacing: 6,
                     children: PolicyDuration.values
-                        .map((d) => _Chip(label: d.shortLabel, selected: d == _duration, onTap: () => setState(() => _duration = d)))
+                        .map(
+                          (d) => _Chip(
+                        label: d.shortLabel,
+                        selected: d == _duration,
+                        onTap: () => setState(() => _duration = d),
+                      ),
+                    )
                         .toList(),
                   ),
                 ],
-              ),
-              Row(
+              );
+
+              final sumAssured = Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Sum Assured:', style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF475569))),
+                  Text(
+                    'Sum Assured:',
+                    style: customTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
                   width(8),
                   Wrap(
                     spacing: 6,
+                    runSpacing: 6,
                     children: SumAssured.values
-                        .map((s) => _Chip(label: s.label, selected: s == _sumAssured, onTap: () => setState(() => _sumAssured = s)))
+                        .map(
+                          (s) => _Chip(
+                        label: s.label,
+                        selected: s == _sumAssured,
+                        onTap: () => setState(() => _sumAssured = s),
+                      ),
+                    )
                         .toList(),
                   ),
                 ],
-              ),
-            ],
+              );
+
+              if (c.maxWidth < 640) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [compareAt, height(10), sumAssured],
+                );
+              }
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [compareAt, sumAssured],
+              );
+            },
           ),
           height(16),
           _ComparisonTable(
             membership: _membership,
             duration: _duration,
             sumAssured: _sumAssured,
-            onSelect: (plan) => widget.onSelect(_membership, plan, _duration, _sumAssured),
+            onSelect: (plan) =>
+                widget.onSelect(_membership, plan, _duration, _sumAssured),
           ),
+          height(14),
+          _AddOnsCallout(membership: _membership),
           height(10),
           Text(
             'Base coverage — Professional/Establishment Indemnity, Defense Cost, Legal '
@@ -124,7 +210,10 @@ class _PlanComparisonToolState extends State<PlanComparisonTool> {
                 'Social Media Defamation Support, PAN India Support and 24×7 Assistance — is '
                 'included at every membership and every plan. Legal matters existing before '
                 'your membership began remain chargeable separately, per our standard policy.',
-            style: customTextStyle(fontSize: 10.5, color: const Color(0xFF94A3B8)).copyWith(height: 1.4),
+            style: customTextStyle(
+              fontSize: 10.5,
+              color: const Color(0xFF94A3B8),
+            ).copyWith(height: 1.4),
           ),
         ],
       ),
@@ -137,7 +226,11 @@ class _Chip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _Chip({required this.label, required this.selected, required this.onTap});
+  const _Chip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -149,11 +242,17 @@ class _Chip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.newPri : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? AppColors.newPri : const Color(0xFFE2E8F0)),
+          border: Border.all(
+            color: selected ? AppColors.newPri : const Color(0xFFE2E8F0),
+          ),
         ),
         child: Text(
           label,
-          style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: selected ? Colors.white : const Color(0xFF475569)),
+          style: customTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: selected ? Colors.white : const Color(0xFF475569),
+          ),
         ),
       ),
     );
@@ -175,11 +274,28 @@ class _ComparisonTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerStyle = customTextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF94A3B8));
-    final cellStyle = customTextStyle(fontSize: 12, color: const Color(0xFF334155)).copyWith(height: 1.4);
+    final headerStyle = customTextStyle(
+      fontSize: 12.5,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF1E293B),
+    );
+    final labelStyle = customTextStyle(
+      fontSize: 12.5,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF1E293B),
+    ).copyWith(height: 1.4);
+    final cellStyle = customTextStyle(
+      fontSize: 12.5,
+      color: const Color(0xFF334155),
+    ).copyWith(height: 1.4);
 
-    Widget cell(Widget child, {int flex = 1}) =>
-        Expanded(flex: flex, child: Padding(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8), child: child));
+    Widget cell(Widget child, {int flex = 1}) => Expanded(
+      flex: flex,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        child: child,
+      ),
+    );
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -188,60 +304,174 @@ class _ComparisonTable extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0)))),
-              child: Row(children: [
-                cell(Text('Feature', style: headerStyle), flex: 2),
-                for (final p in PlanTier.values) cell(Text(p.label, style: headerStyle)),
-              ]),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+              ),
+              child: Row(
+                children: [
+                  cell(Text('Feature', style: headerStyle), flex: 2),
+                  for (final p in PlanTier.values)
+                    cell(Text(p.label, style: headerStyle)),
+                ],
+              ),
             ),
             Container(
-              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9)))),
-              child: Row(children: [
-                cell(Text('Premium (selected)', style: cellStyle), flex: 2),
-                for (final p in PlanTier.values)
-                  cell(Text(
-                    '₹${formatRupees(calculatePremium(membership: membership, plan: p, duration: duration, sumAssured: sumAssured))}',
-                    style: cellStyle,
-                  )),
-              ]),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+              ),
+              child: Row(
+                children: [
+                  cell(
+                    Text('Premium (selected)', style: labelStyle),
+                    flex: 2,
+                  ),
+                  for (final p in PlanTier.values)
+                    cell(
+                      Text(
+                        '₹${formatRupees(calculatePremium(membership: membership, plan: p, duration: duration, sumAssured: sumAssured))} / yr',
+                        style: cellStyle,
+                      ),
+                    ),
+                ],
+              ),
             ),
             Container(
-              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9)))),
-              child: Row(children: [
-                cell(Text('Consultation access', style: cellStyle), flex: 2),
-                for (final p in PlanTier.values) cell(Text(p.consultationAccess(membership), style: cellStyle)),
-              ]),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+              ),
+              child: Row(
+                children: [
+                  cell(Text('Consultation access', style: labelStyle), flex: 2),
+                  for (final p in PlanTier.values)
+                    cell(Text(p.consultationAccess(membership), style: cellStyle)),
+                ],
+              ),
             ),
             Container(
-              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9)))),
-              child: Row(children: [
-                cell(Text('Free review of 1 pre-existing matter', style: cellStyle), flex: 2),
-                for (final _ in PlanTier.values) cell(Text('—', style: cellStyle)),
-              ]),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+              ),
+              child: Row(
+                children: [
+                  cell(
+                    Text('Free review of 1 pre-existing matter', style: labelStyle),
+                    flex: 2,
+                  ),
+                  for (final _ in PlanTier.values)
+                    cell(Text('—', style: cellStyle)),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(children: [
-                const Expanded(flex: 2, child: SizedBox()),
-                for (final p in PlanTier.values)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: OutlinedButton(
-                        onPressed: () => onSelect(p),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+              child: Row(
+                children: [
+                  const Expanded(flex: 2, child: SizedBox()),
+                  for (final p in PlanTier.values)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: OutlinedButton(
+                          onPressed: () => onSelect(p),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          child: Text(
+                            'Select',
+                            style: customTextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1E293B),
+                            ),
+                          ),
                         ),
-                        child: Text('Select', style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF1E293B))),
                       ),
                     ),
-                  ),
-              ]),
+                ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AddOnsCallout extends StatelessWidget {
+  final MembershipType membership;
+
+  const _AddOnsCallout({required this.membership});
+
+  @override
+  Widget build(BuildContext context) {
+    final addOns = membership.addOns;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFECFDF5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${membership.label.toUpperCase()} MEMBERSHIP ADD-ONS (APPLY AT EVERY PLAN LEVEL)',
+            style: customTextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF065F46),
+            ).copyWith(letterSpacing: 0.3),
+          ),
+          height(8),
+          if (addOns.isEmpty)
+            _AddOnRow(
+              text: 'No proactive add-ons at this membership level',
+              included: false,
+            )
+          else
+            ...addOns.map((a) => _AddOnRow(text: a, included: true)),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddOnRow extends StatelessWidget {
+  final String text;
+  final bool included;
+
+  const _AddOnRow({required this.text, required this.included});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            included ? Icons.check_rounded : Icons.close_rounded,
+            size: 14,
+            color: included
+                ? const Color(0xFF059669)
+                : const Color(0xFF94A3B8),
+          ),
+          width(6),
+          Expanded(
+            child: Text(
+              text,
+              style: customTextStyle(
+                fontSize: 12,
+                color: const Color(0xFF475569),
+              ).copyWith(height: 1.4),
+            ),
+          ),
+        ],
       ),
     );
   }

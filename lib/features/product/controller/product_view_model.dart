@@ -26,7 +26,7 @@ class ProductViewModel extends _$ProductViewModel {
   final couponController = TextEditingController();
 
   final policyOptions = const [
-    ' Error And Ommission',
+    'Error And Ommission',
     'Policy and Services',
     'Complete Medico Legal Support',
   ];

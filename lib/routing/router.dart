@@ -45,6 +45,7 @@ import '../features/main/ui/main_screen.dart';
 import '../features/notification/ui/notification_screen.dart';
 import '../features/onboarding/ui/splash_screen.dart';
 import '../features/product/model/product_model.dart';
+import '../features/product/ui/my_plan_details_screen.dart';
 import '../features/product/ui/my_plans_view.dart';
 import '../features/product/ui/plan_category_view.dart';
 import '../features/product/ui/plan_finder_view.dart';
@@ -62,9 +63,9 @@ enum SlideDirection { right, left, up, down }
 
 extension GoRouterStateExtension on GoRouterState {
   SlideRouteTransition slidePage(
-    Widget child, {
-    SlideDirection direction = SlideDirection.left,
-  }) {
+      Widget child, {
+        SlideDirection direction = SlideDirection.left,
+      }) {
     return SlideRouteTransition(
       key: pageKey,
       child: child,
@@ -79,33 +80,33 @@ class SlideRouteTransition extends CustomTransitionPage<void> {
     required super.child,
     SlideDirection direction = SlideDirection.left,
   }) : super(
-         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-           final curve = CurvedAnimation(
-             parent: animation,
-             curve: Curves.easeInOut,
-           );
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curve = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOut,
+      );
 
-           Offset begin;
-           switch (direction) {
-             case SlideDirection.right:
-               begin = const Offset(-1.0, 0.0);
-               break;
-             case SlideDirection.left:
-               begin = const Offset(1.0, 0.0);
-               break;
-             case SlideDirection.up:
-               begin = const Offset(0.0, 1.0);
-               break;
-             case SlideDirection.down:
-               begin = const Offset(0.0, -1.0);
-               break;
-           }
-           final tween = Tween(begin: begin, end: Offset.zero);
-           final offsetAnimation = tween.animate(curve);
+      Offset begin;
+      switch (direction) {
+        case SlideDirection.right:
+          begin = const Offset(-1.0, 0.0);
+          break;
+        case SlideDirection.left:
+          begin = const Offset(1.0, 0.0);
+          break;
+        case SlideDirection.up:
+          begin = const Offset(0.0, 1.0);
+          break;
+        case SlideDirection.down:
+          begin = const Offset(0.0, -1.0);
+          break;
+      }
+      final tween = Tween(begin: begin, end: Offset.zero);
+      final offsetAnimation = tween.animate(curve);
 
-           return SlideTransition(position: offsetAnimation, child: child);
-         },
-       );
+      return SlideTransition(position: offsetAnimation, child: child);
+    },
+  );
 }
 
 final GoRouter router = GoRouter(
@@ -179,26 +180,6 @@ final GoRouter router = GoRouter(
       path: Routes.planListScreen,
       pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
     ),
-    // GoRoute(
-    //   path: Routes.myPlanDetails,
-    //   pageBuilder: (context, state) => state.slidePage(
-    //     const MyPlanDetailsScreen(
-    //     //   plan: MyPlan(
-    //     //     srNo: srNo,
-    //     //     id: id,
-    //     //     planName: planName,
-    //     //     duration: duration,
-    //     //     sumAssured: sumAssured,
-    //     //     premium: premium,
-    //     //     payable: payable,
-    //     //     status: status,
-    //     //     fromDate: fromDate,
-    //     //     toDate: toDate,
-    //     //     policyNumber: policyNumber,
-    //     //   ),
-    //     // ),
-    //   ),
-    // ),
     GoRoute(
       path: Routes.productList,
       pageBuilder: (context, state) => state.slidePage(const ProductView()),
@@ -219,13 +200,36 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.purchaseWizard,
       builder: (context, state) {
-        final args = state.extra as (Product, TierPlan, String, double, double);
+        final extra = state.extra;
+
+        // `extra` must be a (Product, TierPlan, String, double, double)
+        // record. If whatever navigated here forgot to pass it (or passed
+        // the wrong shape), don't crash the whole app on a bad cast —
+        // bounce back to the previous screen instead.
+        if (extra is! (Product, TierPlan, String, double, double)) {
+          debugPrint(
+            'purchaseWizard route reached without valid extra args '
+                '(got: ${extra.runtimeType}). Check the caller is passing '
+                'extra: (product, tier, duration, sumAssured, premium).',
+          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted && context.canPop()) {
+              context.pop();
+            } else if (context.mounted) {
+              context.go(Routes.productList);
+            }
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
         return PurchaseWizardScreen(
-          product: args.$1,
-          tier: args.$2,
-          duration: args.$3,
-          sumAssured: args.$4,
-          premium: args.$5,
+          product: extra.$1,
+          tier: extra.$2,
+          duration: extra.$3,
+          sumAssured: extra.$4,
+          premium: extra.$5,
         );
       },
     ),
@@ -264,10 +268,6 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
     ),
 
-    // GoRoute(
-    //   path: Routes.overview,
-    //   pageBuilder: (context, state) => state.slidePage(OverviewScreen()),
-    // ),
     GoRoute(
       path: Routes.adminDocs,
       pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
@@ -300,10 +300,6 @@ final GoRouter router = GoRouter(
         return state.slidePage(QueryDetailsScreen(queryId: queryId));
       },
     ),
-    // GoRoute(
-    //   path: Routes.liveChat,
-    //   pageBuilder: (context, state) => state.slidePage(ChatView()),
-    // ),
     GoRoute(
       path: Routes.forgotPassword,
       pageBuilder: (context, state) =>

@@ -57,6 +57,19 @@ class PlanFinderViewModel extends _$PlanFinderViewModel {
     );
   }
 
+  /// Switches the plan tier (Starter/Standard/Premium) while keeping the
+  /// current membership, duration and sum assured, and re-fetches the quote
+  /// immediately. Used by the "other plans in this membership" strip.
+  void switchPlan(PlanTier plan) {
+    if (state.membership == null ||
+        state.duration == null ||
+        state.sumAssured == null) {
+      return;
+    }
+    state = state.copyWith(plan: plan, clearQuote: true);
+    search();
+  }
+
   void clear() => state = state.copyWith(
     clearMembership: true,
     clearPlan: true,

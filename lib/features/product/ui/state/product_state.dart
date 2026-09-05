@@ -17,6 +17,5 @@ class ProductState with _$ProductState {
     @Default(0.0) double discountAmount,
     @Default(0.0) double payableAmount,
     @Default(<String>[]) List<String> premiumOptions,
-
   }) = _ProductState;
 }

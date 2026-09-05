@@ -6,6 +6,7 @@ extension MembershipTypeX on MembershipType {
     MembershipType.essential => 'Essential',
     MembershipType.comprehensive => 'Comprehensive',
   };
+
   String get tagline => switch (this) {
     MembershipType.basic =>
     'Core policy cover and legal defense — no proactive extras.',
@@ -13,6 +14,21 @@ extension MembershipTypeX on MembershipType {
     'Everything in Basic, plus proactive risk reviews.',
     MembershipType.comprehensive =>
     'Our fullest cover with priority support and audits.',
+  };
+
+  /// Proactive add-ons included at this membership level, applied across
+  /// every plan tier (Starter/Standard/Premium) within it.
+  /// TODO: replace with real product-catalog data once available.
+  List<String> get addOns => switch (this) {
+    MembershipType.basic => const [],
+    MembershipType.essential => const [
+      'Proactive risk reviews',
+    ],
+    MembershipType.comprehensive => const [
+      'Proactive risk reviews',
+      'Priority support',
+      'Compliance audits',
+    ],
   };
 }
 
