@@ -84,6 +84,7 @@ class PlanFinderView extends ConsumerWidget {
                       children: [left, height(16), right],
                     );
                   }
+
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -94,6 +95,7 @@ class PlanFinderView extends ConsumerWidget {
                   );
                 },
               ),
+
               if (state.showComparison) ...[
                 height(16),
                 PlanComparisonTool(
@@ -644,41 +646,43 @@ class _QuoteResultCard extends StatelessWidget {
               onPressed: state.hasActivePolicy
                   ? null
                   : () {
-                final q = state.quote!;
+                      final q = state.quote!;
 
-                final product = Product(
-                  id: 1,
-                  type: state.category,
-                  productNames: [q.membership.label],
-                  shortDescription: '${q.membership.label} Membership Plan',
-                  fullDescription: '${q.membership.label} Membership with ${q.plan.label} tier.',
-                  tiers: [],
-                  createdDate: DateTime.now(),
-                );
+                      final product = Product(
+                        id: 1,
+                        type: state.category,
+                        productNames: [q.membership.label],
+                        shortDescription:
+                            '${q.membership.label} Membership Plan',
+                        fullDescription:
+                            '${q.membership.label} Membership with ${q.plan.label} tier.',
+                        tiers: [],
+                        createdDate: DateTime.now(),
+                      );
 
-                // TierStyles.standard assign karein blank TierStyle() ki jagah
-                final tierPlan = TierPlan(
-                  name: q.plan.label,
-                  tagline: '${q.plan.label} Protection Plan',
-                  premiumPerYear: q.premium,
-                  sumInsured: q.sumAssured.amount,
-                  maxMembers: 1,
-                  validityYears: 1,
-                  features: const [],
-                  style: TierStyles.standard,
-                );
+                      // TierStyles.standard assign karein blank TierStyle() ki jagah
+                      final tierPlan = TierPlan(
+                        name: q.plan.label,
+                        tagline: '${q.plan.label} Protection Plan',
+                        premiumPerYear: q.premium,
+                        sumInsured: q.sumAssured.amount,
+                        maxMembers: 1,
+                        validityYears: 1,
+                        features: const [],
+                        style: TierStyles.standard,
+                      );
 
-                context.push(
-                  Routes.purchaseWizard,
-                  extra: (
-                  product,
-                  tierPlan,
-                  q.duration.label,
-                  q.sumAssured.amount,
-                  q.premium,
-                  ),
-                );
-              },
+                      context.push(
+                        Routes.purchaseWizard,
+                        extra: (
+                          product,
+                          tierPlan,
+                          q.duration.label,
+                          q.sumAssured.amount,
+                          q.premium,
+                        ),
+                      );
+                    },
             ),
           ),
           if (state.hasActivePolicy) ...[

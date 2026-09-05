@@ -71,17 +71,14 @@ class Routes {
   static const eventsScreen = '/eventsScreen';
   static const eventRegister = '/eventRegister';
 
-
   static const communityScreen = '/communityScreen';
   static const profileView = '/profileView';
   static const editProfile = '/editProfile';
-
 
   static const addBlog = '/addBlog';
 
   static const addAppointment = '/addAppointment';
   static const viewAppointment = '/viewAppointment';
-
 
   static const legalConsultant = '/legalConsultant';
   static const legalNotice = '/legalNotice';
@@ -91,5 +88,4 @@ class Routes {
   static const legalScreen = '/legalScreen';
   static const addLegalNotice = '/addLegalNotice';
   static const scanScreen = '/scanScreen';
-
 }

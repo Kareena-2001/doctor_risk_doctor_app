@@ -52,6 +52,7 @@ const appointmentNotifications = [
     description: 'Your requested new time slot has been confirmed by our team.',
   ),
 ];
+
 final policyModel = PolicyModel(
   title: 'Policy Details',
   planName: 'Medico Legal Services',

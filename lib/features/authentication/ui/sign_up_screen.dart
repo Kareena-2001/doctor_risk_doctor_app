@@ -16,6 +16,8 @@ import '../../common/ui/widgets/primary_button.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 import 'view_model/authentication_view_model.dart';
 
+enum RegistrationType { professional, establishment }
+
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
 
@@ -26,11 +28,14 @@ class SignUpScreen extends ConsumerStatefulWidget {
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final DeviceService deviceService = DeviceService();
 
+  RegistrationType _selectedType = RegistrationType.professional;
+
   late final TextEditingController _firstNameController;
   late final TextEditingController _middleNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _mobileNoController;
   late final TextEditingController _emailController;
+  late final TextEditingController _establishmentNameController;
   late final TextEditingController _organizationCodeController;
   late final TextEditingController _associateCodeController;
   late final TextEditingController _passwordController;
@@ -80,17 +85,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     _lastNameController = TextEditingController();
     _mobileNoController = TextEditingController();
     _emailController = TextEditingController();
+    _establishmentNameController = TextEditingController();
     _organizationCodeController = TextEditingController();
     _associateCodeController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
 
-    // Attach listeners to update Live Preview in real-time
     _firstNameController.addListener(_onFieldChanged);
     _middleNameController.addListener(_onFieldChanged);
     _lastNameController.addListener(_onFieldChanged);
     _mobileNoController.addListener(_onFieldChanged);
     _emailController.addListener(_onFieldChanged);
+    _establishmentNameController.addListener(_onFieldChanged);
     _passwordController.addListener(_onFieldChanged);
   }
 
@@ -105,6 +111,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     _lastNameController.dispose();
     _mobileNoController.dispose();
     _emailController.dispose();
+    _establishmentNameController.dispose();
     _organizationCodeController.dispose();
     _associateCodeController.dispose();
     _passwordController.dispose();
@@ -155,129 +162,125 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authenticationViewModelProvider);
 
-    final fullName = [
-      _selectedPrefix ?? '',
-      _firstNameController.text,
-      _middleNameController.text,
-      _lastNameController.text,
-    ].where((e) => e.trim().isNotEmpty).join(' ');
-
-    final isDoctor = _selectedPrefix == 'Dr.';
-
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Membership Registration'),
+      appBar: CustomAppBar(title: 'Membership Registration'),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                margin: EdgeInsets.all(Responsive.sp(16)),
-                padding: EdgeInsets.all(Responsive.sp(16)),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF16A34A),
-                                shape: BoxShape.circle,
-                              ),
+              height(Responsive.h(16)),
+              Center(
+                child: Container(
+                  width: Responsive.w(320),
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedType = RegistrationType.professional;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color:
+                                  _selectedType == RegistrationType.professional
+                                  ? const Color(0xFF15803D)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(25),
                             ),
-                            width(6),
-                            Text(
-                              'LIVE PREVIEW',
-                              style: customTextStyle(
-                                fontSize: Responsive.sp(10),
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF16A34A),
-                              ).copyWith(letterSpacing: 0.8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.person_outline,
+                                  size: 16,
+                                  color:
+                                      _selectedType ==
+                                          RegistrationType.professional
+                                      ? Colors.white
+                                      : const Color(0xFF64748B),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Professional',
+                                  style: customTextStyle(
+                                    fontSize: Responsive.sp(13),
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                        _selectedType ==
+                                            RegistrationType.professional
+                                        ? Colors.white
+                                        : const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        Text(
-                          'Takes ~ 3 mins',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(10),
-                            color: const Color(0xFF64748B),
                           ),
                         ),
-                      ],
-                    ),
-                    Divider(height: 20, color: Color(0xFFE2E8F0)),
-                    Text(
-                      fullName.isEmpty ? 'Your Full Name' : fullName,
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(17),
-                        fontWeight: FontWeight.bold,
-                        color: fullName.isEmpty
-                            ? const Color(0xFF94A3B8)
-                            : AppColors.brandGreen,
                       ),
-                    ),
-
-                    // Show Category & Speciality in Live Preview ONLY if Dr. is selected
-                    if (isDoctor) ...[
-                      height(Responsive.h(4)),
-                      Text(
-                        '${_selectedCategory ?? 'Category'} · ${_selectedSpeciality ?? 'Speciality'}',
-                        style: TextStyle(
-                          fontSize: Responsive.sp(12),
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF475569),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedType = RegistrationType.establishment;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color:
+                                  _selectedType ==
+                                      RegistrationType.establishment
+                                  ? const Color(0xFF15803D)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.location_city_outlined,
+                                  size: 16,
+                                  color:
+                                      _selectedType ==
+                                          RegistrationType.establishment
+                                      ? Colors.white
+                                      : Color(0xFF64748B),
+                                ),
+                                width(6),
+                                Text(
+                                  'Establishment',
+                                  style: customTextStyle(
+                                    fontSize: Responsive.sp(13),
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                        _selectedType ==
+                                            RegistrationType.establishment
+                                        ? Colors.white
+                                        : Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                    height(Responsive.h(12)),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _PreviewDetailTile(
-                            label: 'Mobile',
-                            value: _mobileNoController.text.isEmpty
-                                ? '—'
-                                : _mobileNoController.text,
-                          ),
-                        ),
-                        Expanded(
-                          child: _PreviewDetailTile(
-                            label: 'Email',
-                            value: _emailController.text.isEmpty
-                                ? '—'
-                                : _emailController.text,
-                          ),
-                        ),
-                        if (isDoctor)
-                          Expanded(
-                            child: _PreviewDetailTile(
-                              label: 'Degree',
-                              value: _selectedDegree ?? '—',
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
+
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: Responsive.sp(20)),
                 child: Form(
@@ -285,36 +288,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Text(
-                      //   'All fields marked * are required.',
-                      //   style: TextStyle(
-                      //     fontSize: Responsive.sp(12),
-                      //     color: const Color(0xFF64748B),
-                      //   ),
-                      // ),
-                      // height(Responsive.h(16)),
-                      const _SectionHeader(title: 'Personal details'),
+                      height(Responsive.h(12)),
+                      _SectionHeader(title: 'PERSONAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomDropdownField(
-                        label: 'Prefix *',
+                        label: 'Prefix',
                         hint: 'Select Prefix',
                         items: prefixes,
                         value: _selectedPrefix,
                         onChanged: (value) {
                           setState(() {
                             _selectedPrefix = value;
-                            if (_selectedPrefix != 'Dr.') {
-                              _selectedCategory = null;
-                              _selectedSpeciality = null;
-                              _selectedDegree = null;
-                            }
                           });
                         },
                       ),
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'First Name',
+                        label: 'First name',
                         hint: 'Enter first name',
                         controller: _firstNameController,
                         isRequired: true,
@@ -322,14 +313,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Middle Name',
+                        label: 'Middle name',
                         hint: 'Enter middle name',
                         controller: _middleNameController,
                       ),
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Last Name ',
+                        label: 'Last name',
                         hint: 'Enter last name',
                         controller: _lastNameController,
                         isRequired: true,
@@ -337,29 +328,39 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Enter your mobile number ',
+                        label: 'Enter your mobile number',
                         hint: '10 digit mobile number',
                         controller: _mobileNoController,
                         keyboardType: TextInputType.phone,
                         maxLength: 10,
                         isRequired: true,
                       ),
+
+                      // Helper text from mockup
+                      Text(
+                        'One mobile number = one login. This number can cover one Individual policy and multiple Establishment policies under the same login — it can\'t be used to create a second account, or added to a different login while securing membership.',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(10),
+                          color: const Color(0xFF64748B),
+                        ).copyWith(height: 1.4),
+                      ),
                       height(Responsive.h(12)),
 
                       CustomTextField(
                         label: 'Enter your email address',
-                        hint: 'e.g. doctor@clinic.com',
+                        hint: 'you@clinic.com',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         isRequired: true,
                       ),
                       height(Responsive.h(20)),
-                      if (isDoctor) ...[
-                        const _SectionHeader(title: 'Professional details'),
-                        height(Responsive.h(12)),
 
+                      // Conditional Professional vs Establishment Details Section
+                      if (_selectedType == RegistrationType.professional) ...[
+                        const _SectionHeader(title: 'PROFESSIONAL DETAILS'),
+                        height(Responsive.h(12)),
                         CustomDropdownField(
-                          label: 'Category ',
+                          label: 'Category *',
                           hint: 'Select Category',
                           items: categories,
                           value: _selectedCategory,
@@ -370,9 +371,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           },
                         ),
                         height(Responsive.h(12)),
-
                         CustomDropdownField(
-                          label: 'Speciality ',
+                          label: 'Speciality',
                           hint: 'Select Speciality',
                           items: specialities,
                           value: _selectedSpeciality,
@@ -396,9 +396,33 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           },
                         ),
                         height(Responsive.h(20)),
+                      ] else ...[
+                        const _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
+                        height(Responsive.h(12)),
+
+                        CustomDropdownField(
+                          label: 'Category *',
+                          hint: 'Select Category',
+                          items: categories,
+                          value: _selectedCategory,
+                          onChanged: (val) {
+                            setState(() {
+                              _selectedCategory = val;
+                            });
+                          },
+                        ),
+                        height(Responsive.h(12)),
+
+                        CustomTextField(
+                          label: 'Establishment Name',
+                          hint: 'e.g. Mathur Multispeciality Clinic',
+                          controller: _establishmentNameController,
+                          isRequired: true,
+                        ),
+                        height(Responsive.h(20)),
                       ],
 
-                      const _SectionHeader(title: 'Referral details'),
+                      const _SectionHeader(title: 'REFERRAL DETAILS'),
                       height(Responsive.h(12)),
 
                       CustomTextField(
@@ -414,12 +438,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         controller: _associateCodeController,
                       ),
                       height(Responsive.h(20)),
-                      const _SectionHeader(title: 'Set your password'),
+
+                      const _SectionHeader(title: 'SET YOUR PASSWORD'),
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Password ',
-                        hint: 'Enter password',
+                        label: 'Password *',
+                        hint: 'At least 8 characters',
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         isRequired: true,
@@ -447,9 +472,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ],
                       height(Responsive.h(12)),
+
                       CustomTextField(
-                        label: 'Confirm password ',
-                        hint: 'Confirm password',
+                        label: 'Confirm password *',
+                        hint: 'Re-enter password',
                         controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
                         isRequired: true,
@@ -466,6 +492,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       height(Responsive.h(20)),
+
                       RecaptchaWidget(
                         siteKey: 'YOUR_SITE_KEY',
                         onVerified: (token) =>
@@ -473,6 +500,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onExpired: () => setState(() => _recaptchaToken = null),
                       ),
                       height(Responsive.h(16)),
+
                       Row(
                         children: [
                           SizedBox(
@@ -488,19 +516,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'I agree to the Terms & Conditions and Privacy Policy.',
                               style: customTextStyle(
                                 fontSize: Responsive.sp(11),
-                                color: const Color(0xFF334155),
+                                color: Color(0xFF334155),
                               ),
                             ),
                           ),
                         ],
                       ),
                       height(Responsive.h(24)),
+
                       PrimaryButton(
                         text: 'Submit Registration',
                         isLoading: authState.isLoading,
@@ -510,29 +539,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         gradient: LinearGradient(
                           colors: [AppColors.newPri, AppColors.primary],
                         ),
-                        // backgroundColor: AppColors.brandGreen,
                       ),
                       height(Responsive.h(16)),
 
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     const Icon(
-                      //       Icons.cloud_done_outlined,
-                      //       size: 14,
-                      //       color: Color(0xFF64748B),
-                      //     ),
-                      //     const SizedBox(width: 4),
-                      //     Text(
-                      //       'Your progress is saved automatically',
-                      //       style: customTextStyle(
-                      //         fontSize: Responsive.sp(11),
-                      //         color: const Color(0xFF64748B),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      // height(Responsive.h(24)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -578,12 +587,12 @@ class _SectionHeader extends StatelessWidget {
         Text(
           title,
           style: customTextStyle(
-            fontSize: Responsive.sp(15),
+            fontSize: Responsive.sp(12),
             fontWeight: FontWeight.bold,
             color: const Color(0xFF0F172A),
           ),
         ),
-        const SizedBox(height: 4),
+        height(4),
         const Divider(height: 1, color: Color(0xFFE2E8F0)),
       ],
     );
@@ -603,18 +612,18 @@ class _PreviewDetailTile extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: customTextStyle(
             fontSize: Responsive.sp(10),
             color: const Color(0xFF94A3B8),
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 2),
+        height(2),
         Text(
           value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: customTextStyle(
             fontSize: Responsive.sp(12),
             color: const Color(0xFF1E293B),
             fontWeight: FontWeight.w600,
