@@ -210,7 +210,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                       ? Colors.white
                                       : const Color(0xFF64748B),
                                 ),
-                                const SizedBox(width: 6),
+                                width(6),
                                 Text(
                                   'Professional',
                                   style: customTextStyle(
