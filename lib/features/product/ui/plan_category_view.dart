@@ -183,10 +183,7 @@ class _CategoryCard extends StatelessWidget {
                     child: Icon(icon, color: AppColors.newPri, size: 24),
                   ),
                   Container(
-                    padding:  EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(20),

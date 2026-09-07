@@ -4,7 +4,6 @@ import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/state/plan_finder_state.dart';
 import 'package:Doctors_App/features/product/ui/view_model/plan_finder_view_model.dart';
-import 'package:Doctors_App/features/product/ui/widgets/plan_comparison_tool.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +27,33 @@ class PlanFinderView extends ConsumerWidget {
     this.staffCode,
     required this.category,
   });
+
+  void _showComparisonSheet(
+    BuildContext context,
+    PlanFinderState state,
+    PlanFinderViewModel vm,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ComparisonBottomSheet(
+        initialMembership: state.membership ?? MembershipType.basic,
+        initialDuration: state.duration ?? PolicyDuration.oneYear,
+        initialSumAssured: state.sumAssured ?? SumAssured.l25,
+        onSelect: (membership, plan, duration, sumAssured) {
+          vm.applyFromComparison(
+            membership: membership,
+            plan: plan,
+            duration: duration,
+            sumAssured: sumAssured,
+          );
+          Navigator.pop(context);
+        },
+        onClose: () => Navigator.pop(context),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,17 +92,12 @@ class PlanFinderView extends ConsumerWidget {
                   final isNarrow = c.maxWidth < 640;
 
                   final left = state.quote != null
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _QuoteResultCard(state: state),
-                            height(16),
-                            _OtherPlansStrip(state: state, vm: vm),
-                          ],
-                        )
+                      ? _QuoteResultCard(state: state)
                       : const _IntroCard();
 
-                  final right = _ComparePlansCard(vm: vm);
+                  final right = _ComparePlansCard(
+                    onTap: () => _showComparisonSheet(context, state, vm),
+                  );
 
                   if (isNarrow) {
                     return Column(
@@ -95,21 +116,6 @@ class PlanFinderView extends ConsumerWidget {
                   );
                 },
               ),
-
-              if (state.showComparison) ...[
-                height(16),
-                PlanComparisonTool(
-                  initialMembership: state.membership ?? MembershipType.basic,
-                  onSelect: (membership, plan, duration, sumAssured) =>
-                      vm.applyFromComparison(
-                        membership: membership,
-                        plan: plan,
-                        duration: duration,
-                        sumAssured: sumAssured,
-                      ),
-                  onClose: vm.toggleComparison,
-                ),
-              ],
             ],
           ),
         ),
@@ -343,7 +349,6 @@ class _FilterCard extends StatelessWidget {
   }
 }
 
-/// Shown on the left while no quote has been fetched yet.
 class _IntroCard extends StatelessWidget {
   const _IntroCard();
 
@@ -393,12 +398,10 @@ class _IntroCard extends StatelessWidget {
   }
 }
 
-/// Always visible — before AND after a quote is found — so the user can
-/// jump into the full comparison tool at any point in the flow.
 class _ComparePlansCard extends StatelessWidget {
-  final PlanFinderViewModel vm;
+  final VoidCallback onTap;
 
-  const _ComparePlansCard({required this.vm});
+  const _ComparePlansCard({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -431,12 +434,15 @@ class _ComparePlansCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: PrimaryButton(
+              width: 150,
               height: 40,
               borderRadius: 20,
               fontSize: 13,
               text: 'Compare Plans',
-              backgroundColor: AppColors.newPri,
-              onPressed: vm.toggleComparison,
+              textColor: Colors.black,
+              borderColor: AppColors.border,
+              backgroundColor: AppColors.white,
+              onPressed: onTap,
             ),
           ),
         ],
@@ -445,108 +451,502 @@ class _ComparePlansCard extends StatelessWidget {
   }
 }
 
-/// Shown below the quote card once a plan is found — lets the user switch
-/// between the other tiers (Starter / Standard / Premium) within the same
-/// membership without leaving the page or opening the full comparison tool.
-class _OtherPlansStrip extends StatelessWidget {
-  final PlanFinderState state;
-  final PlanFinderViewModel vm;
+class _ComparisonBottomSheet extends StatefulWidget {
+  final MembershipType initialMembership;
+  final PolicyDuration initialDuration;
+  final SumAssured initialSumAssured;
+  final void Function(MembershipType, PlanTier, PolicyDuration, SumAssured)
+  onSelect;
+  final VoidCallback onClose;
 
-  const _OtherPlansStrip({required this.state, required this.vm});
+  const _ComparisonBottomSheet({
+    required this.initialMembership,
+    required this.initialDuration,
+    required this.initialSumAssured,
+    required this.onSelect,
+    required this.onClose,
+  });
+
+  @override
+  State<_ComparisonBottomSheet> createState() => _ComparisonBottomSheetState();
+}
+
+class _ComparisonBottomSheetState extends State<_ComparisonBottomSheet> {
+  late MembershipType _membership;
+  late PolicyDuration _duration;
+  late SumAssured _sumAssured;
+
+  @override
+  void initState() {
+    super.initState();
+    _membership = widget.initialMembership;
+    _duration = widget.initialDuration;
+    _sumAssured = widget.initialSumAssured;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final q = state.quote!;
+    final sh = MediaQuery.of(context).size.height;
+    return Container(
+      height: sh * 0.88,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          height(10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Plan Comparison Tool',
+                    style: customTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textColor,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: widget.onClose,
+                  borderRadius: BorderRadius.circular(20),
+                  child: const Padding(
+                    padding: EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.close_rounded,
+                      size: 20,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Pick a membership, then compare Starter / Standard / Premium plans within it.',
+              style: customTextStyle(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+              ),
+            ),
+          ),
+          const Divider(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Membership:',
+                        style: customTextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF475569),
+                        ),
+                      ),
+                      width(8),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: MembershipType.values
+                              .map(
+                                (m) => _SheetChip(
+                                  label: m.label,
+                                  selected: m == _membership,
+                                  onTap: () => setState(() => _membership = m),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  height(6),
+                  Text(
+                    _membership.tagline,
+                    style: customTextStyle(
+                      fontSize: 12,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                  height(14),
+                  Text(
+                    'Compare at:',
+                    style: customTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
+                  height(6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: PolicyDuration.values
+                        .map(
+                          (d) => _SheetChip(
+                            label: d.shortLabel,
+                            selected: d == _duration,
+                            onTap: () => setState(() => _duration = d),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  height(14),
+                  Text(
+                    'Sum Assured:',
+                    style: customTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
+                  height(6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: SumAssured.values
+                        .map(
+                          (s) => _SheetChip(
+                            label: s.label,
+                            selected: s == _sumAssured,
+                            onTap: () => setState(() => _sumAssured = s),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  height(16),
+                  _MobileComparisonTable(
+                    membership: _membership,
+                    duration: _duration,
+                    sumAssured: _sumAssured,
+                    onSelect: (plan) => widget.onSelect(
+                      _membership,
+                      plan,
+                      _duration,
+                      _sumAssured,
+                    ),
+                  ),
+                  height(14),
+                  _SheetAddOnsCallout(membership: _membership),
+                  height(10),
+
+                  Text(
+                    'Base coverage — Professional/Establishment Indemnity, Defense Cost, Legal '
+                    'Notice Replies, Documentation Audit, Retroactive Facility, Cashless Claims, '
+                    'Social Media Defamation Support, PAN India Support and 24×7 Assistance — is '
+                    'included at every membership and every plan. Legal matters existing before '
+                    'your membership began remain chargeable separately, per our standard policy.',
+                    style: customTextStyle(
+                      fontSize: 10.5,
+                      color: const Color(0xFF94A3B8),
+                    ).copyWith(height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SheetChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SheetChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.newPri : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? AppColors.newPri : const Color(0xFFE2E8F0),
+          ),
+        ),
+        child: Text(
+          label,
+          style: customTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: selected ? Colors.white : const Color(0xFF475569),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MobileComparisonTable extends StatelessWidget {
+  final MembershipType membership;
+  final PolicyDuration duration;
+  final SumAssured sumAssured;
+  final ValueChanged<PlanTier> onSelect;
+
+  const _MobileComparisonTable({
+    required this.membership,
+    required this.duration,
+    required this.sumAssured,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const featureW = 130.0;
+    const planW = 110.0;
+    const totalW = featureW + planW * 3;
+
+    final headerStyle = customTextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF1E293B),
+    );
+    final labelStyle = customTextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF1E293B),
+    ).copyWith(height: 1.4);
+    final cellStyle = customTextStyle(
+      fontSize: 11.5,
+      color: const Color(0xFF334155),
+    ).copyWith(height: 1.4);
+
+    const p = EdgeInsets.symmetric(vertical: 10, horizontal: 8);
+
+    Widget tc(Widget child, {Color? bg, bool center = false}) => TableCell(
+      verticalAlignment: TableCellVerticalAlignment.middle,
+      child: Container(
+        color: bg,
+        padding: p,
+        alignment: center ? Alignment.center : Alignment.centerLeft,
+        child: child,
+      ),
+    );
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SizedBox(
+          width: totalW,
+          child: Table(
+            columnWidths: const {
+              0: FixedColumnWidth(featureW),
+              1: FixedColumnWidth(planW),
+              2: FixedColumnWidth(planW),
+              3: FixedColumnWidth(planW),
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            border: TableBorder(
+              horizontalInside: BorderSide(
+                color: const Color(0xFFF1F5F9),
+                width: 1,
+              ),
+              bottom: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+            children: [
+              // ── Header ──────────────────────────────────────────────────
+              TableRow(
+                decoration: const BoxDecoration(color: Color(0xFFF8FAFC)),
+                children: [
+                  tc(Text('Feature', style: headerStyle)),
+                  for (final p in PlanTier.values)
+                    tc(Text(p.label, style: headerStyle)),
+                ],
+              ),
+
+              // ── Premium ─────────────────────────────────────────────────
+              TableRow(
+                children: [
+                  tc(Text('Premium (selected)', style: labelStyle)),
+                  for (final plan in PlanTier.values)
+                    tc(
+                      Text(
+                        '₹${formatRupees(calculatePremium(membership: membership, plan: plan, duration: duration, sumAssured: sumAssured))} / yr',
+                        style: cellStyle,
+                      ),
+                    ),
+                ],
+              ),
+
+              // ── Consultation access ──────────────────────────────────────
+              TableRow(
+                decoration: const BoxDecoration(color: Color(0xFFFAFAFA)),
+                children: [
+                  tc(Text('Consultation access', style: labelStyle)),
+                  for (final plan in PlanTier.values)
+                    tc(
+                      Text(
+                        plan.consultationAccess(membership),
+                        style: cellStyle,
+                      ),
+                    ),
+                ],
+              ),
+
+              // ── Free review ─────────────────────────────────────────────
+              TableRow(
+                children: [
+                  tc(
+                    Text(
+                      'Free review of 1 pre-existing matter',
+                      style: labelStyle,
+                    ),
+                  ),
+                  for (final _ in PlanTier.values)
+                    tc(Text('—', style: cellStyle)),
+                ],
+              ),
+
+              // ── Select buttons ───────────────────────────────────────────
+              TableRow(
+                children: [
+                  tc(const SizedBox.shrink()),
+                  for (final plan in PlanTier.values)
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 8,
+                        ),
+                        child: OutlinedButton(
+                          onPressed: () => onSelect(plan),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          child: Text(
+                            'Select',
+                            style: customTextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.newPri,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Add-ons callout inside the bottom sheet ───────────────────────────────
+class _SheetAddOnsCallout extends StatelessWidget {
+  final MembershipType membership;
+
+  const _SheetAddOnsCallout({required this.membership});
+
+  @override
+  Widget build(BuildContext context) {
+    final addOns = membership.addOns;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: const Color(0xFFECFDF5),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Other plans in ${q.membership.label} Membership',
+            '${membership.label.toUpperCase()} MEMBERSHIP ADD-ONS (APPLY AT EVERY PLAN LEVEL)',
             style: customTextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
-            ),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF065F46),
+            ).copyWith(letterSpacing: 0.3),
           ),
-          height(4),
-          Text(
-            'Same duration and sum assured — tap to switch.',
-            style: customTextStyle(
-              fontSize: 11,
-              color: const Color(0xFF94A3B8),
-            ),
+          height(8),
+          if (addOns.isEmpty)
+            _SheetAddOnRow(
+              text: 'No proactive add-ons at this membership level',
+              included: false,
+            )
+          else
+            ...addOns.map((a) => _SheetAddOnRow(text: a, included: true)),
+        ],
+      ),
+    );
+  }
+}
+
+class _SheetAddOnRow extends StatelessWidget {
+  final String text;
+  final bool included;
+
+  const _SheetAddOnRow({required this.text, required this.included});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            included ? Icons.check_rounded : Icons.close_rounded,
+            size: 14,
+            color: included ? const Color(0xFF059669) : const Color(0xFF94A3B8),
           ),
-          height(12),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: PlanTier.values.map((tier) {
-              final selected = tier == q.plan;
-              final premium = calculatePremium(
-                membership: q.membership,
-                plan: tier,
-                duration: q.duration,
-                sumAssured: q.sumAssured,
-              );
-              return GestureDetector(
-                onTap: selected ? null : () => vm.switchPlan(tier),
-                child: Container(
-                  width: 150,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: selected ? const Color(0xFFECFDF5) : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: selected
-                          ? AppColors.newPri
-                          : const Color(0xFFE2E8F0),
-                      width: selected ? 1.5 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tier.label,
-                            style: customTextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textColor,
-                            ),
-                          ),
-                          if (selected)
-                            const Icon(
-                              Icons.check_circle_rounded,
-                              size: 16,
-                              color: Color(0xFF059669),
-                            ),
-                        ],
-                      ),
-                      height(4),
-                      Text(
-                        '₹${formatRupees(premium)} / yr',
-                        style: customTextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.newPri,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+          width(6),
+          Expanded(
+            child: Text(
+              text,
+              style: customTextStyle(
+                fontSize: 12,
+                color: const Color(0xFF475569),
+              ).copyWith(height: 1.4),
+            ),
           ),
         ],
       ),
@@ -623,7 +1023,7 @@ class _QuoteResultCard extends StatelessWidget {
                         q.plan.consultationAccess(q.membership),
                         style: customTextStyle(
                           fontSize: 12,
-                          color: const Color(0xFF475569),
+                          color: Color(0xFF475569),
                         ).copyWith(height: 1.4),
                       ),
                     ),

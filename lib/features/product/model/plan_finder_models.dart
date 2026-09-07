@@ -9,11 +9,11 @@ extension MembershipTypeX on MembershipType {
 
   String get tagline => switch (this) {
     MembershipType.basic =>
-    'Core policy cover and legal defense — no proactive extras.',
+      'Core policy cover and legal defense — no proactive extras.',
     MembershipType.essential =>
-    'Everything in Basic, plus proactive risk reviews.',
+      'Everything in Basic, plus proactive risk reviews.',
     MembershipType.comprehensive =>
-    'Our fullest cover with priority support and audits.',
+      'Our fullest cover with priority support and audits.',
   };
 
   /// Proactive add-ons included at this membership level, applied across
@@ -21,9 +21,7 @@ extension MembershipTypeX on MembershipType {
   /// TODO: replace with real product-catalog data once available.
   List<String> get addOns => switch (this) {
     MembershipType.basic => const [],
-    MembershipType.essential => const [
-      'Proactive risk reviews',
-    ],
+    MembershipType.essential => const ['Proactive risk reviews'],
     MembershipType.comprehensive => const [
       'Proactive risk reviews',
       'Priority support',
@@ -45,8 +43,8 @@ extension PlanTierX on PlanTier {
     PlanTier.starter => 'Phone consultation with our medico-legal team',
     PlanTier.standard => 'Phone + in-person consultation',
     PlanTier.premium =>
-    'Phone + in-person consultation, with priority same-day response '
-        'and Bail Cost Coverage',
+      'Phone + in-person consultation, with priority same-day response '
+          'and Bail Cost Coverage',
   };
 }
 
@@ -59,12 +57,14 @@ extension PolicyDurationX on PolicyDuration {
     PolicyDuration.threeYear => '3 Years',
     PolicyDuration.fiveYear => '5 Years',
   };
+
   String get shortLabel => switch (this) {
     PolicyDuration.oneYear => '1 Yr',
     PolicyDuration.twoYear => '2 Yrs',
     PolicyDuration.threeYear => '3 Yrs',
     PolicyDuration.fiveYear => '5 Yrs',
   };
+
   double get multiplier => switch (this) {
     PolicyDuration.oneYear => 1.0,
     PolicyDuration.twoYear => 1.9,
@@ -82,12 +82,14 @@ extension SumAssuredX on SumAssured {
     SumAssured.l75 => '₹75L',
     SumAssured.cr1 => '₹1Cr',
   };
+
   double get amount => switch (this) {
     SumAssured.l25 => 2500000,
     SumAssured.l50 => 5000000,
     SumAssured.l75 => 7500000,
     SumAssured.cr1 => 10000000,
   };
+
   double get multiplier => switch (this) {
     SumAssured.l25 => 1.0,
     SumAssured.l50 => 1.6,

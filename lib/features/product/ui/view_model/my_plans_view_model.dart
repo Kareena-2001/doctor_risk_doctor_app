@@ -34,6 +34,7 @@ class MyPlansViewModel extends _$MyPlansViewModel {
       fromDate: DateTime(2025, 9, 1),
       toDate: DateTime(2026, 8, 31),
       policyNumber: '03303387333412',
+      planType: 'Professional',
     ),
     MyPlan(
       srNo: 2,
@@ -47,6 +48,21 @@ class MyPlansViewModel extends _$MyPlansViewModel {
       fromDate: DateTime(2024, 8, 1),
       toDate: DateTime(2025, 7, 31),
       policyNumber: '03303387333999',
+      planType: 'Establishment',
+    ),
+    MyPlan(
+      srNo: 2,
+      id: 'PLN002',
+      planName: 'Error and Omission',
+      duration: '1 Year',
+      sumAssured: 2500000,
+      premium: 21000,
+      payable: 21000,
+      status: PlanStatus.pendingRenewal,
+      fromDate: DateTime(2024, 8, 1),
+      toDate: DateTime(2025, 7, 31),
+      policyNumber: '03303387333999',
+      planType: 'Establishment',
     ),
   ];
 }

@@ -1402,10 +1402,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               padding: EdgeInsets.all(Responsive.w(16)),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.white.withValues(alpha: 0.22),
-                    Colors.white,
-                  ],
+                  colors: [AppColors.white, Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

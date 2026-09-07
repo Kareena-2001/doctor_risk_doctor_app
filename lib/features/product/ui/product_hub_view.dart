@@ -39,33 +39,35 @@ class ProductHubView extends StatelessWidget {
               //   style: customTextStyle(fontSize: 12, color: Color(0xFF64748B)),
               // ),
               // height(16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _EntryCard(
-                      icon: Icons.add,
-                      title: 'Buy New Plans',
-                      subtitle:
-                          'Compare coverage by sum assured and duration, then get instant premium quotes.',
-                      buttonText: 'Browse Plan List',
-                      isPrimaryButton: true,
-                      onTap: () => context.push(Routes.productSource),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _EntryCard(
+                        icon: Icons.add,
+                        title: 'Buy New Plans',
+                        subtitle:
+                            'Compare coverage by sum assured and duration, then get instant premium quotes.',
+                        buttonText: 'Browse Plan List',
+                        isPrimaryButton: true,
+                        onTap: () => context.push(Routes.productSource),
+                      ),
                     ),
-                  ),
-                  width(12),
-                  Expanded(
-                    child: _EntryCard(
-                      icon: Icons.verified_sharp,
-                      title: 'View My Plans',
-                      subtitle:
-                          'Track status, download certificates, and renew before they expire.',
-                      buttonText: 'View My Plans',
-                      isPrimaryButton: false,
-                      onTap: () => context.push(Routes.myPlans),
+                    width(12),
+                    Expanded(
+                      child: _EntryCard(
+                        icon: Icons.verified_sharp,
+                        title: 'View My Plans',
+                        subtitle:
+                            'Track status, download certificates, and renew before they expire.',
+                        buttonText: 'View My Plans',
+                        isPrimaryButton: false,
+                        onTap: () => context.push(Routes.myPlans),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               height(24),
               Text(
@@ -155,6 +157,7 @@ class _EntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // height: Responsive.h(200),
       padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,

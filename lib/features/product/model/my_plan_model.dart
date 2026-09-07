@@ -25,6 +25,7 @@ class MyPlan {
   final double payable;
   final PlanStatus status;
   final DateTime fromDate;
+  final String planType;
   final DateTime toDate;
   final String policyNumber;
 
@@ -38,6 +39,7 @@ class MyPlan {
     required this.payable,
     required this.status,
     required this.fromDate,
+    required this.planType,
     required this.toDate,
     required this.policyNumber,
   });
