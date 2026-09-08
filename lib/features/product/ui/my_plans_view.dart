@@ -190,7 +190,7 @@ class _MyPlanCard extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             plan.planName,
             style: customTextStyle(
@@ -199,7 +199,7 @@ class _MyPlanCard extends ConsumerWidget {
               color: const Color(0xFF0F172A),
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2),
           Text(
             'Client ID ${plan.policyNumber}',
             style: customTextStyle(
@@ -207,7 +207,7 @@ class _MyPlanCard extends ConsumerWidget {
               color: const Color(0xFF64748B),
             ),
           ),
-          const SizedBox(height: 16),
+          height(16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -217,9 +217,7 @@ class _MyPlanCard extends ConsumerWidget {
               _metaCol('VALID TILL', _fmtDate(plan.toDate)),
             ],
           ),
-          const SizedBox(height: 16),
-
-          // Responsive Wrap Action Section (fixes row overflow)
+          height(16),
           Wrap(
             spacing: 8,
             runSpacing: 8,
