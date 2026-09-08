@@ -119,7 +119,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   gradient: LinearGradient(
                     colors: [AppColors.newPri, AppColors.primary],
                   ),
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
