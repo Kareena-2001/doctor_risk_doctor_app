@@ -42,7 +42,6 @@ class MyPlansView extends ConsumerWidget {
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
                     itemCount: plans.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    // itemBuilder: (_, i) => _MyPlanCard(plan: plans[i]),
                     itemBuilder: (_, i) {
                       final selectedPlan = plans[i];
                       return InkWell(
