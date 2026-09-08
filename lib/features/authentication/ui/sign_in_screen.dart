@@ -132,10 +132,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
-                              Icons.verified_user_rounded,
-                              color: Color(0xFF4ADE80),
-                              size: 22,
+                            Image.asset(
+                              'assets/images/logo.png',
+                              height: Responsive.h(24),
+                              fit: BoxFit.contain,
                             ),
                             width(8),
                             Text(
@@ -152,7 +152,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ),
                     height(Responsive.h(16)),
                     Text(
-                      'Instant Legal Defense\nIn Your Pocket.',
+                      'One login. Your entire\n professional life, protected.',
                       style: customTextStyle(
                         fontSize: Responsive.sp(16),
                         fontWeight: FontWeight.bold,
@@ -171,15 +171,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.headset_mic_rounded,
-                            color: Color(0xFF4ADE80),
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              '24/7 Immediate Legal Hotline & Medical Defense Access',
+                              'Indemnity cover, medico‑legal defense, documents, community and expert guidance — inside a single ecosystem built for practising professionals',
                               style: customTextStyle(
                                 fontSize: Responsive.sp(11),
                                 color: Colors.white.withValues(alpha: 0.9),

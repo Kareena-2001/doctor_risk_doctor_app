@@ -364,7 +364,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       height(Responsive.h(12)),
-                      const _SectionHeader(title: 'PERSONAL DETAILS'),
+                      _SectionHeader(title: 'PERSONAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomDropdownField(
                         label: 'Prefix',
@@ -378,7 +378,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         },
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'First name',
                         hint: 'Enter first name',
@@ -386,14 +385,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Middle name',
                         hint: 'Enter middle name',
                         controller: _middleNameController,
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Last name',
                         hint: 'Enter last name',
@@ -401,7 +398,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Enter your mobile number',
                         hint: '10 digit mobile number',
@@ -410,7 +406,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         maxLength: 10,
                         isRequired: true,
                       ),
-
                       Text(
                         'One mobile number = one login. This number can cover one Individual policy and multiple Establishment policies under the same login — it can\'t be used to create a second account, or added to a different login while securing membership.',
                         style: customTextStyle(
