@@ -410,11 +410,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         'One mobile number = one login. This number can cover one Individual policy and multiple Establishment policies under the same login — it can\'t be used to create a second account, or added to a different login while securing membership.',
                         style: customTextStyle(
                           fontSize: Responsive.sp(10),
-                          color: const Color(0xFF64748B),
+                          color: Color(0xFF64748B),
                         ).copyWith(height: 1.4),
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Enter your email address',
                         hint: 'you@clinic.com',
@@ -423,7 +422,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
                       height(Responsive.h(20)),
-
                       if (_selectedType == RegistrationType.professional) ...[
                         const _SectionHeader(title: 'PROFESSIONAL DETAILS'),
                         height(Responsive.h(12)),
@@ -451,7 +449,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           },
                         ),
                         height(Responsive.h(12)),
-
                         CustomDropdownField(
                           label: 'Degree',
                           hint: 'Select Degree',
@@ -467,7 +464,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ] else ...[
                         const _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
                         height(Responsive.h(12)),
-
                         CustomDropdownField(
                           label: 'Category *',
                           hint: 'Select Category',
@@ -480,7 +476,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           },
                         ),
                         height(Responsive.h(12)),
-
                         CustomTextField(
                           label: 'Establishment Name',
                           hint: 'e.g. Mathur Multispeciality Clinic',
@@ -489,27 +484,22 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                         height(Responsive.h(20)),
                       ],
-
-                      const _SectionHeader(title: 'REFERRAL DETAILS'),
+                      _SectionHeader(title: 'REFERRAL DETAILS'),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Enter Your Organization Name',
                         hint: 'e.g. ABC Medical Organization',
                         controller: _organizationCodeController,
                       ),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Where did you hear about us?',
                         hint: 'e.g. Webinar',
                         controller: _associateCodeController,
                       ),
                       height(Responsive.h(20)),
-
-                      const _SectionHeader(title: 'SET YOUR PASSWORD'),
+                      _SectionHeader(title: 'SET YOUR PASSWORD'),
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Password',
                         hint: 'At least 8 characters',
@@ -527,13 +517,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                       ),
-
                       if (_passwordController.text.isNotEmpty) ...[
                         height(Responsive.h(6)),
                         _buildPasswordStrengthBar(),
                       ],
                       height(Responsive.h(12)),
-
                       CustomTextField(
                         label: 'Confirm password',
                         hint: 'Re-enter password',
@@ -553,7 +541,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       height(Responsive.h(20)),
-
                       RecaptchaWidget(
                         siteKey: 'YOUR_SITE_KEY',
                         onVerified: (token) =>
@@ -561,7 +548,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         onExpired: () => setState(() => _recaptchaToken = null),
                       ),
                       height(Responsive.h(16)),
-
                       Row(
                         children: [
                           SizedBox(
@@ -577,7 +563,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          width(8),
                           Expanded(
                             child: Text(
                               'I agree to the Terms & Conditions and Privacy Policy.',
@@ -606,7 +592,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Already have an account? '),
+                          Text('Already have an account? '),
                           GestureDetector(
                             onTap: () => context.pop(),
                             child: Text(

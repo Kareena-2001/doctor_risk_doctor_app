@@ -133,7 +133,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         Row(
                           children: [
                             Image.asset(
-                              'assets/images/logo.png',
+                              'assets/images/login_logo.png',
                               height: Responsive.h(24),
                               fit: BoxFit.contain,
                             ),
@@ -149,6 +149,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                           ],
                         ),
                       ],
+                    ),
+                    Text(
+                      ' Medico‑Legal Services · Est. 2005',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(12),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     height(Responsive.h(16)),
                     Text(
