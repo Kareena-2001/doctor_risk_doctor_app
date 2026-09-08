@@ -36,6 +36,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
 
+  bool _isSignInTab = true;
+
   String? fcmToken;
   String? deviceId;
 
@@ -117,8 +119,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   gradient: LinearGradient(
                     colors: [AppColors.newPri, AppColors.primary],
                   ),
-                  // gradient: AppColors.brandLinearGradient,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
@@ -131,7 +132,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.verified_user_rounded,
                               color: Color(0xFF4ADE80),
                               size: 22,
@@ -147,34 +148,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             ),
                           ],
                         ),
-                        // Container(
-                        //   padding: EdgeInsets.symmetric(
-                        //     horizontal: 10,
-                        //     vertical: 4,
-                        //   ),
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.white.withValues(alpha: 0.12),
-                        //     borderRadius: BorderRadius.circular(20),
-                        //   ),
-                        //   child: Row(
-                        //     children: [
-                        //       Icon(
-                        //         Icons.lock_outline_rounded,
-                        //         color: Colors.white,
-                        //         size: 12,
-                        //       ),
-                        //       SizedBox(width: 4),
-                        //       Text(
-                        //         'Encrypted Portal',
-                        //         style: customTextStyle(
-                        //           fontSize: Responsive.sp(10),
-                        //           color: Colors.white,
-                        //           fontWeight: FontWeight.w500,
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
                     height(Responsive.h(16)),
@@ -198,12 +171,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.headset_mic_rounded,
                             color: Color(0xFF4ADE80),
                             size: 18,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               '24/7 Immediate Legal Hotline & Medical Defense Access',
@@ -232,25 +205,43 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Sign in',
-                              style: customTextStyle(
-                                color: const Color(0xFF1E293B),
-                                fontWeight: FontWeight.bold,
-                                fontSize: Responsive.sp(13),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isSignInTab = true;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              color: _isSignInTab
+                                  ? Colors.white
+                                  : AppColors.lightGreen,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: _isSignInTab
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.05,
+                                        ),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Sign in',
+                                style: customTextStyle(
+                                  color: _isSignInTab
+                                      ? AppColors.newPri
+                                      : const Color(0xFF64748B),
+                                  fontWeight: _isSignInTab
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
+                                  fontSize: Responsive.sp(13),
+                                ),
                               ),
                             ),
                           ),
@@ -258,15 +249,40 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () => context.push(Routes.register),
-                          child: Container(
-                            color: Colors.transparent,
+                          onTap: () {
+                            setState(() {
+                              _isSignInTab = false;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              color: !_isSignInTab
+                                  ? Colors.white
+                                  : AppColors.lightGreen,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: !_isSignInTab
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.05,
+                                        ),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
                             child: Center(
                               child: Text(
                                 'Create account',
                                 style: customTextStyle(
-                                  color: const Color(0xFF64748B),
-                                  fontWeight: FontWeight.w600,
+                                  color: !_isSignInTab
+                                      ? AppColors.newPri
+                                      : const Color(0xFF64748B),
+                                  fontWeight: !_isSignInTab
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
                                   fontSize: Responsive.sp(13),
                                 ),
                               ),
@@ -278,130 +294,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(Responsive.sp(24)),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome back, Doctor',
-                        style: customTextStyle(
-                          fontSize: Responsive.sp(22),
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0F172A),
-                        ),
-                      ),
-                      height(Responsive.h(4)),
-                      Text(
-                        'Sign in to manage active cases, indemnity & legal docs.',
-                        style: customTextStyle(
-                          fontSize: Responsive.sp(13),
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
-                      height(Responsive.h(24)),
-                      CustomTextField(
-                        label: 'Email',
-                        hint: 'doctor@clinic.com',
-                        controller: _mobileNoController,
-                        validator: notEmptyPhoneValidator,
-                        isRequired: true,
-                      ),
-                      height(Responsive.h(16)),
-                      CustomTextField(
-                        label: 'Password',
-                        hint: 'Enter your password',
-                        controller: _passwordController,
-                        isRequired: true,
-                        obscureText: !_isPasswordVisible,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: const Color(0xFF64748B),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return LocaleKeys.validator_required_field.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      height(Responsive.h(8)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                  activeColor: accentGreen,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Remember Me',
-                                style: AppTheme.label12.copyWith(
-                                  color: const Color(0xFF475569),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              context.push(Routes.forgotPassword);
-                            },
-                            child: Text(
-                              'Forgot password?',
-                              style: AppTheme.label12.copyWith(
-                                color: accentGreen,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      height(Responsive.h(28)),
-                      PrimaryButton(
-                        text: 'Sign In to Dashboard',
-                        // gradient: AppColors.brandLinearGradient,
-                        gradient: LinearGradient(
-                          colors: [AppColors.newPri, AppColors.primary],
-                        ),
-                        isLoading: authState.isLoading,
-                        onPressed: authState.isLoading ? null : _login,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              height(Responsive.h(8)),
+              _isSignInTab
+                  ? _buildSignInForm(authState)
+                  : _buildCreateAccountCard(),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: Responsive.w(24)),
                 padding: EdgeInsets.symmetric(vertical: Responsive.h(16)),
-                decoration: const BoxDecoration(
-                  border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-                ),
+                // decoration: const BoxDecoration(
+                //   border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+                // ),
                 child: Column(
                   children: [
                     Text(
@@ -423,12 +325,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                           color: Color(0xFFDC2626),
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          'Need help? Call +91-8080099908 (24×7 Emergency)',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(11),
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF334155),
+                        Flexible(
+                          child: Text(
+                            'Need help? Call +91-8080099908 (24×7 Emergency)',
+                            textAlign: TextAlign.center,
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(11),
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF334155),
+                            ),
                           ),
                         ),
                       ],
@@ -441,6 +346,178 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               height(Responsive.h(24)),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignInForm(AsyncValue authState) {
+    return Padding(
+      padding: EdgeInsets.all(Responsive.sp(24)),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Welcome back, Doctor',
+              style: customTextStyle(
+                fontSize: Responsive.sp(22),
+                fontWeight: FontWeight.w900,
+                color: AppColors.textColor,
+              ),
+            ),
+            height(Responsive.h(4)),
+            Text(
+              'Sign in to access your membership dashboard.',
+              style: customTextStyle(
+                fontSize: Responsive.sp(13),
+                color: const Color(0xFF64748B),
+              ),
+            ),
+            height(Responsive.h(24)),
+            CustomTextField(
+              label: 'Mobile or email ',
+              hint: 'e.g. 98765 43210 or you@clinic.com',
+              controller: _mobileNoController,
+              validator: notEmptyPhoneValidator,
+              isRequired: true,
+            ),
+            height(Responsive.h(16)),
+            CustomTextField(
+              label: 'Password',
+              hint: 'Enter your password',
+              controller: _passwordController,
+              isRequired: true,
+              obscureText: !_isPasswordVisible,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isPasswordVisible
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: const Color(0xFF64748B),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return LocaleKeys.validator_required_field.tr();
+                }
+                return null;
+              },
+            ),
+            height(Responsive.h(8)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Checkbox(
+                        value: _rememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                        activeColor: accentGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Remember Me',
+                      style: AppTheme.label12.copyWith(
+                        color: const Color(0xFF475569),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    context.push(Routes.forgotPassword);
+                  },
+                  child: Text(
+                    'Forgot password?',
+                    style: AppTheme.label12.copyWith(
+                      color: accentGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            height(Responsive.h(28)),
+            PrimaryButton(
+              fontSize: 14,
+              borderRadius: 25,
+              text: 'Sign In to Dashboard',
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.newPri],
+              ),
+              isLoading: authState.isLoading,
+              onPressed: authState.isLoading ? null : _login,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreateAccountCard() {
+    return Padding(
+      padding: EdgeInsets.all(Responsive.sp(24)),
+      child: Container(
+        padding: EdgeInsets.all(Responsive.w(20)),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'New to DoctorsRisk?',
+              style: customTextStyle(
+                fontSize: Responsive.sp(18),
+                fontWeight: FontWeight.w700,
+                color: AppColors.textColor,
+              ),
+            ),
+            height(Responsive.h(8)),
+            Text(
+              'Registration takes about 3 minutes. We\'ll verify your medical registration before activating cover.',
+              style: customTextStyle(
+                fontSize: Responsive.sp(13),
+                color: const Color(0xFF64748B),
+              ).copyWith(height: 1.4),
+            ),
+            height(Responsive.h(20)),
+            PrimaryButton(
+              fontSize: 14,
+              borderRadius: 25,
+              text: 'Start Registration',
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.newPri],
+              ),
+              // isLoading: authState.isLoading,
+              onPressed: () => context.push(Routes.register),
+            ),
+            height(Responsive.h(12)),
+            Text(
+              'Already mid‑registration? Your progress is saved automatically.',
+              style: customTextStyle(
+                fontSize: Responsive.sp(11),
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ],
         ),
       ),
     );

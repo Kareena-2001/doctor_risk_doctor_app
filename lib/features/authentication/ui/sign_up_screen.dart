@@ -138,24 +138,97 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     }
   }
 
-  String _getPasswordStrength() {
+  int _getPasswordStrengthScore() {
+    final pass = _passwordController.text;
+    if (pass.isEmpty) return 0;
+
+    // Minimum requirement: Must be at least 8 characters
+    if (pass.length < 8) return 1; // Red / Weak
+
+    int score = 1; // Base score for reaching 8 characters
+    if (RegExp(r'[0-9]').hasMatch(pass)) score++;
+    if (RegExp(r'[a-z]').hasMatch(pass) && RegExp(r'[A-Z]').hasMatch(pass))
+      score++;
+    if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(pass)) score++;
+
+    return score;
+  }
+
+  String _getPasswordStrengthLabel() {
     final pass = _passwordController.text;
     if (pass.isEmpty) return '';
-    if (pass.length < 6) return 'Weak — add numbers & symbols';
-    if (pass.length >= 8 &&
-        RegExp(r'[0-9]').hasMatch(pass) &&
-        RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(pass)) {
-      return 'Strong password';
+
+    if (pass.length < 8) {
+      return 'Weak — enter at least 8 characters';
     }
-    return 'Medium — add special characters';
+
+    final score = _getPasswordStrengthScore();
+    switch (score) {
+      case 1:
+        return 'Weak — add numbers or uppercase letters';
+      case 2:
+        return 'Fair — add symbols for better security';
+      case 3:
+        return 'Good — add special characters';
+      case 4:
+        return 'Strong / Extra Strong password';
+      default:
+        return 'Weak';
+    }
   }
 
   Color _getPasswordStrengthColor() {
-    final str = _getPasswordStrength();
-    if (str.startsWith('Weak')) return Colors.red;
-    if (str.startsWith('Medium')) return Colors.orange;
-    if (str.startsWith('Strong')) return Colors.green;
-    return Colors.grey;
+    final pass = _passwordController.text;
+    if (pass.isEmpty || pass.length < 8) return Colors.red;
+
+    final score = _getPasswordStrengthScore();
+    switch (score) {
+      case 1:
+        return Colors.red;
+      case 2:
+        return Colors.orange;
+      case 3:
+        return Colors.amber.shade700;
+      case 4:
+        return Colors.green;
+      default:
+        return Colors.red;
+    }
+  }
+
+  Widget _buildPasswordStrengthBar() {
+    final score = _getPasswordStrengthScore();
+    final color = _getPasswordStrengthColor();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: List.generate(4, (index) {
+            final isFilled = index < score;
+            return Expanded(
+              child: Container(
+                height: 4,
+                margin: EdgeInsets.only(right: index == 3 ? 0 : 4),
+                decoration: BoxDecoration(
+                  color: isFilled ? color : const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            );
+          }),
+        ),
+        height(Responsive.h(6)),
+        Text(
+          _getPasswordStrengthLabel(),
+          style: TextStyle(
+            fontSize: Responsive.sp(11),
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -174,9 +247,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               Center(
                 child: Container(
                   width: Responsive.w(320),
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Color(0xFFF1F5F9),
+                    color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Row(
@@ -194,8 +267,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             decoration: BoxDecoration(
                               color:
                                   _selectedType == RegistrationType.professional
-                                  ? const Color(0xFF15803D)
-                                  : Colors.transparent,
+                                  ? AppColors.buttonColor2
+                                  : AppColors.lightGreen,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: Row(
@@ -204,6 +277,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 Icon(
                                   Icons.person_outline,
                                   size: 16,
+                                  fontWeight: FontWeight.w700,
                                   color:
                                       _selectedType ==
                                           RegistrationType.professional
@@ -215,7 +289,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                   'Professional',
                                   style: customTextStyle(
                                     fontSize: Responsive.sp(13),
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color:
                                         _selectedType ==
                                             RegistrationType.professional
@@ -242,8 +316,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               color:
                                   _selectedType ==
                                       RegistrationType.establishment
-                                  ? const Color(0xFF15803D)
-                                  : Colors.transparent,
+                                  ? AppColors.buttonColor2
+                                  : AppColors.lightGreen,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: Row(
@@ -252,23 +326,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 Icon(
                                   Icons.location_city_outlined,
                                   size: 16,
+                                  fontWeight: FontWeight.w700,
                                   color:
                                       _selectedType ==
                                           RegistrationType.establishment
                                       ? Colors.white
-                                      : Color(0xFF64748B),
+                                      : const Color(0xFF64748B),
                                 ),
                                 width(6),
                                 Text(
                                   'Establishment',
                                   style: customTextStyle(
                                     fontSize: Responsive.sp(13),
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color:
                                         _selectedType ==
                                             RegistrationType.establishment
                                         ? Colors.white
-                                        : Color(0xFF64748B),
+                                        : const Color(0xFF64748B),
                                   ),
                                 ),
                               ],
@@ -289,7 +364,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       height(Responsive.h(12)),
-                      _SectionHeader(title: 'PERSONAL DETAILS'),
+                      const _SectionHeader(title: 'PERSONAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomDropdownField(
                         label: 'Prefix',
@@ -336,7 +411,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         isRequired: true,
                       ),
 
-                      // Helper text from mockup
                       Text(
                         'One mobile number = one login. This number can cover one Individual policy and multiple Establishment policies under the same login — it can\'t be used to create a second account, or added to a different login while securing membership.',
                         style: customTextStyle(
@@ -355,7 +429,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                       height(Responsive.h(20)),
 
-                      // Conditional Professional vs Establishment Details Section
                       if (_selectedType == RegistrationType.professional) ...[
                         const _SectionHeader(title: 'PROFESSIONAL DETAILS'),
                         height(Responsive.h(12)),
@@ -426,15 +499,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Organization / Source Code',
-                        hint: 'Enter your organization code',
+                        label: 'Enter Your Organization Name',
+                        hint: 'e.g. ABC Medical Organization',
                         controller: _organizationCodeController,
                       ),
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Associate Code',
-                        hint: 'Enter your associate code',
+                        label: 'Where did you hear about us?',
+                        hint: 'e.g. Webinar',
                         controller: _associateCodeController,
                       ),
                       height(Responsive.h(20)),
@@ -443,7 +516,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Password *',
+                        label: 'Password',
                         hint: 'At least 8 characters',
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
@@ -461,20 +534,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
 
                       if (_passwordController.text.isNotEmpty) ...[
-                        height(Responsive.h(4)),
-                        Text(
-                          _getPasswordStrength(),
-                          style: TextStyle(
-                            fontSize: Responsive.sp(11),
-                            fontWeight: FontWeight.w600,
-                            color: _getPasswordStrengthColor(),
-                          ),
-                        ),
+                        height(Responsive.h(6)),
+                        _buildPasswordStrengthBar(),
                       ],
                       height(Responsive.h(12)),
 
                       CustomTextField(
-                        label: 'Confirm password *',
+                        label: 'Confirm password',
                         hint: 'Re-enter password',
                         controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
@@ -522,16 +588,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               'I agree to the Terms & Conditions and Privacy Policy.',
                               style: customTextStyle(
                                 fontSize: Responsive.sp(11),
-                                color: Color(0xFF334155),
+                                color: const Color(0xFF334155),
                               ),
                             ),
                           ),
                         ],
                       ),
                       height(Responsive.h(24)),
-
                       PrimaryButton(
-                        text: 'Submit Registration',
+                        height: 50,
+                        fontSize: 14,
+                        text: 'Submit',
                         isLoading: authState.isLoading,
                         onPressed: authState.isLoading
                             ? null
@@ -541,11 +608,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       height(Responsive.h(16)),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account? '),
+                          const Text('Already have an account? '),
                           GestureDetector(
                             onTap: () => context.pop(),
                             child: Text(
@@ -558,7 +624,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ],
                       ),
-
                       height(Responsive.h(32)),
                       SocialLinkWidget(),
                       height(Responsive.h(32)),
@@ -588,47 +653,12 @@ class _SectionHeader extends StatelessWidget {
           title,
           style: customTextStyle(
             fontSize: Responsive.sp(12),
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0F172A),
+            fontWeight: FontWeight.w700,
+            color: AppColors.buttonColor2,
           ),
         ),
         height(4),
         const Divider(height: 1, color: Color(0xFFE2E8F0)),
-      ],
-    );
-  }
-}
-
-class _PreviewDetailTile extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _PreviewDetailTile({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: customTextStyle(
-            fontSize: Responsive.sp(10),
-            color: const Color(0xFF94A3B8),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        height(2),
-        Text(
-          value,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            color: const Color(0xFF1E293B),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
       ],
     );
   }

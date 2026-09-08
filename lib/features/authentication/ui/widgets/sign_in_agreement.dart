@@ -12,7 +12,7 @@ class SignInAgreement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding:  EdgeInsets.symmetric(horizontal: 16),
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(

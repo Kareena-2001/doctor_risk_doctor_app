@@ -11,7 +11,7 @@ class RecaptchaWidget extends StatefulWidget {
   });
 
   final String siteKey;
-  final ValueChanged<String> onVerified; // gives you the token
+  final ValueChanged<String> onVerified;
   final VoidCallback onExpired;
 
   @override
@@ -21,7 +21,8 @@ class RecaptchaWidget extends StatefulWidget {
 class _RecaptchaWidgetState extends State<RecaptchaWidget> {
   late final WebViewController _controller;
 
-  String get _html => '''
+  String get _html =>
+      '''
   <!DOCTYPE html>
   <html>
   <head>
