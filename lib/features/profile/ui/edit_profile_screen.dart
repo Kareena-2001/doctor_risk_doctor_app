@@ -119,18 +119,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
-
-  void _openViewProfile() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfileViewScreen(
-          data: _buildViewDataFromForm(),
-          // policies: ref.read(polsicyRepositoryProvider).myPolicies,
-        ),
-      ),
-    );
-  }
+  //
+  // void _openViewProfile() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (_) => ProfileViewScreen(
+  //         data: _buildViewDataFromForm(),
+  //         // policies: ref.read(polsicyRepositoryProvider).myPolicies,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Lets you preview exactly what's currently filled in, before saving.
   // Once you have a real "get profile" API, build DoctorProfileData from the

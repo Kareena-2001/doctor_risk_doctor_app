@@ -506,7 +506,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               gradient: LinearGradient(
                 colors: [AppColors.primary, AppColors.newPri],
               ),
-              // isLoading: authState.isLoading,
               onPressed: () => context.push(Routes.register),
             ),
             height(Responsive.h(12)),
