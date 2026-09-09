@@ -199,8 +199,6 @@ class _ShareExperienceFormState extends State<ShareExperienceForm> {
   }
 
   void _done() {
-    // Return the created testimonial to ExperienceListScreen so it can
-    // be inserted into the list.
     Navigator.pop(context, _createdExperience);
   }
 
