@@ -13,8 +13,9 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
   }
 
   Future<void> login({
-    required String mobile,
+    required String login,
     required String password,
+    required String deviceToken,
     required String fcmToken,
     required String deviceId,
     required String platform,
@@ -24,10 +25,11 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
     try {
       final repo = ref.read(authenticationRepositoryProvider);
       final result = await repo.login(
-        mobile: mobile,
+        login: login,
         password: password,
+        deviceToken: deviceToken,
         fcmToken: fcmToken,
-        deviceToken: deviceId,
+        deviceId: deviceId,
         platform: platform,
         rememberMe: rememberMe,
       );

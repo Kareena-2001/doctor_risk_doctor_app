@@ -32,6 +32,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   late final TextEditingController _mobileNoController;
   late final TextEditingController _passwordController;
+
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
@@ -300,55 +301,56 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               _isSignInTab
                   ? _buildSignInForm(authState)
                   : _buildCreateAccountCard(),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: Responsive.w(24)),
-                padding: EdgeInsets.symmetric(vertical: Responsive.h(16)),
-                // decoration: const BoxDecoration(
-                //   border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-                // ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Doctors • Hospitals • Clinics • Allied Professionals',
-                      textAlign: TextAlign.center,
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(11),
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                    height(Responsive.h(8)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.phone_in_talk_rounded,
-                          size: 14,
-                          color: Color(0xFFDC2626),
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            'Need help? Call +91-8080099908 (24×7 Emergency)',
-                            textAlign: TextAlign.center,
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(11),
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF334155),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              _buildEmergencyWidget(),
               height(Responsive.h(0)),
               SocialLinkWidget(),
               height(Responsive.h(24)),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmergencyWidget() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: Responsive.w(24)),
+      padding: EdgeInsets.symmetric(vertical: Responsive.h(16)),
+      child: Column(
+        children: [
+          Text(
+            'Doctors • Hospitals • Clinics • Allied Professionals',
+            textAlign: TextAlign.center,
+            style: customTextStyle(
+              fontSize: Responsive.sp(11),
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          height(Responsive.h(8)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.phone_in_talk_rounded,
+                size: 14,
+                color: Color(0xFFDC2626),
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  'Need help? Call +91-8080099908 (24×7 Emergency)',
+                  textAlign: TextAlign.center,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

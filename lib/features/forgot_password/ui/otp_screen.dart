@@ -27,7 +27,7 @@ class OtpScreen extends ConsumerStatefulWidget {
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   bool _isExpired = false;
 
-  static const int _totalSeconds = 120; // 2 minutes
+  static const int _totalSeconds = 120;
   int _remainingSeconds = _totalSeconds;
   Timer? _timer;
 

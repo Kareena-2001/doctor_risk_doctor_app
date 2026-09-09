@@ -32,10 +32,11 @@ class AuthenticationRepository {
        _credentialsStorage = credentialsStorage;
 
   Future<AuthenticationModel> login({
-    required String mobile,
+    required String login,
     required String password,
-    required String fcmToken,
     required String deviceToken,
+    required String fcmToken,
+    required String deviceId,
     required String platform,
     bool rememberMe = false,
   }) async {
@@ -43,10 +44,11 @@ class AuthenticationRepository {
       final data = await _apiClient.post(
         url: 'login',
         formData: {
-          'mobile': mobile,
+          'login': login,
           'password': password,
-          'fcm_token': fcmToken,
           'device_token': deviceToken,
+          'fcm_token': fcmToken,
+          'device_id': deviceId,
           'platform': platform,
         },
         includeAuth: false,
@@ -58,7 +60,7 @@ class AuthenticationRepository {
 
         if (rememberMe) {
           await _credentialsStorage.saveCredentials(
-            mobile: mobile,
+            mobile: login,
             password: password,
           );
         } else {
