@@ -19,6 +19,12 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AuthenticationState {
   LoginResponse? get response => throw _privateConstructorUsedError;
   SignUpResponse? get signUpResponse => throw _privateConstructorUsedError;
+  AsyncValue<CategoryResponse> get categoryAsync =>
+      throw _privateConstructorUsedError;
+  AsyncValue<SpecialityResponse?> get specialityAsync =>
+      throw _privateConstructorUsedError;
+  AsyncValue<DegreeResponse> get degreeAsync =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +40,13 @@ abstract class $AuthenticationStateCopyWith<$Res> {
     $Res Function(AuthenticationState) then,
   ) = _$AuthenticationStateCopyWithImpl<$Res, AuthenticationState>;
   @useResult
-  $Res call({LoginResponse? response, SignUpResponse? signUpResponse});
+  $Res call({
+    LoginResponse? response,
+    SignUpResponse? signUpResponse,
+    AsyncValue<CategoryResponse> categoryAsync,
+    AsyncValue<SpecialityResponse?> specialityAsync,
+    AsyncValue<DegreeResponse> degreeAsync,
+  });
 
   $LoginResponseCopyWith<$Res>? get response;
   $SignUpResponseCopyWith<$Res>? get signUpResponse;
@@ -54,7 +66,13 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? response = freezed, Object? signUpResponse = freezed}) {
+  $Res call({
+    Object? response = freezed,
+    Object? signUpResponse = freezed,
+    Object? categoryAsync = null,
+    Object? specialityAsync = null,
+    Object? degreeAsync = null,
+  }) {
     return _then(
       _value.copyWith(
             response: freezed == response
@@ -65,6 +83,18 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
                 ? _value.signUpResponse
                 : signUpResponse // ignore: cast_nullable_to_non_nullable
                       as SignUpResponse?,
+            categoryAsync: null == categoryAsync
+                ? _value.categoryAsync
+                : categoryAsync // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<CategoryResponse>,
+            specialityAsync: null == specialityAsync
+                ? _value.specialityAsync
+                : specialityAsync // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<SpecialityResponse?>,
+            degreeAsync: null == degreeAsync
+                ? _value.degreeAsync
+                : degreeAsync // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<DegreeResponse>,
           )
           as $Val,
     );
@@ -108,7 +138,13 @@ abstract class _$$AuthenticationStateImplCopyWith<$Res>
   ) = __$$AuthenticationStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({LoginResponse? response, SignUpResponse? signUpResponse});
+  $Res call({
+    LoginResponse? response,
+    SignUpResponse? signUpResponse,
+    AsyncValue<CategoryResponse> categoryAsync,
+    AsyncValue<SpecialityResponse?> specialityAsync,
+    AsyncValue<DegreeResponse> degreeAsync,
+  });
 
   @override
   $LoginResponseCopyWith<$Res>? get response;
@@ -129,7 +165,13 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? response = freezed, Object? signUpResponse = freezed}) {
+  $Res call({
+    Object? response = freezed,
+    Object? signUpResponse = freezed,
+    Object? categoryAsync = null,
+    Object? specialityAsync = null,
+    Object? degreeAsync = null,
+  }) {
     return _then(
       _$AuthenticationStateImpl(
         response: freezed == response
@@ -140,6 +182,18 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
             ? _value.signUpResponse
             : signUpResponse // ignore: cast_nullable_to_non_nullable
                   as SignUpResponse?,
+        categoryAsync: null == categoryAsync
+            ? _value.categoryAsync
+            : categoryAsync // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<CategoryResponse>,
+        specialityAsync: null == specialityAsync
+            ? _value.specialityAsync
+            : specialityAsync // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<SpecialityResponse?>,
+        degreeAsync: null == degreeAsync
+            ? _value.degreeAsync
+            : degreeAsync // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<DegreeResponse>,
       ),
     );
   }
@@ -148,16 +202,31 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$AuthenticationStateImpl implements _AuthenticationState {
-  const _$AuthenticationStateImpl({this.response, this.signUpResponse});
+  const _$AuthenticationStateImpl({
+    this.response,
+    this.signUpResponse,
+    this.categoryAsync = const AsyncLoading<CategoryResponse>(),
+    this.specialityAsync = const AsyncData<SpecialityResponse?>(null),
+    this.degreeAsync = const AsyncLoading<DegreeResponse>(),
+  });
 
   @override
   final LoginResponse? response;
   @override
   final SignUpResponse? signUpResponse;
+  @override
+  @JsonKey()
+  final AsyncValue<CategoryResponse> categoryAsync;
+  @override
+  @JsonKey()
+  final AsyncValue<SpecialityResponse?> specialityAsync;
+  @override
+  @JsonKey()
+  final AsyncValue<DegreeResponse> degreeAsync;
 
   @override
   String toString() {
-    return 'AuthenticationState(response: $response, signUpResponse: $signUpResponse)';
+    return 'AuthenticationState(response: $response, signUpResponse: $signUpResponse, categoryAsync: $categoryAsync, specialityAsync: $specialityAsync, degreeAsync: $degreeAsync)';
   }
 
   @override
@@ -168,11 +237,24 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
             (identical(other.response, response) ||
                 other.response == response) &&
             (identical(other.signUpResponse, signUpResponse) ||
-                other.signUpResponse == signUpResponse));
+                other.signUpResponse == signUpResponse) &&
+            (identical(other.categoryAsync, categoryAsync) ||
+                other.categoryAsync == categoryAsync) &&
+            (identical(other.specialityAsync, specialityAsync) ||
+                other.specialityAsync == specialityAsync) &&
+            (identical(other.degreeAsync, degreeAsync) ||
+                other.degreeAsync == degreeAsync));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, response, signUpResponse);
+  int get hashCode => Object.hash(
+    runtimeType,
+    response,
+    signUpResponse,
+    categoryAsync,
+    specialityAsync,
+    degreeAsync,
+  );
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -190,12 +272,21 @@ abstract class _AuthenticationState implements AuthenticationState {
   const factory _AuthenticationState({
     final LoginResponse? response,
     final SignUpResponse? signUpResponse,
+    final AsyncValue<CategoryResponse> categoryAsync,
+    final AsyncValue<SpecialityResponse?> specialityAsync,
+    final AsyncValue<DegreeResponse> degreeAsync,
   }) = _$AuthenticationStateImpl;
 
   @override
   LoginResponse? get response;
   @override
   SignUpResponse? get signUpResponse;
+  @override
+  AsyncValue<CategoryResponse> get categoryAsync;
+  @override
+  AsyncValue<SpecialityResponse?> get specialityAsync;
+  @override
+  AsyncValue<DegreeResponse> get degreeAsync;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.

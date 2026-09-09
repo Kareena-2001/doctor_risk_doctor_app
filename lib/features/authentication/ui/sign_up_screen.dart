@@ -1,10 +1,15 @@
+import 'dart:math';
+
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
-import 'package:Doctors_App/features/authentication/ui/widgets/recapta_widget.dart';
+import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/register_request.dart';
+import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
 import 'package:Doctors_App/features/fcm/device_service.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,47 +47,32 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   late final TextEditingController _confirmPasswordController;
 
   final _formKey = GlobalKey<FormState>();
-  String? _recaptchaToken;
+  String? _captchaToken;
+  Key _captchaKey = UniqueKey();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreeTerms = false;
+  bool _isSubmitting = false;
 
   String? _selectedPrefix;
-  String? _selectedCategory;
-  String? _selectedSpeciality;
-  String? _selectedDegree;
+
+  String? _selectedCategoryId;
+  String? _selectedCategoryName;
+
+  String? _selectedSpecialityId;
+  String? _selectedSpecialityName;
+
+  final List<_IdName> _selectedDegrees = [];
 
   final prefixes = ['Dr.', 'Mr.', 'Mrs.', 'Ms.'];
-
-  final categories = [
-    'Dental Surgeon (MDS And BDS)',
-    'General Practitioner All Pathy',
-    'Physician Consultant (Non Surgical)',
-    'Physiotherapist All Pathy',
-    'Surgeon All Speciality (All Pathy)',
-  ];
 
   List<String> get _availablePrefixes {
     if (_selectedType == RegistrationType.professional) {
       return ['Dr.'];
     }
-
     return prefixes;
   }
-
-  final specialities = [
-    'General Medicine',
-    'Orthopaedics',
-    'Gynaecology & Obstetrics',
-    'Cardiology',
-    'Dermatology',
-    'ENT',
-    'Ayurvedic',
-    'Other',
-  ];
-
-  final degrees = ['MBBS', 'MD', 'MS', 'MDS', 'BDS', 'DM', 'BAMS', 'BHMS'];
 
   @override
   void initState() {
@@ -98,18 +88,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
 
-    _firstNameController.addListener(_onFieldChanged);
-    _middleNameController.addListener(_onFieldChanged);
-    _lastNameController.addListener(_onFieldChanged);
-    _mobileNoController.addListener(_onFieldChanged);
-    _emailController.addListener(_onFieldChanged);
-    _establishmentNameController.addListener(_onFieldChanged);
     _passwordController.addListener(_onFieldChanged);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authenticationViewModelProvider.notifier).categoryList();
+      ref.read(authenticationViewModelProvider.notifier).degreeList();
+    });
   }
 
-  void _onFieldChanged() {
-    setState(() {});
-  }
+  void _onFieldChanged() => setState(() {});
 
   @override
   void dispose() {
@@ -126,11 +113,41 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     super.dispose();
   }
 
-  void _onSignUpPressed() {
+  void _resetCaptcha() {
+    setState(() {
+      _captchaToken = null;
+      _captchaKey = UniqueKey();
+    });
+  }
+
+  Future<void> _onSignUpPressed() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     if (_passwordController.text != _confirmPasswordController.text) {
       context.showWarningSnackBar('Passwords do not match');
+      return;
+    }
+
+    if (_selectedCategoryId == null) {
+      context.showWarningSnackBar('Please select a category');
+      return;
+    }
+
+    if (_selectedType == RegistrationType.professional &&
+        _selectedSpecialityId == null) {
+      context.showWarningSnackBar('Please select a speciality');
+      return;
+    }
+
+    if (_selectedType == RegistrationType.professional &&
+        _selectedDegrees.isEmpty) {
+      context.showWarningSnackBar('Please select at least one degree');
+      return;
+    }
+
+    if (_selectedType == RegistrationType.establishment &&
+        _establishmentNameController.text.trim().isEmpty) {
+      context.showWarningSnackBar('Please enter the establishment name');
       return;
     }
 
@@ -139,16 +156,62 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       return;
     }
 
-    if (_recaptchaToken == null) {
-      context.showWarningSnackBar('Please complete the captcha');
+    if (_captchaToken == null || _captchaToken!.isEmpty) {
+      context.showWarningSnackBar('Please complete the verification check');
       return;
+    }
+
+    final request = RegisterRequest(
+      productTypeId: _selectedType == RegistrationType.professional ? 1 : 2,
+      prefix: _selectedPrefix ?? 'Dr.',
+      firstName: _firstNameController.text.trim(),
+      middleName: _middleNameController.text.trim().isEmpty
+          ? null
+          : _middleNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      mobileNo: _mobileNoController.text.trim(),
+      email: _emailController.text.trim().isEmpty
+          ? null
+          : _emailController.text.trim(),
+      categoryId: int.parse(_selectedCategoryId!),
+      specialityId: _selectedType == RegistrationType.professional
+          ? int.parse(_selectedSpecialityId!)
+          : 0,
+      degree: _selectedType == RegistrationType.professional
+          ? _selectedDegrees.map((d) => d.name).join(', ')
+          : '',
+      organizationName: _selectedType == RegistrationType.establishment
+          ? _establishmentNameController.text.trim()
+          : (_organizationCodeController.text.trim().isEmpty
+                ? null
+                : _organizationCodeController.text.trim()),
+      source: _associateCodeController.text.trim(),
+      password: _passwordController.text,
+      termsPrivacyAccepted: _agreeTerms,
+    );
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      await ref
+          .read(authenticationViewModelProvider.notifier)
+          .register(request);
+
+      if (!mounted) return;
+      context.showSuccessSnackBar('Registration successful. Please sign in.');
+      context.pop();
+    } catch (error) {
+      if (!mounted) return;
+      context.showWarningSnackBar('Registration failed: $error');
+      _resetCaptcha();
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
   int _getPasswordStrengthScore() {
     final pass = _passwordController.text;
     if (pass.isEmpty) return 0;
-
     if (pass.length < 8) return 1;
 
     int score = 1;
@@ -157,20 +220,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       score++;
     }
     if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(pass)) score++;
-
     return score;
   }
 
   String _getPasswordStrengthLabel() {
     final pass = _passwordController.text;
     if (pass.isEmpty) return '';
+    if (pass.length < 8) return 'Weak — enter at least 8 characters';
 
-    if (pass.length < 8) {
-      return 'Weak — enter at least 8 characters';
-    }
-
-    final score = _getPasswordStrengthScore();
-    switch (score) {
+    switch (_getPasswordStrengthScore()) {
       case 1:
         return 'Weak — add numbers or uppercase letters';
       case 2:
@@ -178,7 +236,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       case 3:
         return 'Good — add special characters';
       case 4:
-        return 'Strong / Extra Strong password';
+        return 'Strong password';
       default:
         return 'Weak';
     }
@@ -188,8 +246,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final pass = _passwordController.text;
     if (pass.isEmpty || pass.length < 8) return Colors.red;
 
-    final score = _getPasswordStrengthScore();
-    switch (score) {
+    switch (_getPasswordStrengthScore()) {
       case 1:
         return Colors.red;
       case 2:
@@ -238,9 +295,313 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     );
   }
 
+  // ---------------------------------------------------------------------
+  // Category / Speciality / Degree — reference data helpers
+  // ---------------------------------------------------------------------
+
+  List<_IdName> _mapIdName(List<dynamic> items) {
+    return items
+        .map((e) => _IdName(id: e.id as int, name: e.name as String))
+        .toList();
+  }
+
+  /// Renders a dropdown backed by an [AsyncValue], keeping loading, error,
+  /// empty and populated states all going through the same widget so the
+  /// field never jumps around or falls back to ad-hoc placeholder text.
+  ///
+  /// When [data] resolves to `null` (nothing loaded / requested yet) or an
+  /// empty list, the dropdown is simply shown disabled with [emptyHint] as
+  /// its hint — the same visual language as "no value selected" elsewhere
+  /// on the form, rather than a separate helper text block.
+  Widget _buildAsyncDropdown<T>({
+    required String label,
+    required AsyncValue<T?> asyncValue,
+    required List<_IdName> Function(T data) itemsBuilder,
+    required String? selectedName,
+    required ValueChanged<_IdName> onSelected,
+    required VoidCallback onRetry,
+    String emptyHint = 'Select an option',
+    bool disabled = false,
+  }) {
+    if (disabled) {
+      return CustomDropdownField(
+        label: label,
+        hint: emptyHint,
+        items: const [],
+        value: null,
+        onChanged: null,
+      );
+    }
+
+    return asyncValue.when(
+      data: (data) {
+        final items = data == null ? <_IdName>[] : itemsBuilder(data);
+
+        if (items.isEmpty) {
+          return CustomDropdownField(
+            label: label,
+            hint: emptyHint,
+            items: const [],
+            value: null,
+            onChanged: null,
+          );
+        }
+
+        return CustomDropdownField(
+          label: label,
+          hint: emptyHint,
+          items: items.map((e) => e.name).toList(),
+          value: selectedName,
+          onChanged: (val) {
+            if (val == null) return;
+            final match = items.firstWhere((e) => e.name == val);
+            onSelected(match);
+          },
+        );
+      },
+      loading: () => CustomDropdownField(
+        label: label,
+        hint: 'Loading...',
+        items: const [],
+        value: null,
+        onChanged: null,
+      ),
+      error: (err, st) => InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Failed to load',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  color: Colors.red,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(
+                'Retry',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.brandGreen,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openDegreePicker(List<_IdName> allDegrees) async {
+    final tempSelected = [..._selectedDegrees];
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Degree(s)',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(15),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    height(Responsive.h(12)),
+                    if (allDegrees.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Text(
+                          'No degrees available',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(12),
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      )
+                    else
+                      Flexible(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: allDegrees.length,
+                          itemBuilder: (context, index) {
+                            final degree = allDegrees[index];
+                            final isChecked = tempSelected.any(
+                              (d) => d.id == degree.id,
+                            );
+                            return CheckboxListTile(
+                              value: isChecked,
+                              title: Text(degree.name),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              onChanged: (checked) {
+                                setSheetState(() {
+                                  if (checked ?? false) {
+                                    tempSelected.add(degree);
+                                  } else {
+                                    tempSelected.removeWhere(
+                                      (d) => d.id == degree.id,
+                                    );
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    height(Responsive.h(12)),
+                    PrimaryButton(
+                      height: 46,
+                      fontSize: 14,
+                      text: 'Done',
+                      onPressed: allDegrees.isEmpty
+                          ? null
+                          : () {
+                              setState(() {
+                                _selectedDegrees
+                                  ..clear()
+                                  ..addAll(tempSelected);
+                              });
+                              Navigator.of(sheetContext).pop();
+                            },
+                      gradient: LinearGradient(
+                        colors: [AppColors.newPri, AppColors.primary],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildDegreeField(AsyncValue<dynamic> degreeAsync) {
+    return degreeAsync.when(
+      data: (response) {
+        final allDegrees = _mapIdName(response.data as List<dynamic>);
+
+        return GestureDetector(
+          onTap: () => _openDegreePicker(allDegrees),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Degree *',
+              hintText: allDegrees.isEmpty
+                  ? 'No degrees available'
+                  : 'Select Degree(s)',
+              suffixIcon: const Icon(Icons.arrow_drop_down),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: _selectedDegrees.isEmpty
+                ? Text(
+                    allDegrees.isEmpty
+                        ? 'No degrees available'
+                        : 'Select Degree(s)',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(13),
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  )
+                : Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: _selectedDegrees
+                        .map(
+                          (d) => Chip(
+                            label: Text(d.name),
+                            onDeleted: () {
+                              setState(() => _selectedDegrees.remove(d));
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+          ),
+        );
+      },
+      loading: () => InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Degree *',
+          hintText: 'Loading...',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Text(
+          'Loading...',
+          style: customTextStyle(
+            fontSize: Responsive.sp(13),
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
+      ),
+      error: (err, st) => InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Degree *',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Failed to load',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  color: Colors.red,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => ref
+                  .read(authenticationViewModelProvider.notifier)
+                  .degreeList(),
+              child: Text(
+                'Retry',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.brandGreen,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authenticationViewModelProvider);
+    final authenticationState = authState.valueOrNull;
+
+    final categoryAsync =
+        authenticationState?.categoryAsync ?? const AsyncLoading();
+    final specialityAsync =
+        authenticationState?.specialityAsync ?? const AsyncData(null);
+    final degreeAsync =
+        authenticationState?.degreeAsync ?? const AsyncLoading();
+
+    final isLoading = _isSubmitting || authState.isLoading;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -262,102 +623,31 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: GestureDetector(
+                        child: _buildTypeToggle(
+                          label: 'Professional',
+                          icon: Icons.person_outline,
+                          isSelected:
+                              _selectedType == RegistrationType.professional,
                           onTap: () {
                             setState(() {
                               _selectedType = RegistrationType.professional;
                               _selectedPrefix = 'Dr.';
                             });
                           },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color:
-                                  _selectedType == RegistrationType.professional
-                                  ? AppColors.buttonColor2
-                                  : AppColors.lightGreen,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.person_outline,
-                                  size: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      _selectedType ==
-                                          RegistrationType.professional
-                                      ? Colors.white
-                                      : const Color(0xFF64748B),
-                                ),
-                                width(6),
-                                Text(
-                                  'Professional',
-                                  style: customTextStyle(
-                                    fontSize: Responsive.sp(13),
-                                    fontWeight: FontWeight.w700,
-                                    color:
-                                        _selectedType ==
-                                            RegistrationType.professional
-                                        ? Colors.white
-                                        : const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ),
                       Expanded(
-                        child: GestureDetector(
+                        child: _buildTypeToggle(
+                          label: 'Establishment',
+                          icon: Icons.location_city_outlined,
+                          isSelected:
+                              _selectedType == RegistrationType.establishment,
                           onTap: () {
                             setState(() {
                               _selectedType = RegistrationType.establishment;
                               _selectedPrefix ??= 'Dr.';
                             });
                           },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color:
-                                  _selectedType ==
-                                      RegistrationType.establishment
-                                  ? AppColors.buttonColor2
-                                  : AppColors.lightGreen,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.location_city_outlined,
-                                  size: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      _selectedType ==
-                                          RegistrationType.establishment
-                                      ? Colors.white
-                                      : const Color(0xFF64748B),
-                                ),
-                                width(6),
-                                Text(
-                                  'Establishment',
-                                  style: customTextStyle(
-                                    fontSize: Responsive.sp(13),
-                                    fontWeight: FontWeight.w700,
-                                    color:
-                                        _selectedType ==
-                                            RegistrationType.establishment
-                                        ? Colors.white
-                                        : const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ),
                     ],
@@ -372,7 +662,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       height(Responsive.h(12)),
-                      _SectionHeader(title: 'PERSONAL DETAILS'),
+                      const _SectionHeader(title: 'PERSONAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomDropdownField(
                         label: 'Prefix',
@@ -380,9 +670,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         items: _availablePrefixes,
                         value: _selectedPrefix,
                         onChanged: (value) {
-                          setState(() {
-                            _selectedPrefix = value;
-                          });
+                          setState(() => _selectedPrefix = value);
                         },
                       ),
                       height(Responsive.h(12)),
@@ -414,12 +702,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         keyboardType: TextInputType.phone,
                         maxLength: 10,
                         isRequired: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                       Text(
-                        'One mobile number = one login. This number can cover one Individual policy and multiple Establishment policies under the same login — it can\'t be used to create a second account, or added to a different login while securing membership.',
+                        'One mobile number = one login. This number can cover '
+                        'one Individual policy and multiple Establishment '
+                        'policies under the same login — it can\'t be used to '
+                        'create a second account, or added to a different '
+                        'login while securing membership.',
                         style: customTextStyle(
                           fontSize: Responsive.sp(10),
-                          color: Color(0xFF64748B),
+                          color: const Color(0xFF64748B),
                         ).copyWith(height: 1.4),
                       ),
                       height(Responsive.h(12)),
@@ -434,53 +729,76 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       if (_selectedType == RegistrationType.professional) ...[
                         const _SectionHeader(title: 'PROFESSIONAL DETAILS'),
                         height(Responsive.h(12)),
-                        CustomDropdownField(
-                          label: 'Category *',
-                          hint: 'Select Category',
-                          items: categories,
-                          value: _selectedCategory,
-                          onChanged: (val) {
+                        _buildAsyncDropdown<CategoryResponse>(
+                          label: 'Category',
+                          emptyHint: 'Select Category',
+                          asyncValue: categoryAsync.whenData((r) => r),
+                          itemsBuilder: (r) => _mapIdName(r.data),
+                          selectedName: _selectedCategoryName,
+                          onRetry: () => ref
+                              .read(authenticationViewModelProvider.notifier)
+                              .categoryList(),
+                          onSelected: (match) {
                             setState(() {
-                              _selectedCategory = val;
+                              _selectedCategoryName = match.name;
+                              _selectedCategoryId = match.id.toString();
+                              _selectedSpecialityId = null;
+                              _selectedSpecialityName = null;
+                            });
+                            ref
+                                .read(authenticationViewModelProvider.notifier)
+                                .specialityList(
+                                  categoryId: match.id.toString(),
+                                );
+                          },
+                        ),
+                        height(Responsive.h(12)),
+                        _buildAsyncDropdown<SpecialityResponse>(
+                          label: 'Speciality *',
+                          emptyHint: _selectedCategoryId == null
+                              ? 'Select a category first'
+                              : 'Select Speciality',
+                          disabled: _selectedCategoryId == null,
+                          asyncValue: specialityAsync.whenData((r) => r),
+                          itemsBuilder: (r) => _mapIdName(r.data),
+                          selectedName: _selectedSpecialityName,
+                          onRetry: () {
+                            if (_selectedCategoryId != null) {
+                              ref
+                                  .read(
+                                    authenticationViewModelProvider.notifier,
+                                  )
+                                  .specialityList(
+                                    categoryId: _selectedCategoryId!,
+                                  );
+                            }
+                          },
+                          onSelected: (match) {
+                            setState(() {
+                              _selectedSpecialityName = match.name;
+                              _selectedSpecialityId = match.id.toString();
                             });
                           },
                         ),
                         height(Responsive.h(12)),
-                        CustomDropdownField(
-                          label: 'Speciality',
-                          hint: 'Select Speciality',
-                          items: specialities,
-                          value: _selectedSpeciality,
-                          onChanged: (val) {
-                            setState(() {
-                              _selectedSpeciality = val;
-                            });
-                          },
-                        ),
-                        height(Responsive.h(12)),
-                        CustomDropdownField(
-                          label: 'Degree',
-                          hint: 'Select Degree',
-                          items: degrees,
-                          value: _selectedDegree,
-                          onChanged: (val) {
-                            setState(() {
-                              _selectedDegree = val;
-                            });
-                          },
-                        ),
+                        _buildDegreeField(degreeAsync),
                         height(Responsive.h(20)),
                       ] else ...[
-                        const _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
+                        _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
                         height(Responsive.h(12)),
-                        CustomDropdownField(
-                          label: 'Category *',
-                          hint: 'Select Category',
-                          items: categories,
-                          value: _selectedCategory,
-                          onChanged: (val) {
+                        _buildAsyncDropdown<CategoryResponse>(
+                          label: 'Category',
+                          emptyHint: 'Select Category',
+                          asyncValue: categoryAsync.whenData((r) => r),
+                          itemsBuilder: (r) => _mapIdName(r.data),
+                          selectedName: _selectedCategoryName,
+                          onRetry: () => ref
+                              .read(authenticationViewModelProvider.notifier)
+                              .categoryList(),
+                          onSelected: (match) {
                             setState(() {
-                              _selectedCategory = val;
+                              _selectedCategoryName = match.name;
+                              _selectedCategoryId = match.id.toString();
                             });
                           },
                         ),
@@ -493,7 +811,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                         height(Responsive.h(20)),
                       ],
-                      _SectionHeader(title: 'REFERRAL DETAILS'),
+                      const _SectionHeader(title: 'REFERRAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomTextField(
                         label: 'Enter Your Organization Name',
@@ -507,7 +825,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         controller: _associateCodeController,
                       ),
                       height(Responsive.h(20)),
-                      _SectionHeader(title: 'SET YOUR PASSWORD'),
+                      const _SectionHeader(title: 'SET YOUR PASSWORD'),
                       height(Responsive.h(12)),
                       CustomTextField(
                         label: 'Password',
@@ -550,11 +868,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ),
                       ),
                       height(Responsive.h(20)),
-                      RecaptchaWidget(
-                        siteKey: 'YOUR_SITE_KEY',
+                      // Placeholder verification check — swap for real
+                      // reCAPTCHA once a site key is configured. Keeps the
+                      // "must verify before submit" contract identical.
+                      _SimpleCaptchaField(
+                        key: _captchaKey,
                         onVerified: (token) =>
-                            setState(() => _recaptchaToken = token),
-                        onExpired: () => setState(() => _recaptchaToken = null),
+                            setState(() => _captchaToken = token),
                       ),
                       height(Responsive.h(16)),
                       Row(
@@ -575,10 +895,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           width(8),
                           Expanded(
                             child: Text(
-                              'I agree to the Terms & Conditions and Privacy Policy.',
+                              'I agree to the Terms & Conditions and Privacy '
+                              'Policy.',
                               style: customTextStyle(
                                 fontSize: Responsive.sp(11),
-                                color: Color(0xFF334155),
+                                color: const Color(0xFF334155),
                               ),
                             ),
                           ),
@@ -589,10 +910,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         height: 50,
                         fontSize: 14,
                         text: 'Submit',
-                        isLoading: authState.isLoading,
-                        onPressed: authState.isLoading
-                            ? null
-                            : _onSignUpPressed,
+                        isLoading: isLoading,
+                        onPressed: isLoading ? null : _onSignUpPressed,
                         gradient: LinearGradient(
                           colors: [AppColors.newPri, AppColors.primary],
                         ),
@@ -601,7 +920,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account? '),
+                          const Text('Already have an account? '),
                           GestureDetector(
                             onTap: () => context.pop(),
                             child: Text(
@@ -615,7 +934,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         ],
                       ),
                       height(Responsive.h(32)),
-                      SocialLinkWidget(),
+                      const SocialLinkWidget(),
                       height(Responsive.h(32)),
                     ],
                   ),
@@ -627,6 +946,51 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       ),
     );
   }
+
+  Widget _buildTypeToggle({
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.buttonColor2 : AppColors.lightGreen,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : const Color(0xFF64748B),
+            ),
+            width(6),
+            Text(
+              label,
+              style: customTextStyle(
+                fontSize: Responsive.sp(13),
+                fontWeight: FontWeight.w700,
+                color: isSelected ? Colors.white : const Color(0xFF64748B),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IdName {
+  final int id;
+  final String name;
+
+  const _IdName({required this.id, required this.name});
 }
 
 class _SectionHeader extends StatelessWidget {
@@ -650,6 +1014,148 @@ class _SectionHeader extends StatelessWidget {
         height(4),
         const Divider(height: 1, color: Color(0xFFE2E8F0)),
       ],
+    );
+  }
+}
+
+/// Lightweight "prove you're not a bot" check to use until real reCAPTCHA
+/// credentials are wired up. Generates a small addition challenge, verifies
+/// the answer locally, and reports a token back through [onVerified] — the
+/// same contract the real reCAPTCHA widget will use (a non-null/non-empty
+/// string on success, null otherwise), so swapping it back in later is a
+/// one-widget change in [_SignUpScreenState].
+class _SimpleCaptchaField extends StatefulWidget {
+  final ValueChanged<String?> onVerified;
+
+  const _SimpleCaptchaField({super.key, required this.onVerified});
+
+  @override
+  State<_SimpleCaptchaField> createState() => _SimpleCaptchaFieldState();
+}
+
+class _SimpleCaptchaFieldState extends State<_SimpleCaptchaField> {
+  final _answerController = TextEditingController();
+  late int _a;
+  late int _b;
+  bool _verified = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _generateChallenge(); // no callback here
+  }
+
+  @override
+  void dispose() {
+    _answerController.dispose();
+    super.dispose();
+  }
+
+  void _generateChallenge() {
+    final rnd = Random();
+    _a = rnd.nextInt(8) + 1;
+    _b = rnd.nextInt(8) + 1;
+    _answerController.clear();
+    _verified = false;
+    _error = null;
+  }
+
+  void _newChallenge() {
+    setState(() {
+      _generateChallenge();
+    });
+    // Safe to notify parent – this is only called from a user gesture
+    // (the refresh button) or after verification fails.
+    widget.onVerified(null);
+  }
+
+  void _check() {
+    final entered = int.tryParse(_answerController.text.trim());
+    setState(() {
+      if (entered != null && entered == _a + _b) {
+        _verified = true;
+        _error = null;
+        widget.onVerified('captcha-${_a}-${_b}-verified');
+      } else {
+        _verified = false;
+        _error = 'That\'s not quite right, try again';
+        widget.onVerified(null);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: _verified ? Colors.green : const Color(0xFFE2E8F0),
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Verify you\'re human',
+            style: customTextStyle(
+              fontSize: Responsive.sp(12),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          height(Responsive.h(8)),
+          Row(
+            children: [
+              Text(
+                '$_a + $_b =',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(14),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              width(8),
+              SizedBox(
+                width: 56,
+                child: TextField(
+                  controller: _answerController,
+                  enabled: !_verified,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              width(8),
+              if (_verified)
+                const Icon(Icons.check_circle, color: Colors.green, size: 22)
+              else
+                TextButton(onPressed: _check, child: const Text('Verify')),
+              const Spacer(),
+              IconButton(
+                tooltip: 'New challenge',
+                icon: const Icon(Icons.refresh, size: 20),
+                onPressed: _newChallenge,
+              ),
+            ],
+          ),
+          if (_error != null) ...[
+            height(Responsive.h(4)),
+            Text(
+              _error!,
+              style: customTextStyle(
+                fontSize: Responsive.sp(11),
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/degree_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/register_request.dart';
 import 'package:Doctors_App/features/authentication/model/register/sign_up_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
@@ -14,8 +15,8 @@ part 'authentication_repository.g.dart';
 
 @Riverpod(keepAlive: true)
 AuthenticationRepository authenticationRepository(
-  AuthenticationRepositoryRef ref,
-) {
+    AuthenticationRepositoryRef ref,
+    ) {
   final apiClient = ref.watch(apiClientProvider);
   final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
   return AuthenticationRepository(
@@ -32,7 +33,7 @@ class AuthenticationRepository {
     required ApiClient apiClient,
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
-       _credentialsStorage = credentialsStorage;
+        _credentialsStorage = credentialsStorage;
 
   Future<LoginResponse> login({
     required String login,
@@ -84,7 +85,7 @@ class AuthenticationRepository {
   }
 
   Future<CategoryResponse> categoryList() async {
-    final response = await _apiClient.post(
+    final response = await _apiClient.get(
       url: 'doctor/categorylist',
       includeAuth: false,
     );
@@ -92,14 +93,23 @@ class AuthenticationRepository {
     return CategoryResponse.fromJson(response);
   }
 
-  Future<SpecialityModel> specialityList({required String categoryId}) async {
-    final response = await _apiClient.post(
+  Future<SpecialityResponse> specialityList({required String categoryId}) async {
+    final response = await _apiClient.get(
       url: 'doctor/speciality',
-      formData: {'categoryId': categoryId},
+      queryParams: {'categoryId': categoryId},
       includeAuth: false,
     );
 
-    return SpecialityModel.fromJson(response);
+    return SpecialityResponse.fromJson(response);
+  }
+
+  Future<DegreeResponse> degreeList() async {
+    final response = await _apiClient.get(
+      url: 'doctor/degreelist',
+      includeAuth: false,
+    );
+
+    return DegreeResponse.fromJson(response);
   }
 
   Future<void> saveToken(String token) async {
