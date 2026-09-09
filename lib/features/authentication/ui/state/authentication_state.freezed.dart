@@ -17,9 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthenticationState {
-  String? get errorMessage => throw _privateConstructorUsedError;
-  bool get isLoading => throw _privateConstructorUsedError;
   LoginResponse? get response => throw _privateConstructorUsedError;
+  SignUpResponse? get signUpResponse => throw _privateConstructorUsedError;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -35,9 +34,10 @@ abstract class $AuthenticationStateCopyWith<$Res> {
     $Res Function(AuthenticationState) then,
   ) = _$AuthenticationStateCopyWithImpl<$Res, AuthenticationState>;
   @useResult
-  $Res call({String? errorMessage, bool isLoading, LoginResponse? response});
+  $Res call({LoginResponse? response, SignUpResponse? signUpResponse});
 
   $LoginResponseCopyWith<$Res>? get response;
+  $SignUpResponseCopyWith<$Res>? get signUpResponse;
 }
 
 /// @nodoc
@@ -54,25 +54,17 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? errorMessage = freezed,
-    Object? isLoading = null,
-    Object? response = freezed,
-  }) {
+  $Res call({Object? response = freezed, Object? signUpResponse = freezed}) {
     return _then(
       _value.copyWith(
-            errorMessage: freezed == errorMessage
-                ? _value.errorMessage
-                : errorMessage // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isLoading: null == isLoading
-                ? _value.isLoading
-                : isLoading // ignore: cast_nullable_to_non_nullable
-                      as bool,
             response: freezed == response
                 ? _value.response
                 : response // ignore: cast_nullable_to_non_nullable
                       as LoginResponse?,
+            signUpResponse: freezed == signUpResponse
+                ? _value.signUpResponse
+                : signUpResponse // ignore: cast_nullable_to_non_nullable
+                      as SignUpResponse?,
           )
           as $Val,
     );
@@ -91,6 +83,20 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
       return _then(_value.copyWith(response: value) as $Val);
     });
   }
+
+  /// Create a copy of AuthenticationState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SignUpResponseCopyWith<$Res>? get signUpResponse {
+    if (_value.signUpResponse == null) {
+      return null;
+    }
+
+    return $SignUpResponseCopyWith<$Res>(_value.signUpResponse!, (value) {
+      return _then(_value.copyWith(signUpResponse: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -102,10 +108,12 @@ abstract class _$$AuthenticationStateImplCopyWith<$Res>
   ) = __$$AuthenticationStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? errorMessage, bool isLoading, LoginResponse? response});
+  $Res call({LoginResponse? response, SignUpResponse? signUpResponse});
 
   @override
   $LoginResponseCopyWith<$Res>? get response;
+  @override
+  $SignUpResponseCopyWith<$Res>? get signUpResponse;
 }
 
 /// @nodoc
@@ -121,25 +129,17 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? errorMessage = freezed,
-    Object? isLoading = null,
-    Object? response = freezed,
-  }) {
+  $Res call({Object? response = freezed, Object? signUpResponse = freezed}) {
     return _then(
       _$AuthenticationStateImpl(
-        errorMessage: freezed == errorMessage
-            ? _value.errorMessage
-            : errorMessage // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isLoading: null == isLoading
-            ? _value.isLoading
-            : isLoading // ignore: cast_nullable_to_non_nullable
-                  as bool,
         response: freezed == response
             ? _value.response
             : response // ignore: cast_nullable_to_non_nullable
                   as LoginResponse?,
+        signUpResponse: freezed == signUpResponse
+            ? _value.signUpResponse
+            : signUpResponse // ignore: cast_nullable_to_non_nullable
+                  as SignUpResponse?,
       ),
     );
   }
@@ -148,23 +148,16 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$AuthenticationStateImpl implements _AuthenticationState {
-  const _$AuthenticationStateImpl({
-    this.errorMessage,
-    this.isLoading = false,
-    this.response,
-  });
+  const _$AuthenticationStateImpl({this.response, this.signUpResponse});
 
   @override
-  final String? errorMessage;
-  @override
-  @JsonKey()
-  final bool isLoading;
-  @override
   final LoginResponse? response;
+  @override
+  final SignUpResponse? signUpResponse;
 
   @override
   String toString() {
-    return 'AuthenticationState(errorMessage: $errorMessage, isLoading: $isLoading, response: $response)';
+    return 'AuthenticationState(response: $response, signUpResponse: $signUpResponse)';
   }
 
   @override
@@ -172,17 +165,14 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthenticationStateImpl &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage) &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
             (identical(other.response, response) ||
-                other.response == response));
+                other.response == response) &&
+            (identical(other.signUpResponse, signUpResponse) ||
+                other.signUpResponse == signUpResponse));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, errorMessage, isLoading, response);
+  int get hashCode => Object.hash(runtimeType, response, signUpResponse);
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -198,17 +188,14 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
 
 abstract class _AuthenticationState implements AuthenticationState {
   const factory _AuthenticationState({
-    final String? errorMessage,
-    final bool isLoading,
     final LoginResponse? response,
+    final SignUpResponse? signUpResponse,
   }) = _$AuthenticationStateImpl;
 
   @override
-  String? get errorMessage;
-  @override
-  bool get isLoading;
-  @override
   LoginResponse? get response;
+  @override
+  SignUpResponse? get signUpResponse;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.

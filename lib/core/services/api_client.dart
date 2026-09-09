@@ -42,9 +42,17 @@ class _SessionInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // validateStatus is set to always return true (see below), so 401s
-    // arrive here, not in onError. Decode the body defensively — some
-    // endpoints don't send application/json content-type.
+    final includeAuth =
+        response.requestOptions.extra['includeAuth'] as bool? ?? true;
+
+    // Only an authenticated request's 401 means "your session expired".
+    // A 401 on login/register/etc. (includeAuth: false) just means
+    // invalid credentials — that's the caller's job to show, not ours.
+    if (!includeAuth) {
+      handler.next(response);
+      return;
+    }
+
     dynamic rawData = response.data;
     if (rawData is String) {
       try {
@@ -72,7 +80,10 @@ class _SessionInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401 && !_isHandlingExpiry) {
+    final includeAuth =
+        err.requestOptions.extra['includeAuth'] as bool? ?? true;
+
+    if (includeAuth && err.response?.statusCode == 401 && !_isHandlingExpiry) {
       debugPrint(' HTTP 401 Unauthorized');
       _handleSessionExpired();
     }

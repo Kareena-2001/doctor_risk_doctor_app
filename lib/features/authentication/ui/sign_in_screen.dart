@@ -135,7 +135,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   gradient: LinearGradient(
                     colors: [AppColors.newPri, AppColors.primary],
                   ),
-                  borderRadius:  BorderRadius.only(
+                  borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
@@ -381,7 +381,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             Text(
               'Welcome back, Doctor',
               style: customTextStyle(
-                fontSize: Responsive.sp(22),
+                fontSize: Responsive.sp(18),
                 fontWeight: FontWeight.w900,
                 color: AppColors.textColor,
               ),
@@ -505,9 +505,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             Text(
               'New to DoctorsRisk?',
               style: customTextStyle(
-                fontSize: Responsive.sp(18),
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w900,
                 color: AppColors.textColor,
+                fontSize: Responsive.sp(18),
               ),
             ),
             height(Responsive.h(8)),

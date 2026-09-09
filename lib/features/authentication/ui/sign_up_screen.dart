@@ -56,13 +56,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final prefixes = ['Dr.', 'Mr.', 'Mrs.', 'Ms.'];
 
   final categories = [
+    'Dental Surgeon (MDS And BDS)',
     'General Practitioner All Pathy',
     'Physician Consultant (Non Surgical)',
-    'Surgeon All Speciality (All Pathy)',
-    'Dental Surgeon (MDS And BDS)',
-    'Plastic / Cosmetic / Anesthetic Surgeon / Oral and Maxillofacial (All Pathy)',
     'Physiotherapist All Pathy',
+    'Surgeon All Speciality (All Pathy)',
   ];
+
+  List<String> get _availablePrefixes {
+    if (_selectedType == RegistrationType.professional) {
+      return ['Dr.'];
+    }
+
+    return prefixes;
+  }
 
   final specialities = [
     'General Medicine',
@@ -142,13 +149,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final pass = _passwordController.text;
     if (pass.isEmpty) return 0;
 
-    // Minimum requirement: Must be at least 8 characters
-    if (pass.length < 8) return 1; // Red / Weak
+    if (pass.length < 8) return 1;
 
-    int score = 1; // Base score for reaching 8 characters
+    int score = 1;
     if (RegExp(r'[0-9]').hasMatch(pass)) score++;
-    if (RegExp(r'[a-z]').hasMatch(pass) && RegExp(r'[A-Z]').hasMatch(pass))
+    if (RegExp(r'[a-z]').hasMatch(pass) && RegExp(r'[A-Z]').hasMatch(pass)) {
       score++;
+    }
     if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(pass)) score++;
 
     return score;
@@ -221,7 +228,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         height(Responsive.h(6)),
         Text(
           _getPasswordStrengthLabel(),
-          style: TextStyle(
+          style: customTextStyle(
             fontSize: Responsive.sp(11),
             fontWeight: FontWeight.w600,
             color: color,
@@ -259,6 +266,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onTap: () {
                             setState(() {
                               _selectedType = RegistrationType.professional;
+                              _selectedPrefix = 'Dr.';
                             });
                           },
                           child: AnimatedContainer(
@@ -307,6 +315,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onTap: () {
                             setState(() {
                               _selectedType = RegistrationType.establishment;
+                              _selectedPrefix ??= 'Dr.';
                             });
                           },
                           child: AnimatedContainer(
@@ -355,7 +364,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: Responsive.sp(20)),
                 child: Form(
@@ -369,7 +377,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       CustomDropdownField(
                         label: 'Prefix',
                         hint: 'Select Prefix',
-                        items: prefixes,
+                        items: _availablePrefixes,
                         value: _selectedPrefix,
                         onChanged: (value) {
                           setState(() {
@@ -389,6 +397,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         label: 'Middle name',
                         hint: 'Enter middle name',
                         controller: _middleNameController,
+                        isRequired: false,
                       ),
                       height(Responsive.h(12)),
                       CustomTextField(
@@ -569,7 +578,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               'I agree to the Terms & Conditions and Privacy Policy.',
                               style: customTextStyle(
                                 fontSize: Responsive.sp(11),
-                                color: const Color(0xFF334155),
+                                color: Color(0xFF334155),
                               ),
                             ),
                           ),
