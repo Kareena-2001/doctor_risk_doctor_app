@@ -19,7 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AuthenticationState {
   String? get errorMessage => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
-  AuthenticationModel? get model => throw _privateConstructorUsedError;
+  LoginResponse? get response => throw _privateConstructorUsedError;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -35,9 +35,9 @@ abstract class $AuthenticationStateCopyWith<$Res> {
     $Res Function(AuthenticationState) then,
   ) = _$AuthenticationStateCopyWithImpl<$Res, AuthenticationState>;
   @useResult
-  $Res call({String? errorMessage, bool isLoading, AuthenticationModel? model});
+  $Res call({String? errorMessage, bool isLoading, LoginResponse? response});
 
-  $AuthenticationModelCopyWith<$Res>? get model;
+  $LoginResponseCopyWith<$Res>? get response;
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
   $Res call({
     Object? errorMessage = freezed,
     Object? isLoading = null,
-    Object? model = freezed,
+    Object? response = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -69,10 +69,10 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
                 ? _value.isLoading
                 : isLoading // ignore: cast_nullable_to_non_nullable
                       as bool,
-            model: freezed == model
-                ? _value.model
-                : model // ignore: cast_nullable_to_non_nullable
-                      as AuthenticationModel?,
+            response: freezed == response
+                ? _value.response
+                : response // ignore: cast_nullable_to_non_nullable
+                      as LoginResponse?,
           )
           as $Val,
     );
@@ -82,13 +82,13 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $AuthenticationModelCopyWith<$Res>? get model {
-    if (_value.model == null) {
+  $LoginResponseCopyWith<$Res>? get response {
+    if (_value.response == null) {
       return null;
     }
 
-    return $AuthenticationModelCopyWith<$Res>(_value.model!, (value) {
-      return _then(_value.copyWith(model: value) as $Val);
+    return $LoginResponseCopyWith<$Res>(_value.response!, (value) {
+      return _then(_value.copyWith(response: value) as $Val);
     });
   }
 }
@@ -102,10 +102,10 @@ abstract class _$$AuthenticationStateImplCopyWith<$Res>
   ) = __$$AuthenticationStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? errorMessage, bool isLoading, AuthenticationModel? model});
+  $Res call({String? errorMessage, bool isLoading, LoginResponse? response});
 
   @override
-  $AuthenticationModelCopyWith<$Res>? get model;
+  $LoginResponseCopyWith<$Res>? get response;
 }
 
 /// @nodoc
@@ -124,7 +124,7 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
   $Res call({
     Object? errorMessage = freezed,
     Object? isLoading = null,
-    Object? model = freezed,
+    Object? response = freezed,
   }) {
     return _then(
       _$AuthenticationStateImpl(
@@ -136,10 +136,10 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
             ? _value.isLoading
             : isLoading // ignore: cast_nullable_to_non_nullable
                   as bool,
-        model: freezed == model
-            ? _value.model
-            : model // ignore: cast_nullable_to_non_nullable
-                  as AuthenticationModel?,
+        response: freezed == response
+            ? _value.response
+            : response // ignore: cast_nullable_to_non_nullable
+                  as LoginResponse?,
       ),
     );
   }
@@ -151,7 +151,7 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
   const _$AuthenticationStateImpl({
     this.errorMessage,
     this.isLoading = false,
-    this.model,
+    this.response,
   });
 
   @override
@@ -160,11 +160,11 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
   @JsonKey()
   final bool isLoading;
   @override
-  final AuthenticationModel? model;
+  final LoginResponse? response;
 
   @override
   String toString() {
-    return 'AuthenticationState(errorMessage: $errorMessage, isLoading: $isLoading, model: $model)';
+    return 'AuthenticationState(errorMessage: $errorMessage, isLoading: $isLoading, response: $response)';
   }
 
   @override
@@ -176,11 +176,13 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
                 other.errorMessage == errorMessage) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
-            (identical(other.model, model) || other.model == model));
+            (identical(other.response, response) ||
+                other.response == response));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, errorMessage, isLoading, model);
+  int get hashCode =>
+      Object.hash(runtimeType, errorMessage, isLoading, response);
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.
@@ -198,7 +200,7 @@ abstract class _AuthenticationState implements AuthenticationState {
   const factory _AuthenticationState({
     final String? errorMessage,
     final bool isLoading,
-    final AuthenticationModel? model,
+    final LoginResponse? response,
   }) = _$AuthenticationStateImpl;
 
   @override
@@ -206,7 +208,7 @@ abstract class _AuthenticationState implements AuthenticationState {
   @override
   bool get isLoading;
   @override
-  AuthenticationModel? get model;
+  LoginResponse? get response;
 
   /// Create a copy of AuthenticationState
   /// with the given fields replaced by the non-null parameter values.

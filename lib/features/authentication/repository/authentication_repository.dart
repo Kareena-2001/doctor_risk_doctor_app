@@ -5,7 +5,7 @@ import '../../../core/services/api_client.dart';
 import '../../../core/exceptions/app_exception.dart';
 import '../../../core/services/credentials_storage_provider.dart';
 import '../../../core/services/credentials_storage_service.dart';
-import '../model/authentication_model.dart';
+import '../model/login_response.dart';
 
 part 'authentication_repository.g.dart';
 
@@ -31,7 +31,7 @@ class AuthenticationRepository {
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
 
-  Future<AuthenticationModel> login({
+  Future<LoginResponse> login({
     required String login,
     required String password,
     required String deviceToken,
@@ -41,8 +41,8 @@ class AuthenticationRepository {
     bool rememberMe = false,
   }) async {
     try {
-      final data = await _apiClient.post(
-        url: 'login',
+      final response = await _apiClient.post(
+        url: 'doctor/login',
         formData: {
           'login': login,
           'password': password,
@@ -54,100 +54,45 @@ class AuthenticationRepository {
         includeAuth: false,
       );
 
-      if (data['status'] == 200) {
-        final authModel = AuthenticationModel.fromJson(data);
-        await _saveAuthData(authModel.data);
+      if (response['status'] == true) {
+        final loginResponse = LoginResponse.fromJson(response);
+
+        await saveToken(loginResponse.data.accessToken);
+        await setIsLogin(true);
 
         if (rememberMe) {
           await _credentialsStorage.saveCredentials(
-            mobile: login,
+            login: login,
             password: password,
           );
         } else {
           await _credentialsStorage.clearCredentials();
         }
 
-        return authModel;
+        return loginResponse;
       } else {
-        throw Exception(data['msg'] ?? 'Login failed');
+        throw response['msg'] ?? 'Login failed';
       }
-    } catch (e) {
-      if (e is ApiException) {
-        throw Exception(e.message);
-      }
+    } on ApiException catch (e) {
+      if (e.isUnauthorized) {}
       rethrow;
     }
   }
 
-  Future<void> _saveAuthData(LoginData data) async {
+  Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', data.token);
-    await prefs.setString('user_id', data.customer.id);
-    if (data.customer.vendor_employee_code != null) {
-      await prefs.setString(
-        'user_vendor_employee_code',
-        data.customer.vendor_employee_code!,
-      );
-    }
-    await prefs.setString('user_name', data.customer.full_name);
-    await prefs.setString('user_email', data.customer.email ?? '');
-    await prefs.setString('user_mobile', data.customer.mobile);
-    if (data.customer.photo != null && data.customer.photo!.isNotEmpty) {
-      await prefs.setString('user_image', data.customer.photo!);
-    }
-    if (data.customer.application_status != null) {
-      await prefs.setString(
-        'user_application_status',
-        data.customer.application_status!,
-      );
-    }
-    if (data.customer.ol_generate != null) {
-      await prefs.setString('user_ol_generate', data.customer.ol_generate!);
-    }
-    await setIsLogin(true);
-  }
-
-  Future<void> updateApplicationStatus(String newStatus) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_application_status', newStatus);
-    await prefs.reload();
+    await prefs.setString('auth_token', token);
   }
 
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
-    await prefs.remove('user_id');
-    await prefs.remove('user_vendor_employee_code');
-    await prefs.remove('user_name');
-    await prefs.remove('user_email');
-    await prefs.remove('user_mobile');
-    await prefs.remove('user_image');
-    await prefs.remove('user_application_status');
-    await prefs.remove('user_ol_generate');
     await setIsLogin(false);
   }
 
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
-  }
-
-  Future<Customer?> getUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_id');
-
-    if (userId == null) return null;
-
-    return Customer(
-      id: userId,
-      vendor_employee_code: prefs.getString('user_vendor_employee_code'),
-      full_name: prefs.getString('user_name') ?? '',
-      email: prefs.getString('user_email') ?? '',
-      mobile: prefs.getString('user_mobile') ?? '',
-      photo: prefs.getString('user_image'),
-      application_status: prefs.getString('user_application_status'),
-      ol_generate: prefs.getString('user_ol_generate'),
-    );
   }
 
   Future<bool> isLogin() async {

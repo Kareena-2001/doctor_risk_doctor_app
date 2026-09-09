@@ -1,30 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'authentication_view_model.dart';
+part of 'user_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authenticationViewModelHash() =>
-    r'cbe2c61aad5e8fd4a66c573dc229323828a390b5';
+String _$userProviderHash() => r'c0b6c0ed90f4e1ef1cfb364989453a0aa3fe4fef';
 
-/// See also [AuthenticationViewModel].
-@ProviderFor(AuthenticationViewModel)
-final authenticationViewModelProvider =
-    AsyncNotifierProvider<
-      AuthenticationViewModel,
-      AuthenticationState
-    >.internal(
-      AuthenticationViewModel.new,
-      name: r'authenticationViewModelProvider',
+/// See also [UserProvider].
+@ProviderFor(UserProvider)
+final userProviderProvider =
+    AsyncNotifierProvider<UserProvider, UserData?>.internal(
+      UserProvider.new,
+      name: r'userProviderProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$authenticationViewModelHash,
+          : _$userProviderHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$AuthenticationViewModel = AsyncNotifier<AuthenticationState>;
+typedef _$UserProvider = AsyncNotifier<UserData?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

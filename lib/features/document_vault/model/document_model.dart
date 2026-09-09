@@ -26,7 +26,6 @@ class DocumentItem {
   });
 }
 
-// Data loaded from your account summary
 final List<DocumentItem> userUploadedDocuments = [
   const DocumentItem(
     id: 'doc_1',

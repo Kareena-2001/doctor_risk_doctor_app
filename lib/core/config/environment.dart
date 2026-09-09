@@ -9,14 +9,14 @@ class EnvironmentConfig {
   factory EnvironmentConfig.development() {
     return const EnvironmentConfig._(
       environment: Environment.development,
-      baseUrl: 'https://mboxindia.com/kalshr/api/',
+      baseUrl: 'https://medicolegalsupport.in/doctors_risk_api/api/',
     );
   }
 
   factory EnvironmentConfig.production() {
     return const EnvironmentConfig._(
       environment: Environment.production,
-      baseUrl: 'https://kals360sdsAD.com/api/',
+      baseUrl: 'https://medicolegalsupport.in/doctors_risk_api/api/',
     );
   }
 

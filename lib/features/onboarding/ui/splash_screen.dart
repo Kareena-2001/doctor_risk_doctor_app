@@ -1,9 +1,6 @@
-import 'package:Doctors_App/features/onboarding/repository/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/constants/values/app_constants.dart';
 import '../../../routing/routes.dart';
 import '../../../theme/app_theme.dart';
 import '../../app_version/app_update_checker.dart';
@@ -13,21 +10,44 @@ class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  ConsumerState createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkLoginStatus();
-    });
+    _navigate();
+  }
+
+  Future<void> _navigate() async {
+    final needsForceUpdate = await AppUpdateChecker.checkForUpdate(
+      context,
+      ref,
+    );
+
+    if (needsForceUpdate) return;
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    final repo = ref.read(authenticationRepositoryProvider);
+    final isLoggedIn = await repo.isLogin();
+
+    if (!mounted) return;
+
+    if (isLoggedIn) {
+      context.go(Routes.main);
+    } else {
+      context.go(Routes.login);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -43,13 +63,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   child: Image.asset(
                     "assets/images/logo.png",
                     width: 291,
-                    height: 187,
+                    height: 180,
                   ),
                 ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
+              // padding: EdgeInsets.only(bottom: 20.0),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).padding.bottom + 40,
+              ),
+              // bottom: MediaQuery.of(context).padding.bottom + 40,
               child: Text(
                 "Designed & Developed By\n Mobisoftseo Technologies",
                 textAlign: TextAlign.center,
@@ -60,45 +84,5 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _checkLoginStatus() async {
-    final needsForceUpdate = await AppUpdateChecker.checkForUpdate(
-      context,
-      ref,
-    );
-
-    if (needsForceUpdate) return;
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (!mounted) return;
-
-    // final onboardingRepo = ref.read(onboardingRepositoryProvider);
-
-    final onboardingCompleted = await ref
-        .read(onboardingRepositoryProvider)
-        .isCompleted();
-
-    debugPrint("Onboarding Completed : $onboardingCompleted");
-
-    // if (!onboardingCompleted) {
-    //   context.go(Routes.onboarding);
-    //   return;
-    // }
-
-    final authRepo = ref.read(authenticationRepositoryProvider);
-
-    final isLoggedIn = await authRepo.isLogin();
-
-    debugPrint('${AppConstants.tag} [SplashScreen] isLoggedIn = $isLoggedIn');
-
-    if (!mounted) return;
-
-    if (isLoggedIn) {
-      context.go(Routes.main);
-    } else {
-      context.go(Routes.login);
-    }
   }
 }

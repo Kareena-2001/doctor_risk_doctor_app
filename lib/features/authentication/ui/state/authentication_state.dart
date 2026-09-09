@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../model/authentication_model.dart';
+import '../../model/login_response.dart';
 
 part 'authentication_state.freezed.dart';
 
@@ -9,6 +9,6 @@ class AuthenticationState with _$AuthenticationState {
   const factory AuthenticationState({
     String? errorMessage,
     @Default(false) bool isLoading,
-    AuthenticationModel? model,
+    LoginResponse? response,
   }) = _AuthenticationState;
 }

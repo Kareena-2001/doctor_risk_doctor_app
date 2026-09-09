@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -41,14 +42,29 @@ class _SessionInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    if (response.data is Map<String, dynamic>) {
-      final data = response.data as Map<String, dynamic>;
-      final jsonStatus = data['status'];
-
-      if (jsonStatus == 401 && !_isHandlingExpiry) {
-        debugPrint(' Session expired - status 401');
-        _handleSessionExpired();
+    // validateStatus is set to always return true (see below), so 401s
+    // arrive here, not in onError. Decode the body defensively — some
+    // endpoints don't send application/json content-type.
+    dynamic rawData = response.data;
+    if (rawData is String) {
+      try {
+        rawData = rawData.trim().isEmpty ? null : jsonDecode(rawData);
+      } catch (_) {
+        rawData = null;
       }
+    }
+
+    final bodyLooksUnauthorized =
+        rawData is Map<String, dynamic> &&
+        (rawData['status'] == 401 ||
+            rawData['code'] == 401 ||
+            ((rawData['status'] == false || rawData['success'] == false) &&
+                response.statusCode == 401));
+
+    if ((response.statusCode == 401 || bodyLooksUnauthorized) &&
+        !_isHandlingExpiry) {
+      debugPrint(' Session expired - 401');
+      _handleSessionExpired();
     }
 
     handler.next(response);
@@ -187,10 +203,8 @@ class ApiClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Unexpected error: ${e.toString()}',
-      );
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
@@ -211,10 +225,8 @@ class ApiClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Unexpected error: ${e.toString()}',
-      );
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
@@ -234,11 +246,11 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Unexpected error: ${e.toString()}',
-      );
+    } catch (e, stackTrace) {
+      if (e is ApiException) rethrow;
+      debugPrint('Unexpected Error in ApiClient: $e');
+      debugPrint('Stack Trace:\n$stackTrace');
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
@@ -257,10 +269,8 @@ class ApiClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Unexpected error: ${e.toString()}',
-      );
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
@@ -281,10 +291,8 @@ class ApiClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Unexpected error: ${e.toString()}',
-      );
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
@@ -348,34 +356,119 @@ class ApiClient {
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw ApiException(
-        statusCode: 0,
-        message: 'Network error: ${e.toString()}',
-      );
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 
-  Map<String, dynamic> _handleResponse(Response response) {
-    try {
-      final data = response.data as Map<String, dynamic>;
+  // ─────────────────────────────────────────────────────────────
+  // Response handling
+  // ─────────────────────────────────────────────────────────────
 
-      if (response.statusCode != null &&
-          response.statusCode! >= 200 &&
-          response.statusCode! < 300) {
-        return data;
-      } else {
+  /// Parses the raw response, decodes it if the server didn't send
+  /// proper JSON content-type, and throws a friendly [ApiException]
+  /// for every failure case: business failure (status/success == false),
+  /// HTTP error status, validation errors, or an unparseable body.
+  Map<String, dynamic> _handleResponse(Response response) {
+    final statusCode = response.statusCode ?? 0;
+    dynamic rawData = response.data;
+
+    if (rawData is String) {
+      if (rawData.trim().isEmpty) {
         throw ApiException(
-          statusCode: response.statusCode ?? 0,
-          message: data['msg'] ?? data['message'] ?? 'Request failed',
-          data: data,
+          statusCode: statusCode,
+          message: _friendlyMessage(statusCode, null),
         );
       }
-    } catch (e) {
-      if (e is ApiException) rethrow;
+      try {
+        rawData = jsonDecode(rawData);
+      } catch (_) {
+        throw ApiException(
+          statusCode: statusCode,
+          message: _friendlyMessage(statusCode, null),
+        );
+      }
+    }
+
+    if (rawData is! Map<String, dynamic>) {
       throw ApiException(
-        statusCode: response.statusCode ?? 0,
-        message: 'Failed to parse response: ${e.toString()}',
+        statusCode: statusCode,
+        message: _friendlyMessage(statusCode, null),
       );
+    }
+
+    final data = rawData;
+
+    // Backend is inconsistent: some endpoints use {"status": true, "msg": ...},
+    // others use {"success": true, "message": ...}. Accept either.
+    final bodyOk = data['status'] == true || data['success'] == true;
+    final httpOk = statusCode >= 200 && statusCode < 300;
+
+    if (bodyOk && httpOk) {
+      return data;
+    }
+
+    final serverMessage = _extractServerMessage(data);
+    final validationMessage = _extractValidationMessage(data);
+
+    throw ApiException(
+      statusCode: statusCode,
+      message: _friendlyMessage(statusCode, validationMessage ?? serverMessage),
+      data: data,
+    );
+  }
+
+  String? _extractServerMessage(Map<String, dynamic> data) {
+    final message = data['msg'] ?? data['message'] ?? data['error'];
+    if (message is String && message.trim().isNotEmpty) return message;
+    return null;
+  }
+
+  /// Handles Laravel-style validation error bodies:
+  /// {"errors": {"email": ["The email field is required."]}}
+  String? _extractValidationMessage(Map<String, dynamic> data) {
+    final errors = data['errors'];
+    if (errors is Map) {
+      for (final value in errors.values) {
+        if (value is List && value.isNotEmpty) {
+          return value.first.toString();
+        }
+        if (value is String && value.trim().isNotEmpty) {
+          return value;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Server message wins when present; otherwise falls back to a
+  /// consistent, user-facing message per status code.
+  String _friendlyMessage(int statusCode, String? serverMessage) {
+    if (serverMessage != null && serverMessage.trim().isNotEmpty) {
+      return serverMessage;
+    }
+    switch (statusCode) {
+      case 0:
+        return 'No internet connection. Please check your network and try again.';
+      case 400:
+        return 'Something went wrong with that request. Please try again.';
+      case 401:
+        return 'Your session has expired. Please log in again.';
+      case 403:
+        return "You don't have permission to do that.";
+      case 404:
+        return "We couldn't find what you were looking for.";
+      case 408:
+        return 'Request timed out. Please check your connection and try again.';
+      case 422:
+        return 'Please check the information you entered and try again.';
+      case 429:
+        return 'Too many requests. Please wait a moment and try again.';
+      default:
+        if (statusCode >= 500) {
+          return 'Something went wrong on our end. Please try again in a moment.';
+        }
+        return 'Something went wrong. Please try again.';
     }
   }
 
@@ -386,28 +479,43 @@ class ApiClient {
       case DioExceptionType.receiveTimeout:
         return ApiException(
           statusCode: 408,
-          message: 'Request timeout. Please check your connection.',
+          message: _friendlyMessage(408, null),
         );
 
       case DioExceptionType.connectionError:
-        return ApiException(
-          statusCode: 0,
-          message: 'No internet connection. Please check your network.',
-        );
+        return ApiException(statusCode: 0, message: _friendlyMessage(0, null));
 
       case DioExceptionType.badResponse:
+        // With validateStatus always true, this branch rarely fires —
+        // 4xx/5xx go through _handleResponse instead. Kept as a safety net.
         final response = error.response;
-        if (response?.data is Map<String, dynamic>) {
-          final data = response!.data as Map<String, dynamic>;
+        final statusCode = response?.statusCode ?? 0;
+        dynamic rawData = response?.data;
+
+        if (rawData is String) {
+          try {
+            rawData = rawData.trim().isEmpty ? null : jsonDecode(rawData);
+          } catch (_) {
+            rawData = null;
+          }
+        }
+
+        if (rawData is Map<String, dynamic>) {
+          final serverMessage = _extractServerMessage(rawData);
+          final validationMessage = _extractValidationMessage(rawData);
           return ApiException(
-            statusCode: response.statusCode ?? 0,
-            message: data['msg'] ?? data['message'] ?? 'Server error occurred',
-            data: data,
+            statusCode: statusCode,
+            message: _friendlyMessage(
+              statusCode,
+              validationMessage ?? serverMessage,
+            ),
+            data: rawData,
           );
         }
+
         return ApiException(
-          statusCode: response?.statusCode ?? 0,
-          message: 'Server error occurred',
+          statusCode: statusCode,
+          message: _friendlyMessage(statusCode, null),
         );
 
       case DioExceptionType.cancel:
@@ -416,18 +524,18 @@ class ApiClient {
       case DioExceptionType.badCertificate:
         return ApiException(
           statusCode: 0,
-          message: 'Security certificate error',
+          message: 'Security certificate error. Please try again later.',
         );
 
       case DioExceptionType.unknown:
       default:
         if (error.error is SocketException) {
-          return ApiException(statusCode: 0, message: 'No internet connection');
+          return ApiException(
+            statusCode: 0,
+            message: _friendlyMessage(0, null),
+          );
         }
-        return ApiException(
-          statusCode: 0,
-          message: error.message ?? 'Network error occurred',
-        );
+        return ApiException(statusCode: 0, message: _friendlyMessage(0, null));
     }
   }
 

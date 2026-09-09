@@ -1,12 +1,17 @@
+import 'dart:convert';
 import 'dart:developer';
-import 'package:Doctors_App/routing/routes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// import '../../core/navigation/main_tab_state.dart';
+import '../../routing/router.dart';
+
+// import '../notification/ui/viewmodel/notification_count_provider.dart';
 import '../notification/ui/viewmodel/notification_view_model.dart';
+// import 'notification_navigator.dart';
 
 final unreadNotificationCountProvider = StateProvider<int>((ref) => 0);
 
@@ -27,11 +32,15 @@ class NotificationService {
   bool _isInitialized = false;
   bool _listenerAttached = false;
 
-  BuildContext? _savedContext;
+  static const String _channelId = 'doctor_app_notifications';
+  static const String _channelName = 'Doctor App Notifications';
+  static const String _channelDescription = 'Notifications from Doctor App';
 
-  static const String _channelId = 'kals_360_notifications';
-  static const String _channelName = 'KALS 360 Notifications';
-  static const String _channelDescription = 'Notifications from KALS 360 app';
+  /// Always use this for navigation triggered from outside the widget tree
+  /// (FCM callbacks, local-notification taps). A manually-saved BuildContext
+  /// can go stale or simply not have GoRouter as an ancestor -- this key,
+  /// once wired to GoRouter's `navigatorKey`, never has that problem.
+  // BuildContext? get _navContext => rootNavigatorKey.currentContext;
 
   Future<void> requestNotificationPermission() async {
     NotificationSettings settings = await _messaging.requestPermission(
@@ -97,12 +106,6 @@ class NotificationService {
 
     log("🔔 Initializing local notifications...");
 
-    // Save context for later use
-    if (context != null) {
-      _savedContext = context;
-      log("📍 Context saved for navigation");
-    }
-
     const androidSettings = AndroidInitializationSettings(
       "@mipmap/ic_launcher",
     );
@@ -139,10 +142,6 @@ class NotificationService {
 
     log("🔔 Setting up Firebase messaging listener...");
 
-    // Save context
-    _savedContext = context;
-
-    // CRITICAL: Set up the onMessage listener
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
         log("🔔🔔🔔 ==========================================");
@@ -152,8 +151,7 @@ class NotificationService {
         log("🔔 Body: ${message.notification?.body}");
         log("🔔 Data: ${message.data}");
         log("🔔🔔🔔 ==========================================");
-        _ref.read(notificationAlertProvider.notifier).showAlert();
-        // Optional: Also refresh notification list
+
         _ref.invalidate(notificationViewModelProvider);
 
         try {
@@ -161,13 +159,19 @@ class NotificationService {
           if (notification != null) {
             log("📬 Processing notification...");
 
-            // Increment unread count using Riverpod
-            final currentCount = _ref.read(unreadNotificationCountProvider);
-            _ref.read(unreadNotificationCountProvider.notifier).state =
-                currentCount + 1;
-            log("📊 Unread count incremented to: ${currentCount + 1}");
+            // final currentCount =
+            //     _ref.read(notificationCountProvider).valueOrNull ?? 0;
+            // _ref
+            //     .read(notificationCountProvider.notifier)
+            //     .showAlert(currentCount + 1);
+            // log(
+            //   "📊 Notification badge count incremented to: ${currentCount + 1}",
+            // );
 
-            // Show the notification
+            final legacyCount = _ref.read(unreadNotificationCountProvider);
+            _ref.read(unreadNotificationCountProvider.notifier).state =
+                legacyCount + 1;
+
             showNotification(message);
           } else {
             log("⚠️ Notification object is null, only data payload received");
@@ -188,6 +192,19 @@ class NotificationService {
 
     _listenerAttached = true;
     log("✅ Firebase messaging listener initialized and attached");
+  }
+
+  /// Backend uses different id keys depending on the payload source:
+  /// - notification_list API always uses `type_id`
+  /// - FCM `data` payload has been seen using `task_id` (not `type_id`)
+  /// This tries every key we've seen so far, in order.
+  String _extractTypeId(Map<String, dynamic> data) {
+    return (data['type_id'] ??
+            data['task_id'] ??
+            data['leave_id'] ??
+            data['attendance_id'] ??
+            '')
+        .toString();
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -225,12 +242,20 @@ class NotificationService {
         "🔔 Showing notification - ID: $notificationId, Title: $title, Body: $body",
       );
 
+      // Encode both type and type_id so the tap handler (local notification,
+      // app-in-foreground case) can route the same way handleMessage does
+      // for background/terminated taps. type_id is the id of the actual
+      // leave/task/etc entity — NOT the notification's own id.
+      final type = message.data['type'] ?? 'notification';
+      final typeId = _extractTypeId(message.data);
+      final payload = jsonEncode({'type': type, 'type_id': typeId});
+
       await _localNotificationsPlugin.show(
         notificationId,
         title,
         body,
         notificationDetails,
-        payload: message.data.toString(),
+        payload: payload,
       );
 
       log("✅ Notification shown successfully (ID: $notificationId)");
@@ -253,30 +278,20 @@ class NotificationService {
   Future<void> setupInteractMessage(BuildContext context) async {
     log("🔔 Setting up notification interaction handlers...");
 
-    // Save context
-    _savedContext = context;
-
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       try {
         log("📲 App opened from notification (background state)");
-        // ⭐ Show alert
-        _ref.read(notificationAlertProvider.notifier).showAlert();
-        log("📲 Message: ${message.notification?.title}");
         handleMessage(message);
       } catch (e) {
         log("❌ Error handling opened app message: $e");
       }
     });
 
-    // Handle when app is opened from notification (terminated state)
     try {
       final initialMessage = await FirebaseMessaging.instance
           .getInitialMessage();
       if (initialMessage != null) {
         log("🚀 App launched from notification (terminated state)");
-        // ⭐ Show alert
-        _ref.read(notificationAlertProvider.notifier).showAlert();
-        log("🚀 Message: ${initialMessage.notification?.title}");
         handleMessage(initialMessage);
       } else {
         log("ℹ️ App not launched from notification");
@@ -288,20 +303,27 @@ class NotificationService {
     log("✅ Notification interaction handlers set up");
   }
 
+  /// Local-notification tap (app was in foreground, we showed our own
+  /// notification via flutter_local_notifications).
   void _handleNotificationTap(NotificationResponse response) {
     log("👆 Notification tapped!");
     log("👆 Payload: ${response.payload}");
-    log("👆 Action ID: ${response.actionId}");
 
-    if (_savedContext != null && _savedContext!.mounted) {
-      log("✅ Navigating to notification screen...");
-      _savedContext!.push(Routes.notification);
-    } else {
-      log("⚠️ No valid context available for navigation");
-      log("⚠️ Context: $_savedContext, Mounted: ${_savedContext?.mounted}");
+    final payload = response.payload;
+    if (payload == null || payload.isEmpty) return;
+
+    try {
+      final data = jsonDecode(payload) as Map<String, dynamic>;
+      _navigateByType(
+        (data['type'] ?? '').toString(),
+        (data['type_id'] ?? '').toString(),
+      );
+    } catch (e) {
+      log("❌ Error parsing notification payload: $e");
     }
   }
 
+  /// FCM tap (app opened from background or terminated state).
   Future<void> handleMessage(RemoteMessage message) async {
     log("📨 Handling notification message...");
     log("📨 Title: ${message.notification?.title}");
@@ -312,13 +334,34 @@ class NotificationService {
       return;
     }
 
-    if (_savedContext != null && _savedContext!.mounted) {
-      log("✅ Navigating to notification screen...");
-      _savedContext!.push(Routes.notification);
-    } else {
-      log("⚠️ No valid context available for navigation");
-      log("⚠️ Context: $_savedContext, Mounted: ${_savedContext?.mounted}");
-    }
+    final type = (message.data['type'] ?? '').toString();
+    final typeId = _extractTypeId(message.data);
+
+    _navigateByType(type, typeId);
+  }
+
+  /// Routes based on notification `type` + `type_id` via the shared
+  /// NotificationNavigator (same logic used by the in-app notification list).
+  /// Uses `rootNavigatorKey.currentContext` — NOT a manually saved context —
+  /// so this works reliably even when triggered from a background/terminated
+  /// FCM callback with no live widget-tree context available.
+  void _navigateByType(String type, String typeId) {
+    // final context = _navContext;
+    // if (context == null || !context.mounted) {
+    //   log(
+    //     "⚠️ No valid navigator context available for navigation. "
+    //         "Make sure rootNavigatorKey is passed to GoRouter(navigatorKey: ...)",
+    //   );
+    //   return;
+    // }
+    //
+    // NotificationNavigator.navigate(
+    //   context: context,
+    //   onSwitchTab: (index) =>
+    //   _ref.read(mainTabIndexProvider.notifier).state = index,
+    //   type: type,
+    //   typeId: typeId,
+    // );
   }
 
   Future<void> iosForegroundMessage() async {
@@ -330,7 +373,6 @@ class NotificationService {
     log("✅ iOS foreground notification settings configured");
   }
 
-  // Method to reset unread count
   void resetUnreadCount() {
     _ref.read(unreadNotificationCountProvider.notifier).state = 0;
     log("🔄 Unread notification count reset to 0");

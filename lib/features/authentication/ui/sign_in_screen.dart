@@ -8,16 +8,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/exceptions/exception_extension.dart';
+import '../../../core/utils/platform_utils.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../extensions/build_context_extension.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../../../routing/routes.dart';
 import '../../../theme/app_theme.dart';
-import '../../../utils/validator.dart';
 import '../../common/ui/widgets/primary_button.dart';
 import '../../fcm/device_service.dart';
+import '../../fcm/notification_service.dart';
 import '../repository/authentication_repository.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -30,7 +29,7 @@ class SignInScreen extends ConsumerStatefulWidget {
 class _SignInScreenState extends ConsumerState<SignInScreen> {
   final DeviceService deviceService = DeviceService();
 
-  late final TextEditingController _mobileNoController;
+  late final TextEditingController _loginIdentifierController;
   late final TextEditingController _passwordController;
 
   final _formKey = GlobalKey<FormState>();
@@ -49,13 +48,18 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   void initState() {
     super.initState();
     _getDeviceToken();
-    _mobileNoController = TextEditingController();
+    _loginIdentifierController = TextEditingController();
     _passwordController = TextEditingController();
     _loadSavedCredentials();
   }
 
   Future<void> _getDeviceToken() async {
+    final notificationService = ref.read(notificationServiceProvider);
+    fcmToken = await notificationService.getDeviceToken();
     deviceId = await DeviceService.getDeviceId();
+
+    debugPrint('FCM token is: $fcmToken');
+    debugPrint('device Id is  : $deviceId ');
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -64,7 +68,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     if (savedCredentials != null && mounted) {
       setState(() {
-        _mobileNoController.text = savedCredentials.mobile;
+        _loginIdentifierController.text = savedCredentials.login;
         _passwordController.text = savedCredentials.password;
         _rememberMe = true;
       });
@@ -73,9 +77,31 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   @override
   void dispose() {
-    _mobileNoController.dispose();
+    _loginIdentifierController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  String? _loginIdentifierValidator(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return LocaleKeys.validator_required_field.tr();
+    }
+
+    final trimmedValue = value.trim();
+
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-0.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+    );
+    final phoneRegex = RegExp(r'^[0-9]{10}$');
+
+    final isEmail = emailRegex.hasMatch(trimmedValue);
+    final isPhone = phoneRegex.hasMatch(trimmedValue);
+
+    if (!isEmail && !isPhone) {
+      return 'Please enter a valid email address or 10-digit mobile number';
+    }
+
+    return null;
   }
 
   @override
@@ -84,23 +110,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
     ref.listen(authenticationViewModelProvider, (prev, next) {
       next.whenOrNull(
-        data: (state) {
-          if (state.model != null) {
-            final applicationStatus =
-                state.model!.data.customer.application_status;
-
-            if (applicationStatus == 'Pending' || applicationStatus == null) {
-              context.go(Routes.main);
-            } else if (applicationStatus == 'Accept') {
-              context.go(Routes.main);
-            } else {
-              context.go(Routes.main);
-            }
+        data: (state) async {
+          if (state.response != null) {
+            context.go(Routes.main);
           }
         },
-        error: (e, _) {
-          context.showWarningSnackBar(e.readableMessage);
-        },
+        error: (e, _) => context.showErrorSnackBar(e.toString()),
       );
     });
 
@@ -120,7 +135,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   gradient: LinearGradient(
                     colors: [AppColors.newPri, AppColors.primary],
                   ),
-                  borderRadius: BorderRadius.only(
+                  borderRadius:  BorderRadius.only(
                     bottomLeft: Radius.circular(24),
                     bottomRight: Radius.circular(24),
                   ),
@@ -303,7 +318,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   : _buildCreateAccountCard(),
               _buildEmergencyWidget(),
               height(Responsive.h(0)),
-              SocialLinkWidget(),
+              const SocialLinkWidget(),
               height(Responsive.h(24)),
             ],
           ),
@@ -381,11 +396,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ),
             height(Responsive.h(24)),
             CustomTextField(
-              label: 'Mobile or email ',
-              hint: 'e.g. 98765 43210 or you@clinic.com',
-              controller: _mobileNoController,
-              validator: notEmptyPhoneValidator,
+              label: 'Mobile or Email',
+              hint: 'e.g. 9876543210 or you@clinic.com',
+              controller: _loginIdentifierController,
+              validator: _loginIdentifierValidator,
               isRequired: true,
+              keyboardType: TextInputType.emailAddress,
             ),
             height(Responsive.h(16)),
             CustomTextField(
@@ -436,7 +452,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    width(Responsive.w(8)),
                     Text(
                       'Remember Me',
                       style: AppTheme.label12.copyWith(
@@ -517,7 +533,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               'Already mid‑registration? Your progress is saved automatically.',
               style: customTextStyle(
                 fontSize: Responsive.sp(11),
-                color: Color(0xFF94A3B8),
+                color: const Color(0xFF94A3B8),
               ),
             ),
           ],
@@ -527,6 +543,21 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   void _login() {
-    context.push(Routes.main);
+    if (_formKey.currentState?.validate() ?? false) {
+      final loginIdentifier = _loginIdentifierController.text.trim();
+      final password = _passwordController.text;
+
+      ref
+          .read(authenticationViewModelProvider.notifier)
+          .login(
+            login: loginIdentifier,
+            password: password,
+            deviceId: deviceId ?? '',
+            rememberMe: _rememberMe,
+            deviceToken: deviceId ?? '',
+            fcmToken: fcmToken ?? '',
+            platform: PlatformUtils.platform,
+          );
+    }
   }
 }
