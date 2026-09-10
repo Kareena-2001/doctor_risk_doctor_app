@@ -15,8 +15,8 @@ part 'authentication_repository.g.dart';
 
 @Riverpod(keepAlive: true)
 AuthenticationRepository authenticationRepository(
-    AuthenticationRepositoryRef ref,
-    ) {
+  AuthenticationRepositoryRef ref,
+) {
   final apiClient = ref.watch(apiClientProvider);
   final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
   return AuthenticationRepository(
@@ -33,7 +33,7 @@ class AuthenticationRepository {
     required ApiClient apiClient,
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
-        _credentialsStorage = credentialsStorage;
+       _credentialsStorage = credentialsStorage;
 
   Future<LoginResponse> login({
     required String login,
@@ -93,7 +93,9 @@ class AuthenticationRepository {
     return CategoryResponse.fromJson(response);
   }
 
-  Future<SpecialityResponse> specialityList({required String categoryId}) async {
+  Future<SpecialityResponse> specialityList({
+    required String categoryId,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/speciality',
       queryParams: {'categoryId': categoryId},

@@ -8,7 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'authentication_state.freezed.dart';
 
-
 @freezed
 class AuthenticationState with _$AuthenticationState {
   const factory AuthenticationState({
