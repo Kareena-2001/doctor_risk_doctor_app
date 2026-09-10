@@ -715,7 +715,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                       height(Responsive.h(20)),
                       if (_selectedType == RegistrationType.professional) ...[
-                        const _SectionHeader(title: 'PROFESSIONAL DETAILS'),
+                        _SectionHeader(title: 'PROFESSIONAL DETAILS'),
                         height(Responsive.h(12)),
                         _buildAsyncDropdown<CategoryResponse>(
                           label: 'Category',
