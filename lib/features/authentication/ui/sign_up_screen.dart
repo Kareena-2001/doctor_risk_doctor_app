@@ -295,24 +295,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------
-  // Category / Speciality / Degree — reference data helpers
-  // ---------------------------------------------------------------------
-
   List<_IdName> _mapIdName(List<dynamic> items) {
     return items
         .map((e) => _IdName(id: e.id as int, name: e.name as String))
         .toList();
   }
 
-  /// Renders a dropdown backed by an [AsyncValue], keeping loading, error,
-  /// empty and populated states all going through the same widget so the
-  /// field never jumps around or falls back to ad-hoc placeholder text.
-  ///
-  /// When [data] resolves to `null` (nothing loaded / requested yet) or an
-  /// empty list, the dropdown is simply shown disabled with [emptyHint] as
-  /// its hint — the same visual language as "no value selected" elsewhere
-  /// on the form, rather than a separate helper text block.
   Widget _buildAsyncDropdown<T>({
     required String label,
     required AsyncValue<T?> asyncValue,
@@ -662,7 +650,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       height(Responsive.h(12)),
-                      const _SectionHeader(title: 'PERSONAL DETAILS'),
+                      _SectionHeader(title: 'PERSONAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomDropdownField(
                         label: 'Prefix',
@@ -714,7 +702,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         'login while securing membership.',
                         style: customTextStyle(
                           fontSize: Responsive.sp(10),
-                          color: const Color(0xFF64748B),
+                          color: Color(0xFF64748B),
                         ).copyWith(height: 1.4),
                       ),
                       height(Responsive.h(12)),
