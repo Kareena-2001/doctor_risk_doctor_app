@@ -83,10 +83,14 @@ class AuthenticationRepository {
 
     return SignUpResponse.fromJson(response);
   }
-
-  Future<CategoryResponse> categoryList() async {
+  Future<CategoryResponse> categoryList({
+    required String productTypeId,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/categorylist',
+      queryParams: {
+        'product_type_id': productTypeId
+      },
       includeAuth: false,
     );
 
@@ -98,7 +102,7 @@ class AuthenticationRepository {
   }) async {
     final response = await _apiClient.get(
       url: 'doctor/speciality',
-      queryParams: {'categoryId': categoryId},
+      queryParams: {'category_id': categoryId},
       includeAuth: false,
     );
 

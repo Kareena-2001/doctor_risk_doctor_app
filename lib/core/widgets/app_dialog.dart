@@ -146,6 +146,31 @@ class AppDialog {
     );
   }
 
+  static Future<T?> customBottomSheet<T>({
+    required BuildContext context,
+    required Widget Function(BuildContext context) builder,
+    bool isScrollControlled = true,
+    bool useSafeArea = true,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: isScrollControlled,
+      useSafeArea: useSafeArea,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: builder(context),
+        );
+      },
+    );
+  }
 
   static Future<void> bottomSheet({
     required BuildContext context,

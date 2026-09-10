@@ -85,7 +85,7 @@ dev_dependencies:
   webview_flutter: ^4.4.2
   webview_flutter_android: ^3.16.2
   webview_flutter_wkwebview: ^3.10.1
-
+  flutter_recaptcha_v2_compat: ^1.0.2+2
 
 dependency_overrides:
   analyzer_plugin: ^0.13.0

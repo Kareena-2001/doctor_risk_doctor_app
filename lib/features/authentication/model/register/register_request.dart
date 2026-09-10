@@ -7,7 +7,7 @@ part 'register_request.g.dart';
 @freezed
 class RegisterRequest with _$RegisterRequest {
   const factory RegisterRequest({
-    @JsonKey(name: 'product_type_id') required int productTypeId,
+    @JsonKey(name: 'product_type_id') required String productTypeId,
 
     required String prefix,
 
@@ -23,9 +23,9 @@ class RegisterRequest with _$RegisterRequest {
 
     @JsonKey(name: 'category_id') required int categoryId,
 
-    @JsonKey(name: 'speciality_id') required int specialityId,
+    @JsonKey(name: 'speciality_id') required int? specialityId,
 
-    required String degree,
+    required String? degree,
 
     @JsonKey(name: 'organization_name') String? organizationName,
 
