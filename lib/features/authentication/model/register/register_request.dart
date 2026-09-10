@@ -23,9 +23,9 @@ class RegisterRequest with _$RegisterRequest {
 
     @JsonKey(name: 'category_id') required int categoryId,
 
-    @JsonKey(name: 'speciality_id') required int? specialityId,
+    @JsonKey(name: 'speciality_id') int? specialityId,
 
-    required String? degree,
+    String? degree,
 
     @JsonKey(name: 'organization_name') String? organizationName,
 
@@ -34,6 +34,7 @@ class RegisterRequest with _$RegisterRequest {
     required String password,
 
     @JsonKey(name: 'terms_privacy_accepted') required bool termsPrivacyAccepted,
+
   }) = _RegisterRequest;
 
   factory RegisterRequest.fromJson(Map<String, dynamic> json) =>

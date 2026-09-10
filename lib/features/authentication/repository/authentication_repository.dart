@@ -75,22 +75,22 @@ class AuthenticationRepository {
   }
 
   Future<SignUpResponse> register(RegisterRequest request) async {
+    final json = request.toJson();
+    json.removeWhere((key, value) => value == null);
+    final body = json.map((key, value) => MapEntry(key, value.toString()));
     final response = await _apiClient.post(
       url: 'doctor/register',
-      formData: request.toJson().map((k, v) => MapEntry(k, v.toString())),
+      formData: body,
       includeAuth: false,
     );
 
     return SignUpResponse.fromJson(response);
   }
-  Future<CategoryResponse> categoryList({
-    required String productTypeId,
-  }) async {
+
+  Future<CategoryResponse> categoryList({required String productTypeId}) async {
     final response = await _apiClient.get(
       url: 'doctor/categorylist',
-      queryParams: {
-        'product_type_id': productTypeId
-      },
+      queryParams: {'product_type_id': productTypeId},
       includeAuth: false,
     );
 

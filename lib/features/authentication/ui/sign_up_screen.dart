@@ -169,7 +169,7 @@ class SignUpScreen extends ConsumerWidget {
     final field = CustomDropdownField(
       label: label,
       hint: hint,
-      items: blocked ? const [] : items.map((e) => e.name).toList(),
+      items: blocked ? const <String>[] : items.map((e) => e.name).toList(),
       value: selected?.name,
       onChanged: blocked
           ? null
@@ -202,7 +202,7 @@ class SignUpScreen extends ConsumerWidget {
       },
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: 'Degree *',
+          labelText: 'Degree',
           suffixIcon: hasError
               ? const Icon(Icons.refresh, size: 20)
               : const Icon(Icons.arrow_drop_down),
