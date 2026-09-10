@@ -9,7 +9,7 @@ import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dar
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
-import 'package:Doctors_App/features/faq/ui/medico_legal_faq_screen.dart';
+import 'package:Doctors_App/features/medical_law_faq/ui/medico_legal_faq_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
 import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
@@ -325,20 +325,29 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const NewsAdvisoryScreen()),
     ),
-    GoRoute(
-      path: Routes.newsAdvisoryDetails,
-      pageBuilder: (context, state) =>
-          state.slidePage(const NewsAdvisoryDetailsScreen()),
-    ),
+    // GoRoute(
+    //   path: Routes.newsAdvisoryDetails,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const NewsAdvisoryDetailsScreen()),
+    // ),
     GoRoute(
       path: Routes.blogCentral,
       pageBuilder: (context, state) => state.slidePage(const BlogScreen()),
     ),
+
     GoRoute(
       path: Routes.blogCentralDetails,
-      pageBuilder: (context, state) =>
-          state.slidePage(const BlogDetailsScreen()),
+      pageBuilder: (context, state) {
+        final blogId = state.extra as String;
+
+        return state.slidePage(BlogDetailsScreen(blogId: blogId));
+      },
     ),
+    // GoRoute(
+    //   path: Routes.blogCentralDetails,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const BlogDetailsScreen(blogId:blogId)),
+    // ),
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),

@@ -10,6 +10,7 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
 import '../../../utils/global_loading.dart';
+import '../../features/authentication/ui/view_model/authentication_view_model.dart';
 import '../../features/common/ui/widgets/common_dialog.dart';
 
 class AppDrawer extends ConsumerWidget {
@@ -407,25 +408,30 @@ class AppDrawer extends ConsumerWidget {
         primaryButtonBackground: AppColors.rambutan100,
         secondaryButtonLabel: Languages.cancel,
         autoDismiss: false,
+
         primaryButtonAction: () async {
           Navigator.of(dialogContext).pop();
-          context.pop();
-          await Future.delayed(const Duration(milliseconds: 100));
+
           if (!context.mounted) return;
+
           Global.showLoading(context);
 
           try {
-            if (!context.mounted) return;
+            await ref.read(authenticationViewModelProvider.notifier).signOut();
+
             Global.hideLoading();
+
+            if (!context.mounted) return;
+
             context.go(Routes.login);
           } catch (e, st) {
             debugPrint('SIGN OUT ERROR: $e');
             debugPrintStack(stackTrace: st);
-            if (context.mounted) {
-              Global.hideLoading();
-            }
+            Global.hideLoading();
+            if (!context.mounted) return;
           }
         },
+
         secondaryButtonAction: () {
           if (Navigator.of(dialogContext).canPop()) {
             Navigator.of(dialogContext).pop();

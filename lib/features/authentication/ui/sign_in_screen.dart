@@ -484,8 +484,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               gradient: LinearGradient(
                 colors: [AppColors.primary, AppColors.newPri],
               ),
-              isLoading: authState.isLoading,
-              onPressed: authState.isLoading ? null : _login,
+              isLoading: authState.value?.isSubmitting ?? false,
+              onPressed: authState.value?.isSubmitting == true ? null : _login,
             ),
           ],
         ),
@@ -554,7 +554,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             password: password,
             deviceId: deviceId ?? '',
             rememberMe: _rememberMe,
-            deviceToken: deviceId ?? '',
+            deviceToken: fcmToken ?? '',
             fcmToken: fcmToken ?? '',
             platform: PlatformUtils.platform,
           );

@@ -5,21 +5,23 @@ import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/common/ui/widgets/secondary_button.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddBlogScreen extends StatefulWidget {
+class AddBlogScreen extends ConsumerStatefulWidget {
   const AddBlogScreen({super.key});
 
   @override
-  State<AddBlogScreen> createState() => _AddBlogScreenState();
+  ConsumerState<AddBlogScreen> createState() => _AddBlogScreenState();
 }
 
-class _AddBlogScreenState extends State<AddBlogScreen> {
+class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
@@ -48,20 +50,35 @@ class _AddBlogScreenState extends State<AddBlogScreen> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (titleController.text.trim().isEmpty) {
       _showMessage('Please enter title');
       return;
     }
-
     if (contentController.text.trim().isEmpty) {
       _showMessage('Please write your article');
       return;
     }
-
     if (!isAgreed) {
       _showMessage('Please accept the agreement');
       return;
+    }
+
+    final success = await ref
+        .read(blogViewModelProvider.notifier)
+        .submitBlog(
+          title: titleController.text.trim(),
+          content: contentController.text.trim(),
+          coverImage: coverImage,
+        );
+
+    if (!mounted) return;
+    if (success) {
+      _showMessage('Submitted for review');
+      Navigator.pop(context);
+    } else {
+      final err = ref.read(blogViewModelProvider).submitStatus;
+      _showMessage('Submission failed: ${err.error}');
     }
   }
 
@@ -73,6 +90,10 @@ class _AddBlogScreenState extends State<AddBlogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting = ref.watch(
+      blogViewModelProvider.select((s) => s.submitStatus.isLoading),
+    );
+
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
       appBar: const CustomAppBar(title: 'Write a Blog'),

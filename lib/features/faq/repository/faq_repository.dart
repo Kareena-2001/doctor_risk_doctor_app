@@ -1,40 +1,39 @@
 import 'package:Doctors_App/core/services/api_client.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
-import 'package:Doctors_App/features/news_advisiories/model/news_advisory_model.dart';
+import 'package:Doctors_App/features/faq/model/faq_response.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/services/credentials_storage_provider.dart';
 
-part 'news_advisory_repository.g.dart';
+part 'faq_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-NewsAdvisoryRepository newsAdvisoryRepository(
-    NewsAdvisoryRepositoryRef ref,
-    ) {
+FaqRepository faqRepository(FaqRepositoryRef ref) {
   final apiClient = ref.watch(apiClientProvider);
   final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
-  return NewsAdvisoryRepository(
+  return FaqRepository(
     apiClient: apiClient,
     credentialsStorage: credentialsStorage,
   );
 }
 
-class NewsAdvisoryRepository {
+
+class FaqRepository {
   final ApiClient _apiClient;
   final CredentialsStorageService _credentialsStorage;
 
-  const NewsAdvisoryRepository({
+  const FaqRepository({
     required ApiClient apiClient,
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
-        _credentialsStorage = credentialsStorage;
+       _credentialsStorage = credentialsStorage;
 
-  Future<NewsAdvisoryResponse> newsList() async {
+  Future<FaqResponse> faqList() async {
     final response = await _apiClient.get(
-      url: 'doctor/newsadvisoriesdoctor',
+      url: 'doctor/faqdoctor',
       includeAuth: true,
     );
 
-    return NewsAdvisoryResponse.fromJson(response);
+    return FaqResponse.fromJson(response);
   }
 }

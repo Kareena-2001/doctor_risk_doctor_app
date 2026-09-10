@@ -19,8 +19,7 @@ class LoginResponse with _$LoginResponse {
 @freezed
 class LoginData with _$LoginData {
   const factory LoginData({
-    @JsonKey(name: 'access_token')
-    required String accessToken,
+    @JsonKey(name: 'access_token') required String accessToken,
   }) = _LoginData;
 
   factory LoginData.fromJson(Map<String, dynamic> json) =>

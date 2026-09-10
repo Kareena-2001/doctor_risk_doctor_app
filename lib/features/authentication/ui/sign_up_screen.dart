@@ -54,7 +54,7 @@ class SignUpScreen extends ConsumerWidget {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,7 +414,6 @@ class SignUpScreen extends ConsumerWidget {
                       ),
                       height(Responsive.h(12)),
                       CustomTextField(
-                        label: 'Middle name',
                         hint: 'Enter middle name',
                         controller: notifier.middleNameController,
                         isRequired: false,
@@ -673,9 +672,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// Ephemeral UI-only widget (the arithmetic challenge itself) — deliberately
-/// kept local since it's not form/business state. Reset externally via
-/// `ValueKey(state.captchaNonce)`.
 class _SimpleCaptchaField extends StatefulWidget {
   final ValueChanged<String?> onVerified;
 

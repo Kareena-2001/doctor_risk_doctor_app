@@ -1,89 +1,109 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 
-class AllBlogsTab extends StatelessWidget {
+class AllBlogsTab extends ConsumerStatefulWidget {
   const AllBlogsTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final blogs = [
-      {
-        'title':
-            'Documenting Telemedicine Consults for Medico-Legal Defensibility',
-        'content':
-            'A practical guide to documenting telemedicine consultations clearly and safely while reducing medico-legal risks.',
-        'date': '12 Jan 2026',
-        'image': 'https://picsum.photos/600/300?random=1',
-      },
-      {
-        'title': 'Handling Consent Discussions in Clinical Practice',
-        'content':
-            'Important points every doctor should consider while discussing informed consent with patients.',
-        'date': '20 Jan 2026',
-        'image': 'https://picsum.photos/600/300?random=2',
-      },
-      {
-        'title': 'How to Maintain Better Medical Documentation',
-        'content':
-            'Simple documentation practices that can help doctors maintain accurate and useful medical records.',
-        'date': '28 Jan 2026',
-        'image': 'https://picsum.photos/600/300?random=3',
-      },
-      {
-        'title': 'Managing Legal Notices from Patients',
-        'content':
-            'What doctors should know when they receive a legal notice and the steps they should consider taking.',
-        'date': '05 Feb 2026',
-        'image': 'https://picsum.photos/600/300?random=4',
-      },
-      {
-        'title': 'Lessons Learned from a Difficult Patient Interaction',
-        'content':
-            'Sharing practical experience and learnings that may help other doctors handle similar situations.',
-        'date': '10 Feb 2026',
-        'image': 'https://picsum.photos/600/300?random=5',
-      },
-    ];
+  ConsumerState<AllBlogsTab> createState() => _AllBlogsTabState();
+}
 
-    return ListView.separated(
-      padding: EdgeInsets.fromLTRB(
-        Responsive.w(16),
-        0,
-        Responsive.w(16),
-        Responsive.h(24),
+class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref.read(blogViewModelProvider.notifier).fetchBlogList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final blogListAsync = ref.watch(
+      blogViewModelProvider.select((s) => s.blogList),
+    );
+
+    return blogListAsync.when(
+      loading: () => const Center(child: Loading()),
+      error: (e, st) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Failed to load blogs: $e'),
+            TextButton(
+              onPressed: () =>
+                  ref.read(blogViewModelProvider.notifier).refreshBlogList(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
       ),
-      itemCount: blogs.length + 1,
-      separatorBuilder: (_, index) {
-        return height(Responsive.h(14));
-      },
-      itemBuilder: (context, index) {
-        if (index == blogs.length) {
-          return Column(
-            children: [SocialLinkWidget(), height(Responsive.h(30))],
+      data: (response) {
+        final blogs = response?.data ?? [];
+
+        if (blogs.isEmpty) {
+          return RefreshIndicator(
+            onRefresh: () =>
+                ref.read(blogViewModelProvider.notifier).refreshBlogList(),
+            child: ListView(
+              children: const [
+                SizedBox(height: 120),
+                Center(child: Text('No blogs yet')),
+              ],
+            ),
           );
         }
 
-        final blog = blogs[index];
+        return RefreshIndicator(
+          onRefresh: () =>
+              ref.read(blogViewModelProvider.notifier).refreshBlogList(),
+          child: ListView.separated(
+            padding: EdgeInsets.fromLTRB(
+              Responsive.w(16),
+              0,
+              Responsive.w(16),
+              Responsive.h(24),
+            ),
+            itemCount: blogs.length + 1,
+            separatorBuilder: (_, __) => height(Responsive.h(14)),
+            itemBuilder: (context, index) {
+              if (index == blogs.length) {
+                return Column(
+                  children: [
+                    const SocialLinkWidget(),
+                    height(Responsive.h(30)),
+                  ],
+                );
+              }
 
-        return _buildBlogCard(context, blog);
+              final blog = blogs[index];
+              return _buildBlogCard(context, blog);
+            },
+          ),
+        );
       },
     );
   }
 
-  Widget _buildBlogCard(BuildContext context, Map<String, String> blog) {
+  Widget _buildBlogCard(BuildContext context, dynamic blog) {
+    final keywords = (blog.keywords as List?) ?? [];
+
     return InkWell(
-      onTap: () {
-        context.push(Routes.blogCentralDetails);
-      },
+      onTap: () =>
+          context.push(Routes.blogCentralDetails, extra: blog.id.toString()),
       borderRadius: BorderRadius.circular(Responsive.w(16)),
       child: Container(
+        padding: EdgeInsets.all(Responsive.w(16)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(Responsive.w(16)),
@@ -99,83 +119,139 @@ class AllBlogsTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover Image
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(Responsive.w(16)),
+            if (keywords.isNotEmpty) ...[
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: keywords
+                    .map(
+                      (k) => Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.w(10),
+                          vertical: Responsive.h(4),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(Responsive.w(20)),
+                        ),
+                        child: Text(
+                          k.toString(),
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(9.5),
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
-              child: Image.network(
-                blog['image'] ?? '',
-                width: double.infinity,
-                height: Responsive.h(150),
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
-                  return Container(
-                    height: Responsive.h(150),
-                    width: double.infinity,
-                    color: Colors.grey.shade100,
-                    child: Icon(
-                      Icons.image_outlined,
-                      size: Responsive.sp(40),
-                      color: Colors.grey.shade400,
-                    ),
-                  );
-                },
-              ),
+              height(Responsive.h(10)),
+            ],
+            Text(
+              blog.title ?? '',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: customTextStyle(
+                fontSize: Responsive.sp(14),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textColor,
+              ).copyWith(height: 1.35),
             ),
 
-            // Blog Details
-            Padding(
-              padding: EdgeInsets.all(Responsive.w(16)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    blog['title'] ?? '',
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(14),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textColor,
-                    ).copyWith(height: 1.4),
-                  ),
+            height(Responsive.h(14)),
+            Divider(height: 1, thickness: 1, color: Colors.grey.shade100),
+            height(Responsive.h(12)),
 
-                  height(Responsive.h(8)),
-
-                  Text(
-                    blog['content'] ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(11),
-                      color: Colors.grey.shade600,
-                    ).copyWith(height: 1.45),
-                  ),
-
-                  height(Responsive.h(10)),
-
-                  Row(
+            // Author row + reads count
+            Row(
+              children: [
+                _AuthorAvatar(name: blog.drName ?? ''),
+                width(Responsive.w(10)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: Responsive.sp(13),
-                        color: Colors.grey.shade500,
-                      ),
-                      width(Responsive.w(5)),
                       Text(
-                        blog['date'] ?? '',
+                        '${blog.drName ?? ''}'
+                        '${(blog.degree ?? '').toString().isNotEmpty ? ', ${blog.degree}' : ''}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
-                          fontSize: Responsive.sp(10.5),
+                          fontSize: Responsive.sp(11.5),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textColor,
+                        ),
+                      ),
+                      Text(
+                        blog.specialityName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(10),
                           color: Colors.grey.shade600,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                width(Responsive.w(8)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.favorite_border,
+                      size: Responsive.sp(13),
+                      color: AppColors.newPri,
+                    ),
+                    width(Responsive.w(4)),
+                    Text(
+                      '${blog.viewCount ?? '0'} Peer Reads',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(10),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.newPri,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AuthorAvatar extends StatelessWidget {
+  final String name;
+
+  const _AuthorAvatar({required this.name});
+
+  String get _initials {
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: Responsive.w(16),
+      backgroundColor: AppColors.newPri.withValues(alpha: 0.12),
+      child: Text(
+        _initials,
+        style: customTextStyle(
+          fontSize: Responsive.sp(11),
+          fontWeight: FontWeight.bold,
+          color: AppColors.newPri,
         ),
       ),
     );

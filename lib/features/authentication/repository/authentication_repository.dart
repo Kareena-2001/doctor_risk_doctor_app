@@ -1,3 +1,4 @@
+import 'package:Doctors_App/features/authentication/model/login/logout_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/degree_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/register_request.dart';
@@ -5,6 +6,7 @@ import 'package:Doctors_App/features/authentication/model/register/sign_up_respo
 import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../core/constants/values/app_constants.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/credentials_storage_provider.dart';
@@ -123,11 +125,29 @@ class AuthenticationRepository {
     await prefs.setString('auth_token', token);
   }
 
-  Future<void> signOut() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    await setIsLogin(false);
+  Future<LogoutResponse> signOut() async {
+    final response = await _apiClient.post(
+      url: 'doctor/logout',
+      includeAuth: true,
+    );
+
+    final logoutResponse = LogoutResponse.fromJson(response);
+
+    if (logoutResponse.status) {
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.remove('auth_token');
+      await prefs.setBool(AppConstants.isLoginKey, false);
+    }
+
+    return logoutResponse;
   }
+
+  // Future<void> signOut() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.remove('auth_token');
+  //   await setIsLogin(false);
+  // }
 
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

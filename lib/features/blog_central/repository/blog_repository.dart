@@ -1,42 +1,106 @@
+import 'dart:io';
+
+import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
+import 'package:Doctors_App/core/services/credentials_storage_service.dart';
+import 'package:Doctors_App/features/blog_central/model/blog_list_detail.dart';
+import 'package:Doctors_App/features/blog_central/model/blog_submit_response_model.dart';
+import 'package:Doctors_App/features/blog_central/model/my_submission_list_model.dart';
+import 'package:Doctors_App/features/blog_central/model/my_submission_list_view_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/api_client.dart';
-import '../model/blog_model.dart';
+import '../model/blog_list_response.dart';
 
 part 'blog_repository.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 BlogRepository blogRepository(BlogRepositoryRef ref) {
-  return BlogRepository(ref.watch(apiClientProvider));
+  final apiClient = ref.watch(apiClientProvider);
+  final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
+  return BlogRepository(
+    apiClient: apiClient,
+    credentialsStorage: credentialsStorage,
+  );
 }
 
 class BlogRepository {
-  final ApiClient _api;
+  final ApiClient _apiClient;
+  final CredentialsStorageService _credentialsStorage;
 
-  const BlogRepository(this._api);
+  const BlogRepository({
+    required ApiClient apiClient,
+    required CredentialsStorageService credentialsStorage,
+  }) : _apiClient = apiClient,
+       _credentialsStorage = credentialsStorage;
 
-  Future<DeleteAcResponse> deleteAccount() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    debugPrint(
-      'Auth Token: ${token != null ? "EXISTS (${token.substring(0, 10)}...)" : "MISSING"}',
+  Future<BlogSubmitResponse> submitBlog({
+    required String title,
+    required String content,
+    File? coverImage,
+  }) async {
+    final Map<String, File> files = {};
+
+    if (coverImage != null) {
+      files['image'] = coverImage;
+    }
+
+    if (files.isEmpty) {
+      debugPrint('📎 Files: none');
+    } else {
+      debugPrint('📎 Files:');
+      files.forEach((key, file) {
+        debugPrint(
+          '  $key → ${file.path.split('/').last} '
+          '(${file.lengthSync()} bytes)',
+        );
+      });
+    }
+
+    final response = await _apiClient.postMultipart(
+      url: 'doctor/addblog',
+      fields: {'title': title, 'content': content},
+      files: files,
+      includeAuth: true,
     );
 
-    try {
-      final response = await _api.post(url: 'delete_profile');
+    return BlogSubmitResponse.fromJson(response);
+  }
 
-      debugPrint(' API Response: $response');
+  Future<MySubmissionListModel> mySubmissionList() async {
+    final response = await _apiClient.post(
+      url: 'doctor/mysubmissionlist',
+      includeAuth: true,
+    );
 
-      if (response['status'] == 200) {
-        return DeleteAcResponse.fromJson(response);
-      } else {
-        final errorMessage = response['msg'] ?? 'Failed to fetch offer letter';
-        throw Exception(errorMessage);
-      }
-    } catch (e) {
-      debugPrint(' Error: $e');
-      rethrow;
-    }
+    return MySubmissionListModel.fromJson(response);
+  }
+
+  Future<MySubmissionListViewResponse> mySubmissionView({
+    required String id,
+  }) async {
+    final response = await _apiClient.get(
+      url: 'doctor/mysubmissionshow/$id',
+      includeAuth: true,
+    );
+
+    return MySubmissionListViewResponse.fromJson(response);
+  }
+
+  Future<BlogListResponse> blogsList() async {
+    final response = await _apiClient.get(
+      url: 'doctor/blogs',
+      includeAuth: true,
+    );
+
+    return BlogListResponse.fromJson(response);
+  }
+
+  Future<BlogListDetail> blogListDetails({required String id}) async {
+    final response = await _apiClient.get(
+      url: 'doctor/blogdetails/$id',
+      includeAuth: true,
+    );
+
+    return BlogListDetail.fromJson(response);
   }
 }
