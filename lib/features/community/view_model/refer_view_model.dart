@@ -4,16 +4,13 @@ import 'package:Doctors_App/features/community/model/refer_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
-// TODO: point this at the Dio instance / interceptor stack the rest of the
-// app already uses (e.g. the shared `dioProvider` in core/network). Wiring
-// a fresh Dio() here so this file compiles standalone — swap it out.
 final _referralDioProvider = Provider<Dio>((ref) {
   return Dio();
 });
 
 abstract class ReferralRepository {
   Future<ReferralSummary> getReferralSummary();
+
   Future<void> submitReferral(ReferralFormData data);
 }
 
@@ -43,9 +40,9 @@ final referralRepositoryProvider = Provider<ReferralRepository>((ref) {
 });
 
 final referralSummaryProvider =
-AsyncNotifierProvider<ReferralViewModel, ReferralSummary>(
-  ReferralViewModel.new,
-);
+    AsyncNotifierProvider<ReferralViewModel, ReferralSummary>(
+      ReferralViewModel.new,
+    );
 
 class ReferralViewModel extends AsyncNotifier<ReferralSummary> {
   late final ReferralRepository _repository;

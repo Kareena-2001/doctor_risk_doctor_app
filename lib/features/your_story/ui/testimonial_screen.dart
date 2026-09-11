@@ -1,5 +1,5 @@
-import 'package:Doctors_App/features/testimonial/ui/widget/community_testimonial_list.dart';
-import 'package:Doctors_App/features/testimonial/ui/widget/experience_list_screen.dart';
+import 'package:Doctors_App/features/your_story/ui/widget/community_testimonial_list.dart';
+import 'package:Doctors_App/features/your_story/ui/widget/experience_list_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/dimensions.dart';

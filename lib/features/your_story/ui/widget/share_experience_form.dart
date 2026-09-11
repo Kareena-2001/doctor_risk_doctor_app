@@ -4,36 +4,33 @@ import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
-import 'package:Doctors_App/features/testimonial/model/experience_model.dart';
+import 'package:Doctors_App/features/your_story/model/experience_model.dart';
+import 'package:Doctors_App/features/your_story/ui/testimonial_screen.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../../core/constants/dimensions.dart';
-import '../../../../../core/constants/values/app_text_style.dart';
-import '../../../../../theme/app_colors.dart';
-import '../testimonial_screen.dart';
+import '../../../../core/constants/dimensions.dart';
+import '../../../../core/constants/values/app_text_style.dart';
+import '../../../../theme/app_colors.dart';
 
-class AddTestimonialForm extends StatefulWidget {
+class ShareExperienceForm extends StatefulWidget {
   final String authorName;
   final String authorSpeciality;
 
-  const AddTestimonialForm({
+  const ShareExperienceForm({
     super.key,
     this.authorName = 'You',
     this.authorSpeciality = '',
   });
 
   @override
-  State<AddTestimonialForm> createState() => _AddTestimonialFormState();
+  State<ShareExperienceForm> createState() => _ShareExperienceFormState();
 }
 
-class _AddTestimonialFormState extends State<AddTestimonialForm> {
-  bool _rememberMe = false;
-  File? _pdfFile;
-  String? _pdfName;
+class _ShareExperienceFormState extends State<ShareExperienceForm> {
   final TextEditingController _textController = TextEditingController();
   TestimonialMode _mode = TestimonialMode.text;
   File? _videoFile;
@@ -41,34 +38,15 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
   bool _isSubmitting = false;
   bool _isSubmitted = false;
   ExperienceModel? _createdExperience;
+  File? _pdfFile;
+  String? _pdfName;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
     _textController.dispose();
     _videoController?.dispose();
     super.dispose();
-  }
-
-  Widget _infoBanner(
-    String text, {
-    IconData icon = Icons.info_outline_rounded,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primary, size: 20),
-          width(10),
-          Expanded(child: Text(text, style: AppTheme.label12)),
-        ],
-      ),
-    );
   }
 
   Future<void> _pickVideo() async {
@@ -119,6 +97,28 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
         context.showWarningSnackBar('Could not record video: $e');
       }
     }
+  }
+
+  Widget _infoBanner(
+    String text, {
+    IconData icon = Icons.info_outline_rounded,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          width(10),
+          Expanded(child: Text(text, style: AppTheme.label12)),
+        ],
+      ),
+    );
   }
 
   void _removeVideo() {
@@ -198,8 +198,6 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
   }
 
   void _done() {
-    // Return the created testimonial to ExperienceListScreen so it can
-    // be inserted into the list.
     Navigator.pop(context, _createdExperience);
   }
 
@@ -221,8 +219,10 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
           height(Responsive.h(20)),
           _infoBanner(
             icon: Icons.lock,
-            'Approved testimonials are published under Community → Testimonials, open for members and non‑members to view.',
+            'Approved experiences are published to Peer Forum — a feature only visible to active DoctorsRisk members.',
           ),
+          height(Responsive.h(20)),
+          _buildModeToggle(),
           height(Responsive.h(20)),
           if (_mode == TestimonialMode.text)
             _buildTextInput()
@@ -268,7 +268,7 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
           height(Responsive.h(28)),
           PrimaryButton(
             backgroundColor: AppColors.newPri,
-            text: _isSubmitting ? 'Submitting...' : 'Share Testimonial',
+            text: _isSubmitting ? 'Submitting...' : 'Share Experience',
             onPressed: _isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
@@ -346,33 +346,6 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
     );
   }
 
-  void _removePdf() {
-    setState(() {
-      _pdfFile = null;
-      _pdfName = null;
-    });
-  }
-
-  Future<void> _pickPdf() async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf'],
-      );
-
-      if (result == null) return;
-
-      setState(() {
-        _pdfFile = File(result.files.single.path!);
-        _pdfName = result.files.single.name;
-      });
-    } catch (e) {
-      if (mounted) {
-        context.showWarningSnackBar("Unable to pick PDF");
-      }
-    }
-  }
-
   Widget _buildHeader() {
     return Container(
       padding: EdgeInsets.all(Responsive.w(15)),
@@ -409,7 +382,7 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Share Your Testimonial',
+                  'Share Your Experience',
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.bold,
@@ -418,7 +391,7 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
                 ),
                 height(Responsive.h(4)),
                 Text(
-                  'Tell us about your testimonial — in your own words or on camera',
+                  'Tell us about your experience — in your own words or on camera',
                   style: customTextStyle(
                     fontSize: Responsive.sp(10.5),
                     color: Colors.grey.shade600,
@@ -430,6 +403,33 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
         ],
       ),
     );
+  }
+
+  Future<void> _pickPdf() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+
+      if (result == null) return;
+
+      setState(() {
+        _pdfFile = File(result.files.single.path!);
+        _pdfName = result.files.single.name;
+      });
+    } catch (e) {
+      if (mounted) {
+        context.showWarningSnackBar("Unable to pick PDF");
+      }
+    }
+  }
+
+  void _removePdf() {
+    setState(() {
+      _pdfFile = null;
+      _pdfName = null;
+    });
   }
 
   Widget _buildModeToggle() {
@@ -516,7 +516,7 @@ class _AddTestimonialFormState extends State<AddTestimonialForm> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(Responsive.w(16)),
           hintText:
-              'Share how our service helped you — a case resolved, guidance you received, or peace of mind you gained...',
+              'Share the case context, what you learned, and how it could help a peer facing something similar…',
           hintStyle: customTextStyle(
             fontSize: Responsive.sp(12),
             color: Colors.grey.shade400,

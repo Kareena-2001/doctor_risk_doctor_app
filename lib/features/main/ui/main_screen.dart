@@ -1,7 +1,7 @@
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/home/ui/home_screen.dart';
 import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
-import 'package:Doctors_App/features/testimonial/ui/testimonial_screen.dart';
+import 'package:Doctors_App/features/your_story/ui/testimonial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';

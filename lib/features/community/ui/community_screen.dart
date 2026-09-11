@@ -1,7 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/features/community/ui/peer_forum_screen.dart';
 import 'package:Doctors_App/features/community/ui/refer_group_screen.dart';
-import 'package:Doctors_App/features/testimonial/ui/widget/community_testimonial_list.dart';
+import 'package:Doctors_App/features/your_story/ui/widget/community_testimonial_list.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
