@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'my_submission_list_view_response.freezed.dart';
-
 part 'my_submission_list_view_response.g.dart';
 
 @freezed
@@ -10,10 +9,12 @@ class MySubmissionListViewResponse with _$MySubmissionListViewResponse {
     required bool status,
     required int code,
     required String msg,
-    required List<BlogData> data,
+    required BlogData data,
   }) = _MySubmissionListViewResponse;
 
-  factory MySubmissionListViewResponse.fromJson(Map<String, dynamic> json) =>
+  factory MySubmissionListViewResponse.fromJson(
+      Map<String, dynamic> json,
+      ) =>
       _$MySubmissionListViewResponseFromJson(json);
 }
 
@@ -21,11 +22,11 @@ class MySubmissionListViewResponse with _$MySubmissionListViewResponse {
 class BlogData with _$BlogData {
   const factory BlogData({
     required int id,
-    required String title,
-    required String description,
-    required String image,
-    @JsonKey(name: 'i_agree_accepted') required String iAgreeAccepted,
-    required List<String> keywords,
+    @Default('') String title,
+    @Default('') String description,
+    String? image,
+    @JsonKey(name: 'i_agree_accepted') String? iAgreeAccepted,
+    @Default([]) List<String> keywords,
   }) = _BlogData;
 
   factory BlogData.fromJson(Map<String, dynamic> json) =>

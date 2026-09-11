@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../model/blog_list_detail.dart';
+import '../../model/my_submission_list_view_response.dart';
 import '../../repository/blog_repository.dart';
 import '../state/blog_state.dart';
 
@@ -50,7 +51,6 @@ class BlogViewModel extends _$BlogViewModel {
     state = state.copyWith(blogList: result);
   }
 
-  /// Debounced search implementation to prevent spamming API requests on typing
   void onSearchChanged(String query, {String? category, String? sortBy}) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
@@ -70,6 +70,16 @@ class BlogViewModel extends _$BlogViewModel {
       () => ref.read(blogRepositoryProvider).mySubmissionList(),
     );
     state = state.copyWith(mySubmissions: result);
+  }
+
+  Future<MySubmissionListViewResponse?> fetchMySubmissionDetails(
+    String id,
+  ) async {
+    try {
+      return await ref.read(blogRepositoryProvider).mySubmissionView(id: id);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> refreshMySubmissions() => fetchMySubmissions();

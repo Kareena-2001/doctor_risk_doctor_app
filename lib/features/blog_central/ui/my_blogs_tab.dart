@@ -1,4 +1,3 @@
-// ui/my_blogs_tab.dart
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
@@ -77,22 +76,14 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
             child: ListView.separated(
               padding: EdgeInsets.fromLTRB(
                 Responsive.w(16),
-                0,
+                Responsive.h(16),
                 Responsive.w(16),
                 Responsive.h(24),
               ),
-              itemCount: blogs.length + 2, // +1 header, +1 social footer
-              separatorBuilder: (_, index) => index == 0
-                  ? const SizedBox.shrink()
-                  : height(Responsive.h(14)),
+              itemCount: blogs.length + 1,
+              separatorBuilder: (_, index) => height(Responsive.h(14)),
               itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _buildTableHeader();
-                }
-
-                final blogIndex = index - 1;
-
-                if (blogIndex == blogs.length) {
+                if (index == blogs.length) {
                   return Column(
                     children: [
                       const SocialLinkWidget(),
@@ -100,42 +91,12 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     ],
                   );
                 }
-
-                final blog = blogs[blogIndex];
+                final blog = blogs[index];
                 return _buildBlogCard(context, blog);
               },
             ),
           );
         },
-      ),
-    );
-  }
-
-  // Grey uppercase column labels, mirroring the web table's
-  // TITLE / STATUS / POINTS / DATE / ACTION header row.
-  Widget _buildTableHeader() {
-    final labelStyle = customTextStyle(
-      fontSize: Responsive.sp(9.5),
-      fontWeight: FontWeight.w700,
-      color: Colors.grey.shade500,
-    ).copyWith(letterSpacing: 0.4);
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Responsive.w(4)),
-      child: Row(
-        children: [
-          Expanded(flex: 2, child: Text('STATUS', style: labelStyle)),
-          Expanded(child: Text('POINTS', style: labelStyle)),
-          Expanded(flex: 2, child: Text('DATE', style: labelStyle)),
-          SizedBox(
-            width: Responsive.w(46),
-            child: Text(
-              'ACTION',
-              style: labelStyle,
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -150,214 +111,311 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     }
   }
 
-  // ui/my_blogs_tab.dart — _buildBlogCard replaced entirely, rest of file unchanged
   Widget _buildBlogCard(BuildContext context, dynamic blog) {
-    final String approveStatus =
-        blog.approveStatus ?? 'awaiting_admin_approval';
+    final String rawStatus = (blog.approveStatus ?? 'awaiting_admin_approval')
+        .toString()
+        .toLowerCase()
+        .trim();
+
+    final bool canEdit =
+        rawStatus == 'draft' ||
+        rawStatus == 'awaiting_admin_approval' ||
+        rawStatus == 'awaiting admin approval' ||
+        rawStatus == 'pending';
 
     late final String statusLabel;
     late final Color statusColor;
-    switch (approveStatus) {
+    late final Color statusBgColor;
+
+    switch (rawStatus) {
+      case 'published_to_forum':
+      case 'published to forum':
       case 'approved':
-        statusLabel = 'Approved';
-        statusColor = const Color(0xFF10B981);
+      case 'published':
+        statusLabel = 'Published to Forum';
+        statusColor = const Color(0xFF15803D);
+        statusBgColor = const Color(0xFFDCFCE7);
+        break;
+      case 'draft':
+        statusLabel = 'Draft';
+        statusColor = const Color(0xFF4B5563);
+        statusBgColor = const Color(0xFFF3F4F6);
         break;
       case 'rejected':
+      case 'not_approved':
         statusLabel = 'Not Approved';
-        statusColor = const Color(0xFFEF4444);
+        statusColor = const Color(0xFFB91C1C);
+        statusBgColor = const Color(0xFFFEE2E2);
         break;
       case 'awaiting_admin_approval':
+      case 'awaiting admin approval':
       default:
         statusLabel = 'Awaiting Admin Approval';
-        statusColor = const Color(0xFFF59E0B);
+        statusColor = const Color(0xFFB45309);
+        statusBgColor = const Color(0xFFFEF3C7);
+        break;
     }
-
-    final isRejected = approveStatus == 'rejected';
-
-    final valueStyle = customTextStyle(
-      fontSize: Responsive.sp(11.5),
-      fontWeight: FontWeight.w600,
-      color: Colors.grey.shade700,
-    );
 
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(Responsive.w(12)),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(Responsive.w(16)),
+        padding: EdgeInsets.all(Responsive.w(14)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title — same as the web's TITLE column, but full width since
-            // titles are long and this is a narrower viewport.
-            Text(
-              blog.title ?? '',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: customTextStyle(
-                fontSize: Responsive.sp(14),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textColor,
-              ).copyWith(height: 1.4),
-            ),
-            if ((blog.description ?? '').toString().isNotEmpty) ...[
-              height(Responsive.h(6)),
-              Text(
-                blog.description ?? '',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11),
-                  color: Colors.grey.shade600,
-                ).copyWith(height: 1.45),
-              ),
-            ],
-            height(Responsive.h(12)),
-            Divider(height: 1, thickness: 1, color: Colors.grey.shade100),
-            height(Responsive.h(10)),
-
-            // Data row — STATUS / POINTS / DATE / ACTION, aligned to the
-            // header row's column widths above.
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2,
                   child: Text(
-                    statusLabel,
+                    blog.title ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: customTextStyle(
-                      fontSize: Responsive.sp(11),
-                      fontWeight: FontWeight.w700,
-                      color: statusColor,
-                    ),
+                      fontSize: Responsive.sp(14),
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1F2937),
+                    ).copyWith(height: 1.3),
                   ),
                 ),
-                Expanded(child: Text(_pointsText(blog), style: valueStyle)),
-                Expanded(
-                  flex: 2,
+                width(Responsive.w(8)),
+                GestureDetector(
+                  onTap: () {
+                    if (canEdit) {
+                      context.push(Routes.addBlog, extra: blog);
+                    } else {
+                      _showSubmissionDetailsDialog(context, blog.id.toString());
+                    }
+                  },
                   child: Text(
-                    (blog.createdOn ?? '').toString(),
-                    style: valueStyle,
-                  ),
-                ),
-                SizedBox(
-                  width: Responsive.w(46),
-                  child: GestureDetector(
-                    onTap: () => context.push(Routes.addBlog),
-                    child: Text(
-                      'Edit',
-                      textAlign: TextAlign.right,
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(11.5),
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.brandGreen,
-                      ).copyWith(decoration: TextDecoration.underline),
-                    ),
+                    canEdit ? 'Edit' : 'View',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(12),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.brandGreen,
+                    ).copyWith(decoration: TextDecoration.underline),
                   ),
                 ),
               ],
             ),
-
-            // Extra mobile-only context the web table doesn't show —
-            // kept below the table row so it doesn't disrupt the match.
-            if ((blog.viewCount ?? 0).toString() != '0') ...[
-              height(Responsive.h(10)),
-              Row(
-                children: [
-                  Icon(
-                    Icons.remove_red_eye_outlined,
-                    size: Responsive.sp(13),
-                    color: Colors.grey.shade500,
-                  ),
-                  width(Responsive.w(5)),
-                  Text(
-                    '${blog.viewCount ?? '0'} views',
-                    style: customTextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: Responsive.sp(10.5),
+            height(Responsive.h(10)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.w(8),
+                vertical: Responsive.h(3),
+              ),
+              decoration: BoxDecoration(
+                color: statusBgColor,
+                borderRadius: BorderRadius.circular(Responsive.w(12)),
+              ),
+              child: Text(
+                statusLabel,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(10.5),
+                  fontWeight: FontWeight.w600,
+                  color: statusColor,
+                ),
+              ),
+            ),
+            height(Responsive.h(12)),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            height(Responsive.h(10)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: Responsive.sp(12),
+                      color: const Color(0xFF9CA3AF),
                     ),
-                  ),
-                ],
-              ),
-            ],
-            if ((blog.keywords as List?)?.isNotEmpty ?? false) ...[
-              height(Responsive.h(10)),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: (blog.keywords as List)
-                    .map(
-                      (k) => Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Responsive.w(9),
-                          vertical: Responsive.h(4),
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.newPri.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(Responsive.w(20)),
-                        ),
-                        child: Text(
-                          k.keyword?.toString() ?? '', // KeywordModel.keyword
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(9.5),
-                            color: AppColors.newPri,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-            if (isRejected) ...[
-              height(Responsive.h(14)),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: Icon(
-                        Icons.refresh_rounded,
-                        size: Responsive.sp(16),
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        minimumSize: Size(double.infinity, Responsive.h(40)),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Responsive.w(12),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(Responsive.w(10)),
-                        ),
-                      ),
-                      label: Text(
-                        'Resubmit',
-                        style: customTextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: Responsive.sp(11),
-                        ),
+                    width(Responsive.w(4)),
+                    Text(
+                      rawStatus == 'draft'
+                          ? 'Last edited ${blog.createdOn ?? 'N/A'}'
+                          : (blog.createdOn ?? 'N/A').toString(),
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11),
+                        color: const Color(0xFF6B7280),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Points: ',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11),
+                        color: const Color(0xFF9CA3AF),
+                      ),
+                    ),
+                    Text(
+                      _pointsText(blog),
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF374151),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showSubmissionDetailsDialog(BuildContext context, String blogId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
+          ),
+          insetPadding: EdgeInsets.all(Responsive.w(16)),
+          child: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.75,
+            ),
+            padding: EdgeInsets.all(Responsive.w(16)),
+            child: FutureBuilder(
+              future: ref
+                  .read(blogViewModelProvider.notifier)
+                  .fetchMySubmissionDetails(blogId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 150,
+                    child: Center(child: Loading()),
+                  );
+                }
+
+                if (snapshot.hasError || snapshot.data == null) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Failed to load submission details'),
+                      height(Responsive.h(12)),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  );
+                }
+
+                final responseData = snapshot.data!;
+                final data = responseData.data;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Submission Detail',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(16),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (data.image != null &&
+                                data.image!.isNotEmpty) ...[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  Responsive.w(8),
+                                ),
+                                child: Image.network(
+                                  data.image!,
+                                  width: double.infinity,
+                                  height: Responsive.h(160),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const SizedBox.shrink(),
+                                ),
+                              ),
+                              height(Responsive.h(12)),
+                            ],
+                            Text(
+                              'Title',
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(11),
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            height(Responsive.h(4)),
+                            Text(
+                              data.title,
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(15),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            height(Responsive.h(10)),
+
+                            Text(
+                              'Description',
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(11),
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            height(Responsive.h(4)),
+                            Text(
+                              data.description,
+                              style: customTextStyle(
+                                fontSize: Responsive.sp(12),
+                                color: const Color(0xFF4B5563),
+                              ).copyWith(height: 1.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
