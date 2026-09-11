@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
@@ -520,8 +521,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             showNotification: true,
             onNotification: _handleNotificationTap,
           ),
-          body: RefreshIndicator(
-            color: AppColors.newPri,
+          body: AppRefreshIndicator(
+            // color: AppColors.newPri,
             onRefresh: _refreshUserData,
             child: FadeTransition(
               opacity: _fadeAnimation,

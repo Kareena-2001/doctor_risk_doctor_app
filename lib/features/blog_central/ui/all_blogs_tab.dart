@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/app_refresh_indicator.dart';
 import '../../../routing/routes.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 
@@ -52,7 +53,7 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
         final blogs = response?.data ?? [];
 
         if (blogs.isEmpty) {
-          return RefreshIndicator(
+          return AppRefreshIndicator(
             onRefresh: () =>
                 ref.read(blogViewModelProvider.notifier).refreshBlogList(),
             child: ListView(
@@ -64,7 +65,7 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
           );
         }
 
-        return RefreshIndicator(
+        return AppRefreshIndicator(
           onRefresh: () =>
               ref.read(blogViewModelProvider.notifier).refreshBlogList(),
           child: ListView.separated(

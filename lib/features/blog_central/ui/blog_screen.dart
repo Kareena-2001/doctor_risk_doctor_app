@@ -1,7 +1,7 @@
-// ui/views/blog_screen.dart
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
 import 'package:Doctors_App/features/blog_central/model/blog_list_response.dart';
@@ -59,8 +59,8 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Blog Central'),
-      body: RefreshIndicator(
+      appBar:  CustomAppBar(title: 'Blog Central'),
+      body: AppRefreshIndicator(
         onRefresh: () async => _fetchData(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

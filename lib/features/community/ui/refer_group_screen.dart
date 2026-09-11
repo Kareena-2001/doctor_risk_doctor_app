@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
@@ -118,7 +119,7 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
   Widget build(BuildContext context) {
     final summaryAsync = ref.watch(referralSummaryProvider);
 
-    return RefreshIndicator(
+    return AppRefreshIndicator(
       onRefresh: () => ref.read(referralSummaryProvider.notifier).refresh(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),

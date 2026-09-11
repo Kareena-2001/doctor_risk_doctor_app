@@ -263,7 +263,9 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
-      appBar: CustomAppBar(title: isEditing ? 'Edit Blog' : 'Write a Blog'),
+      appBar: CustomAppBar(
+        title: isEditing ? 'Edit Blog Submission' : 'Write a Blog',
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(Responsive.w(16)),
         child: Column(
@@ -273,19 +275,17 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
               const LinearProgressIndicator(minHeight: 2),
               height(12),
             ],
-
-            Text(
-              'Share your experience with the group. Your submission goes '
-              'to admin for review before it\'s published — you\'ll earn '
-              'points once it\'s approved.',
-              style: customTextStyle(
-                fontSize: Responsive.sp(10.5),
-                color: Colors.grey.shade700,
-              ).copyWith(height: 1.5),
-            ),
-
+            if (!isEditing)
+              Text(
+                'Share your experience with the group. Your submission goes '
+                'to admin for review before it\'s published — you\'ll earn '
+                'points once it\'s approved.',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(10.5),
+                  color: Colors.grey.shade700,
+                ).copyWith(height: 1.5),
+              ),
             height(22),
-
             Text(
               'Keywords',
               style: customTextStyle(
@@ -296,7 +296,6 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
             height(8),
             _buildKeywordInput(),
             if (keywords.isNotEmpty) ...[height(10), _buildKeywordChips()],
-
             height(24),
             CustomTextField(
               label: 'Subject Line / Title',
@@ -316,7 +315,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                 ),
                 width(10),
                 Text(
-                  'Optional',
+                  '(Optional)',
                   style: customTextStyle(
                     fontSize: Responsive.sp(10.5),
                     color: Colors.grey.shade600,
@@ -326,7 +325,6 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
             ),
             height(10),
             _buildImagePicker(),
-
             height(22),
             CustomTextField(
               label: 'Your Article',
@@ -364,9 +362,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                 ),
               ],
             ),
-
             height(14),
-
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -412,10 +408,6 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
     );
   }
 
-  /// - New blog, or editing a DRAFT: Cancel + "Save Changes"/"Save as
-  ///   Draft" side by side, then a full-width "Submit for Review" below.
-  /// - Editing a submission that's AWAITING_ADMIN_APPROVAL: only Cancel +
-  ///   "Save Changes" — no submit action, status stays as-is.
   Widget _buildActionButtons(bool isSubmitting) {
     if (_isDraftStatus) {
       return Column(
@@ -439,17 +431,19 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
           ),
           height(12),
           PrimaryButton(
-            borderRadius: 25,
+            borderRadius: 30,
+            width: 180,
             fontSize: 14,
             text: 'Submit for Review',
-            backgroundColor: AppColors.newPri,
+            gradient: LinearGradient(
+              colors: [AppColors.primary, AppColors.newPri],
+            ),
             onPressed: isSubmitting ? () {} : _submitForReview,
           ),
         ],
       );
     }
 
-    // Already awaiting_admin_approval — only allow saving changes.
     return Row(
       children: [
         Expanded(

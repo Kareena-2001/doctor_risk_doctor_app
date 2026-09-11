@@ -10,6 +10,7 @@ import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/common_empty_state.dart';
 import '../model/my_plan_model.dart';
 import 'my_plan_details_screen.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 class MyPlansView extends ConsumerWidget {
   const MyPlansView({super.key});
@@ -24,7 +25,7 @@ class MyPlansView extends ConsumerWidget {
         subTitle: 'All memberships secured under Membership ID DR‑2026‑084213',
       ),
       body: SafeArea(
-        child: RefreshIndicator(
+        child: AppRefreshIndicator(
           onRefresh: () =>
               ref.read(myPlansViewModelProvider.notifier).refresh(),
           child: plansAsync.when(

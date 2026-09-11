@@ -8,6 +8,7 @@ import '../../../core/widgets/custom_app_bar.dart';
 import '../../../extensions/build_context_extension.dart';
 import '../../../theme/app_colors.dart';
 import '../../common/ui/widgets/loading.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -75,7 +76,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       );
     }
 
-    return RefreshIndicator(
+    return AppRefreshIndicator(
       onRefresh: () => notificationsAsync.refresh(),
       child: Padding(
         padding: const EdgeInsets.only(

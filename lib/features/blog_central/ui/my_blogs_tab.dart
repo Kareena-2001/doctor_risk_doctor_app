@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/routing/routes.dart';
@@ -37,7 +38,11 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'Blog Central'),
+      appBar: CustomAppBar(
+        title: 'My Submissions & Rewards',
+        subTitle:
+            'Only visible to you. Track your own articles through the approval workflow',
+      ),
       body: mySubmissionsAsync.when(
         loading: () => Center(child: Loading()),
         error: (e, st) => Center(
@@ -58,7 +63,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
           final blogs = response?.data ?? [];
 
           if (blogs.isEmpty) {
-            return RefreshIndicator(
+            return AppRefreshIndicator(
               onRefresh: () => ref
                   .read(blogViewModelProvider.notifier)
                   .refreshMySubmissions(),
@@ -71,7 +76,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
             );
           }
 
-          return RefreshIndicator(
+          return AppRefreshIndicator(
             onRefresh: () =>
                 ref.read(blogViewModelProvider.notifier).refreshMySubmissions(),
             child: ListView.separated(
@@ -206,7 +211,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     style: customTextStyle(
                       fontSize: Responsive.sp(12),
                       fontWeight: FontWeight.w600,
-                      color: AppColors.brandGreen,
+                      color: AppColors.newPri,
                     ).copyWith(decoration: TextDecoration.underline),
                   ),
                 ),

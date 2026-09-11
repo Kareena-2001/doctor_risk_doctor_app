@@ -38,7 +38,7 @@ class SecondaryButton extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isEnable ? txtColor : AppColors.mono20,
-          width: 2,
+          width: 1,
         ),
       ),
       child: MaterialInkWell(
