@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/widgets/custom_app_bar.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 
 class MyBlogsTab extends ConsumerStatefulWidget {
@@ -34,73 +35,79 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
       blogViewModelProvider.select((s) => s.mySubmissions),
     );
 
-    return mySubmissionsAsync.when(
-      loading: () => const Center(child: Loading()),
-      error: (e, st) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Failed to load your blogs: $e'),
-            TextButton(
-              onPressed: () => ref
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: const CustomAppBar(title: 'Blog Central'),
+      body: mySubmissionsAsync.when(
+        loading: () => const Center(child: Loading()),
+        error: (e, st) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Failed to load your blogs: $e'),
+              TextButton(
+                onPressed: () => ref
+                    .read(blogViewModelProvider.notifier)
+                    .refreshMySubmissions(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+        data: (response) {
+          final blogs = response?.data ?? [];
+
+          if (blogs.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: () => ref
                   .read(blogViewModelProvider.notifier)
                   .refreshMySubmissions(),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-      data: (response) {
-        final blogs = response?.data ?? [];
+              child: ListView(
+                children: const [
+                  SizedBox(height: 120),
+                  Center(child: Text('You haven\'t submitted any blogs yet')),
+                ],
+              ),
+            );
+          }
 
-        if (blogs.isEmpty) {
           return RefreshIndicator(
             onRefresh: () =>
                 ref.read(blogViewModelProvider.notifier).refreshMySubmissions(),
-            child: ListView(
-              children: const [
-                SizedBox(height: 120),
-                Center(child: Text('You haven\'t submitted any blogs yet')),
-              ],
+            child: ListView.separated(
+              padding: EdgeInsets.fromLTRB(
+                Responsive.w(16),
+                0,
+                Responsive.w(16),
+                Responsive.h(24),
+              ),
+              itemCount: blogs.length + 2, // +1 header, +1 social footer
+              separatorBuilder: (_, index) => index == 0
+                  ? const SizedBox.shrink()
+                  : height(Responsive.h(14)),
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _buildTableHeader();
+                }
+
+                final blogIndex = index - 1;
+
+                if (blogIndex == blogs.length) {
+                  return Column(
+                    children: [
+                      const SocialLinkWidget(),
+                      height(Responsive.h(30)),
+                    ],
+                  );
+                }
+
+                final blog = blogs[blogIndex];
+                return _buildBlogCard(context, blog);
+              },
             ),
           );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () =>
-              ref.read(blogViewModelProvider.notifier).refreshMySubmissions(),
-          child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(
-              Responsive.w(16),
-              0,
-              Responsive.w(16),
-              Responsive.h(24),
-            ),
-            itemCount: blogs.length + 2, // +1 header, +1 social footer
-            separatorBuilder: (_, index) =>
-                index == 0 ? const SizedBox.shrink() : height(Responsive.h(14)),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return _buildTableHeader();
-              }
-
-              final blogIndex = index - 1;
-
-              if (blogIndex == blogs.length) {
-                return Column(
-                  children: [
-                    const SocialLinkWidget(),
-                    height(Responsive.h(30)),
-                  ],
-                );
-              }
-
-              final blog = blogs[blogIndex];
-              return _buildBlogCard(context, blog);
-            },
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 

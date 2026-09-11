@@ -9,7 +9,6 @@ part 'blog_state.freezed.dart';
 @freezed
 class BlogState with _$BlogState {
   const factory BlogState({
-
     @Default(AsyncValue.data(null)) AsyncValue<void> submitStatus,
 
     @Default(AsyncValue.data(null))
@@ -18,6 +17,5 @@ class BlogState with _$BlogState {
     @Default(AsyncValue.data(null)) AsyncValue<BlogListResponse?> blogList,
 
     @Default({}) Map<String, AsyncValue<BlogListDetail>> blogDetails,
-
   }) = _BlogState;
 }

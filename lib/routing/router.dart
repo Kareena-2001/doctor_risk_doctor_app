@@ -4,6 +4,7 @@ import 'package:Doctors_App/features/authentication/ui/sign_up_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
+import 'package:Doctors_App/features/blog_central/ui/my_blogs_tab.dart';
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dart';
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
@@ -325,6 +326,7 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const NewsAdvisoryScreen()),
     ),
+
     // GoRoute(
     //   path: Routes.newsAdvisoryDetails,
     //   pageBuilder: (context, state) =>
@@ -343,6 +345,7 @@ final GoRouter router = GoRouter(
         return state.slidePage(BlogDetailsScreen(blogId: blogId));
       },
     ),
+
     // GoRoute(
     //   path: Routes.blogCentralDetails,
     //   pageBuilder: (context, state) =>
@@ -360,6 +363,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.communityScreen,
       pageBuilder: (context, state) => state.slidePage(const CommunityScreen()),
+    ),
+    GoRoute(
+      path: Routes.mySubmission,
+      pageBuilder: (context, state) => state.slidePage(MyBlogsTab()),
     ),
     GoRoute(
       path: Routes.addBlog,

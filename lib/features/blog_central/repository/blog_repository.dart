@@ -86,10 +86,33 @@ class BlogRepository {
     return MySubmissionListViewResponse.fromJson(response);
   }
 
-  Future<BlogListResponse> blogsList() async {
+  Future<BlogListResponse> blogsList({
+    String? keywords,
+    String? category,
+    String? speciality,
+    String? title,
+    String? sortBy,
+    String? page,
+    String? limit,
+  }) async {
+    final Map<String, String> queryParams = {};
+
+    if (keywords != null && keywords.isNotEmpty) {
+      queryParams['keywords'] = keywords;
+    }
+    if (category != null && category.isNotEmpty)
+      queryParams['category'] = category;
+    if (speciality != null && speciality.isNotEmpty)
+      queryParams['speciality'] = speciality;
+    if (title != null && title.isNotEmpty) queryParams['title'] = title;
+    if (sortBy != null && sortBy.isNotEmpty) queryParams['sort_by'] = sortBy;
+    if (page != null) queryParams['page'] = page;
+    if (limit != null) queryParams['limit'] = limit;
+
     final response = await _apiClient.get(
       url: 'doctor/blogs',
       includeAuth: true,
+      queryParams: queryParams.isEmpty ? null : queryParams,
     );
 
     return BlogListResponse.fromJson(response);

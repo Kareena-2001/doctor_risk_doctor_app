@@ -1,4 +1,4 @@
-// viewmodel/blog_view_model.dart — single view model, all screens use this
+import 'dart:async';
 import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../model/blog_list_detail.dart';
@@ -9,18 +9,60 @@ part 'blog_view_model.g.dart';
 
 @riverpod
 class BlogViewModel extends _$BlogViewModel {
-  @override
-  BlogState build() => const BlogState();
+  Timer? _debounceTimer;
 
-  Future<void> fetchBlogList() async {
+  @override
+  BlogState build() {
+    ref.onDispose(() {
+      _debounceTimer?.cancel();
+    });
+    return const BlogState();
+  }
+
+  Future<void> fetchBlogList({
+    String? query,
+    String? category,
+    String? sortBy,
+  }) async {
     state = state.copyWith(blogList: const AsyncLoading());
+
+    // Map drop-down values to API sort parameters
+    String? mappedSortBy;
+    if (sortBy == 'Newest first') {
+      mappedSortBy = 'newest';
+    } else if (sortBy == 'Oldest first') {
+      mappedSortBy = 'oldest';
+    } else if (sortBy == 'Most Read') {
+      mappedSortBy = 'most_read';
+    }
+
     final result = await AsyncValue.guard(
-      () => ref.read(blogRepositoryProvider).blogsList(),
+      () => ref
+          .read(blogRepositoryProvider)
+          .blogsList(
+            keywords: query,
+            category: (category == 'All Topics' || category == null)
+                ? null
+                : category,
+            sortBy: mappedSortBy,
+          ),
     );
     state = state.copyWith(blogList: result);
   }
 
-  Future<void> refreshBlogList() => fetchBlogList();
+  /// Debounced search implementation to prevent spamming API requests on typing
+  void onSearchChanged(String query, {String? category, String? sortBy}) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      fetchBlogList(query: query, category: category, sortBy: sortBy);
+    });
+  }
+
+  Future<void> refreshBlogList({
+    String? query,
+    String? category,
+    String? sortBy,
+  }) => fetchBlogList(query: query, category: category, sortBy: sortBy);
 
   Future<void> fetchMySubmissions() async {
     state = state.copyWith(mySubmissions: const AsyncLoading());

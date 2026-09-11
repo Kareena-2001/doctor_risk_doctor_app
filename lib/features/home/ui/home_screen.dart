@@ -334,7 +334,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     });
   }
 
-  // --- update _buildQuickActionsRow: swap CompositedTransformTarget for keyed Container ---
   Widget _buildQuickActionsRow() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),

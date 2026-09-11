@@ -1,9 +1,15 @@
+// ui/views/blog_screen.dart
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
+import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/features/blog_central/model/blog_list_response.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,22 +29,20 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
   String selectedSort = 'Newest first';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<String> filterCategories = [
-    'All Topics',
-    'Informed Consent Scenarios',
-    'High Risk Diagnostics',
-    'Defensive Documentation',
-    'Cross Speciality & Referral Liability',
-    'Reputation & Social Media Risk',
-    'Regulatory & Compliance Updates',
-  ];
-
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => ref.read(blogViewModelProvider.notifier).fetchBlogList(),
-    );
+    Future.microtask(() => _fetchData());
+  }
+
+  void _fetchData() {
+    ref
+        .read(blogViewModelProvider.notifier)
+        .fetchBlogList(
+          query: _searchController.text.trim(),
+          category: selectedFilter,
+          sortBy: selectedSort,
+        );
   }
 
   @override
@@ -54,11 +58,12 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'Blog Central'),
       body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(blogViewModelProvider.notifier).refreshBlogList(),
+        onRefresh: () async => _fetchData(),
         child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(
             horizontal: Responsive.w(16),
             vertical: Responsive.h(12),
@@ -66,21 +71,8 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Breadcrumb/Subtitle bar
-              Text(
-                'Dashboard / Blog Central',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11),
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              height(Responsive.h(10)),
-
-              // 1. Hero Header Card
               _buildHeaderBanner(context),
               height(Responsive.h(20)),
-
-              // 2. Peer Insights Section Title & Search Box
               Text(
                 'Peer Insights',
                 style: customTextStyle(
@@ -97,115 +89,32 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 ),
               ),
               height(Responsive.h(12)),
-
-              // Search Bar
-              TextField(
+              CustomSearchBar(
                 controller: _searchController,
-                style: customTextStyle(fontSize: Responsive.sp(12)),
-                decoration: InputDecoration(
-                  hintText: 'Search by keyword, specialty or author...',
-                  hintStyle: customTextStyle(
-                    fontSize: Responsive.sp(12),
-                    color: Colors.grey.shade400,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.grey.shade500,
-                    size: Responsive.sp(18),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: Responsive.h(10),
-                    horizontal: Responsive.w(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(Responsive.w(8)),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(Responsive.w(8)),
-                    borderSide: BorderSide(color: AppColors.newPri),
-                  ),
-                ),
+                hint: 'Search by keyword, specialty or author…',
+                onChanged: (val) {
+                  ref
+                      .read(blogViewModelProvider.notifier)
+                      .onSearchChanged(
+                        val,
+                        category: selectedFilter,
+                        sortBy: selectedSort,
+                      );
+                },
+              ),
+              height(Responsive.h(10)),
+              CustomDropdownField(
+                isRequired: false,
+                value: selectedSort,
+                items: const ['Newest first', 'Most Read', 'Oldest first'],
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() => selectedSort = val);
+                    _fetchData();
+                  }
+                },
               ),
               height(Responsive.h(12)),
-
-              // Sorting Dropdown
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.w(12),
-                    vertical: Responsive.h(2),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(Responsive.w(8)),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedSort,
-                      isDense: true,
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(12),
-                        color: Colors.grey.shade800,
-                      ),
-                      items: ['Newest first', 'Most Read', 'Oldest first']
-                          .map(
-                            (e) => DropdownMenuItem(value: e, child: Text(e)),
-                          )
-                          .toList(),
-                      onChanged: (val) {
-                        if (val != null) setState(() => selectedSort = val);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              height(Responsive.h(12)),
-
-              // Filter Category Chips
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: filterCategories.map((cat) {
-                  final isSelected = selectedFilter == cat;
-                  return ChoiceChip(
-                    label: Text(
-                      cat,
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(10.5),
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                        color: isSelected ? Colors.white : Colors.grey.shade800,
-                      ),
-                    ),
-                    selected: isSelected,
-                    selectedColor: const Color(0xFF0F5A47),
-                    backgroundColor: Colors.grey.shade100,
-                    showCheckmark: false,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Responsive.w(8),
-                      vertical: Responsive.h(4),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Responsive.w(20)),
-                      side: BorderSide(
-                        color: isSelected
-                            ? const Color(0xFF0F5A47)
-                            : Colors.grey.shade300,
-                      ),
-                    ),
-                    onSelected: (_) => setState(() => selectedFilter = cat),
-                  );
-                }).toList(),
-              ),
-              height(Responsive.h(18)),
-
-              // 3. Blog List Grid / Content Section
               blogListAsync.when(
                 loading: () => const SizedBox(
                   height: 200,
@@ -216,9 +125,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                     children: [
                       Text('Failed to load blogs: $e'),
                       TextButton(
-                        onPressed: () => ref
-                            .read(blogViewModelProvider.notifier)
-                            .refreshBlogList(),
+                        onPressed: _fetchData,
                         child: const Text('Retry'),
                       ),
                     ],
@@ -230,26 +137,29 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                   if (blogs.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 40),
-                      child: Center(child: Text('No blogs yet')),
+                      child: Center(
+                        child: Text('No blogs found matching your criteria.'),
+                      ),
                     );
                   }
 
                   return LayoutBuilder(
                     builder: (context, constraints) {
                       final crossAxisCount = constraints.maxWidth > 600 ? 2 : 1;
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: Responsive.w(12),
-                          mainAxisSpacing: Responsive.h(12),
-                          mainAxisExtent: 220,
-                        ),
-                        itemCount: blogs.length,
-                        itemBuilder: (context, index) {
-                          return _buildBlogCard(context, blogs[index]);
-                        },
+                      final spacing = Responsive.w(12);
+                      final itemWidth = crossAxisCount == 1
+                          ? constraints.maxWidth
+                          : (constraints.maxWidth - spacing) / 2;
+
+                      return Wrap(
+                        spacing: spacing,
+                        runSpacing: Responsive.h(12),
+                        children: blogs.map((blog) {
+                          return SizedBox(
+                            width: itemWidth,
+                            child: _buildBlogCard(context, blog),
+                          );
+                        }).toList(),
                       );
                     },
                   );
@@ -263,7 +173,6 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
     );
   }
 
-  // Header Banner Component
   Widget _buildHeaderBanner(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -290,21 +199,18 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                   ),
                 ),
               ),
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.lock_outline,
-                  size: Responsive.sp(12),
-                  color: Colors.grey.shade700,
-                ),
-                label: Text(
-                  'My Submissions',
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11),
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+              PrimaryButton(
+                borderColor: AppColors.border,
+                backgroundColor: AppColors.white,
+                textColor: AppColors.newPri,
+                text: 'My Submissions',
+                width: 130,
+                height: 35,
+                fontSize: 11,
+                onPressed: () {
+                  context.push(Routes.mySubmission);
+                },
+                icon: Icons.menu,
               ),
             ],
           ),
@@ -312,7 +218,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
           Text(
             'A private space for the DoctorsRisk consultation group — read how peers across specialties are navigating medico-legal risk, share your own experience to help someone facing the same situation, and earn recognition points every time your insight goes live.',
             style: customTextStyle(
-              fontSize: Responsive.sp(10.5),
+              fontSize: Responsive.sp(11),
               color: Colors.grey.shade700,
             ).copyWith(height: 1.4),
           ),
@@ -336,7 +242,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                   child: Text(
                     'Private to this consultation group. Nothing here is public or searchable outside DoctorsRisk unless you personally choose to export or share a specific article.',
                     style: customTextStyle(
-                      fontSize: Responsive.sp(9.5),
+                      fontSize: Responsive.sp(10),
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -345,38 +251,28 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
             ),
           ),
           height(Responsive.h(14)),
-          ElevatedButton.icon(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F5A47),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.w(16),
-                vertical: Responsive.h(10),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Responsive.w(8)),
-              ),
-              elevation: 0,
-            ),
-            icon: Icon(Icons.add, size: Responsive.sp(16)),
-            label: Text(
-              'Write a Blog',
-              style: customTextStyle(
-                fontSize: Responsive.sp(12),
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+          PrimaryButton(
+            gradientColors: [AppColors.newPri, AppColors.primary],
+            textColor: AppColors.white,
+            text: 'Write a Blog',
+            width: 130,
+            height: 50,
+            borderRadius: 25,
+            fontSize: 12,
+            onPressed: () {
+              context.push(Routes.addBlog);
+            },
+            icon: Icons.add,
           ),
         ],
       ),
     );
   }
 
-  // Individual Card Component
-  Widget _buildBlogCard(BuildContext context, dynamic blog) {
+  Widget _buildBlogCard(BuildContext context, BlogData blog) {
     final keywords = (blog.keywords as List?) ?? [];
+    final formattedDate = _formatBlogDate(blog.date);
+    final hasDate = formattedDate.isNotEmpty;
 
     return InkWell(
       onTap: () =>
@@ -398,13 +294,13 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Keywords / Category Chips
             if (keywords.isNotEmpty) ...[
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
-                children: keywords.take(2).map((k) {
+                children: keywords.take(2).map((keyword) {
                   return Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: Responsive.w(6),
@@ -415,7 +311,9 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                       borderRadius: BorderRadius.circular(Responsive.w(4)),
                     ),
                     child: Text(
-                      k.toString(),
+                      keyword.toString(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
                         fontSize: Responsive.sp(8.5),
                         fontWeight: FontWeight.w500,
@@ -425,10 +323,8 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                   );
                 }).toList(),
               ),
-              height(Responsive.h(8)),
+              height(Responsive.h(6)),
             ],
-
-            // Article Title
             Text(
               blog.title ?? '',
               maxLines: 2,
@@ -439,10 +335,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 color: AppColors.textColor,
               ).copyWith(height: 1.3),
             ),
-
-            const Spacer(),
-
-            // Author Avatar & Meta Details
+            height(Responsive.h(8)),
             Row(
               children: [
                 _AuthorAvatar(name: blog.drName ?? ''),
@@ -463,6 +356,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                           color: AppColors.textColor,
                         ),
                       ),
+                      height(Responsive.h(1)),
                       Text(
                         blog.specialityName ?? '',
                         maxLines: 1,
@@ -477,10 +371,67 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 ),
               ],
             ),
+            height(Responsive.h(8)),
+            Divider(color: AppColors.divider),
+            height(Responsive.h(8)),
+            Row(
+              children: [
+                Icon(
+                  Icons.visibility_outlined,
+                  size: Responsive.sp(13),
+                  color: Colors.grey.shade600,
+                ),
+                width(Responsive.w(4)),
+                Text(
+                  '${blog.viewCount ?? '0'} Peer Reads',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(9),
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                if (hasDate) ...[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: Responsive.w(10)),
+                    child: Container(
+                      width: 1,
+                      height: Responsive.h(14),
+                      color: Colors.grey.shade300,
+                    ),
+                  ),
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: Responsive.sp(12),
+                    color: Colors.grey.shade500,
+                  ),
+                  width(Responsive.w(4)),
+                  Flexible(
+                    child: Text(
+                      formattedDate,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(9),
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
     );
+  }
+
+  String _formatBlogDate(String? value) {
+    if (value == null || value.isEmpty) return '';
+    try {
+      final date = DateTime.parse(value);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (_) {
+      return value;
+    }
   }
 }
 

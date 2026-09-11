@@ -66,6 +66,8 @@ class Routes {
 
   static const newsAdvisory = '/newsAdvisory';
   static const newsAdvisoryDetails = '/newsAdvisoryDetails';
+
+  static const mySubmission = '/mySubmission';
   static const blogCentral = '/blogCentral';
   static const blogCentralDetails = '/blogCentralDetails';
   static const eventsScreen = '/eventsScreen';

@@ -1,16 +1,15 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'blog_list_detail.freezed.dart';
-
 part 'blog_list_detail.g.dart';
 
 @freezed
 class BlogListDetail with _$BlogListDetail {
   const factory BlogListDetail({
-    required bool status,
-    required int code,
-    required String msg,
-    required List<BlogData> data,
+    bool? status,
+    int? code,
+    String? msg,
+    @Default([]) List<BlogData> data,
   }) = _BlogListDetail;
 
   factory BlogListDetail.fromJson(Map<String, dynamic> json) =>
@@ -21,19 +20,19 @@ class BlogListDetail with _$BlogListDetail {
 class BlogData with _$BlogData {
   const factory BlogData({
     required int id,
-    required String title,
-    required String description,
-    required String image,
-    @JsonKey(name: 'dr_name') required String drName,
-    required String degree,
-    @JsonKey(name: 'category_id') required int categoryId,
-    @JsonKey(name: 'speciality_id') required int specialityId,
-    @JsonKey(name: 'view_count') required int viewCount,
-    @JsonKey(name: 'created_on') required String createdOn,
-    @JsonKey(name: 'approve_date') required String? approveDate,
-    @JsonKey(name: 'category_name') required String categoryName,
-    @JsonKey(name: 'speciality_name') required String specialityName,
-    required List<KeywordData> keywords,
+    @Default('') String title,
+    @Default('') String description,
+    String? image,
+    @JsonKey(name: 'dr_name') String? drName,
+    String? degree,
+    @JsonKey(name: 'category_id') dynamic categoryId,
+    @JsonKey(name: 'speciality_id') dynamic specialityId,
+    @JsonKey(name: 'view_count') dynamic viewCount,
+    @JsonKey(name: 'created_on') String? createdOn,
+    @JsonKey(name: 'approve_date') String? approveDate,
+    @JsonKey(name: 'category_name') String? categoryName,
+    @JsonKey(name: 'speciality_name') String? specialityName,
+    @Default([]) List<KeywordData> keywords,
   }) = _BlogData;
 
   factory BlogData.fromJson(Map<String, dynamic> json) =>
@@ -43,8 +42,8 @@ class BlogData with _$BlogData {
 @freezed
 class KeywordData with _$KeywordData {
   const factory KeywordData({
-    @JsonKey(name: 'blog_id') required int blogId,
-    required String keyword,
+    @JsonKey(name: 'blog_id') int? blogId,
+    @Default('') String keyword,
   }) = _KeywordData;
 
   factory KeywordData.fromJson(Map<String, dynamic> json) =>
