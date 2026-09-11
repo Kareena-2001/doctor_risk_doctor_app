@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../model/blog_list_detail.dart';
 import '../../model/my_submission_list_view_response.dart';
@@ -73,11 +74,15 @@ class BlogViewModel extends _$BlogViewModel {
   }
 
   Future<MySubmissionListViewResponse?> fetchMySubmissionDetails(
-    String id,
-  ) async {
+      String id,
+      ) async {
     try {
-      return await ref.read(blogRepositoryProvider).mySubmissionView(id: id);
-    } catch (e) {
+      return await ref
+          .read(blogRepositoryProvider)
+          .mySubmissionView(id: id);
+    } catch (e, stackTrace) {
+      debugPrint('fetchMySubmissionDetails error: $e');
+      debugPrintStack(stackTrace: stackTrace);
       return null;
     }
   }
@@ -101,20 +106,36 @@ class BlogViewModel extends _$BlogViewModel {
   }
 
   Future<bool> submitBlog({
+    int? id,
     required String title,
     required String content,
+    required String iAgreeAccepted,
+    required List<String> keywords,
+    required String approveStatus,
     File? coverImage,
   }) async {
     state = state.copyWith(submitStatus: const AsyncLoading());
+
     final result = await AsyncValue.guard(
       () => ref
           .read(blogRepositoryProvider)
-          .submitBlog(title: title, content: content, coverImage: coverImage),
+          .submitBlog(
+            id: id,
+            title: title,
+            description: content,
+            iAgreeAccepted: iAgreeAccepted,
+            keywords: keywords,
+            approveStatus: approveStatus,
+            coverImage: coverImage,
+          ),
     );
-    final asyncVoid = result.hasError
+
+    final submitStatus = result.hasError
         ? AsyncValue<void>.error(result.error!, result.stackTrace!)
         : const AsyncValue<void>.data(null);
-    state = state.copyWith(submitStatus: asyncVoid);
+
+    state = state.copyWith(submitStatus: submitStatus);
+
     return !result.hasError;
   }
 }

@@ -32,40 +32,71 @@ class BlogRepository {
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
-
   Future<BlogSubmitResponse> submitBlog({
+    int? id,
     required String title,
-    required String content,
+    required String description,
+    required String iAgreeAccepted,
+    required List<String> keywords,
+    required String approveStatus,
     File? coverImage,
   }) async {
+    final Map<String, String> fields = {
+      if (id != null) 'id': id.toString(),
+      'title': title,
+      'description': description,
+      'i_agree_accepted': iAgreeAccepted,
+      'approve_status': approveStatus,
+    };
+
     final Map<String, File> files = {};
 
     if (coverImage != null) {
       files['image'] = coverImage;
     }
 
+    debugPrint('================ API REQUEST DEBUG ================');
+
+    debugPrint('Fields:');
+    fields.forEach((key, value) {
+      debugPrint('  $key = $value');
+    });
+
+    debugPrint('Keywords:');
+    for (final keyword in keywords) {
+      debugPrint('  keywords[] = $keyword');
+    }
+
     if (files.isEmpty) {
-      debugPrint('📎 Files: none');
+      debugPrint('Files: none');
     } else {
-      debugPrint('📎 Files:');
+      debugPrint('Files:');
       files.forEach((key, file) {
         debugPrint(
           '  $key → ${file.path.split('/').last} '
-          '(${file.lengthSync()} bytes)',
+              '(${file.lengthSync()} bytes)',
         );
       });
     }
 
+    debugPrint('===================================================');
+
     final response = await _apiClient.postMultipart(
       url: 'doctor/addblog',
-      fields: {'title': title, 'content': content},
+      fields: {
+        ...fields,
+
+        // IMPORTANT:
+        // This requires ApiClient.postMultipart to support
+        // multiple values for the same multipart field.
+        for (final keyword in keywords) 'keywords[]': keyword,
+      },
       files: files,
       includeAuth: true,
     );
 
     return BlogSubmitResponse.fromJson(response);
   }
-
   Future<MySubmissionListModel> mySubmissionList() async {
     final response = await _apiClient.post(
       url: 'doctor/mysubmissionlist',
@@ -100,10 +131,12 @@ class BlogRepository {
     if (keywords != null && keywords.isNotEmpty) {
       queryParams['keywords'] = keywords;
     }
-    if (category != null && category.isNotEmpty)
+    if (category != null && category.isNotEmpty) {
       queryParams['category'] = category;
-    if (speciality != null && speciality.isNotEmpty)
+    }
+    if (speciality != null && speciality.isNotEmpty) {
       queryParams['speciality'] = speciality;
+    }
     if (title != null && title.isNotEmpty) queryParams['title'] = title;
     if (sortBy != null && sortBy.isNotEmpty) queryParams['sort_by'] = sortBy;
     if (page != null) queryParams['page'] = page;

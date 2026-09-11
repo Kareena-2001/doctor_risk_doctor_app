@@ -36,6 +36,7 @@ import 'package:go_router/go_router.dart';
 import '../core/widgets/app_drawer.dart';
 import '../features/admindocs/ui/admin_docs_screen.dart';
 import '../features/authentication/ui/sign_in_screen.dart';
+import '../features/blog_central/model/my_submission_list_model.dart';
 import '../features/forgot_password/ui/create_new_password.dart';
 import '../features/helpdesk/ui/my_queries_screen.dart';
 import '../features/helpdesk/ui/widgets/query_details_screen.dart';
@@ -370,7 +371,16 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.addBlog,
-      pageBuilder: (context, state) => state.slidePage(const AddBlogScreen()),
+      builder: (context, state) {
+        final blogToEdit = state.extra as SubmissionModel?;
+        debugPrint(
+          'Router addBlog — extra=$blogToEdit (runtimeType=${state.extra.runtimeType})',
+        );
+        return AddBlogScreen(
+          key: ValueKey(blogToEdit?.id ?? 'new'),
+          blogToEdit: blogToEdit,
+        );
+      },
     ),
     GoRoute(
       path: Routes.editProfile,

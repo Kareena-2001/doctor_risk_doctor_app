@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
+import '../model/my_submission_list_model.dart';
 
 class MyBlogsTab extends ConsumerStatefulWidget {
   const MyBlogsTab({super.key});
@@ -36,9 +37,9 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Blog Central'),
+      appBar: CustomAppBar(title: 'Blog Central'),
       body: mySubmissionsAsync.when(
-        loading: () => const Center(child: Loading()),
+        loading: () => Center(child: Loading()),
         error: (e, st) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -62,8 +63,8 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                   .read(blogViewModelProvider.notifier)
                   .refreshMySubmissions(),
               child: ListView(
-                children: const [
-                  SizedBox(height: 120),
+                children: [
+                  SizedBox(height: Responsive.h(120)),
                   Center(child: Text('You haven\'t submitted any blogs yet')),
                 ],
               ),
@@ -91,7 +92,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     ],
                   );
                 }
-                final blog = blogs[index];
+                final SubmissionModel blog = blogs[index];
                 return _buildBlogCard(context, blog);
               },
             ),
@@ -111,7 +112,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     }
   }
 
-  Widget _buildBlogCard(BuildContext context, dynamic blog) {
+  Widget _buildBlogCard(BuildContext context, SubmissionModel blog) {
     final String rawStatus = (blog.approveStatus ?? 'awaiting_admin_approval')
         .toString()
         .toLowerCase()
@@ -120,8 +121,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     final bool canEdit =
         rawStatus == 'draft' ||
         rawStatus == 'awaiting_admin_approval' ||
-        rawStatus == 'awaiting admin approval' ||
-        rawStatus == 'pending';
+        rawStatus == 'awaiting admin approval';
 
     late final String statusLabel;
     late final Color statusColor;
@@ -192,6 +192,9 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                 width(Responsive.w(8)),
                 GestureDetector(
                   onTap: () {
+                    debugPrint(
+                      'Edit tapped — canEdit=$canEdit, id=${blog.id}, type=${blog.runtimeType}',
+                    );
                     if (canEdit) {
                       context.push(Routes.addBlog, extra: blog);
                     } else {
@@ -229,7 +232,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
               ),
             ),
             height(Responsive.h(12)),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
             height(Responsive.h(10)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,9 +246,11 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     ),
                     width(Responsive.w(4)),
                     Text(
-                      rawStatus == 'draft'
-                          ? 'Last edited ${blog.createdOn ?? 'N/A'}'
-                          : (blog.createdOn ?? 'N/A').toString(),
+                      // rawStatus == 'draft' ||
+                      //         rawStatus == 'awaiting_admin_approval'
+                      //     ? 'Last edited ${blog.updatedOn ?? 'N/A'}'
+                      //     : (blog.createdOn ?? 'N/A').toString(),
+                      blog.createdOn,
                       style: customTextStyle(
                         fontSize: Responsive.sp(11),
                         color: const Color(0xFF6B7280),
