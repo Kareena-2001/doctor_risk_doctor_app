@@ -28,11 +28,24 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   late final TextEditingController _lastNameCtrl;
   late final TextEditingController _emailCtrl;
   late final TextEditingController _mobileCtrl;
+
+  late final TextEditingController _alternateMobileCtrl;
+  late final TextEditingController _dobCtrl;
+  late final TextEditingController _genderCtrl;
   late final TextEditingController _organisationCtrl;
 
   late final TextEditingController _categoryCtrl;
   late final TextEditingController _specialityCtrl;
   late final TextEditingController _degreeCtrl;
+
+  late final TextEditingController _medicalRegStateCtrl;
+  late final TextEditingController _medicalRegNoCtrl;
+  late final TextEditingController _medicalRegYearCtrl;
+  late final TextEditingController _retroactiveDateCtrl;
+  late final TextEditingController _retroactiveCtrl;
+  late final TextEditingController _worldwideCtrl;
+  late final TextEditingController _unqualifiedStaffCtrl;
+  late final TextEditingController _unqualifiedStaffCountCtrl;
 
   final List<String> categories = [
     'Professional Individual',
@@ -49,9 +62,22 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     _middleNameCtrl = TextEditingController(
       text: widget.initialData.middleName,
     );
+
     _lastNameCtrl = TextEditingController(text: widget.initialData.lastName);
     _emailCtrl = TextEditingController(text: widget.initialData.email);
     _mobileCtrl = TextEditingController(text: widget.initialData.mobile);
+
+    _alternateMobileCtrl = TextEditingController(
+      text: widget.initialData.alternateMobile,
+    );
+    _dobCtrl = TextEditingController(
+      text: widget.initialData.dob != null
+          ? _formatDate(widget.initialData.dob!)
+          : '',
+    );
+
+    _genderCtrl = TextEditingController(text: widget.initialData.gender);
+
     _organisationCtrl = TextEditingController(
       text: widget.initialData.organisation,
     );
@@ -61,6 +87,40 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
       text: widget.initialData.speciality,
     );
     _degreeCtrl = TextEditingController(text: widget.initialData.degree);
+
+    final clinic = widget.initialData.clinicHospitalDetails;
+
+    _medicalRegStateCtrl = TextEditingController(
+      text: clinic?.medicalRegState ?? '',
+    );
+
+    _medicalRegNoCtrl = TextEditingController(text: clinic?.medicalRegNo ?? '');
+
+    _medicalRegYearCtrl = TextEditingController(
+      text: clinic?.medicalRegYear ?? '',
+    );
+
+    _retroactiveDateCtrl = TextEditingController(
+      text: clinic?.retroactiveDate ?? '',
+    );
+
+    _retroactiveCtrl = TextEditingController(text: clinic?.retroactive ?? '');
+
+    _worldwideCtrl = TextEditingController(text: clinic?.worldwide ?? '');
+
+    _unqualifiedStaffCtrl = TextEditingController(
+      text: clinic?.unqualifiedStaff ?? '',
+    );
+
+    _unqualifiedStaffCountCtrl = TextEditingController(
+      text: clinic?.unqualifiedStaffCount ?? '',
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
 
   @override
@@ -71,10 +131,14 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _mobileCtrl.dispose();
+    _alternateMobileCtrl.dispose();
+    _dobCtrl.dispose();
+    _genderCtrl.dispose();
     _organisationCtrl.dispose();
     _categoryCtrl.dispose();
     _specialityCtrl.dispose();
     _degreeCtrl.dispose();
+
     super.dispose();
   }
 
@@ -179,6 +243,14 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                         _buildReadUnit('LAST NAME', _lastNameCtrl.text),
                         _buildReadUnit('EMAIL ADDRESS', _emailCtrl.text),
                         _buildReadUnit('MOBILE NUMBER', _mobileCtrl.text),
+
+                        _buildReadUnit(
+                          'Alternate Number',
+                          _alternateMobileCtrl.text,
+                        ),
+                        _buildReadUnit('Date of Birth', _dobCtrl.text),
+                        _buildReadUnit('Gender', _genderCtrl.text),
+
                         _buildReadUnit(
                           'ORGANISATION / ASSOCIATION',
                           _organisationCtrl.text,
@@ -192,6 +264,186 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
               SectionCard(
                 title: 'Professional & Practice Details',
                 icon: Icons.medical_services_outlined,
+                children: [
+                  if (_isEditing) ...[
+                    CustomDropdownField(
+                      label: 'CATEGORY',
+                      controller: _categoryCtrl,
+                      items: categories,
+                    ),
+                    height(12),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            label: 'SPECIALITY',
+                            controller: _specialityCtrl,
+                          ),
+                        ),
+                        width(10),
+                        Expanded(
+                          child: CustomTextField(
+                            label: 'DEGREE',
+                            controller: _degreeCtrl,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    height(12),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            label: 'MEDICAL REG. STATE',
+                            controller: _medicalRegStateCtrl,
+                          ),
+                        ),
+                        width(10),
+                        Expanded(
+                          child: CustomTextField(
+                            label: 'MEDICAL REG. NO.',
+                            controller: _medicalRegNoCtrl,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    height(12),
+
+                    CustomTextField(
+                      label: 'MEDICAL REG. YEAR',
+                      controller: _medicalRegYearCtrl,
+                    ),
+
+                    height(12),
+
+                    CustomTextField(
+                      label: 'RETROACTIVE DATE',
+                      controller: _retroactiveDateCtrl,
+                    ),
+
+                    height(12),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomDropdownField(
+                            label: 'RETROACTIVE',
+                            controller: _retroactiveCtrl,
+                            items: const ['Yes', 'No'],
+                          ),
+                        ),
+                        width(10),
+                        Expanded(
+                          child: CustomDropdownField(
+                            label: 'WORLDWIDE COVER',
+                            controller: _worldwideCtrl,
+                            items: const ['Yes', 'No'],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    height(12),
+
+                    CustomDropdownField(
+                      label: 'UNQUALIFIED STAFF',
+                      controller: _unqualifiedStaffCtrl,
+                      items: const ['Yes', 'No'],
+                    ),
+
+                    if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes') ...[
+                      height(12),
+                      CustomTextField(
+                        label: 'UNQUALIFIED STAFF COUNT',
+                        controller: _unqualifiedStaffCountCtrl,
+                      ),
+                    ],
+
+                    height(20),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        OutlinedButton(
+                          onPressed: _toggleEdit,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                          ),
+                          child: const Text('Cancel'),
+                        ),
+                        width(12),
+                        ElevatedButton(
+                          onPressed: _saveChanges,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF16A34A),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                          ),
+                          child: Text(
+                            'Save Changes',
+                            style: customTextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    Wrap(
+                      runSpacing: 16,
+                      spacing: 16,
+                      children: [
+                        _buildReadUnit('CATEGORY', _categoryCtrl.text),
+                        _buildReadUnit('SPECIALITY', _specialityCtrl.text),
+                        _buildReadUnit('DEGREE', _degreeCtrl.text),
+                        _buildReadUnit(
+                          'MEDICAL REG. STATE',
+                          _medicalRegStateCtrl.text,
+                        ),
+                        _buildReadUnit(
+                          'MEDICAL REG. NO.',
+                          _medicalRegNoCtrl.text,
+                        ),
+                        _buildReadUnit(
+                          'MEDICAL REG. YEAR',
+                          _medicalRegYearCtrl.text,
+                        ),
+                        _buildReadUnit(
+                          'RETROACTIVE DATE',
+                          _retroactiveDateCtrl.text,
+                        ),
+                        _buildReadUnit('WORLDWIDE COVER', _worldwideCtrl.text),
+                        _buildReadUnit(
+                          'UNQUALIFIED STAFF',
+                          _unqualifiedStaffCtrl.text,
+                        ),
+                        if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes')
+                          _buildReadUnit(
+                            'UNQUALIFIED STAFF COUNT',
+                            _unqualifiedStaffCountCtrl.text,
+                          ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+              height(16),
+              SectionCard(
+                title: 'Practice Addresses',
+                icon: Icons.location_on_sharp,
                 children: [
                   if (_isEditing) ...[
                     CustomDropdownField(

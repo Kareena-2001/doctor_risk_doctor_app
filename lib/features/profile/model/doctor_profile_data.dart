@@ -1,6 +1,5 @@
 import 'address_view_model.dart';
 import 'certificate_model.dart';
-import 'policy_model.dart';
 
 class DoctorProfileData {
   final String prefix;
@@ -17,10 +16,12 @@ class DoctorProfileData {
   final DateTime? dob;
   final String gender;
   final String religion;
+
   final List<AddressViewData> addresses;
   final List<CertificateModel> doctorCertificates;
   final List<CertificateModel> organisationCertificates;
-  // final List<PolicyModel> policies;
+
+  final ClinicHospitalModel? clinicHospitalDetails;
 
   const DoctorProfileData({
     required this.prefix,
@@ -40,10 +41,47 @@ class DoctorProfileData {
     this.addresses = const [],
     this.doctorCertificates = const [],
     this.organisationCertificates = const [],
-    // this.policies = const [],
+    this.clinicHospitalDetails,
   });
 
-  String get fullName => [prefix, firstName, middleName, lastName]
-      .where((e) => e.trim().isNotEmpty)
-      .join(' ');
+  String get fullName => [
+    prefix,
+    firstName,
+    middleName,
+    lastName,
+  ].where((e) => e.trim().isNotEmpty).join(' ');
+}
+
+class ClinicHospitalModel {
+  final String? medicalRegState;
+  final String? medicalRegNo;
+  final String? medicalRegYear;
+  final String? hospitalClinicRegState;
+  final String? hospitalClinicRegNo;
+  final String? hospitalClinicRegYear;
+  final String? retroactive;
+  final String? retroactiveDate;
+  final String? retroactivePolicyDoc;
+  final String? worldwide;
+  final String? unqualifiedStaff;
+  final String? unqualifiedStaffCount;
+  final String? opd;
+  final String? ipd;
+
+  const ClinicHospitalModel({
+    this.medicalRegState,
+    this.medicalRegNo,
+    this.medicalRegYear,
+    this.hospitalClinicRegState,
+    this.hospitalClinicRegNo,
+    this.hospitalClinicRegYear,
+    this.retroactive,
+    this.retroactiveDate,
+    this.retroactivePolicyDoc,
+    this.worldwide,
+    this.unqualifiedStaff,
+    this.unqualifiedStaffCount,
+    this.opd,
+    this.ipd,
+  });
 }
