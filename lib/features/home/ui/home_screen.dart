@@ -168,7 +168,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
-  // --- replace _toggleQuickActionDropdown entirely ---
   void _toggleQuickActionDropdown({
     required BuildContext context,
     required GlobalKey anchorKey,
@@ -522,7 +521,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onNotification: _handleNotificationTap,
           ),
           body: AppRefreshIndicator(
-            // color: AppColors.newPri,
             onRefresh: _refreshUserData,
             child: FadeTransition(
               opacity: _fadeAnimation,
