@@ -193,8 +193,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     const panelWidth = 280.0;
     const edgeMargin = 12.0;
 
-    // Anchor panel's right edge under the pill's right edge, then clamp
-    // so it never runs off either side of the screen.
     double left = targetPosition.dx + targetSize.width - panelWidth;
     left = left.clamp(edgeMargin, screenSize.width - panelWidth - edgeMargin);
 
