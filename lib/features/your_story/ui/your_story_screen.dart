@@ -36,11 +36,10 @@ class _YourStoryScreenState extends State<YourStoryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: Color(0xffF6F7FB),
       appBar: CustomAppBar(title: 'Your Story', showBack: false),
       body: Column(
         children: [
-          // Expanded(child: ExperienceListScreen()),
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
@@ -53,7 +52,7 @@ class _YourStoryScreenState extends State<YourStoryScreen>
                 fontSize: Responsive.sp(13),
                 fontWeight: FontWeight.bold,
               ),
-              tabs: const [
+              tabs: [
                 Tab(text: 'Experience'),
                 Tab(text: 'Testimonial'),
               ],
@@ -62,10 +61,7 @@ class _YourStoryScreenState extends State<YourStoryScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                ExperienceListScreen(),
-                TestimonialListScreen(),
-              ],
+              children: const [ExperienceListScreen(), TestimonialListScreen()],
             ),
           ),
           height(100),

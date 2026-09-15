@@ -11,17 +11,14 @@ part 'your_story_state.freezed.dart';
 @freezed
 class YourStoryState with _$YourStoryState {
   const factory YourStoryState({
-    @Default(AsyncData(null))
-    AsyncValue<ExperienceResponse?> experienceList,
+    @Default(AsyncData(null)) AsyncValue<ExperienceResponse?> experienceList,
 
     @Default(AsyncData(null))
     AsyncValue<ExperienceSubmitResponse?> submitExperienceStatus,
 
-    @Default(AsyncData(null))
-    AsyncValue<TestimonialResponse?> testimonialList,
+    @Default(AsyncData(null)) AsyncValue<TestimonialResponse?> testimonialList,
 
     @Default(AsyncData(null))
     AsyncValue<TestimonialSubmitResponse?> submitTestimonialStatus,
-
   }) = _YourStoryState;
 }

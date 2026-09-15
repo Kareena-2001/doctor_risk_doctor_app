@@ -33,8 +33,7 @@ class ShareExperienceForm extends ConsumerStatefulWidget {
       _ShareExperienceFormState();
 }
 
-class _ShareExperienceFormState
-    extends ConsumerState<ShareExperienceForm> {
+class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _textController = TextEditingController();
 
@@ -67,36 +66,23 @@ class _ShareExperienceFormState
     final title = _titleController.text.trim();
     final description = _textController.text.trim();
 
-    if (title.isEmpty) {
-      context.showWarningSnackBar('Please enter a title');
-      return;
-    }
-
     if (_mode == YourStoryMode.text && description.isEmpty) {
-      context.showWarningSnackBar(
-        'Please write your experience first',
-      );
+      context.showWarningSnackBar('Please write your experience first');
       return;
     }
 
     if (_mode == YourStoryMode.video && _videoFile == null) {
-      context.showWarningSnackBar(
-        'Please add a video first',
-      );
+      context.showWarningSnackBar('Please add a video first');
       return;
     }
 
     if (_mode == YourStoryMode.document && _pdfFile == null) {
-      context.showWarningSnackBar(
-        'Please upload a PDF first',
-      );
+      context.showWarningSnackBar('Please upload a PDF first');
       return;
     }
 
     if (!_rememberMe) {
-      context.showWarningSnackBar(
-        'Please accept the agreement',
-      );
+      context.showWarningSnackBar('Please accept the agreement');
       return;
     }
 
@@ -115,19 +101,19 @@ class _ShareExperienceFormState
     final success = await ref
         .read(yourStoryViewModelProvider.notifier)
         .submitExperience(
-      title: title,
-      experienceType: experienceType,
-      description: description,
-      iAgreeAccepted: _rememberMe ? '1' : '0',
-      file: file,
-    );
+          title: title,
+          experienceType: experienceType,
+          description: description,
+          iAgreeAccepted: _rememberMe ? '1' : '0',
+          file: file,
+        );
 
     if (!mounted) return;
 
     if (success) {
-      final response = ref.read(
-        yourStoryViewModelProvider,
-      ).submitExperienceStatus;
+      final response = ref
+          .read(yourStoryViewModelProvider)
+          .submitExperienceStatus;
 
       response.whenOrNull(
         data: (data) {
@@ -140,19 +126,15 @@ class _ShareExperienceFormState
         },
       );
 
-      context.showSuccessSnackBar(
-        'Experience submitted successfully',
-      );
+      context.showSuccessSnackBar('Experience submitted successfully');
     } else {
-      final submitStatus = ref.read(
-        yourStoryViewModelProvider,
-      ).submitExperienceStatus;
+      final submitStatus = ref
+          .read(yourStoryViewModelProvider)
+          .submitExperienceStatus;
 
       submitStatus.whenOrNull(
         error: (error, _) {
-          context.showErrorSnackBar(
-            error.toString(),
-          );
+          context.showErrorSnackBar(error.toString());
         },
       );
     }
@@ -189,9 +171,7 @@ class _ShareExperienceFormState
       });
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Could not load video: $e',
-        );
+        context.showWarningSnackBar('Could not load video: $e');
       }
     }
   }
@@ -223,9 +203,7 @@ class _ShareExperienceFormState
       });
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Could not record video: $e',
-        );
+        context.showWarningSnackBar('Could not record video: $e');
       }
     }
   }
@@ -255,9 +233,7 @@ class _ShareExperienceFormState
       final path = result.files.single.path;
 
       if (path == null) {
-        context.showWarningSnackBar(
-          'Unable to access selected PDF',
-        );
+        context.showWarningSnackBar('Unable to access selected PDF');
         return;
       }
 
@@ -267,9 +243,7 @@ class _ShareExperienceFormState
       });
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Unable to pick PDF',
-        );
+        context.showWarningSnackBar('Unable to pick PDF');
       }
     }
   }
@@ -319,18 +293,14 @@ class _ShareExperienceFormState
   Widget build(BuildContext context) {
     final isSubmitting = ref.watch(
       yourStoryViewModelProvider.select(
-            (s) => s.submitExperienceStatus.isLoading,
+        (s) => s.submitExperienceStatus.isLoading,
       ),
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
-      appBar: CustomAppBar(
-        title: 'Share Experience',
-      ),
-      body: _isSubmitted
-          ? _buildSuccessView()
-          : _buildForm(isSubmitting),
+      backgroundColor: const Color(0xffF7F8FC),
+      appBar: CustomAppBar(title: 'Share Experience'),
+      body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
   }
 
@@ -340,9 +310,7 @@ class _ShareExperienceFormState
 
   Widget _buildForm(bool isSubmitting) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(
-        Responsive.w(20),
-      ),
+      padding: EdgeInsets.all(Responsive.w(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -372,10 +340,10 @@ class _ShareExperienceFormState
           height(Responsive.h(20)),
 
           CustomTextField(
-            label: 'Title',
+            isRequired: false,
+            label: 'Title (optional)',
             controller: _titleController,
-            hint:
-            'e.g. What I Learned from a Difficult Clinical Case',
+            hint: 'e.g. What I Learned from a Difficult Clinical Case',
           ),
 
           height(Responsive.h(20)),
@@ -399,10 +367,10 @@ class _ShareExperienceFormState
                   onChanged: isSubmitting
                       ? null
                       : (value) {
-                    setState(() {
-                      _rememberMe = value ?? false;
-                    });
-                  },
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -432,9 +400,7 @@ class _ShareExperienceFormState
 
           PrimaryButton(
             backgroundColor: AppColors.newPri,
-            text: isSubmitting
-                ? 'Submitting...'
-                : 'Share Experience',
+            text: isSubmitting ? 'Submitting...' : 'Share Experience',
             onPressed: isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
@@ -451,9 +417,7 @@ class _ShareExperienceFormState
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(
-        Responsive.w(15),
-      ),
+      padding: EdgeInsets.all(Responsive.w(15)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -463,26 +427,17 @@ class _ShareExperienceFormState
             AppColors.primary.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(
-          Responsive.w(18),
-        ),
+        borderRadius: BorderRadius.circular(Responsive.w(18)),
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(
-              Responsive.w(10),
-            ),
+            padding: EdgeInsets.all(Responsive.w(10)),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.newPri,
-                  AppColors.primary,
-                ],
+                colors: [AppColors.newPri, AppColors.primary],
               ),
-              borderRadius: BorderRadius.circular(
-                Responsive.w(12),
-              ),
+              borderRadius: BorderRadius.circular(Responsive.w(12)),
             ),
             child: Icon(
               Icons.auto_stories_rounded,
@@ -498,7 +453,7 @@ class _ShareExperienceFormState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Share Your Experience',
+                  'Your Story',
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.bold,
@@ -509,7 +464,7 @@ class _ShareExperienceFormState
                 height(Responsive.h(4)),
 
                 Text(
-                  'Tell us about your experience — in your own words or on camera',
+                  'Share your own experience or testimonial with the DoctorsRisk community. Every submission is reviewed by our team before it goes live — this is your individual space, not a shared feed.',
                   style: customTextStyle(
                     fontSize: Responsive.sp(10.5),
                     color: Colors.grey.shade600,
@@ -523,57 +478,34 @@ class _ShareExperienceFormState
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // INFO BANNER
-  // ---------------------------------------------------------------------------
-
   Widget _infoBanner(
-      String text, {
-        IconData icon = Icons.info_outline_rounded,
-      }) {
+    String text, {
+    IconData icon = Icons.info_outline_rounded,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: AppColors.primary,
-            size: 20,
-          ),
+          Icon(icon, color: AppColors.primary, size: 20),
           width(10),
-          Expanded(
-            child: Text(
-              text,
-              style: AppTheme.label12,
-            ),
-          ),
+          Expanded(child: Text(text, style: AppTheme.label12)),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // MODE TOGGLE
-  // ---------------------------------------------------------------------------
-
   Widget _buildModeToggle() {
     return Container(
-      padding: EdgeInsets.all(
-        Responsive.w(4),
-      ),
+      padding: EdgeInsets.all(Responsive.w(4)),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(
-          Responsive.w(30),
-        ),
+        borderRadius: BorderRadius.circular(Responsive.w(30)),
       ),
       child: Row(
         children: [
@@ -612,19 +544,11 @@ class _ShareExperienceFormState
           });
         },
         child: AnimatedContainer(
-          duration: const Duration(
-            milliseconds: 200,
-          ),
-          padding: EdgeInsets.symmetric(
-            vertical: Responsive.h(10),
-          ),
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
           decoration: BoxDecoration(
-            color: selected
-                ? AppColors.newPri
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(
-              Responsive.w(30),
-            ),
+            color: selected ? AppColors.newPri : Colors.transparent,
+            borderRadius: BorderRadius.circular(Responsive.w(30)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -632,9 +556,7 @@ class _ShareExperienceFormState
               Icon(
                 icon,
                 size: Responsive.sp(16),
-                color: selected
-                    ? Colors.white
-                    : Colors.grey.shade600,
+                color: selected ? Colors.white : Colors.grey.shade600,
               ),
               width(Responsive.w(6)),
               Text(
@@ -642,9 +564,7 @@ class _ShareExperienceFormState
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
                   fontWeight: FontWeight.w600,
-                  color: selected
-                      ? Colors.white
-                      : Colors.grey.shade600,
+                  color: selected ? Colors.white : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -654,72 +574,61 @@ class _ShareExperienceFormState
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // TEXT
-  // ---------------------------------------------------------------------------
-
   Widget _buildTextInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          Responsive.w(16),
-        ),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
-      ),
-      child: TextField(
-        controller: _textController,
-        maxLines: 8,
-        maxLength: 1000,
-        style: customTextStyle(
-          fontSize: Responsive.sp(13.5),
-        ),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(
-            Responsive.w(16),
-          ),
-          hintText:
-          'Share the case context, what you learned, and how it could help a peer facing something similar…',
-          hintStyle: customTextStyle(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Your Experience',
+          style: customTextStyle(
             fontSize: Responsive.sp(12),
-            color: Colors.grey.shade400,
+            fontWeight: FontWeight.w600,
           ),
-          border: InputBorder.none,
         ),
-      ),
+        SizedBox(height: Responsive.h(8)),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: TextField(
+            controller: _textController,
+            maxLines: 8,
+            maxLength: 1000,
+            style: customTextStyle(fontSize: Responsive.sp(13.5)),
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(Responsive.w(16)),
+              hintText:
+                  'Share the case context, what you learned, and how it could help a peer facing something similar…',
+              hintStyle: customTextStyle(
+                fontSize: Responsive.sp(12),
+                color: Colors.grey.shade400,
+              ),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // VIDEO
-  // ---------------------------------------------------------------------------
-
   Widget _buildVideoInput() {
-    if (_videoFile != null &&
-        _videoController != null) {
+    if (_videoFile != null && _videoController != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(
-              Responsive.w(16),
-            ),
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
             child: AspectRatio(
-              aspectRatio:
-              _videoController!.value.aspectRatio == 0
+              aspectRatio: _videoController!.value.aspectRatio == 0
                   ? 16 / 9
                   : _videoController!.value.aspectRatio,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  VideoPlayer(
-                    _videoController!,
-                  ),
-                  _PlayPauseOverlay(
-                    controller: _videoController!,
-                  ),
+                  VideoPlayer(_videoController!),
+                  _PlayPauseOverlay(controller: _videoController!),
                 ],
               ),
             ),
@@ -732,10 +641,7 @@ class _ShareExperienceFormState
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _removeVideo,
-                  icon: const Icon(
-                    Icons.close_rounded,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.close_rounded, size: 16),
                   label: const Text('Remove'),
                 ),
               ),
@@ -745,10 +651,7 @@ class _ShareExperienceFormState
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _pickVideo,
-                  icon: const Icon(
-                    Icons.swap_horiz_rounded,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.swap_horiz_rounded, size: 16),
                   label: const Text('Change'),
                 ),
               ),
@@ -762,17 +665,11 @@ class _ShareExperienceFormState
       children: [
         Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: Responsive.h(30),
-          ),
+          padding: EdgeInsets.symmetric(vertical: Responsive.h(30)),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(
-              Responsive.w(16),
-            ),
-            border: Border.all(
-              color: Colors.grey.shade300,
-            ),
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
+            border: Border.all(color: Colors.grey.shade300),
           ),
           child: Column(
             children: [
@@ -843,26 +740,18 @@ class _ShareExperienceFormState
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey.shade300,
-          ),
+          border: Border.all(color: Colors.grey.shade300),
         ),
         child: Column(
           children: [
-            const Icon(
-              Icons.picture_as_pdf,
-              size: 60,
-              color: Colors.red,
-            ),
+            const Icon(Icons.picture_as_pdf, size: 60, color: Colors.red),
 
             const SizedBox(height: 12),
 
             Text(
               _pdfName ?? '',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 16),
@@ -899,34 +788,22 @@ class _ShareExperienceFormState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.shade300,
-        ),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.picture_as_pdf,
-            size: 40,
-            color: Colors.red,
-          ),
+          const Icon(Icons.picture_as_pdf, size: 40, color: Colors.red),
 
           const SizedBox(height: 12),
 
-          const Text(
-            'No PDF selected',
-          ),
+          const Text('No PDF selected'),
 
           const SizedBox(height: 20),
 
           ElevatedButton.icon(
             onPressed: _pickPdf,
-            icon: const Icon(
-              Icons.upload_file,
-            ),
-            label: const Text(
-              'Upload PDF',
-            ),
+            icon: const Icon(Icons.upload_file),
+            label: const Text('Upload PDF'),
           ),
         ],
       ),
@@ -940,20 +817,14 @@ class _ShareExperienceFormState
   Widget _buildSuccessView() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(
-          Responsive.w(24),
-        ),
+        padding: EdgeInsets.all(Responsive.w(24)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(
-                Responsive.w(20),
-              ),
+              padding: EdgeInsets.all(Responsive.w(20)),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(
-                  alpha: 0.1,
-                ),
+                color: Colors.green.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -977,8 +848,7 @@ class _ShareExperienceFormState
             height(Responsive.h(8)),
 
             Text(
-              _submittedExperience?.approveStatus ==
-                  'awaiting_admin_approval'
+              _submittedExperience?.approveStatus == 'awaiting_admin_approval'
                   ? 'Your experience has been submitted and is awaiting admin approval.'
                   : 'Your experience has been submitted successfully.',
               textAlign: TextAlign.center,
@@ -1006,24 +876,15 @@ class _ShareExperienceFormState
               child: OutlinedButton(
                 onPressed: _resetForm,
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: AppColors.newPri,
-                    width: 1.5,
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    vertical: Responsive.h(14),
-                  ),
+                  side: const BorderSide(color: AppColors.newPri, width: 1.5),
+                  padding: EdgeInsets.symmetric(vertical: Responsive.h(14)),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      Responsive.w(12),
-                    ),
+                    borderRadius: BorderRadius.circular(Responsive.w(12)),
                   ),
                 ),
                 child: Text(
                   'Share Another Story',
-                  style: AppTheme.label14.copyWith(
-                    color: AppColors.newPri,
-                  ),
+                  style: AppTheme.label14.copyWith(color: AppColors.newPri),
                 ),
               ),
             ),
@@ -1041,17 +902,13 @@ class _ShareExperienceFormState
 class _PlayPauseOverlay extends StatefulWidget {
   final VideoPlayerController controller;
 
-  const _PlayPauseOverlay({
-    required this.controller,
-  });
+  const _PlayPauseOverlay({required this.controller});
 
   @override
-  State<_PlayPauseOverlay> createState() =>
-      _PlayPauseOverlayState();
+  State<_PlayPauseOverlay> createState() => _PlayPauseOverlayState();
 }
 
-class _PlayPauseOverlayState
-    extends State<_PlayPauseOverlay> {
+class _PlayPauseOverlayState extends State<_PlayPauseOverlay> {
   late final VoidCallback _listener;
 
   @override
@@ -1084,12 +941,8 @@ class _PlayPauseOverlayState
         }
       },
       child: AnimatedOpacity(
-        opacity: widget.controller.value.isPlaying
-            ? 0
-            : 1,
-        duration: const Duration(
-          milliseconds: 200,
-        ),
+        opacity: widget.controller.value.isPlaying ? 0 : 1,
+        duration: const Duration(milliseconds: 200),
         child: Container(
           color: Colors.black26,
           child: const Center(
