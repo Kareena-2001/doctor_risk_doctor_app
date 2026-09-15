@@ -168,7 +168,6 @@ class ProductViewModel extends _$ProductViewModel {
     ),
   ];
 
-  // ── Rebuild-driving state ──
   @override
   ProductState build() {
     ref.onDispose(() {

@@ -1,4 +1,4 @@
-import 'package:Doctors_App/features/your_story/ui/widget/community_testimonial_list.dart';
+import 'package:Doctors_App/features/your_story/ui/widget/testimonial_list_screen.dart';
 import 'package:Doctors_App/features/your_story/ui/widget/experience_list_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -8,18 +8,17 @@ import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 
-enum TestimonialMode { text, video, document }
+enum YourStoryMode { text, video, document }
 
-class TestimonialScreen extends StatefulWidget {
-  const TestimonialScreen({super.key});
+class YourStoryScreen extends StatefulWidget {
+  const YourStoryScreen({super.key});
 
   @override
-  State<TestimonialScreen> createState() => _TestimonialScreenState();
+  State<YourStoryScreen> createState() => _YourStoryScreenState();
 }
 
-class _TestimonialScreenState extends State<TestimonialScreen>
+class _YourStoryScreenState extends State<YourStoryScreen>
     with SingleTickerProviderStateMixin {
-
   late final TabController _tabController;
 
   @override
@@ -65,7 +64,7 @@ class _TestimonialScreenState extends State<TestimonialScreen>
               controller: _tabController,
               children: const [
                 ExperienceListScreen(),
-                CommunityTestimonialsList(),
+                TestimonialListScreen(),
               ],
             ),
           ),

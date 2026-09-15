@@ -24,21 +24,49 @@ class ExperienceResponse with _$ExperienceResponse {
 class ExperienceData with _$ExperienceData {
   const factory ExperienceData({
     required int id,
-    @Default('') String title,
-    @JsonKey(name: 'experience_type') @Default('') String experienceType,
-    @Default('') String details,
+
+    @Default('')
+    String title,
+
+    @JsonKey(name: 'experience_type')
+    @Default('')
+    String experienceType,
+
+    @Default('')
+    String details,
+
     String? file,
-    @JsonKey(name: 'dr_name') String? drName,
+
+    @JsonKey(name: 'dr_name')
+    String? drName,
+
     String? degree,
-    @JsonKey(name: 'category_name') String? categoryName,
-    @JsonKey(name: 'speciality_name') String? specialityName,
-    @JsonKey(name: 'i_agree_accepted') String? iAgreeAccepted,
-    @JsonKey(name: 'approve_status') String? approveStatus,
-    @JsonKey(name: 'approved_by') String? approvedBy,
-    @JsonKey(name: 'approve_date') String? approveDate,
+
+    @JsonKey(name: 'category_name')
+    String? categoryName,
+
+    @JsonKey(name: 'speciality_name')
+    String? specialityName,
+
+    @JsonKey(name: 'i_agree_accepted')
+    String? iAgreeAccepted,
+
+    @JsonKey(name: 'approve_status')
+    String? approveStatus,
+
+    @JsonKey(name: 'approved_by')
+    String? approvedBy,
+
+    @JsonKey(name: 'approve_date')
+    String? approveDate,
+
     String? status,
-    @JsonKey(name: 'created_on') String? createdOn,
-    @JsonKey(name: 'updated_on') String? updatedOn,
+
+    @JsonKey(name: 'created_on')
+    String? createdOn,
+
+    @JsonKey(name: 'updated_on')
+    String? updatedOn,
   }) = _ExperienceData;
 
   factory ExperienceData.fromJson(Map<String, dynamic> json) =>

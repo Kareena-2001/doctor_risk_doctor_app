@@ -1,7 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/features/community/ui/peer_forum_screen.dart';
 import 'package:Doctors_App/features/community/ui/refer_group_screen.dart';
-import 'package:Doctors_App/features/your_story/ui/widget/community_testimonial_list.dart';
+import 'package:Doctors_App/features/your_story/ui/widget/testimonial_list_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
@@ -50,7 +50,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                 fontSize: Responsive.sp(13),
                 fontWeight: FontWeight.bold,
               ),
-              tabs: const [
+              tabs: [
                 Tab(text: 'Peer Forum'),
                 Tab(text: 'Testimonials'),
                 Tab(text: 'Refer & Groups'),
@@ -62,7 +62,7 @@ class _CommunityScreenState extends State<CommunityScreen>
               controller: _tabController,
               children: const [
                 PeerForumTab(),
-                CommunityTestimonialsList(),
+                TestimonialListScreen(),
                 ReferAndGroupsTab(),
               ],
             ),
