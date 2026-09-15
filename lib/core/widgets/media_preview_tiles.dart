@@ -6,10 +6,8 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Tappable 16:9 video preview. Opens [VideoPlayerScreen] with [videoUrl].
-///
-/// Requires the `url_launcher` package for [DocumentPreviewTile] below:
-///   url_launcher: ^6.3.1
+/// Tappable 16:9 video banner — gradient background, play button and a
+/// "Tap to watch" label. Opens [VideoPlayerScreen] with [videoUrl].
 class VideoPreviewTile extends StatelessWidget {
   const VideoPreviewTile({super.key, required this.videoUrl, this.title});
 
@@ -35,15 +33,90 @@ class VideoPreviewTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(Responsive.w(14)),
         child: AspectRatio(
           aspectRatio: 16 / 9,
-          child: Container(
-            color: Colors.black87,
-            child: Center(
-              child: Icon(
-                hasVideo ? Icons.play_circle_fill_rounded : Icons.videocam_off_rounded,
-                color: Colors.white,
-                size: Responsive.sp(46),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.newPri.withValues(alpha: 0.92),
+                      const Color(0xFF1E1B4B),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                right: -18,
+                top: -18,
+                child: Container(
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.07),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: -28,
+                bottom: -28,
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.06),
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  padding: EdgeInsets.all(Responsive.w(14)),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    hasVideo ? Icons.play_arrow_rounded : Icons.videocam_off_rounded,
+                    color: AppColors.newPri,
+                    size: Responsive.sp(28),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: Responsive.w(12),
+                right: Responsive.w(12),
+                bottom: Responsive.h(10),
+                child: Row(
+                  children: [
+                    Icon(Icons.videocam_rounded, color: Colors.white, size: Responsive.sp(14)),
+                    width(Responsive.w(6)),
+                    Expanded(
+                      child: Text(
+                        hasVideo ? 'Tap to watch video' : 'Video unavailable',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(11),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -51,7 +124,11 @@ class VideoPreviewTile extends StatelessWidget {
   }
 }
 
-/// Tappable document row. Opens [fileUrl] in an external viewer.
+/// Tappable document row with a circular icon badge. Opens [fileUrl]
+/// in an external viewer.
+///
+/// Requires the `url_launcher` package:
+///   url_launcher: ^6.3.1
 class DocumentPreviewTile extends StatelessWidget {
   const DocumentPreviewTile({super.key, required this.fileUrl, this.label = 'Document'});
 
@@ -79,26 +156,45 @@ class DocumentPreviewTile extends StatelessWidget {
 
     return InkWell(
       onTap: !hasFile ? null : () => _openDocument(context),
-      borderRadius: BorderRadius.circular(Responsive.w(12)),
+      borderRadius: BorderRadius.circular(Responsive.w(14)),
       child: Container(
         padding: EdgeInsets.all(Responsive.w(14)),
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(Responsive.w(12)),
-          border: Border.all(color: Colors.grey.shade200),
+          color: const Color(0xFFFAFAFA),
+          borderRadius: BorderRadius.circular(Responsive.w(14)),
+          border: Border.all(color: const Color(0xFFF0F0F0)),
         ),
         child: Row(
           children: [
-            Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: Responsive.sp(30)),
-            width(Responsive.w(10)),
+            Container(
+              padding: EdgeInsets.all(Responsive.w(10)),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: Responsive.sp(22)),
+            ),
+            width(Responsive.w(12)),
             Expanded(
-              child: Text(
-                label,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(12.5),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textColor,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(12.5),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textColor,
+                    ),
+                  ),
+                  height(Responsive.h(2)),
+                  Text(
+                    hasFile ? 'Tap to open document' : 'No document attached',
+                    style: customTextStyle(fontSize: Responsive.sp(10.5), color: Colors.grey.shade500),
+                  ),
+                ],
               ),
             ),
             if (hasFile)

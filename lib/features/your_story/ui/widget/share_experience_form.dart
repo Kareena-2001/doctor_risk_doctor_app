@@ -578,14 +578,14 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Your Experience',
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: Responsive.h(8)),
+        // Text(
+        //   'Your Experience',
+        //   style: customTextStyle(
+        //     fontSize: Responsive.sp(12),
+        //     fontWeight: FontWeight.w600,
+        //   ),
+        // ),
+        // SizedBox(height: Responsive.h(8)),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,

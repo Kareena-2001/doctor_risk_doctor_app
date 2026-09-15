@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/community/ui/view_model/refer_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,6 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
 import '../model/refer_model.dart';
-import '../view_model/refer_view_model.dart';
 
 class ReferAndGroupsTab extends ConsumerStatefulWidget {
   const ReferAndGroupsTab({super.key});

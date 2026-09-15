@@ -11,8 +11,6 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'experience_details_sheet.dart';
-
 class ExperienceListScreen extends ConsumerStatefulWidget {
   const ExperienceListScreen({super.key});
 
@@ -108,12 +106,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
               itemCount: experiences.length,
               separatorBuilder: (_, __) => height(Responsive.h(14)),
               itemBuilder: (context, index) {
-                final experience = experiences[index];
-                return ExperienceCard(
-                  experience: experience,
-                  onViewDetails: () =>
-                      showExperienceDetailsSheet(context, experience),
-                );
+                return ExperienceCard(experience: experiences[index]);
               },
             ),
           );

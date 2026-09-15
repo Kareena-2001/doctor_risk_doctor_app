@@ -27,19 +27,16 @@ class AddTestimonialForm extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AddTestimonialForm> createState() =>
-      _AddTestimonialFormState();
+  ConsumerState<AddTestimonialForm> createState() => _AddTestimonialFormState();
 }
 
-class _AddTestimonialFormState
-    extends ConsumerState<AddTestimonialForm> {
+class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
   bool _rememberMe = false;
 
   File? _pdfFile;
   String? _pdfName;
 
-  final TextEditingController _textController =
-  TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   YourStoryMode _mode = YourStoryMode.text;
 
@@ -56,33 +53,22 @@ class _AddTestimonialFormState
   }
 
   Widget _infoBanner(
-      String text, {
-        IconData icon = Icons.info_outline_rounded,
-      }) {
+    String text, {
+    IconData icon = Icons.info_outline_rounded,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: AppColors.primary,
-            size: 20,
-          ),
+          Icon(icon, color: AppColors.primary, size: 20),
           width(10),
-          Expanded(
-            child: Text(
-              text,
-              style: AppTheme.label12,
-            ),
-          ),
+          Expanded(child: Text(text, style: AppTheme.label12)),
         ],
       ),
     );
@@ -101,45 +87,34 @@ class _AddTestimonialFormState
       YourStoryMode.document => _pdfFile,
     };
 
-    if (_mode == YourStoryMode.text &&
-        _textController.text.trim().isEmpty) {
-      context.showWarningSnackBar(
-        'Please write your testimonial first',
-      );
+    if (_mode == YourStoryMode.text && _textController.text.trim().isEmpty) {
+      context.showWarningSnackBar('Please write your testimonial first');
       return;
     }
 
-    if (_mode == YourStoryMode.video &&
-        _videoFile == null) {
-      context.showWarningSnackBar(
-        'Please add a video first',
-      );
+    if (_mode == YourStoryMode.video && _videoFile == null) {
+      context.showWarningSnackBar('Please add a video first');
       return;
     }
 
-    if (_mode == YourStoryMode.document &&
-        _pdfFile == null) {
-      context.showWarningSnackBar(
-        'Please upload a PDF first',
-      );
+    if (_mode == YourStoryMode.document && _pdfFile == null) {
+      context.showWarningSnackBar('Please upload a PDF first');
       return;
     }
 
     if (!_rememberMe) {
-      context.showWarningSnackBar(
-        'Please accept the sharing agreement',
-      );
+      context.showWarningSnackBar('Please accept the sharing agreement');
       return;
     }
 
     final success = await ref
         .read(yourStoryViewModelProvider.notifier)
         .submitTestimonial(
-      testimonialType: testimonialType,
-      description: _textController.text.trim(),
-      iAgreeAccepted: _rememberMe ? '1' : '0',
-      file: file,
-    );
+          testimonialType: testimonialType,
+          description: _textController.text.trim(),
+          iAgreeAccepted: _rememberMe ? '1' : '0',
+          file: file,
+        );
 
     if (!mounted) return;
 
@@ -148,14 +123,13 @@ class _AddTestimonialFormState
         _isSubmitted = true;
       });
     } else {
-      final submitState =
-          ref.read(yourStoryViewModelProvider).submitTestimonialStatus;
+      final submitState = ref
+          .read(yourStoryViewModelProvider)
+          .submitTestimonialStatus;
 
       submitState.whenOrNull(
         error: (error, _) {
-          context.showErrorSnackBar(
-            error.toString(),
-          );
+          context.showErrorSnackBar(error.toString());
         },
       );
     }
@@ -185,26 +159,21 @@ class _AddTestimonialFormState
 
   @override
   Widget build(BuildContext context) {
-    final submitState =
-        ref.watch(yourStoryViewModelProvider).submitTestimonialStatus;
+    final submitState = ref
+        .watch(yourStoryViewModelProvider)
+        .submitTestimonialStatus;
 
     final isSubmitting = submitState.isLoading;
 
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Share Testimonial',
-      ),
-      body: _isSubmitted
-          ? _buildSuccessView()
-          : _buildForm(isSubmitting),
+      appBar: CustomAppBar(title: 'Share Testimonial'),
+      body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
   }
 
   Widget _buildForm(bool isSubmitting) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(
-        Responsive.w(20),
-      ),
+      padding: EdgeInsets.all(Responsive.w(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -239,10 +208,10 @@ class _AddTestimonialFormState
                   onChanged: isSubmitting
                       ? null
                       : (value) {
-                    setState(() {
-                      _rememberMe = value ?? false;
-                    });
-                  },
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -272,9 +241,7 @@ class _AddTestimonialFormState
 
           PrimaryButton(
             backgroundColor: AppColors.newPri,
-            text: isSubmitting
-                ? 'Submitting...'
-                : 'Share Testimonial',
+            text: isSubmitting ? 'Submitting...' : 'Share Testimonial',
             onPressed: isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
@@ -287,14 +254,10 @@ class _AddTestimonialFormState
 
   Widget _buildModeToggle() {
     return Container(
-      padding: EdgeInsets.all(
-        Responsive.w(4),
-      ),
+      padding: EdgeInsets.all(Responsive.w(4)),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(
-          Responsive.w(30),
-        ),
+        borderRadius: BorderRadius.circular(Responsive.w(30)),
       ),
       child: Row(
         children: [
@@ -336,16 +299,10 @@ class _AddTestimonialFormState
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(
-            vertical: Responsive.h(10),
-          ),
+          padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
           decoration: BoxDecoration(
-            color: selected
-                ? AppColors.newPri
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(
-              Responsive.w(30),
-            ),
+            color: selected ? AppColors.newPri : Colors.transparent,
+            borderRadius: BorderRadius.circular(Responsive.w(30)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -353,9 +310,7 @@ class _AddTestimonialFormState
               Icon(
                 icon,
                 size: Responsive.sp(16),
-                color: selected
-                    ? Colors.white
-                    : Colors.grey.shade600,
+                color: selected ? Colors.white : Colors.grey.shade600,
               ),
               width(Responsive.w(6)),
               Text(
@@ -363,9 +318,7 @@ class _AddTestimonialFormState
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
                   fontWeight: FontWeight.w600,
-                  color: selected
-                      ? Colors.white
-                      : Colors.grey.shade600,
+                  color: selected ? Colors.white : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -379,26 +332,18 @@ class _AddTestimonialFormState
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          Responsive.w(16),
-        ),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: _textController,
         maxLines: 8,
         maxLength: 1000,
-        style: customTextStyle(
-          fontSize: Responsive.sp(13.5),
-        ),
+        style: customTextStyle(fontSize: Responsive.sp(13.5)),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(
-            Responsive.w(16),
-          ),
+          contentPadding: EdgeInsets.all(Responsive.w(16)),
           hintText:
-          'Share how our service helped you — a case resolved, guidance you received, or peace of mind you gained...',
+              'Share how our service helped you — a case resolved, guidance you received, or peace of mind you gained...',
           hintStyle: customTextStyle(
             fontSize: Responsive.sp(12),
             color: Colors.grey.shade400,
@@ -438,9 +383,7 @@ class _AddTestimonialFormState
       await oldController?.dispose();
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Could not load video',
-        );
+        context.showWarningSnackBar('Could not load video');
       }
     }
   }
@@ -474,9 +417,7 @@ class _AddTestimonialFormState
       await oldController?.dispose();
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Could not record video',
-        );
+        context.showWarningSnackBar('Could not record video');
       }
     }
   }
@@ -493,27 +434,21 @@ class _AddTestimonialFormState
   }
 
   Widget _buildVideoInput() {
-    if (_videoFile != null &&
-        _videoController != null) {
+    if (_videoFile != null && _videoController != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(
-              Responsive.w(16),
-            ),
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
             child: AspectRatio(
-              aspectRatio:
-              _videoController!.value.aspectRatio == 0
+              aspectRatio: _videoController!.value.aspectRatio == 0
                   ? 16 / 9
                   : _videoController!.value.aspectRatio,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   VideoPlayer(_videoController!),
-                  _PlayPauseOverlay(
-                    controller: _videoController!,
-                  ),
+                  _PlayPauseOverlay(controller: _videoController!),
                 ],
               ),
             ),
@@ -524,10 +459,7 @@ class _AddTestimonialFormState
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _removeVideo,
-                  icon: const Icon(
-                    Icons.close_rounded,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.close_rounded, size: 16),
                   label: const Text('Remove'),
                 ),
               ),
@@ -535,10 +467,7 @@ class _AddTestimonialFormState
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _pickVideo,
-                  icon: const Icon(
-                    Icons.swap_horiz_rounded,
-                    size: 16,
-                  ),
+                  icon: const Icon(Icons.swap_horiz_rounded, size: 16),
                   label: const Text('Change'),
                 ),
               ),
@@ -552,17 +481,11 @@ class _AddTestimonialFormState
       children: [
         Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: Responsive.h(30),
-          ),
+          padding: EdgeInsets.symmetric(vertical: Responsive.h(30)),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(
-              Responsive.w(16),
-            ),
-            border: Border.all(
-              color: Colors.grey.shade300,
-            ),
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
+            border: Border.all(color: Colors.grey.shade300),
           ),
           child: Column(
             children: [
@@ -625,24 +548,16 @@ class _AddTestimonialFormState
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey.shade300,
-          ),
+          border: Border.all(color: Colors.grey.shade300),
         ),
         child: Column(
           children: [
-            const Icon(
-              Icons.picture_as_pdf,
-              size: 60,
-              color: Colors.red,
-            ),
+            const Icon(Icons.picture_as_pdf, size: 60, color: Colors.red),
             const SizedBox(height: 12),
             Text(
               _pdfName ?? '',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             Row(
@@ -675,30 +590,18 @@ class _AddTestimonialFormState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.shade300,
-        ),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.picture_as_pdf,
-            size: 40,
-            color: Colors.red,
-          ),
+          const Icon(Icons.picture_as_pdf, size: 40, color: Colors.red),
           const SizedBox(height: 12),
           const Text('No PDF selected'),
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: _pickPdf,
-            icon: Icon(
-              Icons.upload_file,
-              color: AppColors.textPri,
-            ),
-            label: Text(
-              'Upload PDF',
-              style: customTextStyle(),
-            ),
+            icon: Icon(Icons.upload_file, color: AppColors.textPri),
+            label: Text('Upload PDF', style: customTextStyle()),
           ),
         ],
       ),
@@ -717,9 +620,7 @@ class _AddTestimonialFormState
       final path = result.files.single.path;
 
       if (path == null) {
-        context.showWarningSnackBar(
-          'Unable to access selected PDF',
-        );
+        context.showWarningSnackBar('Unable to access selected PDF');
         return;
       }
 
@@ -729,9 +630,7 @@ class _AddTestimonialFormState
       });
     } catch (_) {
       if (mounted) {
-        context.showWarningSnackBar(
-          'Unable to pick PDF',
-        );
+        context.showWarningSnackBar('Unable to pick PDF');
       }
     }
   }
@@ -745,9 +644,7 @@ class _AddTestimonialFormState
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.all(
-        Responsive.w(15),
-      ),
+      padding: EdgeInsets.all(Responsive.w(15)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -757,26 +654,17 @@ class _AddTestimonialFormState
             AppColors.primary.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(
-          Responsive.w(18),
-        ),
+        borderRadius: BorderRadius.circular(Responsive.w(18)),
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(
-              Responsive.w(10),
-            ),
+            padding: EdgeInsets.all(Responsive.w(10)),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.newPri,
-                  AppColors.primary,
-                ],
+                colors: [AppColors.newPri, AppColors.primary],
               ),
-              borderRadius: BorderRadius.circular(
-                Responsive.w(12),
-              ),
+              borderRadius: BorderRadius.circular(Responsive.w(12)),
             ),
             child: Icon(
               Icons.auto_stories_rounded,
@@ -787,20 +675,21 @@ class _AddTestimonialFormState
           width(Responsive.w(14)),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Share Your Testimonial',
+                  'Your Story',
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.bold,
                     color: AppColors.textColor,
                   ),
                 ),
+
                 height(Responsive.h(4)),
+
                 Text(
-                  'Tell us about your testimonial — in your own words or on camera',
+                  'Share your own experience or testimonial with the DoctorsRisk community. Every submission is reviewed by our team before it goes live — this is your individual space, not a shared feed.',
                   style: customTextStyle(
                     fontSize: Responsive.sp(10.5),
                     color: Colors.grey.shade600,
@@ -817,16 +706,12 @@ class _AddTestimonialFormState
   Widget _buildSuccessView() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(
-          Responsive.w(24),
-        ),
+        padding: EdgeInsets.all(Responsive.w(24)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(
-                Responsive.w(20),
-              ),
+              padding: EdgeInsets.all(Responsive.w(20)),
               decoration: BoxDecoration(
                 color: Colors.green.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
@@ -870,24 +755,15 @@ class _AddTestimonialFormState
               child: OutlinedButton(
                 onPressed: _resetForm,
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: AppColors.newPri,
-                    width: 1.5,
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    vertical: Responsive.h(14),
-                  ),
+                  side: const BorderSide(color: AppColors.newPri, width: 1.5),
+                  padding: EdgeInsets.symmetric(vertical: Responsive.h(14)),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      Responsive.w(12),
-                    ),
+                    borderRadius: BorderRadius.circular(Responsive.w(12)),
                   ),
                 ),
                 child: Text(
                   'Share Another Testimonial',
-                  style: AppTheme.label14.copyWith(
-                    color: AppColors.newPri,
-                  ),
+                  style: AppTheme.label14.copyWith(color: AppColors.newPri),
                 ),
               ),
             ),
@@ -901,17 +777,13 @@ class _AddTestimonialFormState
 class _PlayPauseOverlay extends StatefulWidget {
   final VideoPlayerController controller;
 
-  const _PlayPauseOverlay({
-    required this.controller,
-  });
+  const _PlayPauseOverlay({required this.controller});
 
   @override
-  State<_PlayPauseOverlay> createState() =>
-      _PlayPauseOverlayState();
+  State<_PlayPauseOverlay> createState() => _PlayPauseOverlayState();
 }
 
-class _PlayPauseOverlayState
-    extends State<_PlayPauseOverlay> {
+class _PlayPauseOverlayState extends State<_PlayPauseOverlay> {
   late final VoidCallback _listener;
 
   @override
@@ -942,9 +814,7 @@ class _PlayPauseOverlayState
             : widget.controller.play();
       },
       child: AnimatedOpacity(
-        opacity: widget.controller.value.isPlaying
-            ? 0
-            : 1,
+        opacity: widget.controller.value.isPlaying ? 0 : 1,
         duration: const Duration(milliseconds: 200),
         child: Container(
           color: Colors.black26,
