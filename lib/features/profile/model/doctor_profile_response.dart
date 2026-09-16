@@ -82,11 +82,8 @@ class DoctorAddress with _$DoctorAddress {
     String? address2,
 
     String? landmark,
-
     String? area,
-
     String? state,
-
     String? city,
 
     String? pincode,

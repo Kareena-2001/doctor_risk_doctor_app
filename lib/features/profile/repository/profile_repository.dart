@@ -2,8 +2,13 @@ import 'dart:io';
 
 import 'package:Doctors_App/core/services/api_client.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
+import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/degree_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
+import 'package:Doctors_App/features/profile/model/city_response.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 import 'package:Doctors_App/features/profile/model/profile_update_response.dart';
+import 'package:Doctors_App/features/profile/model/state_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -143,13 +148,13 @@ class ProfileRepository {
 
       debugPrint('🟦 Profile Update Response: $response');
 
-      if (response['code'] == 200) {
+      if (response['status'] == true) {
         return ProfileUpdateResponse.fromJson(response);
       }
 
       throw Exception(response['msg'] ?? 'Profile update failed');
     } catch (e) {
-      debugPrint('🔴 Profile Update Error: $e');
+      debugPrint('Profile Update Error: $e');
 
       if (e is ApiException) {
         throw Exception(e.message);
@@ -158,4 +163,55 @@ class ProfileRepository {
       throw Exception('Profile update error: ${e.toString()}');
     }
   }
+
+  Future<StateResponse> stateList() async {
+    final response = await _apiClient.get(url: 'statelist', includeAuth: true);
+
+    if (response['status'] == true) {
+      return StateResponse.fromJson(response);
+    }
+
+    throw Exception(response['msg'] ?? 'Failed to fetch states');
+  }
+
+  Future<CityResponse> cityList({required String stateId}) async {
+    final response = await _apiClient.get(
+      url: 'citieslist',
+      includeAuth: true,
+      queryParams: {'state_id': stateId},
+    );
+
+    if (response['status'] == true) {
+      return CityResponse.fromJson(response);
+    }
+
+    throw Exception(response['msg'] ?? 'Failed to fetch states');
+  }
+
+  Future<CategoryResponse> categoryList({required String productTypeId}) async {
+    final response = await _apiClient.get(
+      url: 'categorylist',
+      includeAuth: true,
+      queryParams: {'product_type_id': productTypeId},
+    );
+    if (response['status'] == true) return CategoryResponse.fromJson(response);
+    throw Exception(response['msg'] ?? 'Failed to fetch categories');
+  }
+
+  Future<SpecialityResponse> specialityList({required String categoryId}) async {
+    final response = await _apiClient.get(
+      url: 'specialitylist',
+      includeAuth: true,
+      queryParams: {'category_id': categoryId},
+    );
+    if (response['status'] == true) return SpecialityResponse.fromJson(response);
+    throw Exception(response['msg'] ?? 'Failed to fetch specialities');
+  }
+
+  Future<DegreeResponse> degreeList() async {
+    final response = await _apiClient.get(url: 'degreelist', includeAuth: true);
+    if (response['status'] == true) return DegreeResponse.fromJson(response);
+    throw Exception(response['msg'] ?? 'Failed to fetch degrees');
+  }
+
 }

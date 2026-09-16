@@ -7,6 +7,7 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
+import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
@@ -54,13 +55,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late final TextEditingController _worldwideCtrl;
   late final TextEditingController _unqualifiedStaffCtrl;
   late final TextEditingController _unqualifiedStaffCountCtrl;
-
-  final List<String> categories = [
-    'Professional Individual',
-    'General Practitioner All Pathy',
-    'Physician Consultant',
-    'Dental Surgeon',
-  ];
 
   final List<String> genders = ['Male', 'Female', 'Other'];
 
@@ -234,9 +228,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           email: _emailCtrl.text.trim(),
           mobileNo: _mobileCtrl.text.trim(),
           alternateNo: _alternateMobileCtrl.text.trim(),
-          categoryId: _categoryCtrl.text.trim(),
-          specialityId: _specialityCtrl.text.trim(),
-          degree: _degreeCtrl.text.trim(),
           establishmentName: _organisationCtrl.text.trim(),
           dob: _dobToApiFormat(_dobCtrl.text),
           gender: _genderCtrl.text.trim(),
@@ -442,141 +433,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       title: 'Professional & Practice Details',
                       icon: Icons.medical_services_outlined,
                       children: [
-                        if (_isEditing) ...[
-                          CustomDropdownField(
-                            label: 'CATEGORY',
-                            controller: _categoryCtrl,
-                            items: categories,
-                          ),
-                          height(12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'SPECIALITY',
-                                  controller: _specialityCtrl,
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'DEGREE',
-                                  controller: _degreeCtrl,
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'MEDICAL REG. STATE',
-                                  controller: _medicalRegStateCtrl,
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'MEDICAL REG. NO.',
-                                  controller: _medicalRegNoCtrl,
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'MEDICAL REG. YEAR',
-                            controller: _medicalRegYearCtrl,
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'RETROACTIVE DATE',
-                            controller: _retroactiveDateCtrl,
-                          ),
-                          height(12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomDropdownField(
-                                  label: 'RETROACTIVE',
-                                  controller: _retroactiveCtrl,
-                                  items: ['Yes', 'No'],
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                child: CustomDropdownField(
-                                  label: 'WORLDWIDE COVER',
-                                  controller: _worldwideCtrl,
-                                  items: const ['Yes', 'No'],
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          CustomDropdownField(
-                            label: 'UNQUALIFIED STAFF',
-                            controller: _unqualifiedStaffCtrl,
-                            items: const ['Yes', 'No'],
-                          ),
-                          if (_unqualifiedStaffCtrl.text.toLowerCase() ==
-                              'yes') ...[
-                            height(12),
-                            CustomTextField(
-                              label: 'UNQUALIFIED STAFF COUNT',
-                              controller: _unqualifiedStaffCountCtrl,
-                            ),
-                          ],
-                          height(20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              OutlinedButton(
-                                onPressed: isSaving ? null : _toggleEdit,
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                ),
-                                child: const Text('Cancel'),
-                              ),
-                              width(12),
-                              ElevatedButton(
-                                onPressed: isSaving ? null : _saveChanges,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF16A34A),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                ),
-                                child: isSaving
-                                    ? const SizedBox(
-                                        height: 18,
-                                        width: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : Text(
-                                        'Save Changes',
-                                        style: customTextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
+                        if (_isEditing)
+                          _buildProfessionalDetailsEditor(isSaving)
+                        else
                           Wrap(
                             runSpacing: 16,
                             spacing: 16,
@@ -623,7 +482,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 ),
                             ],
                           ),
-                        ],
                       ],
                     ),
                     height(16),
@@ -656,7 +514,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ] else ...[
                           ...data.addresses.asMap().entries.map(
                             (entry) => Padding(
-                              padding: EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.only(bottom: 12),
                               child: _buildAddressCard(entry.value, entry.key),
                             ),
                           ),
@@ -690,6 +548,196 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildProfessionalDetailsEditor(bool isSaving) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final state =
+            ref.watch(profileViewModelProvider).valueOrNull ??
+            const ProfileState();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonFormField<IdNameOption>(
+              decoration: const InputDecoration(labelText: 'CATEGORY'),
+              value: state.selectedCategory,
+              items: state.categories
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                  .toList(),
+              onChanged: state.isCategoryLoading
+                  ? null
+                  : (v) {
+                      if (v != null) {
+                        ref
+                            .read(profileViewModelProvider.notifier)
+                            .selectCategory(v);
+                      }
+                    },
+            ),
+            height(12),
+            DropdownButtonFormField<IdNameOption>(
+              decoration: const InputDecoration(labelText: 'SPECIALITY'),
+              value: state.selectedSpeciality,
+              items: state.specialities
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
+                  .toList(),
+              onChanged: state.isSpecialityLoading
+                  ? null
+                  : (v) {
+                      if (v != null) {
+                        ref
+                            .read(profileViewModelProvider.notifier)
+                            .selectSpeciality(v);
+                      }
+                    },
+            ),
+            height(12),
+            Text(
+              'DEGREE',
+              style: customTextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            height(6),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: state.degrees.map((d) {
+                final selected = state.selectedDegrees.any((e) => e.id == d.id);
+                return FilterChip(
+                  label: Text(d.name),
+                  selected: selected,
+                  onSelected: state.isDegreeLoading
+                      ? null
+                      : (isSelected) {
+                          final updated = [...state.selectedDegrees];
+                          if (isSelected) {
+                            updated.add(d);
+                          } else {
+                            updated.removeWhere((e) => e.id == d.id);
+                          }
+                          ref
+                              .read(profileViewModelProvider.notifier)
+                              .setSelectedDegrees(updated);
+                        },
+                );
+              }).toList(),
+            ),
+            height(12),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextField(
+                    label: 'MEDICAL REG. STATE',
+                    controller: _medicalRegStateCtrl,
+                  ),
+                ),
+                width(10),
+                Expanded(
+                  child: CustomTextField(
+                    label: 'MEDICAL REG. NO.',
+                    controller: _medicalRegNoCtrl,
+                  ),
+                ),
+              ],
+            ),
+            height(12),
+            CustomTextField(
+              label: 'MEDICAL REG. YEAR',
+              controller: _medicalRegYearCtrl,
+            ),
+            height(12),
+            CustomTextField(
+              label: 'RETROACTIVE DATE',
+              controller: _retroactiveDateCtrl,
+            ),
+            height(12),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomDropdownField(
+                    label: 'RETROACTIVE',
+                    controller: _retroactiveCtrl,
+                    items: const ['Yes', 'No'],
+                  ),
+                ),
+                width(10),
+                Expanded(
+                  child: CustomDropdownField(
+                    label: 'WORLDWIDE COVER',
+                    controller: _worldwideCtrl,
+                    items: const ['Yes', 'No'],
+                  ),
+                ),
+              ],
+            ),
+            height(12),
+            CustomDropdownField(
+              label: 'UNQUALIFIED STAFF',
+              controller: _unqualifiedStaffCtrl,
+              items: const ['Yes', 'No'],
+            ),
+            if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes') ...[
+              height(12),
+              CustomTextField(
+                label: 'UNQUALIFIED STAFF COUNT',
+                controller: _unqualifiedStaffCountCtrl,
+              ),
+            ],
+            height(20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                OutlinedButton(
+                  onPressed: isSaving ? null : _toggleEdit,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: const Text('Cancel'),
+                ),
+                width(12),
+                ElevatedButton(
+                  onPressed: isSaving ? null : _saveChanges,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: isSaving
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          'Save Changes',
+                          style: customTextStyle(color: Colors.white),
+                        ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -805,9 +853,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   width(8),
                   InkWell(
-                    onTap: () {
-                      // Logic for deleting address
-                    },
+                    onTap: () {},
                     child: const Icon(
                       Icons.delete_outline,
                       size: 18,
