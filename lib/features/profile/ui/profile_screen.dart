@@ -5,9 +5,12 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../product/model/purchase_model.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
@@ -286,7 +289,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       items: categories,
                     ),
                     height(12),
-
                     Row(
                       children: [
                         Expanded(
@@ -304,9 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-
                     height(12),
-
                     Row(
                       children: [
                         Expanded(
@@ -331,16 +331,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       label: 'MEDICAL REG. YEAR',
                       controller: _medicalRegYearCtrl,
                     ),
-
                     height(12),
-
                     CustomTextField(
                       label: 'RETROACTIVE DATE',
                       controller: _retroactiveDateCtrl,
                     ),
-
                     height(12),
-
                     Row(
                       children: [
                         Expanded(
@@ -360,15 +356,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-
                     height(12),
-
                     CustomDropdownField(
                       label: 'UNQUALIFIED STAFF',
                       controller: _unqualifiedStaffCtrl,
                       items: const ['Yes', 'No'],
                     ),
-
                     if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes') ...[
                       height(12),
                       CustomTextField(
@@ -376,9 +369,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         controller: _unqualifiedStaffCountCtrl,
                       ),
                     ],
-
                     height(20),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -460,8 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.location_on_sharp,
                 children: [
                   if (widget.initialData.addresses.isEmpty) ...[
-                    const SizedBox(height: 4),
-
+                    height(4),
                     Text(
                       'No practice addresses added.',
                       style: TextStyle(
@@ -469,16 +459,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontSize: 14,
                       ),
                     ),
-
-                    const SizedBox(height: 14),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _addAddress,
-                        icon: const Icon(Icons.add_location_alt_outlined),
-                        label: const Text('Add Address'),
-                      ),
+                    height(14),
+                    PrimaryButton(
+                      height: 45,
+                      borderRadius: 25,
+                      borderColor: AppColors.borderGrey,
+                      width: 150,
+                      fontSize: 13,
+                      backgroundColor: AppColors.white,
+                      textColor: AppColors.textColor,
+                      onPressed: _addAddress,
+                      icon: Icons.add,
+                      // icon: Icon(Icons.add_location_alt_outlined),
+                      text: 'Add Address',
                     ),
                   ] else ...[
                     ...widget.initialData.addresses.map(
@@ -488,54 +481,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     height(4),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _addAddress,
-                        icon: Icon(Icons.add_location_alt_outlined),
-                        label: Text(
-                          'Add Address',
-                          style: customTextStyle(color: AppColors.newPri),
-                        ),
-                      ),
+                    PrimaryButton(
+                      height: 45,
+                      borderRadius: 25,
+                      borderColor: AppColors.borderGrey,
+                      width: 150,
+                      fontSize: 13,
+                      backgroundColor: AppColors.white,
+                      textColor: AppColors.textColor,
+                      onPressed: _addAddress,
+                      icon: Icons.add,
+                      text: 'Add Address',
                     ),
                   ],
                 ],
               ),
               height(16),
-
               _buildMembershipCard(),
-
               height(16),
-
-              _buildRewardsCard(),
-
+              _buildRewardsSection(),
               height(16),
               _buildDocumentsCard(),
-
-              height(Responsive.h(100)),
-              // _buildCardTile(
-              //   title: 'Membership & Plans',
-              //   subtitle:
-              //       'You haven\'t secured a membership yet - plan details, your Membership ID and tier will appear here once you do.',
-              //   buttonText: 'Browse Plans',
-              //   icon: Icons.card_membership_outlined,
-              //   onPressed: () {},
-              // ),
-              // height(16),
-              // _buildCardTile(
-              //   title: 'Documents & Certificates',
-              //   subtitle:
-              //       'Policy certificate, invoices and your agreement will appear here once you secure a membership.',
-              //   buttonText: 'Open Document Vault',
-              //   icon: Icons.folder_open_outlined,
-              //   onPressed: () {},
-              // ),
               height(Responsive.h(100)),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRewardsSection() {
+    return SectionCard(
+      title: 'Rewards & Points',
+      icon: Icons.stars_rounded,
+      children: [
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '320',
+                style: customTextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFFD99A00),
+                ),
+              ),
+              TextSpan(
+                text: ' points available',
+                style: customTextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        height(10),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Text(
+            'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway"s "Redeem Reward Points" toggle.',
+            style: customTextStyle(
+              fontSize: 11,
+              color: AppColors.textColor,
+            ).copyWith(height: 1.4),
+          ),
+        ),
+      ],
     );
   }
 
@@ -551,7 +569,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             children: [
               Container(
@@ -579,20 +596,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-
           height(18),
-
-          // Membership ID
           _buildInfoRow('MEMBERSHIP ID', 'DR-2026-084213'),
-
           height(14),
-
-          // Active Plans
           _buildInfoRow('ACTIVE PLANS', '2 (1 Professional, 1 Establishment)'),
-
           height(14),
-
-          // Current Tier
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -602,6 +610,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width(12),
               Expanded(child: _buildInfoRow('MEMBER SINCE', '01 Sep 2025')),
             ],
+          ),
+          height(14),
+          PrimaryButton(
+            height: 45,
+            borderRadius: 25,
+            borderColor: AppColors.borderGrey,
+            width: 150,
+            fontSize: 13,
+            backgroundColor: AppColors.white,
+            textColor: AppColors.textColor,
+            onPressed: () {
+              context.push(Routes.myPlans);
+            },
+            text: 'View My Plans',
           ),
         ],
       ),
@@ -621,8 +643,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           height(18),
-
-          // Rewards
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -697,30 +717,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.grey.shade600,
             ).copyWith(height: 1.4),
           ),
-
-          height(16),
-
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                side: BorderSide(color: AppColors.primary),
-              ),
-              child: Text(
-                'View My Plans',
-                style: customTextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -766,51 +762,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-
           height(18),
-
           _buildDocumentItem(
             icon: Icons.verified_outlined,
             title: 'Medical Reg. Certificate',
             fileName: 'medicalregisterationcert.jpg',
             onTap: () {},
           ),
-
           height(10),
-
           _buildDocumentItem(
             icon: Icons.local_hospital_outlined,
             title: 'Clinic Registration Certificate',
             fileName: 'clinicregisterationcert.pdf',
             onTap: () {},
           ),
-
           height(10),
-
           _buildDocumentItem(
             icon: Icons.description_outlined,
             title: 'Previous Policy',
             fileName: 'NIAPareshMathur.pdf',
             onTap: () {},
           ),
-
           height(16),
-
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.folder_open_outlined, size: 18),
-              label: const Text('Open Document Vault'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                side: BorderSide(color: AppColors.primary),
-                foregroundColor: AppColors.primary,
-              ),
-            ),
+          PrimaryButton(
+            height: 45,
+            borderRadius: 25,
+            borderColor: AppColors.borderGrey,
+            width: 200,
+            fontSize: 13,
+            backgroundColor: AppColors.white,
+            textColor: AppColors.textColor,
+            onPressed: () {
+              context.push(Routes.documentVault);
+            },
+            text: 'Open Document Vault',
           ),
         ],
       ),
@@ -1046,7 +1031,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           CircleAvatar(
             radius: 28,
             backgroundColor: Colors.grey.shade200,
-            child: const Icon(Icons.person, size: 32, color: Colors.grey),
+            backgroundImage: const AssetImage('assets/images/user.png'),
           ),
           width(12),
           Expanded(
@@ -1075,7 +1060,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.grey,
                         shape: BoxShape.circle,
                       ),
@@ -1148,60 +1133,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1E293B),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCardTile({
-    required String title,
-    required String subtitle,
-    required String buttonText,
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: Colors.grey.shade700),
-              width(8),
-              Text(
-                title,
-                style: customTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          height(8),
-          Text(
-            subtitle,
-            style: customTextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-          height(12),
-          ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: Text(
-              buttonText,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
           ),
         ],
