@@ -17,6 +17,9 @@ import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.da
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../routing/routes.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -1143,9 +1146,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildDocumentsCard(List<dynamic>? documents) {
+  Widget _buildDocumentsCard(List<DoctorDocument>? documents) {
     return SectionCard(
-      title: 'Documents',
+      title: 'Documents & Certificates',
       icon: Icons.folder_open_outlined,
       children: [
         if (documents == null || documents.isEmpty)
@@ -1156,21 +1159,111 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         else
           Column(
             children: documents.map((doc) {
-              return ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(
-                  Icons.insert_drive_file,
-                  color: Colors.grey,
-                ),
-                title: Text(
-                  _fileNameFromUrl(doc.toString()),
-                  style: customTextStyle(fontSize: 12),
+              final fileName = _fileNameFromUrl(doc.documents ?? '');
+
+              final isPdf = fileName.toLowerCase().endsWith('.pdf');
+
+              return InkWell(
+                onTap: () => _openDocument(doc.documents),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          isPdf
+                              ? Icons.picture_as_pdf_outlined
+                              : Icons.image_outlined,
+                          size: 20,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              doc.docName ?? 'Document',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: customTextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+
+                            const SizedBox(height: 3),
+
+                            Text(
+                              fileName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: customTextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      Icon(
+                        Icons.open_in_new,
+                        size: 18,
+                        color: Colors.grey.shade600,
+                      ),
+                    ],
+                  ),
                 ),
               );
             }).toList(),
           ),
+        height(4),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () {
+              context.push(Routes.documentVault);
+            },
+            icon: const Icon(Icons.folder_open_outlined, size: 18),
+            label: Text(
+              'Open Document Vault',
+              style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  Future<void> _openDocument(String? documentUrl) async {
+    if (documentUrl == null || documentUrl.trim().isEmpty) {
+      return;
+    }
+
+    final uri = Uri.tryParse(documentUrl);
+
+    if (uri == null) {
+      return;
+    }
+
+    final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!success) {
+      debugPrint('Could not open document: $documentUrl');
+    }
   }
 }
