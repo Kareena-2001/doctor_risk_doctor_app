@@ -30,18 +30,31 @@ class ProfileViewModel extends _$ProfileViewModel {
   }
 
   Future<void> getProfile() async {
-    state = const AsyncLoading();
+    final current = _current;
+    // Keep master-data requests available while the profile request is running.
+    state = AsyncData(current.copyWith(profileData: null));
     try {
       final repository = ref.read(profileRepositoryProvider);
       final response = await repository.getProfileList();
+      final latest = _current;
       state = AsyncData(
         ProfileState(
           profileData: response.data,
-          categories: _current.categories,
-          specialities: _current.specialities,
-          degrees: _current.degrees,
-          states: _current.states,
-          cities: _current.cities,
+          categories: latest.categories,
+          specialities: latest.specialities,
+          degrees: latest.degrees,
+          states: latest.states,
+          cities: latest.cities,
+          selectedCategory: latest.selectedCategory,
+          selectedSpeciality: latest.selectedSpeciality,
+          selectedDegrees: latest.selectedDegrees,
+          selectedState: latest.selectedState,
+          selectedCity: latest.selectedCity,
+          isCategoryLoading: latest.isCategoryLoading,
+          isSpecialityLoading: latest.isSpecialityLoading,
+          isDegreeLoading: latest.isDegreeLoading,
+          isStateLoading: latest.isStateLoading,
+          isCityLoading: latest.isCityLoading,
         ),
       );
       await _prefillFromProfile();

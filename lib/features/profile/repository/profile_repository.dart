@@ -198,13 +198,16 @@ class ProfileRepository {
     throw Exception(response['msg'] ?? 'Failed to fetch categories');
   }
 
-  Future<SpecialityResponse> specialityList({required String categoryId}) async {
+  Future<SpecialityResponse> specialityList({
+    required String categoryId,
+  }) async {
     final response = await _apiClient.get(
       url: 'specialitylist',
       includeAuth: true,
       queryParams: {'category_id': categoryId},
     );
-    if (response['status'] == true) return SpecialityResponse.fromJson(response);
+    if (response['status'] == true)
+      return SpecialityResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch specialities');
   }
 
@@ -213,5 +216,4 @@ class ProfileRepository {
     if (response['status'] == true) return DegreeResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch degrees');
   }
-
 }

@@ -557,77 +557,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         final state =
             ref.watch(profileViewModelProvider).valueOrNull ??
             const ProfileState();
+        final notifier = ref.read(profileViewModelProvider.notifier);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DropdownButtonFormField<IdNameOption>(
-              decoration: const InputDecoration(labelText: 'CATEGORY'),
-              value: state.selectedCategory,
-              items: state.categories
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
-                  .toList(),
-              onChanged: state.isCategoryLoading
-                  ? null
-                  : (v) {
-                      if (v != null) {
-                        ref
-                            .read(profileViewModelProvider.notifier)
-                            .selectCategory(v);
-                      }
-                    },
+            _buildReferenceDropdown(
+              label: 'CATEGORY',
+              emptyHint: 'Select Category',
+              isLoading: state.isCategoryLoading,
+              items: state.categories,
+              selected: state.selectedCategory,
+              onSelected: notifier.selectCategory,
             ),
             height(12),
-            DropdownButtonFormField<IdNameOption>(
-              decoration: const InputDecoration(labelText: 'SPECIALITY'),
-              value: state.selectedSpeciality,
-              items: state.specialities
-                  .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
-                  .toList(),
-              onChanged: state.isSpecialityLoading
-                  ? null
-                  : (v) {
-                      if (v != null) {
-                        ref
-                            .read(profileViewModelProvider.notifier)
-                            .selectSpeciality(v);
-                      }
-                    },
+            _buildReferenceDropdown(
+              label: 'SPECIALITY',
+              emptyHint: state.selectedCategory == null
+                  ? 'Select a category first'
+                  : 'Select Speciality',
+              disabled: state.selectedCategory == null,
+              isLoading: state.isSpecialityLoading,
+              items: state.specialities,
+              selected: state.selectedSpeciality,
+              onSelected: notifier.selectSpeciality,
             ),
             height(12),
-            Text(
-              'DEGREE',
-              style: customTextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            height(6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: state.degrees.map((d) {
-                final selected = state.selectedDegrees.any((e) => e.id == d.id);
-                return FilterChip(
-                  label: Text(d.name),
-                  selected: selected,
-                  onSelected: state.isDegreeLoading
-                      ? null
-                      : (isSelected) {
-                          final updated = [...state.selectedDegrees];
-                          if (isSelected) {
-                            updated.add(d);
-                          } else {
-                            updated.removeWhere((e) => e.id == d.id);
-                          }
-                          ref
-                              .read(profileViewModelProvider.notifier)
-                              .setSelectedDegrees(updated);
-                        },
-                );
-              }).toList(),
-            ),
+            _buildDegreeEditorField(context, ref, state),
             height(12),
             Row(
               children: [
@@ -736,6 +692,206 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ],
             ),
           ],
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Reusable clean dropdown for reference data (Category / Speciality),
+  // same visual pattern used in SignUpScreen's `_buildReferenceDropdown`.
+  // ---------------------------------------------------------------------------
+  Widget _buildReferenceDropdown({
+    required String label,
+    required String emptyHint,
+    required bool isLoading,
+    required List<IdNameOption> items,
+    required IdNameOption? selected,
+    required ValueChanged<IdNameOption> onSelected,
+    bool disabled = false,
+  }) {
+    final blocked = disabled || isLoading;
+    final hint = disabled
+        ? emptyHint
+        : isLoading
+        ? 'Loading...'
+        : emptyHint;
+
+    return CustomDropdownField<IdNameOption>(
+      label: label,
+      hint: hint,
+      items: blocked ? const <IdNameOption>[] : items,
+      value: selected,
+      itemBuilder: (item) => item.name,
+      onChanged: blocked
+          ? null
+          : (val) {
+              if (val == null) return;
+              onSelected(val);
+            },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Degree field: chip summary that opens a bottom-sheet multi-select,
+  // mirroring SignUpScreen's `_buildDegreeField` + `_openDegreePicker`.
+  // ---------------------------------------------------------------------------
+  Widget _buildDegreeEditorField(
+    BuildContext context,
+    WidgetRef ref,
+    ProfileState state,
+  ) {
+    return GestureDetector(
+      onTap: state.isDegreeLoading
+          ? null
+          : () => _openDegreePicker(context, ref, state),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'DEGREE',
+          suffixIcon: const Icon(Icons.arrow_drop_down),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: state.isDegreeLoading
+            ? Text(
+                'Loading...',
+                style: customTextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade500,
+                ),
+              )
+            : state.selectedDegrees.isEmpty
+            ? Text(
+                state.degrees.isEmpty
+                    ? 'No degrees available'
+                    : 'Select Degree(s)',
+                style: customTextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade500,
+                ),
+              )
+            : Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: state.selectedDegrees
+                    .map(
+                      (d) => Chip(
+                        label: Text(d.name),
+                        onDeleted: () {
+                          ref
+                              .read(profileViewModelProvider.notifier)
+                              .setSelectedDegrees(
+                                state.selectedDegrees
+                                    .where((e) => e.id != d.id)
+                                    .toList(),
+                              );
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+      ),
+    );
+  }
+
+  Future<void> _openDegreePicker(
+    BuildContext context,
+    WidgetRef ref,
+    ProfileState state,
+  ) async {
+    final notifier = ref.read(profileViewModelProvider.notifier);
+    final tempSelected = [...state.selectedDegrees];
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Degree(s)',
+                    style: customTextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  height(12),
+                  if (state.degrees.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          'No degrees available',
+                          style: customTextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: state.degrees.length,
+                        itemBuilder: (context, index) {
+                          final degree = state.degrees[index];
+                          final isChecked = tempSelected.any(
+                            (item) => item.id == degree.id,
+                          );
+
+                          return CheckboxListTile(
+                            value: isChecked,
+                            title: Text(
+                              degree.name,
+                              style: customTextStyle(fontSize: 13),
+                            ),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            contentPadding: EdgeInsets.zero,
+                            onChanged: (checked) {
+                              setSheetState(() {
+                                if (checked == true) {
+                                  if (!tempSelected.any(
+                                    (item) => item.id == degree.id,
+                                  )) {
+                                    tempSelected.add(degree);
+                                  }
+                                } else {
+                                  tempSelected.removeWhere(
+                                    (item) => item.id == degree.id,
+                                  );
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  height(12),
+                  PrimaryButton(
+                    height: 46,
+                    fontSize: 14,
+                    text: 'Done',
+                    onPressed: state.degrees.isEmpty
+                        ? null
+                        : () {
+                            notifier.setSelectedDegrees(tempSelected);
+                            Navigator.of(sheetContext).pop();
+                          },
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

@@ -10,7 +10,6 @@ class ProfileState with _$ProfileState {
     DoctorProfileData? profileData,
     @Default(false) bool isSaving,
 
-    // Master lists
     @Default([]) List<IdNameOption> categories,
     @Default([]) List<IdNameOption> specialities,
     @Default([]) List<IdNameOption> degrees,

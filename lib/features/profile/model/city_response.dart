@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'city_response.freezed.dart';
-
 part 'city_response.g.dart';
 
 @freezed
@@ -19,7 +18,10 @@ class CityResponse with _$CityResponse {
 
 @freezed
 class CityModel with _$CityModel {
-  const factory CityModel({required int id, required String name}) = _CityModel;
+  const factory CityModel({
+    required int id,
+    required String name,
+  }) = _CityModel;
 
   factory CityModel.fromJson(Map<String, dynamic> json) =>
       _$CityModelFromJson(json);
