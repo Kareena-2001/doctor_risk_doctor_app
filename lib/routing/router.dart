@@ -20,7 +20,6 @@ import 'package:Doctors_App/features/legal/ui/add_legal_notice_form.dart';
 import 'package:Doctors_App/features/legal/ui/legal_consultant_view.dart';
 import 'package:Doctors_App/features/legal/ui/legal_notice_view.dart';
 import 'package:Doctors_App/features/legal/ui/legal_screen.dart';
-import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_details_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_screen.dart';
 import 'package:Doctors_App/features/onboarding/ui/onboarding_view.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
@@ -34,7 +33,6 @@ import 'package:Doctors_App/features/scan/ui/scan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_drawer.dart';
-import '../features/admindocs/ui/admin_docs_screen.dart';
 import '../features/authentication/ui/sign_in_screen.dart';
 import '../features/blog_central/model/my_submission_list_model.dart';
 import '../features/forgot_password/ui/create_new_password.dart';
@@ -51,7 +49,6 @@ import '../features/product/ui/plan_finder_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
 import '../features/product/ui/source_details_view.dart';
-import '../features/profile/ui/languages_screen.dart';
 import '../features/setting/about_us_screen.dart';
 import '../features/setting/contact_us.dart';
 import '../features/setting/privacy_policy_screen.dart';
@@ -175,10 +172,10 @@ final GoRouter router = GoRouter(
       path: Routes.rewards,
       pageBuilder: (context, state) => state.slidePage(const RewardsScreen()),
     ),
-    GoRoute(
-      path: Routes.planListScreen,
-      pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
-    ),
+    // GoRoute(
+    //   path: Routes.planListScreen,
+    //   pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
+    // ),
     GoRoute(
       path: Routes.productList,
       pageBuilder: (context, state) => state.slidePage(const ProductView()),
@@ -200,12 +197,6 @@ final GoRouter router = GoRouter(
       path: Routes.purchaseWizard,
       builder: (context, state) {
         final extra = state.extra;
-
-        // `extra` must be a (Product, TierPlan, String, double, double)
-        // record. If whatever navigated here forgot to pass it (or passed
-        // the wrong shape), don't crash the whole app on a bad cast —
-        // bounce back to the previous screen instead.
-
         if (extra is! (Product, TierPlan, String, double, double)) {
           debugPrint(
             'purchaseWizard route reached without valid extra args '
@@ -232,11 +223,6 @@ final GoRouter router = GoRouter(
           premium: extra.$5,
         );
       },
-    ),
-
-    GoRoute(
-      path: Routes.languages,
-      pageBuilder: (context, state) => state.slidePage(const LanguagesScreen()),
     ),
 
     GoRoute(
@@ -267,11 +253,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.notification,
       pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
-    ),
-
-    GoRoute(
-      path: Routes.adminDocs,
-      pageBuilder: (context, state) => state.slidePage(AdminDocsScreen()),
     ),
     GoRoute(
       path: Routes.supportHub,
@@ -306,7 +287,6 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const ForgetPasswordScreen()),
     ),
-
     GoRoute(
       path: Routes.otpVerification,
       pageBuilder: (context, state) {
@@ -327,17 +307,10 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const NewsAdvisoryScreen()),
     ),
-
-    // GoRoute(
-    //   path: Routes.newsAdvisoryDetails,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const NewsAdvisoryDetailsScreen()),
-    // ),
     GoRoute(
       path: Routes.blogCentral,
       pageBuilder: (context, state) => state.slidePage(const BlogScreen()),
     ),
-
     GoRoute(
       path: Routes.blogCentralDetails,
       pageBuilder: (context, state) {
@@ -346,12 +319,6 @@ final GoRouter router = GoRouter(
         return state.slidePage(BlogDetailsScreen(blogId: blogId));
       },
     ),
-
-    // GoRoute(
-    //   path: Routes.blogCentralDetails,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const BlogDetailsScreen(blogId:blogId)),
-    // ),
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),

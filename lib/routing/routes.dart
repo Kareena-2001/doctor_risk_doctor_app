@@ -29,12 +29,7 @@ class Routes {
   static const offerLetter = '/offerLetter';
   static const homeScreen = '/homeScreen';
 
-  // static const productList = '/productList';
-  static const planListScreen = '/planListScreen';
-  static const myPlansScreen = '/myPlansScreen';
-  static const myPlanDetails = '/myPlanDetails';
-  static const addPlanScreen = '/addPlanScreen';
-
+  // static const planListScreen = '/planListScreen';
   static const String productHub = '/product-hub';
   static const String productList = '/product-list';
   static const String myPlans = '/my-plans';
@@ -45,11 +40,8 @@ class Routes {
   static const privacyPolicy = '/privacyPolicy';
   static const termsAndCondition = '/termsAndCondition';
   static const contactUs = '/contactUs';
-  static const helpDesk = '/helpDesks';
   static const notification = '/notification';
 
-  static const adminDocs = '/adminDocs';
-  static const idCard = '/idCard';
   static const helpSupport = '/helpSupport';
   static const faqScreen = '/faqScreen';
   static const medicoLawFaq = '/medicoLawFaq';

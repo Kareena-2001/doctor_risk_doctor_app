@@ -147,7 +147,7 @@ class DoctorClinicHospitalDetails with _$DoctorClinicHospitalDetails {
 
     @JsonKey(name: 'retroactive_date') String? retroactiveDate,
 
-    String? retroactivePolicydoc,
+    @JsonKey(name: 'retroactive_policydoc') String? retroactivePolicydoc,
 
     String? worldwide,
 
