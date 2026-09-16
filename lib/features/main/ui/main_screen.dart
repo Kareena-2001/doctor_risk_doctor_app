@@ -1,6 +1,6 @@
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/home/ui/home_screen.dart';
-import 'package:Doctors_App/features/profile/ui/profile_view_screen.dart';
+import 'package:Doctors_App/features/profile/ui/profile_screen.dart';
 import 'package:Doctors_App/features/your_story/ui/your_story_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +24,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     const HomeScreen(),
     const YourStoryScreen(),
     const CommunityScreen(),
-    ProfileViewScreen(
+    ProfileScreen(
       initialData: DoctorProfileData(
         prefix: 'Dr.',
         firstName: 'Paresh',

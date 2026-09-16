@@ -9,16 +9,20 @@ import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class ProfileViewScreen extends StatefulWidget {
+import '../../product/model/purchase_model.dart';
+import '../../product/ui/widgets/address_form_sheet.dart';
+import '../model/address_view_model.dart';
+
+class ProfileScreen extends StatefulWidget {
   final DoctorProfileData initialData;
 
-  const ProfileViewScreen({super.key, required this.initialData});
+  const ProfileScreen({super.key, required this.initialData});
 
   @override
-  State<ProfileViewScreen> createState() => _ProfileViewScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileViewScreenState extends State<ProfileViewScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -139,6 +143,15 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     _categoryCtrl.dispose();
     _specialityCtrl.dispose();
     _degreeCtrl.dispose();
+
+    _medicalRegStateCtrl.dispose();
+    _medicalRegNoCtrl.dispose();
+    _medicalRegYearCtrl.dispose();
+    _retroactiveDateCtrl.dispose();
+    _retroactiveCtrl.dispose();
+    _worldwideCtrl.dispose();
+    _unqualifiedStaffCtrl.dispose();
+    _unqualifiedStaffCountCtrl.dispose();
 
     super.dispose();
   }
@@ -446,103 +459,577 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 title: 'Practice Addresses',
                 icon: Icons.location_on_sharp,
                 children: [
-                  if (_isEditing) ...[
-                    CustomDropdownField(
-                      label: 'CATEGORY',
-                      controller: _categoryCtrl,
-                      items: categories,
+                  if (widget.initialData.addresses.isEmpty) ...[
+                    const SizedBox(height: 4),
+
+                    Text(
+                      'No practice addresses added.',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
                     ),
-                    height(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'SPECIALITY',
-                            controller: _specialityCtrl,
-                          ),
-                        ),
-                        width(10),
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'DEGREE',
-                            controller: _degreeCtrl,
-                          ),
-                        ),
-                      ],
-                    ),
-                    height(20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        OutlinedButton(
-                          onPressed: _toggleEdit,
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          child: const Text('Cancel'),
-                        ),
-                        width(12),
-                        ElevatedButton(
-                          onPressed: _saveChanges,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF16A34A),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                          child: Text(
-                            'Save Changes',
-                            style: customTextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
+
+                    const SizedBox(height: 14),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _addAddress,
+                        icon: const Icon(Icons.add_location_alt_outlined),
+                        label: const Text('Add Address'),
+                      ),
                     ),
                   ] else ...[
-                    Wrap(
-                      runSpacing: 16,
-                      spacing: 16,
-                      children: [
-                        _buildReadUnit('CATEGORY', _categoryCtrl.text),
-                        _buildReadUnit('SPECIALITY', _specialityCtrl.text),
-                        _buildReadUnit('DEGREE', _degreeCtrl.text),
-                      ],
+                    ...widget.initialData.addresses.map(
+                      (address) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildAddressCard(address),
+                      ),
+                    ),
+                    height(4),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _addAddress,
+                        icon: Icon(Icons.add_location_alt_outlined),
+                        label: Text(
+                          'Add Address',
+                          style: customTextStyle(color: AppColors.newPri),
+                        ),
+                      ),
                     ),
                   ],
                 ],
               ),
               height(16),
-              _buildCardTile(
-                title: 'Membership & Plans',
-                subtitle:
-                    'You haven\'t secured a membership yet - plan details, your Membership ID and tier will appear here once you do.',
-                buttonText: 'Browse Plans',
-                icon: Icons.card_membership_outlined,
-                onPressed: () {},
-              ),
+
+              _buildMembershipCard(),
+
               height(16),
-              _buildCardTile(
-                title: 'Documents & Certificates',
-                subtitle:
-                    'Policy certificate, invoices and your agreement will appear here once you secure a membership.',
-                buttonText: 'Open Document Vault',
-                icon: Icons.folder_open_outlined,
-                onPressed: () {},
-              ),
+
+              _buildRewardsCard(),
+
+              height(16),
+              _buildDocumentsCard(),
+
+              height(Responsive.h(100)),
+              // _buildCardTile(
+              //   title: 'Membership & Plans',
+              //   subtitle:
+              //       'You haven\'t secured a membership yet - plan details, your Membership ID and tier will appear here once you do.',
+              //   buttonText: 'Browse Plans',
+              //   icon: Icons.card_membership_outlined,
+              //   onPressed: () {},
+              // ),
+              // height(16),
+              // _buildCardTile(
+              //   title: 'Documents & Certificates',
+              //   subtitle:
+              //       'Policy certificate, invoices and your agreement will appear here once you secure a membership.',
+              //   buttonText: 'Open Document Vault',
+              //   icon: Icons.folder_open_outlined,
+              //   onPressed: () {},
+              // ),
               height(Responsive.h(100)),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMembershipCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.card_membership_outlined,
+                  color: AppColors.primary,
+                  size: 21,
+                ),
+              ),
+              width(10),
+              Expanded(
+                child: Text(
+                  'Membership & Plans',
+                  style: customTextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          height(18),
+
+          // Membership ID
+          _buildInfoRow('MEMBERSHIP ID', 'DR-2026-084213'),
+
+          height(14),
+
+          // Active Plans
+          _buildInfoRow('ACTIVE PLANS', '2 (1 Professional, 1 Establishment)'),
+
+          height(14),
+
+          // Current Tier
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildInfoRow('CURRENT TIER', 'Gold II · Premium'),
+              ),
+              width(12),
+              Expanded(child: _buildInfoRow('MEMBER SINCE', '01 Sep 2025')),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRewardsCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          height(18),
+
+          // Rewards
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF8E7),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFF5D98A)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFE8A8),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.stars_rounded,
+                    size: 20,
+                    color: Color(0xFFD99A00),
+                  ),
+                ),
+                width(10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rewards & Points',
+                        style: customTextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      height(2),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '320',
+                              style: customTextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFD99A00),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' points available',
+                              style: customTextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          height(8),
+
+          Text(
+            'Redeem your points at checkout toward a membership renewal, '
+            'new plan purchase, or paid event.',
+            style: customTextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade600,
+            ).copyWith(height: 1.4),
+          ),
+
+          height(16),
+
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () {},
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                side: BorderSide(color: AppColors.primary),
+              ),
+              child: Text(
+                'View My Plans',
+                style: customTextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDocumentsCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.folder_open_outlined,
+                  color: AppColors.primary,
+                  size: 21,
+                ),
+              ),
+              width(10),
+              Expanded(
+                child: Text(
+                  'Documents & Certificates',
+                  style: customTextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          height(18),
+
+          _buildDocumentItem(
+            icon: Icons.verified_outlined,
+            title: 'Medical Reg. Certificate',
+            fileName: 'medicalregisterationcert.jpg',
+            onTap: () {},
+          ),
+
+          height(10),
+
+          _buildDocumentItem(
+            icon: Icons.local_hospital_outlined,
+            title: 'Clinic Registration Certificate',
+            fileName: 'clinicregisterationcert.pdf',
+            onTap: () {},
+          ),
+
+          height(10),
+
+          _buildDocumentItem(
+            icon: Icons.description_outlined,
+            title: 'Previous Policy',
+            fileName: 'NIAPareshMathur.pdf',
+            onTap: () {},
+          ),
+
+          height(16),
+
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.folder_open_outlined, size: 18),
+              label: const Text('Open Document Vault'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                side: BorderSide(color: AppColors.primary),
+                foregroundColor: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: customTextStyle(
+            fontSize: 9.5,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade500,
+          ),
+        ),
+        height(4),
+        Text(
+          value,
+          style: customTextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF1E293B),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentItem({
+    required IconData icon,
+    required String title,
+    required String fileName,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(11),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 18, color: AppColors.primary),
+            ),
+            width(10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                  height(3),
+                  Text(
+                    fileName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: customTextStyle(
+                      fontSize: 10.5,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            width(8),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: Colors.grey.shade500,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _addAddress() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return AddressFormSheet(
+          existing: null,
+          onSave: (WizardAddress address) {
+            Navigator.of(context).pop(address);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAddressCard(AddressViewData address) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  address.addressType.isEmpty ? 'Address' : address.addressType,
+                  style: customTextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.orange,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              if (address.ownVisiting.isNotEmpty)
+                Text(
+                  address.ownVisiting,
+                  style: customTextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+            ],
+          ),
+
+          height(12),
+
+          _buildAddressValue('ADDRESS 1', address.address1),
+
+          if (address.address2.isNotEmpty) ...[
+            height(8),
+            _buildAddressValue('ADDRESS 2', address.address2),
+          ],
+
+          if (address.area.isNotEmpty) ...[
+            height(8),
+            _buildAddressValue('AREA', address.area),
+          ],
+
+          if (address.landmark.isNotEmpty) ...[
+            height(8),
+            _buildAddressValue('LANDMARK', address.landmark),
+          ],
+
+          height(8),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _buildAddressValue('CITY', address.city)),
+              width(12),
+              Expanded(child: _buildAddressValue('STATE', address.state)),
+            ],
+          ),
+
+          height(8),
+
+          _buildAddressValue('PIN CODE', address.pincode),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressValue(String label, String? value) {
+    final displayValue = value?.trim() ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: customTextStyle(
+            fontSize: 9.5,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade500,
+          ),
+        ),
+        height(3),
+        Text(
+          displayValue.isEmpty ? '-' : displayValue,
+          style: customTextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1E293B),
+          ),
+        ),
+      ],
     );
   }
 

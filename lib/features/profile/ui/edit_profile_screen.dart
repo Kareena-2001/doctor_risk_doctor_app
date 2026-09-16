@@ -16,7 +16,6 @@ import '../../../extensions/build_context_extension.dart';
 import '../../../theme/app_colors.dart';
 import '../../common/ui/widgets/primary_button.dart';
 import '../model/certificate_upload_field.dart';
-import 'profile_view_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -119,6 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
+
   //
   // void _openViewProfile() {
   //   Navigator.push(
@@ -156,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               address1: a.address1.text,
               address2: a.address2.text,
               landmark: a.landmark.text,
-              pinCode: a.pinCode.text,
+              pincode: a.pinCode.text,
               city: a.city.text,
               state: a.state.text,
             ),
@@ -170,10 +170,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Edit Profile',
-        showView: false,
-      ),
+      appBar: CustomAppBar(title: 'Edit Profile', showView: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
