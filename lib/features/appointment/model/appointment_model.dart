@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../profile/model/certificate_model.dart';
+import 'certificate_model.dart';
 
 enum AppointmentMode { videoCall, phoneCall, inPerson }
 

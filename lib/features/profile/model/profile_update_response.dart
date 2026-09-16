@@ -30,47 +30,26 @@ class ProfileUpdateData with _$ProfileUpdateData {
 class ProfileUpdateProfile with _$ProfileUpdateProfile {
   const factory ProfileUpdateProfile({
     required int id,
-
     @JsonKey(name: 'doctor_no') String? doctorNo,
-
     String? photo,
-
     @JsonKey(name: 'organization_name') String? organizationName,
-
     String? prifix,
-
     @JsonKey(name: 'first_name') String? firstName,
-
     @JsonKey(name: 'middle_name') String? middleName,
-
     @JsonKey(name: 'last_name') String? lastName,
-
     @JsonKey(name: 'full_name') String? fullName,
-
     String? email,
-
     @JsonKey(name: 'mobile_no') String? mobileNo,
-
     @JsonKey(name: 'alternate_no') String? alternateNo,
-
     @JsonKey(name: 'category_id') String? categoryId,
-
     @JsonKey(name: 'category_name') String? categoryName,
-
     @JsonKey(name: 'speciality_id') String? specialityId,
-
     @JsonKey(name: 'speciality_name') String? specialityName,
-
     String? degree,
-
     @JsonKey(name: 'establishment_name') String? establishmentName,
-
     String? dob,
-
     String? gender,
-
     @Default([]) List<ProfileUpdateAddress> addresses,
-
     @JsonKey(name: 'clinic_hospital_details')
     ProfileUpdateClinicHospitalDetails? clinicHospitalDetails,
   }) = _ProfileUpdateProfile;

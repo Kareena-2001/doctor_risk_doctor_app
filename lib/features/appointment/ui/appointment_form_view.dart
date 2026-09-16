@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 
 import '../model/appointment_model.dart';
 import '../provider/appointment_provider.dart';
-import '../../profile/model/certificate_model.dart';
+import '../model/certificate_model.dart';
 
 class AppointmentFormView extends ConsumerStatefulWidget {
   const AppointmentFormView({super.key});

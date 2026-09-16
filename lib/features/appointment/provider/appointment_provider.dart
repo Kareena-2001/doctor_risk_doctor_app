@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../profile/model/certificate_model.dart';
+import '../model/certificate_model.dart';
 import '../model/appointment_model.dart';
 
 class AppointmentNotifier extends StateNotifier<List<AppointmentModel>> {

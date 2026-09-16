@@ -10,15 +10,12 @@ import 'package:Doctors_App/core/widgets/section_card.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
+import 'package:Doctors_App/features/profile/model/profile_address_request.dart';
 import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
 import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.dart';
-import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
-import '../../product/model/purchase_model.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -64,6 +61,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     'Physician Consultant',
     'Dental Surgeon',
   ];
+
+  final List<String> genders = ['Male', 'Female', 'Other'];
 
   @override
   void initState() {
@@ -113,14 +112,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _degreeCtrl.text = data.degree ?? '';
 
     final clinic = data.clinicHospitalDetails;
+
     _medicalRegStateCtrl.text = clinic?.medicleRegState ?? '';
     _medicalRegNoCtrl.text = clinic?.medicleRegNo ?? '';
     _medicalRegYearCtrl.text = clinic?.medicleRegYear ?? '';
+
     _retroactiveDateCtrl.text = clinic?.retroactiveDate ?? '';
-    _retroactiveCtrl.text = clinic?.retroactive ?? '';
-    _worldwideCtrl.text = clinic?.worldwide ?? '';
-    _unqualifiedStaffCtrl.text = clinic?.unqualifiedStaff ?? '';
+
+    _retroactiveCtrl.text = _yesNoValue(clinic?.retroactive);
+    _worldwideCtrl.text = _yesNoValue(clinic?.worldwide);
+    _unqualifiedStaffCtrl.text = _yesNoValue(clinic?.unqualifiedStaff);
+
     _unqualifiedStaffCountCtrl.text = clinic?.unqualifiedStaffCount ?? '';
+  }
+
+  String _yesNoValue(String? value) {
+    if (value == '1') return 'Yes';
+    if (value == '0') return 'No';
+
+    if (value?.toLowerCase() == 'yes') return 'Yes';
+    if (value?.toLowerCase() == 'no') return 'No';
+
+    return '';
+  }
+
+  String? _apiYesNo(String value) {
+    if (value.toLowerCase() == 'yes') return '1';
+    if (value.toLowerCase() == 'no') return '0';
+    return null;
   }
 
   String _formatDob(String? dob) {
@@ -130,6 +149,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return '${parsed.day.toString().padLeft(2, '0')}/'
         '${parsed.month.toString().padLeft(2, '0')}/'
         '${parsed.year}';
+  }
+
+  String? _dobToApiFormat(String display) {
+    if (display.trim().isEmpty) return null;
+    final parts = display.split('/');
+    if (parts.length != 3) return display;
+    final day = parts[0].padLeft(2, '0');
+    final month = parts[1].padLeft(2, '0');
+    final year = parts[2];
+    return '$year-$month-$day';
   }
 
   String _fileNameFromUrl(String? url) {
@@ -173,17 +202,87 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     });
   }
 
-  void _saveChanges() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isEditing = false;
-      });
+  Future<void> _saveChanges() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final data = ref.read(profileViewModelProvider).valueOrNull?.profileData;
+
+    final addressRequests = (data?.addresses ?? [])
+        .map(
+          (a) => ProfileAddressRequest(
+            id: a.id.toString(),
+            addressType: a.addressType,
+            ownVisiting: a.ownVisiting,
+            address1: a.address1,
+            address2: a.address2,
+            landmark: a.landmark,
+            area: a.area,
+            state: a.state,
+            city: a.city,
+            pincode: a.pincode,
+          ),
+        )
+        .toList();
+
+    final success = await ref
+        .read(profileViewModelProvider.notifier)
+        .updateProfile(
+          prefix: _prefixCtrl.text.trim(),
+          firstName: _firstNameCtrl.text.trim(),
+          middleName: _middleNameCtrl.text.trim(),
+          lastName: _lastNameCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          mobileNo: _mobileCtrl.text.trim(),
+          alternateNo: _alternateMobileCtrl.text.trim(),
+          categoryId: _categoryCtrl.text.trim(),
+          specialityId: _specialityCtrl.text.trim(),
+          degree: _degreeCtrl.text.trim(),
+          establishmentName: _organisationCtrl.text.trim(),
+          dob: _dobToApiFormat(_dobCtrl.text),
+          gender: _genderCtrl.text.trim(),
+          addresses: addressRequests,
+          clinicHospitalId: data?.clinicHospitalDetails?.id?.toString(),
+          medicleRegState: _medicalRegStateCtrl.text.trim(),
+          medicleRegNo: _medicalRegNoCtrl.text.trim(),
+          medicleRegYear: _medicalRegYearCtrl.text.trim(),
+          retroactive: _apiYesNo(_retroactiveCtrl.text),
+          retroactiveDate: _retroactiveDateCtrl.text.trim(),
+          worldwide: _apiYesNo(_worldwideCtrl.text),
+          unqualifiedStaff: _apiYesNo(_unqualifiedStaffCtrl.text),
+          unqualifiedStaffCount: _unqualifiedStaffCountCtrl.text.trim(),
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      _controllersPopulated = false;
+      setState(() => _isEditing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update profile. Please try again.'),
+        ),
+      );
     }
+  }
+
+  void _addAddress() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          AddressFormSheet(onSave: (address) {}, existing: null),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileViewModelProvider);
+    final isSaving = profileAsync.valueOrNull?.isSaving ?? false;
 
     ref.listen<AsyncValue<ProfileState>>(profileViewModelProvider, (
       previous,
@@ -279,6 +378,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             label: 'MOBILE NUMBER',
                             controller: _mobileCtrl,
                             isRequired: true,
+                          ),
+                          height(12),
+                          CustomTextField(
+                            label: 'ALTERNATE MOBILE NUMBER',
+                            controller: _alternateMobileCtrl,
+                          ),
+                          height(12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'DATE OF BIRTH (DD/MM/YYYY)',
+                                  controller: _dobCtrl,
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                child: CustomDropdownField(
+                                  label: 'GENDER',
+                                  controller: _genderCtrl,
+                                  items: genders,
+                                ),
+                              ),
+                            ],
                           ),
                           height(12),
                           CustomTextField(
@@ -410,7 +533,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               OutlinedButton(
-                                onPressed: _toggleEdit,
+                                onPressed: isSaving ? null : _toggleEdit,
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
@@ -424,7 +547,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                               width(12),
                               ElevatedButton(
-                                onPressed: _saveChanges,
+                                onPressed: isSaving ? null : _saveChanges,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF16A34A),
                                   padding: const EdgeInsets.symmetric(
@@ -435,10 +558,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     borderRadius: BorderRadius.circular(24),
                                   ),
                                 ),
-                                child: Text(
-                                  'Save Changes',
-                                  style: customTextStyle(color: Colors.white),
-                                ),
+                                child: isSaving
+                                    ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Save Changes',
+                                        style: customTextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),
@@ -464,6 +598,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               _buildReadUnit(
                                 'MEDICAL REG. YEAR',
                                 _medicalRegYearCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'RETROACTIVE',
+                                _retroactiveCtrl.text,
                               ),
                               _buildReadUnit(
                                 'RETROACTIVE DATE',
@@ -516,10 +654,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             text: 'Add Address',
                           ),
                         ] else ...[
-                          ...data.addresses.map(
-                            (address) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _buildAddressCard(address),
+                          ...data.addresses.asMap().entries.map(
+                            (entry) => Padding(
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: _buildAddressCard(entry.value, entry.key),
                             ),
                           ),
                           height(4),
@@ -551,6 +689,150 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildTopHeaderCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+            child: Text(
+              _firstNameCtrl.text.isNotEmpty ? _firstNameCtrl.text[0] : 'D',
+              style: customTextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          width(12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_prefixCtrl.text} ${_firstNameCtrl.text} ${_lastNameCtrl.text}'
+                      .trim(),
+                  style: customTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                height(2),
+                Text(
+                  _emailCtrl.text,
+                  style: customTextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: _toggleEdit,
+            icon: Icon(
+              _isEditing ? Icons.close : Icons.edit_outlined,
+              color: AppColors.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadUnit(String label, String value) {
+    return SizedBox(
+      width: 150,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: customTextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          height(4),
+          Text(
+            value.isEmpty ? '-' : value,
+            style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressCard(dynamic address, int index) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${address.addressType ?? 'Address'} (${address.ownVisiting ?? 'N/A'})',
+                style: customTextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+              Row(
+                children: [
+                  InkWell(
+                    onTap: () {},
+                    child: const Icon(Icons.edit, size: 18, color: Colors.blue),
+                  ),
+                  width(8),
+                  InkWell(
+                    onTap: () {
+                      // Logic for deleting address
+                    },
+                    child: const Icon(
+                      Icons.delete_outline,
+                      size: 18,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          height(6),
+          Text(
+            '${address.address1 ?? ''}, ${address.address2 ?? ''}'.trim(),
+            style: customTextStyle(fontSize: 12),
+          ),
+          if (address.landmark != null && address.landmark!.isNotEmpty)
+            Text(
+              'Landmark: ${address.landmark}',
+              style: customTextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+          Text(
+            '${address.city ?? ''}, ${address.state ?? ''} - ${address.pincode ?? ''}',
+            style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }
@@ -597,14 +879,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         height(10),
         Container(
           width: double.infinity,
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.grey.shade200),
           ),
           child: Text(
-            'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway"s "Redeem Reward Points" toggle.',
+            'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
             style: customTextStyle(
               fontSize: 11,
               color: AppColors.textColor,
@@ -648,459 +930,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   'Membership & Plans',
                   style: customTextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          height(18),
-          _buildInfoRow('MEMBERSHIP ID', 'DR-2026-084213'),
-          height(14),
-          _buildInfoRow('ACTIVE PLANS', '2 (1 Professional, 1 Establishment)'),
-          height(14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _buildInfoRow('CURRENT TIER', 'Gold II · Premium'),
-              ),
-              width(12),
-              Expanded(child: _buildInfoRow('MEMBER SINCE', '01 Sep 2025')),
-            ],
-          ),
-          height(14),
-          PrimaryButton(
-            height: 45,
-            borderRadius: 25,
-            borderColor: AppColors.borderGrey,
-            width: 150,
-            fontSize: 13,
-            backgroundColor: AppColors.white,
-            textColor: AppColors.textColor,
-            onPressed: () {
-              context.push(Routes.myPlans);
-            },
-            text: 'View My Plans',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocumentsCard(List<DoctorDocument> documents) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.folder_open_outlined,
-                  color: AppColors.primary,
-                  size: 21,
-                ),
-              ),
-              width(10),
-              Expanded(
-                child: Text(
-                  'Documents & Certificates',
-                  style: customTextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          height(18),
-          if (documents.isEmpty)
-            Text(
-              'No documents uploaded.',
-              style: customTextStyle(color: Colors.grey.shade600, fontSize: 13),
-            )
-          else
-            ...documents.map(
-              (doc) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _buildDocumentItem(
-                  icon: Icons.description_outlined,
-                  title: doc.docName ?? 'Document',
-                  fileName: _fileNameFromUrl(doc.documents),
-                  onTap: () {},
-                ),
-              ),
-            ),
-          height(6),
-          PrimaryButton(
-            height: 45,
-            borderRadius: 25,
-            borderColor: AppColors.borderGrey,
-            width: 200,
-            fontSize: 13,
-            backgroundColor: AppColors.white,
-            textColor: AppColors.textColor,
-            onPressed: () {
-              context.push(Routes.documentVault);
-            },
-            text: 'Open Document Vault',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: customTextStyle(
-            fontSize: 9.5,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade500,
-          ),
-        ),
-        height(4),
-        Text(
-          value,
-          style: customTextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF1E293B),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDocumentItem({
-    required IconData icon,
-    required String title,
-    required String fileName,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(11),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, size: 18, color: AppColors.primary),
-            ),
-            width(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: customTextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
-                    ),
-                  ),
-                  height(3),
-                  Text(
-                    fileName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: customTextStyle(
-                      fontSize: 10.5,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            width(8),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: Colors.grey.shade500,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _addAddress() async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return AddressFormSheet(
-          existing: null,
-          onSave: (WizardAddress address) {
-            Navigator.of(context).pop(address);
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildAddressCard(DoctorAddress address) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  (address.addressType ?? '').isEmpty
-                      ? 'Address'
-                      : address.addressType!,
-                  style: customTextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.orange,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              if ((address.ownVisiting ?? '').isNotEmpty)
-                Text(
-                  address.ownVisiting!,
-                  style: customTextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-            ],
-          ),
-
-          height(12),
-
-          _buildAddressValue('ADDRESS 1', address.address1),
-
-          if ((address.address2 ?? '').isNotEmpty) ...[
-            height(8),
-            _buildAddressValue('ADDRESS 2', address.address2),
-          ],
-
-          if ((address.area ?? '').isNotEmpty) ...[
-            height(8),
-            _buildAddressValue('AREA', address.area),
-          ],
-
-          if ((address.landmark ?? '').isNotEmpty) ...[
-            height(8),
-            _buildAddressValue('LANDMARK', address.landmark),
-          ],
-
-          height(8),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _buildAddressValue('CITY', address.city)),
-              width(12),
-              Expanded(child: _buildAddressValue('STATE', address.state)),
-            ],
-          ),
-
-          height(8),
-
-          _buildAddressValue('PIN CODE', address.pincode),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressValue(String label, String? value) {
-    final displayValue = value?.trim() ?? '';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: customTextStyle(
-            fontSize: 9.5,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade500,
-          ),
-        ),
-        height(3),
-        Text(
-          displayValue.isEmpty ? '-' : displayValue,
-          style: customTextStyle(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF1E293B),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTopHeaderCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.grey.shade200,
-            backgroundImage: const AssetImage('assets/images/user.png'),
-          ),
-          width(12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${_prefixCtrl.text} ${_firstNameCtrl.text} ${_lastNameCtrl.text}'
-                      .trim(),
-                  style: customTextStyle(
-                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                height(2),
-                Text(
-                  '${_categoryCtrl.text} • ${_degreeCtrl.text}',
-                  style: customTextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                height(4),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    width(6),
-                    Text(
-                      'No Active Membership',
-                      style: customTextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          if (!_isEditing)
-            OutlinedButton(
-              onPressed: _toggleEdit,
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                side: BorderSide(color: Colors.grey.shade300),
-              ),
-              child: Text(
-                'Edit Profile',
-                style: customTextStyle(color: Colors.black87),
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                'Editing...',
-                style: customTextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
 
-  Widget _buildReadUnit(String label, String value) {
-    return SizedBox(
-      width: Responsive.w(150),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+  Widget _buildDocumentsCard(List<dynamic>? documents) {
+    return SectionCard(
+      title: 'Documents',
+      icon: Icons.folder_open_outlined,
+      children: [
+        if (documents == null || documents.isEmpty)
           Text(
-            label,
-            style: customTextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade500,
-            ),
+            'No documents uploaded.',
+            style: customTextStyle(fontSize: 12, color: Colors.grey.shade600),
+          )
+        else
+          Column(
+            children: documents.map((doc) {
+              return ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(
+                  Icons.insert_drive_file,
+                  color: Colors.grey,
+                ),
+                title: Text(
+                  _fileNameFromUrl(doc.toString()),
+                  style: customTextStyle(fontSize: 12),
+                ),
+              );
+            }).toList(),
           ),
-          height(4),
-          Text(
-            value.isEmpty ? '-' : value,
-            style: customTextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
