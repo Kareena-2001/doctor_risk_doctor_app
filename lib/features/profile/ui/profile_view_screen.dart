@@ -86,6 +86,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     _specialityCtrl = TextEditingController(
       text: widget.initialData.speciality,
     );
+
     _degreeCtrl = TextEditingController(text: widget.initialData.degree);
 
     final clinic = widget.initialData.clinicHospitalDetails;
