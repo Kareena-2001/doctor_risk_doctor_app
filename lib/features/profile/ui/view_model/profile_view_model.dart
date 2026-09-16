@@ -21,16 +21,9 @@ class ProfileViewModel extends _$ProfileViewModel {
 
       final response = await repository.getProfileList();
 
-      state = AsyncData(
-        ProfileState(
-          profileData: response.data,
-        ),
-      );
+      state = AsyncData(ProfileState(profileData: response.data));
     } catch (error, stackTrace) {
-      state = AsyncError(
-        error,
-        stackTrace,
-      );
+      state = AsyncError(error, stackTrace);
     }
   }
 

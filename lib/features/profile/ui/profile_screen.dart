@@ -260,14 +260,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildReadUnit('LAST NAME', _lastNameCtrl.text),
                         _buildReadUnit('EMAIL ADDRESS', _emailCtrl.text),
                         _buildReadUnit('MOBILE NUMBER', _mobileCtrl.text),
-
                         _buildReadUnit(
                           'Alternate Number',
                           _alternateMobileCtrl.text,
                         ),
                         _buildReadUnit('Date of Birth', _dobCtrl.text),
                         _buildReadUnit('Gender', _genderCtrl.text),
-
                         _buildReadUnit(
                           'ORGANISATION / ASSOCIATION',
                           _organisationCtrl.text,
@@ -454,7 +452,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height(4),
                     Text(
                       'No practice addresses added.',
-                      style: TextStyle(
+                      style: customTextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 14,
                       ),
@@ -624,98 +622,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context.push(Routes.myPlans);
             },
             text: 'View My Plans',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRewardsCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          height(18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF8E7),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFF5D98A)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFE8A8),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.stars_rounded,
-                    size: 20,
-                    color: Color(0xFFD99A00),
-                  ),
-                ),
-                width(10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Rewards & Points',
-                        style: customTextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      height(2),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '320',
-                              style: customTextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFFD99A00),
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' points available',
-                              style: customTextStyle(
-                                fontSize: 11,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          height(8),
-
-          Text(
-            'Redeem your points at checkout toward a membership renewal, '
-            'new plan purchase, or paid event.',
-            style: customTextStyle(
-              fontSize: 11,
-              color: Colors.grey.shade600,
-            ).copyWith(height: 1.4),
           ),
         ],
       ),
@@ -1087,9 +993,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 side: BorderSide(color: Colors.grey.shade300),
               ),
-              child: const Text(
+              child: Text(
                 'Edit Profile',
-                style: TextStyle(color: Colors.black87),
+                style: customTextStyle(color: Colors.black87),
               ),
             )
           else
@@ -1132,7 +1038,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: customTextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1E293B),
+              color: Color(0xFF1E293B),
             ),
           ),
         ],
