@@ -1,32 +1,36 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
-import 'package:Doctors_App/features/profile/model/doctor_profile_data.dart';
+import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
+import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
+import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../product/model/purchase_model.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
-import '../model/address_view_model.dart';
 
-class ProfileScreen extends StatefulWidget {
-  final DoctorProfileData initialData;
-
-  const ProfileScreen({super.key, required this.initialData});
+class ProfileScreen extends ConsumerStatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isEditing = false;
+  bool _controllersPopulated = false;
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _prefixCtrl;
@@ -64,71 +68,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _prefixCtrl = TextEditingController(text: widget.initialData.prefix);
-    _firstNameCtrl = TextEditingController(text: widget.initialData.firstName);
-    _middleNameCtrl = TextEditingController(
-      text: widget.initialData.middleName,
-    );
 
-    _lastNameCtrl = TextEditingController(text: widget.initialData.lastName);
-    _emailCtrl = TextEditingController(text: widget.initialData.email);
-    _mobileCtrl = TextEditingController(text: widget.initialData.mobile);
+    _prefixCtrl = TextEditingController();
+    _firstNameCtrl = TextEditingController();
+    _middleNameCtrl = TextEditingController();
+    _lastNameCtrl = TextEditingController();
+    _emailCtrl = TextEditingController();
+    _mobileCtrl = TextEditingController();
+    _alternateMobileCtrl = TextEditingController();
+    _dobCtrl = TextEditingController();
+    _genderCtrl = TextEditingController();
+    _organisationCtrl = TextEditingController();
+    _categoryCtrl = TextEditingController();
+    _specialityCtrl = TextEditingController();
+    _degreeCtrl = TextEditingController();
+    _medicalRegStateCtrl = TextEditingController();
+    _medicalRegNoCtrl = TextEditingController();
+    _medicalRegYearCtrl = TextEditingController();
+    _retroactiveDateCtrl = TextEditingController();
+    _retroactiveCtrl = TextEditingController();
+    _worldwideCtrl = TextEditingController();
+    _unqualifiedStaffCtrl = TextEditingController();
+    _unqualifiedStaffCountCtrl = TextEditingController();
 
-    _alternateMobileCtrl = TextEditingController(
-      text: widget.initialData.alternateMobile,
-    );
-    _dobCtrl = TextEditingController(
-      text: widget.initialData.dob != null
-          ? _formatDate(widget.initialData.dob!)
-          : '',
-    );
-
-    _genderCtrl = TextEditingController(text: widget.initialData.gender);
-
-    _organisationCtrl = TextEditingController(
-      text: widget.initialData.organisation,
-    );
-
-    _categoryCtrl = TextEditingController(text: widget.initialData.category);
-    _specialityCtrl = TextEditingController(
-      text: widget.initialData.speciality,
-    );
-
-    _degreeCtrl = TextEditingController(text: widget.initialData.degree);
-
-    final clinic = widget.initialData.clinicHospitalDetails;
-
-    _medicalRegStateCtrl = TextEditingController(
-      text: clinic?.medicalRegState ?? '',
-    );
-
-    _medicalRegNoCtrl = TextEditingController(text: clinic?.medicalRegNo ?? '');
-
-    _medicalRegYearCtrl = TextEditingController(
-      text: clinic?.medicalRegYear ?? '',
-    );
-
-    _retroactiveDateCtrl = TextEditingController(
-      text: clinic?.retroactiveDate ?? '',
-    );
-
-    _retroactiveCtrl = TextEditingController(text: clinic?.retroactive ?? '');
-
-    _worldwideCtrl = TextEditingController(text: clinic?.worldwide ?? '');
-
-    _unqualifiedStaffCtrl = TextEditingController(
-      text: clinic?.unqualifiedStaff ?? '',
-    );
-
-    _unqualifiedStaffCountCtrl = TextEditingController(
-      text: clinic?.unqualifiedStaffCount ?? '',
+    Future.microtask(
+      () => ref.read(profileViewModelProvider.notifier).getProfile(),
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/'
-        '${date.month.toString().padLeft(2, '0')}/'
-        '${date.year}';
+  void _populateControllers(DoctorProfileData data) {
+    _prefixCtrl.text = data.prifix ?? '';
+    _firstNameCtrl.text = data.firstName ?? '';
+    _middleNameCtrl.text = data.middleName ?? '';
+    _lastNameCtrl.text = data.lastName ?? '';
+    _emailCtrl.text = data.email ?? '';
+    _mobileCtrl.text = data.mobileNo ?? '';
+    _alternateMobileCtrl.text = data.alternateNo ?? '';
+    _dobCtrl.text = _formatDob(data.dob);
+    _genderCtrl.text = data.gender ?? '';
+    _organisationCtrl.text = data.organizationName ?? '';
+
+    _categoryCtrl.text = data.categoryName ?? '';
+    _specialityCtrl.text = data.specialityName ?? '';
+    _degreeCtrl.text = data.degree ?? '';
+
+    final clinic = data.clinicHospitalDetails;
+    _medicalRegStateCtrl.text = clinic?.medicleRegState ?? '';
+    _medicalRegNoCtrl.text = clinic?.medicleRegNo ?? '';
+    _medicalRegYearCtrl.text = clinic?.medicleRegYear ?? '';
+    _retroactiveDateCtrl.text = clinic?.retroactiveDate ?? '';
+    _retroactiveCtrl.text = clinic?.retroactive ?? '';
+    _worldwideCtrl.text = clinic?.worldwide ?? '';
+    _unqualifiedStaffCtrl.text = clinic?.unqualifiedStaff ?? '';
+    _unqualifiedStaffCountCtrl.text = clinic?.unqualifiedStaffCount ?? '';
+  }
+
+  String _formatDob(String? dob) {
+    if (dob == null || dob.isEmpty) return '';
+    final parsed = DateTime.tryParse(dob);
+    if (parsed == null) return dob;
+    return '${parsed.day.toString().padLeft(2, '0')}/'
+        '${parsed.month.toString().padLeft(2, '0')}/'
+        '${parsed.year}';
+  }
+
+  String _fileNameFromUrl(String? url) {
+    if (url == null || url.isEmpty) return '-';
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.pathSegments.isEmpty) return url;
+    return Uri.decodeFull(uri.pathSegments.last);
   }
 
   @override
@@ -175,335 +183,387 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileAsync = ref.watch(profileViewModelProvider);
+
+    ref.listen<AsyncValue<ProfileState>>(profileViewModelProvider, (
+      previous,
+      next,
+    ) {
+      next.whenData((state) {
+        if (!_controllersPopulated && state.profileData != null) {
+          _populateControllers(state.profileData!);
+          _controllersPopulated = true;
+          setState(() {});
+        }
+      });
+    });
+
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Profile & Account', showBack: false),
+      appBar: CustomAppBar(title: 'Profile & Account', showBack: false),
       backgroundColor: const Color(0xFFF8FAFC),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTopHeaderCard(),
-              height(16),
-              SectionCard(
-                title: 'Personal Details',
-                icon: Icons.person_outline,
-                children: [
-                  if (_isEditing) ...[
-                    Row(
+      body: profileAsync.when(
+        loading: () => const Center(child: Loading()),
+        error: (error, _) => _buildErrorState(error),
+        data: (state) {
+          final data = state.profileData;
+          if (data == null) {
+            return const Center(child: Loading());
+          }
+
+          return AppRefreshIndicator(
+            onRefresh: () =>
+                ref.read(profileViewModelProvider.notifier).refreshProfile(),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTopHeaderCard(),
+                    height(16),
+                    SectionCard(
+                      title: 'Personal Details',
+                      icon: Icons.person_outline,
                       children: [
-                        Expanded(
-                          flex: 2,
-                          child: CustomDropdownField(
-                            label: 'PREFIX',
-                            controller: _prefixCtrl,
-                            items: ['Dr.', 'Mr.', 'Ms.', 'Mrs.'],
+                        if (_isEditing) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: CustomDropdownField(
+                                  label: 'PREFIX',
+                                  controller: _prefixCtrl,
+                                  items: ['Dr.', 'Mr.', 'Ms.', 'Mrs.'],
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                flex: 3,
+                                child: CustomTextField(
+                                  label: 'FIRST NAME',
+                                  controller: _firstNameCtrl,
+                                  isRequired: true,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        width(10),
-                        Expanded(
-                          flex: 3,
-                          child: CustomTextField(
-                            label: 'FIRST NAME',
-                            controller: _firstNameCtrl,
+                          height(12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'MIDDLE NAME',
+                                  controller: _middleNameCtrl,
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'LAST NAME',
+                                  controller: _lastNameCtrl,
+                                  isRequired: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                          height(12),
+                          CustomTextField(
+                            label: 'EMAIL ADDRESS',
+                            controller: _emailCtrl,
                             isRequired: true,
                           ),
-                        ),
-                      ],
-                    ),
-                    height(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'MIDDLE NAME',
-                            controller: _middleNameCtrl,
-                          ),
-                        ),
-                        width(10),
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'LAST NAME',
-                            controller: _lastNameCtrl,
+                          height(12),
+                          CustomTextField(
+                            label: 'MOBILE NUMBER',
+                            controller: _mobileCtrl,
                             isRequired: true,
                           ),
-                        ),
+                          height(12),
+                          CustomTextField(
+                            label: 'ORGANISATION / ASSOCIATION',
+                            controller: _organisationCtrl,
+                          ),
+                        ] else ...[
+                          Wrap(
+                            runSpacing: 16,
+                            spacing: 16,
+                            children: [
+                              _buildReadUnit('PREFIX', _prefixCtrl.text),
+                              _buildReadUnit('FIRST NAME', _firstNameCtrl.text),
+                              _buildReadUnit(
+                                'MIDDLE NAME',
+                                _middleNameCtrl.text,
+                              ),
+                              _buildReadUnit('LAST NAME', _lastNameCtrl.text),
+                              _buildReadUnit('EMAIL ADDRESS', _emailCtrl.text),
+                              _buildReadUnit('MOBILE NUMBER', _mobileCtrl.text),
+                              _buildReadUnit(
+                                'Alternate Number',
+                                _alternateMobileCtrl.text,
+                              ),
+                              _buildReadUnit('Date of Birth', _dobCtrl.text),
+                              _buildReadUnit('Gender', _genderCtrl.text),
+                              _buildReadUnit(
+                                'ORGANISATION / ASSOCIATION',
+                                _organisationCtrl.text,
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
-                    height(12),
-                    CustomTextField(
-                      label: 'EMAIL ADDRESS',
-                      controller: _emailCtrl,
-                      isRequired: true,
-                    ),
-                    height(12),
-                    CustomTextField(
-                      label: 'MOBILE NUMBER',
-                      controller: _mobileCtrl,
-                      isRequired: true,
-                    ),
-                    height(12),
-                    CustomTextField(
-                      label: 'ORGANISATION / ASSOCIATION',
-                      controller: _organisationCtrl,
-                    ),
-                  ] else ...[
-                    Wrap(
-                      runSpacing: 16,
-                      spacing: 16,
+                    height(16),
+                    SectionCard(
+                      title: 'Professional & Practice Details',
+                      icon: Icons.medical_services_outlined,
                       children: [
-                        _buildReadUnit('PREFIX', _prefixCtrl.text),
-                        _buildReadUnit('FIRST NAME', _firstNameCtrl.text),
-                        _buildReadUnit('MIDDLE NAME', _middleNameCtrl.text),
-                        _buildReadUnit('LAST NAME', _lastNameCtrl.text),
-                        _buildReadUnit('EMAIL ADDRESS', _emailCtrl.text),
-                        _buildReadUnit('MOBILE NUMBER', _mobileCtrl.text),
-                        _buildReadUnit(
-                          'Alternate Number',
-                          _alternateMobileCtrl.text,
-                        ),
-                        _buildReadUnit('Date of Birth', _dobCtrl.text),
-                        _buildReadUnit('Gender', _genderCtrl.text),
-                        _buildReadUnit(
-                          'ORGANISATION / ASSOCIATION',
-                          _organisationCtrl.text,
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-              height(16),
-              SectionCard(
-                title: 'Professional & Practice Details',
-                icon: Icons.medical_services_outlined,
-                children: [
-                  if (_isEditing) ...[
-                    CustomDropdownField(
-                      label: 'CATEGORY',
-                      controller: _categoryCtrl,
-                      items: categories,
-                    ),
-                    height(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'SPECIALITY',
-                            controller: _specialityCtrl,
+                        if (_isEditing) ...[
+                          CustomDropdownField(
+                            label: 'CATEGORY',
+                            controller: _categoryCtrl,
+                            items: categories,
                           ),
-                        ),
-                        width(10),
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'DEGREE',
-                            controller: _degreeCtrl,
+                          height(12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'SPECIALITY',
+                                  controller: _specialityCtrl,
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'DEGREE',
+                                  controller: _degreeCtrl,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    height(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'MEDICAL REG. STATE',
-                            controller: _medicalRegStateCtrl,
+                          height(12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'MEDICAL REG. STATE',
+                                  controller: _medicalRegStateCtrl,
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                child: CustomTextField(
+                                  label: 'MEDICAL REG. NO.',
+                                  controller: _medicalRegNoCtrl,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        width(10),
-                        Expanded(
-                          child: CustomTextField(
-                            label: 'MEDICAL REG. NO.',
-                            controller: _medicalRegNoCtrl,
+                          height(12),
+                          CustomTextField(
+                            label: 'MEDICAL REG. YEAR',
+                            controller: _medicalRegYearCtrl,
                           ),
-                        ),
-                      ],
-                    ),
-
-                    height(12),
-
-                    CustomTextField(
-                      label: 'MEDICAL REG. YEAR',
-                      controller: _medicalRegYearCtrl,
-                    ),
-                    height(12),
-                    CustomTextField(
-                      label: 'RETROACTIVE DATE',
-                      controller: _retroactiveDateCtrl,
-                    ),
-                    height(12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomDropdownField(
-                            label: 'RETROACTIVE',
-                            controller: _retroactiveCtrl,
+                          height(12),
+                          CustomTextField(
+                            label: 'RETROACTIVE DATE',
+                            controller: _retroactiveDateCtrl,
+                          ),
+                          height(12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomDropdownField(
+                                  label: 'RETROACTIVE',
+                                  controller: _retroactiveCtrl,
+                                  items: ['Yes', 'No'],
+                                ),
+                              ),
+                              width(10),
+                              Expanded(
+                                child: CustomDropdownField(
+                                  label: 'WORLDWIDE COVER',
+                                  controller: _worldwideCtrl,
+                                  items: const ['Yes', 'No'],
+                                ),
+                              ),
+                            ],
+                          ),
+                          height(12),
+                          CustomDropdownField(
+                            label: 'UNQUALIFIED STAFF',
+                            controller: _unqualifiedStaffCtrl,
                             items: const ['Yes', 'No'],
                           ),
-                        ),
-                        width(10),
-                        Expanded(
-                          child: CustomDropdownField(
-                            label: 'WORLDWIDE COVER',
-                            controller: _worldwideCtrl,
-                            items: const ['Yes', 'No'],
+                          if (_unqualifiedStaffCtrl.text.toLowerCase() ==
+                              'yes') ...[
+                            height(12),
+                            CustomTextField(
+                              label: 'UNQUALIFIED STAFF COUNT',
+                              controller: _unqualifiedStaffCountCtrl,
+                            ),
+                          ],
+                          height(20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              OutlinedButton(
+                                onPressed: _toggleEdit,
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: const Text('Cancel'),
+                              ),
+                              width(12),
+                              ElevatedButton(
+                                onPressed: _saveChanges,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF16A34A),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Save Changes',
+                                  style: customTextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
+                        ] else ...[
+                          Wrap(
+                            runSpacing: 16,
+                            spacing: 16,
+                            children: [
+                              _buildReadUnit('CATEGORY', _categoryCtrl.text),
+                              _buildReadUnit(
+                                'SPECIALITY',
+                                _specialityCtrl.text,
+                              ),
+                              _buildReadUnit('DEGREE', _degreeCtrl.text),
+                              _buildReadUnit(
+                                'MEDICAL REG. STATE',
+                                _medicalRegStateCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'MEDICAL REG. NO.',
+                                _medicalRegNoCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'MEDICAL REG. YEAR',
+                                _medicalRegYearCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'RETROACTIVE DATE',
+                                _retroactiveDateCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'WORLDWIDE COVER',
+                                _worldwideCtrl.text,
+                              ),
+                              _buildReadUnit(
+                                'UNQUALIFIED STAFF',
+                                _unqualifiedStaffCtrl.text,
+                              ),
+                              if (_unqualifiedStaffCtrl.text.toLowerCase() ==
+                                  'yes')
+                                _buildReadUnit(
+                                  'UNQUALIFIED STAFF COUNT',
+                                  _unqualifiedStaffCountCtrl.text,
+                                ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
-                    height(12),
-                    CustomDropdownField(
-                      label: 'UNQUALIFIED STAFF',
-                      controller: _unqualifiedStaffCtrl,
-                      items: const ['Yes', 'No'],
-                    ),
-                    if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes') ...[
-                      height(12),
-                      CustomTextField(
-                        label: 'UNQUALIFIED STAFF COUNT',
-                        controller: _unqualifiedStaffCountCtrl,
-                      ),
-                    ],
-                    height(20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    height(16),
+                    SectionCard(
+                      title: 'Practice Addresses',
+                      icon: Icons.location_on_sharp,
                       children: [
-                        OutlinedButton(
-                          onPressed: _toggleEdit,
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
+                        if (data.addresses.isEmpty) ...[
+                          height(4),
+                          Text(
+                            'No practice addresses added.',
+                            style: customTextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
                             ),
                           ),
-                          child: const Text('Cancel'),
-                        ),
-                        width(12),
-                        ElevatedButton(
-                          onPressed: _saveChanges,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF16A34A),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
+                          height(14),
+                          PrimaryButton(
+                            height: 45,
+                            borderRadius: 25,
+                            borderColor: AppColors.borderGrey,
+                            width: 150,
+                            fontSize: 13,
+                            backgroundColor: AppColors.white,
+                            textColor: AppColors.textColor,
+                            onPressed: _addAddress,
+                            icon: Icons.add,
+                            text: 'Add Address',
+                          ),
+                        ] else ...[
+                          ...data.addresses.map(
+                            (address) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildAddressCard(address),
                             ),
                           ),
-                          child: Text(
-                            'Save Changes',
-                            style: customTextStyle(color: Colors.white),
+                          height(4),
+                          PrimaryButton(
+                            height: 45,
+                            borderRadius: 25,
+                            borderColor: AppColors.borderGrey,
+                            width: 150,
+                            fontSize: 13,
+                            backgroundColor: AppColors.white,
+                            textColor: AppColors.textColor,
+                            onPressed: _addAddress,
+                            icon: Icons.add,
+                            text: 'Add Address',
                           ),
-                        ),
+                        ],
                       ],
                     ),
-                  ] else ...[
-                    Wrap(
-                      runSpacing: 16,
-                      spacing: 16,
-                      children: [
-                        _buildReadUnit('CATEGORY', _categoryCtrl.text),
-                        _buildReadUnit('SPECIALITY', _specialityCtrl.text),
-                        _buildReadUnit('DEGREE', _degreeCtrl.text),
-                        _buildReadUnit(
-                          'MEDICAL REG. STATE',
-                          _medicalRegStateCtrl.text,
-                        ),
-                        _buildReadUnit(
-                          'MEDICAL REG. NO.',
-                          _medicalRegNoCtrl.text,
-                        ),
-                        _buildReadUnit(
-                          'MEDICAL REG. YEAR',
-                          _medicalRegYearCtrl.text,
-                        ),
-                        _buildReadUnit(
-                          'RETROACTIVE DATE',
-                          _retroactiveDateCtrl.text,
-                        ),
-                        _buildReadUnit('WORLDWIDE COVER', _worldwideCtrl.text),
-                        _buildReadUnit(
-                          'UNQUALIFIED STAFF',
-                          _unqualifiedStaffCtrl.text,
-                        ),
-                        if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes')
-                          _buildReadUnit(
-                            'UNQUALIFIED STAFF COUNT',
-                            _unqualifiedStaffCountCtrl.text,
-                          ),
-                      ],
-                    ),
+                    height(16),
+                    _buildMembershipCard(),
+                    height(16),
+                    _buildRewardsSection(),
+                    height(16),
+                    _buildDocumentsCard(data.documents),
+                    height(Responsive.h(100)),
                   ],
-                ],
+                ),
               ),
-              height(16),
-              SectionCard(
-                title: 'Practice Addresses',
-                icon: Icons.location_on_sharp,
-                children: [
-                  if (widget.initialData.addresses.isEmpty) ...[
-                    height(4),
-                    Text(
-                      'No practice addresses added.',
-                      style: customTextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    height(14),
-                    PrimaryButton(
-                      height: 45,
-                      borderRadius: 25,
-                      borderColor: AppColors.borderGrey,
-                      width: 150,
-                      fontSize: 13,
-                      backgroundColor: AppColors.white,
-                      textColor: AppColors.textColor,
-                      onPressed: _addAddress,
-                      icon: Icons.add,
-                      // icon: Icon(Icons.add_location_alt_outlined),
-                      text: 'Add Address',
-                    ),
-                  ] else ...[
-                    ...widget.initialData.addresses.map(
-                      (address) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildAddressCard(address),
-                      ),
-                    ),
-                    height(4),
-                    PrimaryButton(
-                      height: 45,
-                      borderRadius: 25,
-                      borderColor: AppColors.borderGrey,
-                      width: 150,
-                      fontSize: 13,
-                      backgroundColor: AppColors.white,
-                      textColor: AppColors.textColor,
-                      onPressed: _addAddress,
-                      icon: Icons.add,
-                      text: 'Add Address',
-                    ),
-                  ],
-                ],
-              ),
-              height(16),
-              _buildMembershipCard(),
-              height(16),
-              _buildRewardsSection(),
-              height(16),
-              _buildDocumentsCard(),
-              height(Responsive.h(100)),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Center(
+      child: CommonErrorState(
+        icon: Icons.error_outline,
+        title: 'Failed to load profile.\n$error',
+        onRetry: () {
+          ref.read(profileViewModelProvider.notifier).getProfile();
+        },
+        message: '',
       ),
     );
   }
@@ -628,7 +688,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDocumentsCard() {
+  Widget _buildDocumentsCard(List<DoctorDocument> documents) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -640,7 +700,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             children: [
               Container(
@@ -669,27 +728,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           height(18),
-          _buildDocumentItem(
-            icon: Icons.verified_outlined,
-            title: 'Medical Reg. Certificate',
-            fileName: 'medicalregisterationcert.jpg',
-            onTap: () {},
-          ),
-          height(10),
-          _buildDocumentItem(
-            icon: Icons.local_hospital_outlined,
-            title: 'Clinic Registration Certificate',
-            fileName: 'clinicregisterationcert.pdf',
-            onTap: () {},
-          ),
-          height(10),
-          _buildDocumentItem(
-            icon: Icons.description_outlined,
-            title: 'Previous Policy',
-            fileName: 'NIAPareshMathur.pdf',
-            onTap: () {},
-          ),
-          height(16),
+          if (documents.isEmpty)
+            Text(
+              'No documents uploaded.',
+              style: customTextStyle(color: Colors.grey.shade600, fontSize: 13),
+            )
+          else
+            ...documents.map(
+              (doc) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _buildDocumentItem(
+                  icon: Icons.description_outlined,
+                  title: doc.docName ?? 'Document',
+                  fileName: _fileNameFromUrl(doc.documents),
+                  onTap: () {},
+                ),
+              ),
+            ),
+          height(6),
           PrimaryButton(
             height: 45,
             borderRadius: 25,
@@ -817,7 +873,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAddressCard(AddressViewData address) {
+  Widget _buildAddressCard(DoctorAddress address) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -838,7 +894,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  address.addressType.isEmpty ? 'Address' : address.addressType,
+                  (address.addressType ?? '').isEmpty
+                      ? 'Address'
+                      : address.addressType!,
                   style: customTextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -847,9 +905,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const Spacer(),
-              if (address.ownVisiting.isNotEmpty)
+              if ((address.ownVisiting ?? '').isNotEmpty)
                 Text(
-                  address.ownVisiting,
+                  address.ownVisiting!,
                   style: customTextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -863,17 +921,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           _buildAddressValue('ADDRESS 1', address.address1),
 
-          if (address.address2.isNotEmpty) ...[
+          if ((address.address2 ?? '').isNotEmpty) ...[
             height(8),
             _buildAddressValue('ADDRESS 2', address.address2),
           ],
 
-          if (address.area.isNotEmpty) ...[
+          if ((address.area ?? '').isNotEmpty) ...[
             height(8),
             _buildAddressValue('AREA', address.area),
           ],
 
-          if (address.landmark.isNotEmpty) ...[
+          if ((address.landmark ?? '').isNotEmpty) ...[
             height(8),
             _buildAddressValue('LANDMARK', address.landmark),
           ],

@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'doctor_profile_response.freezed.dart';
-
 part 'doctor_profile_response.g.dart';
 
 @freezed
@@ -22,74 +21,60 @@ class DoctorProfileData with _$DoctorProfileData {
   const factory DoctorProfileData({
     required int id,
 
-    @JsonKey(name: 'doctor_no') String? doctorNo,
+    @JsonKey(name: 'doctor_no')
+    String? doctorNo,
 
     String? photo,
 
-    @JsonKey(name: 'organization_name') String? organizationName,
+    @JsonKey(name: 'organization_name')
+    String? organizationName,
 
-    @JsonKey(name: 'source_code_type') String? sourceCodeType,
-
-    @JsonKey(name: 'source_code') String? sourceCode,
-
-    String? source,
-
-    @JsonKey(name: 'refer_by') String? referBy,
-
-    @JsonKey(name: 'refer_code') String? referCode,
-
-    @JsonKey(name: 'product_type_id') int? productTypeId,
-
+    @JsonKey(name: 'prifix')
     String? prifix,
 
-    @JsonKey(name: 'first_name') String? firstName,
+    @JsonKey(name: 'first_name')
+    String? firstName,
 
-    @JsonKey(name: 'middle_name') String? middleName,
+    @JsonKey(name: 'middle_name')
+    String? middleName,
 
-    @JsonKey(name: 'last_name') String? lastName,
+    @JsonKey(name: 'last_name')
+    String? lastName,
 
-    @JsonKey(name: 'full_name') String? fullName,
+    @JsonKey(name: 'full_name')
+    String? fullName,
 
     String? email,
 
-    @JsonKey(name: 'mobile_no') String? mobileNo,
+    @JsonKey(name: 'mobile_no')
+    String? mobileNo,
 
-    @JsonKey(name: 'alternate_no') String? alternateNo,
+    @JsonKey(name: 'alternate_no')
+    String? alternateNo,
 
-    @JsonKey(name: 'category_id') int? categoryId,
+    @JsonKey(name: 'category_name')
+    String? categoryName,
 
-    @JsonKey(name: 'category_name') String? categoryName,
-
-    @JsonKey(name: 'speciality_id') int? specialityId,
-
-    @JsonKey(name: 'speciality_name') String? specialityName,
+    @JsonKey(name: 'speciality_name')
+    String? specialityName,
 
     String? degree,
 
-    @JsonKey(name: 'establishment_name') String? establishmentName,
+    @JsonKey(name: 'establishment_name')
+    String? establishmentName,
 
     String? dob,
 
     String? gender,
 
-    @JsonKey(name: 'terms_privacy_accepted') String? termsPrivacyAccepted,
-
-    @JsonKey(name: 'terms_privacy_accepted_at') String? termsPrivacyAcceptedAt,
-
-    @JsonKey(name: 'login_at') String? loginAt,
-
-    String? status,
-
-    @JsonKey(name: 'created_on') String? createdOn,
-
-    @JsonKey(name: 'updated_on') String? updatedOn,
-
-    @Default([]) List<DoctorAddress> addresses,
+    @Default([])
+    List<DoctorAddress> addresses,
 
     @JsonKey(name: 'clinic_hospital_details')
     DoctorClinicHospitalDetails? clinicHospitalDetails,
 
-    @Default([]) List<DoctorDocument> documents,
+    @Default([])
+    List<DoctorDocument> documents,
   }) = _DoctorProfileData;
 
   factory DoctorProfileData.fromJson(Map<String, dynamic> json) =>
@@ -101,9 +86,11 @@ class DoctorAddress with _$DoctorAddress {
   const factory DoctorAddress({
     required int id,
 
-    @JsonKey(name: 'address_type') String? addressType,
+    @JsonKey(name: 'address_type')
+    String? addressType,
 
-    @JsonKey(name: 'own_visiting') String? ownVisiting,
+    @JsonKey(name: 'own_visiting')
+    String? ownVisiting,
 
     String? address1,
 
@@ -127,33 +114,44 @@ class DoctorAddress with _$DoctorAddress {
 }
 
 @freezed
-class DoctorClinicHospitalDetails with _$DoctorClinicHospitalDetails {
+class DoctorClinicHospitalDetails
+    with _$DoctorClinicHospitalDetails {
   const factory DoctorClinicHospitalDetails({
     required int id,
 
-    @JsonKey(name: 'medicle_reg_state') String? medicleRegState,
+    @JsonKey(name: 'medicle_reg_state')
+    String? medicleRegState,
 
-    @JsonKey(name: 'medicle_reg_no') String? medicleRegNo,
+    @JsonKey(name: 'medicle_reg_no')
+    String? medicleRegNo,
 
-    @JsonKey(name: 'medicle_reg_year') String? medicleRegYear,
+    @JsonKey(name: 'medicle_reg_year')
+    String? medicleRegYear,
 
-    @JsonKey(name: 'hospclin_reg_state') String? hospclinRegState,
+    @JsonKey(name: 'hospclin_reg_state')
+    String? hospclinRegState,
 
-    @JsonKey(name: 'hospclin_reg_no') String? hospclinRegNo,
+    @JsonKey(name: 'hospclin_reg_no')
+    String? hospclinRegNo,
 
-    @JsonKey(name: 'hospclin_reg_year') String? hospclinRegYear,
+    @JsonKey(name: 'hospclin_reg_year')
+    String? hospclinRegYear,
 
     String? retroactive,
 
-    @JsonKey(name: 'retroactive_date') String? retroactiveDate,
+    @JsonKey(name: 'retroactive_date')
+    String? retroactiveDate,
 
-    @JsonKey(name: 'retroactive_policydoc') String? retroactivePolicydoc,
+    @JsonKey(name: 'retroactive_policydoc')
+    String? retroactivePolicydoc,
 
     String? worldwide,
 
-    @JsonKey(name: 'unqualified_staff') String? unqualifiedStaff,
+    @JsonKey(name: 'unqualified_staff')
+    String? unqualifiedStaff,
 
-    @JsonKey(name: 'unqualified_staff_count') String? unqualifiedStaffCount,
+    @JsonKey(name: 'unqualified_staff_count')
+    String? unqualifiedStaffCount,
 
     String? opd,
 
@@ -162,7 +160,9 @@ class DoctorClinicHospitalDetails with _$DoctorClinicHospitalDetails {
     String? status,
   }) = _DoctorClinicHospitalDetails;
 
-  factory DoctorClinicHospitalDetails.fromJson(Map<String, dynamic> json) =>
+  factory DoctorClinicHospitalDetails.fromJson(
+      Map<String, dynamic> json,
+      ) =>
       _$DoctorClinicHospitalDetailsFromJson(json);
 }
 
@@ -171,7 +171,8 @@ class DoctorDocument with _$DoctorDocument {
   const factory DoctorDocument({
     required int id,
 
-    @JsonKey(name: 'doc_name') String? docName,
+    @JsonKey(name: 'doc_name')
+    String? docName,
 
     String? documents,
 

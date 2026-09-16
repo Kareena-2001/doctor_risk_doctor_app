@@ -8,7 +8,6 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../../../extensions/build_context_extension.dart';
-import '../../profile/model/doctor_profile_data.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -24,23 +23,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     const HomeScreen(),
     const YourStoryScreen(),
     const CommunityScreen(),
-    ProfileScreen(
-      initialData: DoctorProfileData(
-        prefix: 'Dr.',
-        firstName: 'Paresh',
-        middleName: 'Jeth',
-        lastName: 'Mathur',
-        email: 'pareshmathur@gmail.com',
-        mobile: '8900900090',
-        organisation: 'Doctors Risk Medico Legal Services',
-        category: 'Professional Individual',
-        speciality: 'General Medicine',
-        degree: 'B.A.M.S.',
-        addresses: [],
-        doctorCertificates: [],
-        organisationCertificates: [],
-      ),
-    ),
+    ProfileScreen(),
   ];
 
   static const List<NavBarItemData> _navItems = [

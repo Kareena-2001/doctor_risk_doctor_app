@@ -349,11 +349,11 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: Routes.editProfile,
-      pageBuilder: (context, state) =>
-          state.slidePage(const EditProfileScreen()),
-    ),
+    // GoRoute(
+    //   path: Routes.editProfile,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const EditProfileScreen()),
+    // ),
     GoRoute(
       path: Routes.purchaseWizard,
       builder: (context, state) {
