@@ -190,7 +190,7 @@ class ProfileRepository {
 
   Future<CategoryResponse> categoryList({required String productTypeId}) async {
     final response = await _apiClient.get(
-      url: 'categorylist',
+      url: 'doctor/categorylist',
       includeAuth: true,
       queryParams: {'product_type_id': productTypeId},
     );
@@ -202,17 +202,21 @@ class ProfileRepository {
     required String categoryId,
   }) async {
     final response = await _apiClient.get(
-      url: 'specialitylist',
+      url: 'doctor/speciality',
       includeAuth: true,
       queryParams: {'category_id': categoryId},
     );
-    if (response['status'] == true)
+    if (response['status'] == true) {
       return SpecialityResponse.fromJson(response);
+    }
     throw Exception(response['msg'] ?? 'Failed to fetch specialities');
   }
 
   Future<DegreeResponse> degreeList() async {
-    final response = await _apiClient.get(url: 'degreelist', includeAuth: true);
+    final response = await _apiClient.get(
+      url: 'doctor/degreelist',
+      includeAuth: true,
+    );
     if (response['status'] == true) return DegreeResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch degrees');
   }

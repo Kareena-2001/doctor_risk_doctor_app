@@ -31,7 +31,6 @@ class ProfileViewModel extends _$ProfileViewModel {
 
   Future<void> getProfile() async {
     final current = _current;
-    // Keep master-data requests available while the profile request is running.
     state = AsyncData(current.copyWith(profileData: null));
     try {
       final repository = ref.read(profileRepositoryProvider);

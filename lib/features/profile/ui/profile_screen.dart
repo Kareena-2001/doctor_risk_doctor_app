@@ -7,7 +7,6 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
-import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/home/model/policy_model.dart';
@@ -21,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routing/routes.dart';
+import '../../authentication/ui/state/authentication_state.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
 
 const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
