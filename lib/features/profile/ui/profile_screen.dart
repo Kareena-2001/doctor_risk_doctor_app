@@ -1,11 +1,13 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/profile/ui/widgets/personal_details_edit_section.dart';
+import 'package:Doctors_App/features/profile/ui/widgets/professional_details_edit_section.dart';
+import 'package:flutter/services.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
-import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
-import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
@@ -20,10 +22,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routing/routes.dart';
-import '../../authentication/ui/state/authentication_state.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
 
 const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
+
+String? validateMobile(
+  String? value, {
+  required String label,
+  bool required = true,
+}) {
+  final v = (value ?? '').trim();
+  if (v.isEmpty) {
+    return required ? 'Please enter $label' : null;
+  }
+  if (!RegExp(r'^[0-9]{10}$').hasMatch(v)) {
+    return '$label must be exactly 10 digits';
+  }
+  return null;
+}
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -43,7 +59,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late final TextEditingController _lastNameCtrl;
   late final TextEditingController _emailCtrl;
   late final TextEditingController _mobileCtrl;
-
   late final TextEditingController _alternateMobileCtrl;
   late final TextEditingController _dobCtrl;
   late final TextEditingController _genderCtrl;
@@ -95,8 +110,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  String _normalizePrefix(String? raw) {
+    final v = (raw ?? '').trim();
+    if (v.isEmpty) return '';
+    return v.endsWith('.') ? v : '$v.';
+  }
+
   void _populateControllers(DoctorProfileData data) {
-    _prefixCtrl.text = data.prifix ?? '';
+    _prefixCtrl.text = _normalizePrefix(data.prifix);
     _firstNameCtrl.text = data.firstName ?? '';
     _middleNameCtrl.text = data.middleName ?? '';
     _lastNameCtrl.text = data.lastName ?? '';
@@ -129,10 +150,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String _yesNoValue(String? value) {
     if (value == '1') return 'Yes';
     if (value == '0') return 'No';
-
     if (value?.toLowerCase() == 'yes') return 'Yes';
     if (value?.toLowerCase() == 'no') return 'No';
-
     return '';
   }
 
@@ -151,6 +170,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         '${parsed.year}';
   }
 
+  DateTime? _parseDisplayDob(String display) {
+    final parts = display.split('/');
+    if (parts.length != 3) return null;
+    final day = int.tryParse(parts[0]);
+    final month = int.tryParse(parts[1]);
+    final year = int.tryParse(parts[2]);
+    if (day == null || month == null || year == null) return null;
+    return DateTime(year, month, day);
+  }
+
   String? _dobToApiFormat(String display) {
     if (display.trim().isEmpty) return null;
     final parts = display.split('/');
@@ -159,6 +188,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final month = parts[1].padLeft(2, '0');
     final year = parts[2];
     return '$year-$month-$day';
+  }
+
+  Future<void> _pickDob() async {
+    final now = DateTime.now();
+    final initial =
+        _parseDisplayDob(_dobCtrl.text) ??
+        DateTime(now.year - 25, now.month, now.day);
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1930),
+      lastDate: now,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _dobCtrl.text =
+            '${picked.day.toString().padLeft(2, '0')}/'
+            '${picked.month.toString().padLeft(2, '0')}/'
+            '${picked.year}';
+      });
+    }
   }
 
   String _fileNameFromUrl(String? url) {
@@ -183,7 +235,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _categoryCtrl.dispose();
     _specialityCtrl.dispose();
     _degreeCtrl.dispose();
-
     _medicalRegStateCtrl.dispose();
     _medicalRegNoCtrl.dispose();
     _medicalRegYearCtrl.dispose();
@@ -192,7 +243,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _worldwideCtrl.dispose();
     _unqualifiedStaffCtrl.dispose();
     _unqualifiedStaffCountCtrl.dispose();
-
     super.dispose();
   }
 
@@ -254,15 +304,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (success) {
       _controllersPopulated = false;
       setState(() => _isEditing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
+
+      context.showSuccessSnackBar('Profile updated successfully');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to update profile. Please try again.'),
-        ),
-      );
+      context.showErrorSnackBar('Failed to update profile. Please try again.');
     }
   }
 
@@ -323,89 +368,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       title: 'Personal Details',
                       icon: Icons.person_outline,
                       children: [
-                        if (_isEditing) ...[
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: CustomDropdownField(
-                                  label: 'PREFIX',
-                                  controller: _prefixCtrl,
-                                  items: ['Dr.', 'Mr.', 'Ms.', 'Mrs.'],
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                flex: 3,
-                                child: CustomTextField(
-                                  label: 'FIRST NAME',
-                                  controller: _firstNameCtrl,
-                                  isRequired: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'MIDDLE NAME',
-                                  controller: _middleNameCtrl,
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'LAST NAME',
-                                  controller: _lastNameCtrl,
-                                  isRequired: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'EMAIL ADDRESS',
-                            controller: _emailCtrl,
-                            isRequired: true,
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'MOBILE NUMBER',
-                            controller: _mobileCtrl,
-                            isRequired: true,
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'ALTERNATE MOBILE NUMBER',
-                            controller: _alternateMobileCtrl,
-                          ),
-                          height(12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  label: 'DATE OF BIRTH (DD/MM/YYYY)',
-                                  controller: _dobCtrl,
-                                ),
-                              ),
-                              width(10),
-                              Expanded(
-                                child: CustomDropdownField(
-                                  label: 'GENDER',
-                                  controller: _genderCtrl,
-                                  items: genders,
-                                ),
-                              ),
-                            ],
-                          ),
-                          height(12),
-                          CustomTextField(
-                            label: 'ORGANISATION / ASSOCIATION',
-                            controller: _organisationCtrl,
-                          ),
-                        ] else ...[
+                        if (_isEditing)
+                          PersonalDetailsEditSection(
+                            prefixCtrl: _prefixCtrl,
+                            firstNameCtrl: _firstNameCtrl,
+                            middleNameCtrl: _middleNameCtrl,
+                            lastNameCtrl: _lastNameCtrl,
+                            emailCtrl: _emailCtrl,
+                            mobileCtrl: _mobileCtrl,
+                            alternateMobileCtrl: _alternateMobileCtrl,
+                            dobCtrl: _dobCtrl,
+                            genderCtrl: _genderCtrl,
+                            organisationCtrl: _organisationCtrl,
+                            genders: genders,
+                            onPickDob: _pickDob,
+                          )
+                        else
                           Wrap(
                             runSpacing: 16,
                             spacing: 16,
@@ -431,7 +409,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                             ],
                           ),
-                        ],
                       ],
                     ),
                     height(16),
@@ -440,7 +417,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: Icons.medical_services_outlined,
                       children: [
                         if (_isEditing)
-                          _buildProfessionalDetailsEditor(isSaving)
+                          ProfessionalDetailsEditSection(
+                            isSaving: isSaving,
+                            medicalRegStateCtrl: _medicalRegStateCtrl,
+                            medicalRegNoCtrl: _medicalRegNoCtrl,
+                            medicalRegYearCtrl: _medicalRegYearCtrl,
+                            retroactiveDateCtrl: _retroactiveDateCtrl,
+                            retroactiveCtrl: _retroactiveCtrl,
+                            worldwideCtrl: _worldwideCtrl,
+                            unqualifiedStaffCtrl: _unqualifiedStaffCtrl,
+                            unqualifiedStaffCountCtrl:
+                                _unqualifiedStaffCountCtrl,
+                            onCancel: _toggleEdit,
+                            onSave: _saveChanges,
+                          )
                         else
                           Wrap(
                             runSpacing: 16,
@@ -557,344 +547,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildProfessionalDetailsEditor(bool isSaving) {
-    return Consumer(
-      builder: (context, ref, _) {
-        final state =
-            ref.watch(profileViewModelProvider).valueOrNull ??
-            const ProfileState();
-        final notifier = ref.read(profileViewModelProvider.notifier);
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildReferenceDropdown(
-              label: 'CATEGORY',
-              emptyHint: 'Select Category',
-              isLoading: state.isCategoryLoading,
-              items: state.categories,
-              selected: state.selectedCategory,
-              onSelected: notifier.selectCategory,
-            ),
-            height(12),
-            _buildReferenceDropdown(
-              label: 'SPECIALITY',
-              emptyHint: state.selectedCategory == null
-                  ? 'Select a category first'
-                  : 'Select Speciality',
-              disabled: state.selectedCategory == null,
-              isLoading: state.isSpecialityLoading,
-              items: state.specialities,
-              selected: state.selectedSpeciality,
-              onSelected: notifier.selectSpeciality,
-            ),
-            height(12),
-            _buildDegreeEditorField(context, ref, state),
-            height(12),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    label: 'MEDICAL REG. STATE',
-                    controller: _medicalRegStateCtrl,
-                  ),
-                ),
-                width(10),
-                Expanded(
-                  child: CustomTextField(
-                    label: 'MEDICAL REG. NO.',
-                    controller: _medicalRegNoCtrl,
-                  ),
-                ),
-              ],
-            ),
-            height(12),
-            CustomTextField(
-              label: 'MEDICAL REG. YEAR',
-              controller: _medicalRegYearCtrl,
-            ),
-            height(12),
-            CustomTextField(
-              label: 'RETROACTIVE DATE',
-              controller: _retroactiveDateCtrl,
-            ),
-            height(12),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomDropdownField(
-                    label: 'RETROACTIVE',
-                    controller: _retroactiveCtrl,
-                    items: const ['Yes', 'No'],
-                  ),
-                ),
-                width(10),
-                Expanded(
-                  child: CustomDropdownField(
-                    label: 'WORLDWIDE COVER',
-                    controller: _worldwideCtrl,
-                    items: const ['Yes', 'No'],
-                  ),
-                ),
-              ],
-            ),
-            height(12),
-            CustomDropdownField(
-              label: 'UNQUALIFIED STAFF',
-              controller: _unqualifiedStaffCtrl,
-              items: const ['Yes', 'No'],
-            ),
-            if (_unqualifiedStaffCtrl.text.toLowerCase() == 'yes') ...[
-              height(12),
-              CustomTextField(
-                label: 'UNQUALIFIED STAFF COUNT',
-                controller: _unqualifiedStaffCountCtrl,
-              ),
-            ],
-            height(20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                OutlinedButton(
-                  onPressed: isSaving ? null : _toggleEdit,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                  child: const Text('Cancel'),
-                ),
-                width(12),
-                ElevatedButton(
-                  onPressed: isSaving ? null : _saveChanges,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF16A34A),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                  child: isSaving
-                      ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          'Save Changes',
-                          style: customTextStyle(color: Colors.white),
-                        ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildReferenceDropdown({
-    required String label,
-    required String emptyHint,
-    required bool isLoading,
-    required List<IdNameOption> items,
-    required IdNameOption? selected,
-    required ValueChanged<IdNameOption> onSelected,
-    bool disabled = false,
-  }) {
-    final blocked = disabled || isLoading;
-    final hint = disabled
-        ? emptyHint
-        : isLoading
-        ? 'Loading...'
-        : emptyHint;
-
-    return CustomDropdownField<IdNameOption>(
-      label: label,
-      hint: hint,
-      items: blocked ? const <IdNameOption>[] : items,
-      value: selected,
-      itemBuilder: (item) => item.name,
-      onChanged: blocked
-          ? null
-          : (val) {
-              if (val == null) return;
-              onSelected(val);
-            },
-    );
-  }
-
-  Widget _buildDegreeEditorField(
-    BuildContext context,
-    WidgetRef ref,
-    ProfileState state,
-  ) {
-    return GestureDetector(
-      onTap: state.isDegreeLoading
-          ? null
-          : () => _openDegreePicker(context, ref, state),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'DEGREE',
-          suffixIcon: const Icon(Icons.arrow_drop_down),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: state.isDegreeLoading
-            ? Text(
-                'Loading...',
-                style: customTextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade500,
-                ),
-              )
-            : state.selectedDegrees.isEmpty
-            ? Text(
-                state.degrees.isEmpty
-                    ? 'No degrees available'
-                    : 'Select Degree(s)',
-                style: customTextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade500,
-                ),
-              )
-            : Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: state.selectedDegrees
-                    .map(
-                      (d) => Chip(
-                        label: Text(d.name),
-                        onDeleted: () {
-                          ref
-                              .read(profileViewModelProvider.notifier)
-                              .setSelectedDegrees(
-                                state.selectedDegrees
-                                    .where((e) => e.id != d.id)
-                                    .toList(),
-                              );
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-      ),
-    );
-  }
-
-  Future<void> _openDegreePicker(
-    BuildContext context,
-    WidgetRef ref,
-    ProfileState state,
-  ) async {
-    final notifier = ref.read(profileViewModelProvider.notifier);
-    final tempSelected = [...state.selectedDegrees];
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Degree(s)',
-                    style: customTextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  height(12),
-                  if (state.degrees.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(
-                          'No degrees available',
-                          style: customTextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.degrees.length,
-                        itemBuilder: (context, index) {
-                          final degree = state.degrees[index];
-                          final isChecked = tempSelected.any(
-                            (item) => item.id == degree.id,
-                          );
-
-                          return CheckboxListTile(
-                            value: isChecked,
-                            title: Text(
-                              degree.name,
-                              style: customTextStyle(fontSize: 13),
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.zero,
-                            onChanged: (checked) {
-                              setSheetState(() {
-                                if (checked == true) {
-                                  if (!tempSelected.any(
-                                    (item) => item.id == degree.id,
-                                  )) {
-                                    tempSelected.add(degree);
-                                  }
-                                } else {
-                                  tempSelected.removeWhere(
-                                    (item) => item.id == degree.id,
-                                  );
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  height(12),
-                  PrimaryButton(
-                    height: 46,
-                    fontSize: 14,
-                    text: 'Done',
-                    onPressed: state.degrees.isEmpty
-                        ? null
-                        : () {
-                            notifier.setSelectedDegrees(tempSelected);
-                            Navigator.of(sheetContext).pop();
-                          },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   Widget _buildTopHeaderCard(PolicyStatus status) {
     final data = ref.watch(profileViewModelProvider).valueOrNull?.profileData;
 
@@ -946,9 +598,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ),
               ),
-
               width(12),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -962,9 +612,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     height(4),
-
                     if (professionalDetails.isNotEmpty)
                       Text(
                         professionalDetails,
@@ -975,7 +623,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.grey.shade600,
                         ),
                       ),
-
                     if (doctorNo.isNotEmpty) ...[
                       height(3),
                       Text(
@@ -1002,15 +649,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ],
           ),
-
           height(14),
-
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
               _statusTag(status),
-
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: Responsive.w(10),
@@ -1044,9 +688,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ],
           ),
-
           height(12),
-
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.w(10),
@@ -1257,35 +899,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.card_membership_outlined,
-                  color: AppColors.primary,
-                  size: 21,
-                ),
-              ),
-              width(10),
-              Expanded(
-                child: Text(
-                  'Membership & Plans',
-                  style: customTextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.card_membership_outlined,
+              color: AppColors.primary,
+              size: 21,
+            ),
+          ),
+          width(10),
+          Expanded(
+            child: Text(
+              'Membership & Plans',
+              style: customTextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -1306,14 +940,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Column(
             children: documents.map((doc) {
               final fileName = _fileNameFromUrl(doc.documents ?? '');
-
               final isPdf = fileName.toLowerCase().endsWith('.pdf');
 
               return InkWell(
                 onTap: () => _openDocument(doc.documents),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.only(bottom: 12),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -1332,9 +965,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.grey.shade600,
                         ),
                       ),
-
-                      const SizedBox(width: 12),
-
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1348,9 +979,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-
-                            const SizedBox(height: 3),
-
+                            SizedBox(height: 3),
                             Text(
                               fileName,
                               maxLines: 1,
@@ -1363,9 +992,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ],
                         ),
                       ),
-
-                      const SizedBox(width: 8),
-
+                      SizedBox(width: 8),
                       Icon(
                         Icons.open_in_new,
                         size: 18,
@@ -1384,7 +1011,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onPressed: () {
               context.push(Routes.documentVault);
             },
-            icon: const Icon(Icons.folder_open_outlined, size: 18),
+            icon: Icon(Icons.folder_open_outlined, size: 18),
             label: Text(
               'Open Document Vault',
               style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w600),
@@ -1396,18 +1023,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _openDocument(String? documentUrl) async {
-    if (documentUrl == null || documentUrl.trim().isEmpty) {
-      return;
-    }
-
+    if (documentUrl == null || documentUrl.trim().isEmpty) return;
     final uri = Uri.tryParse(documentUrl);
-
-    if (uri == null) {
-      return;
-    }
-
+    if (uri == null) return;
     final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
     if (!success) {
       debugPrint('Could not open document: $documentUrl');
     }
