@@ -1,6 +1,9 @@
 import 'package:Doctors_App/core/services/api_client.dart';
 import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
+import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/degree_response.dart';
+import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
 import 'package:Doctors_App/features/community/model/doctor_no_response.dart';
 import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
 import 'package:Doctors_App/features/community/model/referred_doctors_response.dart';
@@ -81,9 +84,9 @@ class CommunityRepository {
     required String lastName,
     required String mobileNo,
     String? email,
-    required int categoryId,
-    required int specialityId,
-    required String degree,
+    int? categoryId,
+    int? specialityId,
+    String? degree,
     String? remark,
   }) async {
     final response = await _apiClient.post(
@@ -94,9 +97,9 @@ class CommunityRepository {
         'last_name': lastName,
         'mobile_no': mobileNo,
         'email': email ?? '',
-        'category_id': categoryId.toString(),
-        'speciality_id': specialityId.toString(),
-        'degree': degree,
+        'category_id': categoryId?.toString() ?? '',
+        'speciality_id': specialityId?.toString() ?? '',
+        'degree': degree ?? '',
         'remark': remark ?? '',
       },
       includeAuth: true,
@@ -112,5 +115,35 @@ class CommunityRepository {
     );
 
     return ReferredDoctorsResponse.fromJson(response);
+  }
+
+  Future<CategoryResponse> categoryList({required String productTypeId}) async {
+    final response = await _apiClient.get(
+      url: 'doctor/allcategorylist',
+      includeAuth: true,
+    );
+
+    return CategoryResponse.fromJson(response);
+  }
+
+  Future<SpecialityResponse> specialityList({
+    required String categoryId,
+  }) async {
+    final response = await _apiClient.get(
+      url: 'doctor/specialitylist',
+      queryParams: {'category_id': categoryId},
+      includeAuth: true,
+    );
+
+    return SpecialityResponse.fromJson(response);
+  }
+
+  Future<DegreeResponse> degreeList() async {
+    final response = await _apiClient.get(
+      url: 'doctor/degree',
+      includeAuth: true,
+    );
+
+    return DegreeResponse.fromJson(response);
   }
 }

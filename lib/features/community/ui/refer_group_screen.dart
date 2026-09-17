@@ -83,7 +83,7 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
     );
   }
 
-  Widget _buildHeaderBanner() {
+  Widget _buildHeaderBanner({int referredCount = 2}) {
     return Container(
       padding: EdgeInsets.all(Responsive.w(18)),
       decoration: BoxDecoration(
@@ -104,7 +104,9 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header Row with Title and Badge Counter
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 padding: EdgeInsets.all(Responsive.w(10)),
@@ -118,18 +120,54 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
                   size: Responsive.sp(20),
                 ),
               ),
-              width(Responsive.w(14)),
-              Text(
-                'REFER & EARN',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(14),
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              width(Responsive.w(12)),
+              Expanded(
+                child: Text(
+                  'REFER & EARN',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(14),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.w(12),
+                  vertical: Responsive.h(8),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(Responsive.w(14)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$referredCount',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(16),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      'Peers referred',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(9),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          height(Responsive.h(10)),
+          height(Responsive.h(12)),
           Text(
             'Invite a peer, earn reward points',
             style: customTextStyle(
@@ -141,8 +179,8 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
           height(Responsive.h(6)),
           Text(
             'When a referred professional joins and secures a membership, '
-            'you earn reward points — redeemable at your next renewal, '
-            'new plan purchase, or a paid event.',
+                'you earn reward points — redeemable at your next renewal, '
+                'new plan purchase, or a paid event.',
             style: customTextStyle(
               fontSize: Responsive.sp(11),
               color: Colors.white.withValues(alpha: 0.85),

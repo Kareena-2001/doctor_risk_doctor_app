@@ -18,15 +18,14 @@ class ReferralLinkCard extends StatelessWidget {
     this.isLoading = false,
   });
 
-  /// Formats the referral link into a complete display URL
   String get displayLink {
     if (referralLink.isEmpty) return '';
     if (referralLink.startsWith('http://') ||
         referralLink.startsWith('https://') ||
-        referralLink.contains('doctorsrisk.in')) {
+        referralLink.contains('doctorsrisk.com')) {
       return referralLink;
     }
-    return 'doctorsrisk.in/join?ref=$referralLink';
+    return 'doctorsrisk.com/join?ref=$referralLink';
   }
 
   Future<void> _copy(BuildContext context) async {

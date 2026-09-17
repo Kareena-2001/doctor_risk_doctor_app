@@ -6,6 +6,8 @@ import 'package:Doctors_App/features/community/model/testimonial_response.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../authentication/ui/state/authentication_state.dart';
+
 part 'community_state.freezed.dart';
 
 @freezed
@@ -16,6 +18,21 @@ class CommunityState with _$CommunityState {
     @Default(AsyncLoading()) AsyncValue<PeerForumResponse> peerForumList,
 
     @Default(AsyncLoading()) AsyncValue<DoctorNoResponse> referralLink,
+
+    @Default(false) bool isCategoryLoading,
+    String? categoryError,
+    @Default(<IdNameOption>[]) List<IdNameOption> categories,
+    IdNameOption? selectedCategory,
+
+    @Default(false) bool isSpecialityLoading,
+    String? specialityError,
+    @Default(<IdNameOption>[]) List<IdNameOption> specialities,
+    IdNameOption? selectedSpeciality,
+
+    @Default(false) bool isDegreeLoading,
+    String? degreeError,
+    @Default(<IdNameOption>[]) List<IdNameOption> degrees,
+    @Default(<IdNameOption>[]) List<IdNameOption> selectedDegrees,
 
     AsyncValue<ReferDoctorResponse>? addReferral,
 
