@@ -700,10 +700,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Reusable clean dropdown for reference data (Category / Speciality),
-  // same visual pattern used in SignUpScreen's `_buildReferenceDropdown`.
-  // ---------------------------------------------------------------------------
   Widget _buildReferenceDropdown({
     required String label,
     required String emptyHint,
@@ -735,10 +731,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Degree field: chip summary that opens a bottom-sheet multi-select,
-  // mirroring SignUpScreen's `_buildDegreeField` + `_openDegreePicker`.
-  // ---------------------------------------------------------------------------
   Widget _buildDegreeEditorField(
     BuildContext context,
     WidgetRef ref,

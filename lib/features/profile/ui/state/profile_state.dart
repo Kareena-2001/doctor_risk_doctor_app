@@ -16,7 +16,6 @@ class ProfileState with _$ProfileState {
     @Default([]) List<IdNameOption> states,
     @Default([]) List<IdNameOption> cities,
 
-    // Selected values (drives the dropdowns)
     IdNameOption? selectedCategory,
     IdNameOption? selectedSpeciality,
     @Default([]) List<IdNameOption> selectedDegrees,
