@@ -156,6 +156,7 @@ class SignUpScreen extends ConsumerWidget {
     required ValueChanged<IdNameOption> onSelected,
     required VoidCallback onRetry,
     bool disabled = false,
+    bool isRequired = false,
   }) {
     final blocked = disabled || isLoading || error != null;
     final hint = disabled
@@ -167,6 +168,7 @@ class SignUpScreen extends ConsumerWidget {
         : emptyHint;
 
     final field = CustomDropdownField(
+      isRequired: isRequired,
       label: label,
       hint: hint,
       items: blocked ? const <String>[] : items.map((e) => e.name).toList(),
@@ -401,8 +403,11 @@ class SignUpScreen extends ConsumerWidget {
                         hint: 'Select Prefix',
                         items: notifier.availablePrefixes,
                         value: state.selectedPrefix,
+                        showDropdownIcon: notifier.availablePrefixes.length > 1,
                         onChanged: (value) {
-                          if (value != null) notifier.selectPrefix(value);
+                          if (value != null) {
+                            notifier.selectPrefix(value);
+                          }
                         },
                       ),
                       height(Responsive.h(12)),
@@ -414,6 +419,7 @@ class SignUpScreen extends ConsumerWidget {
                       ),
                       height(Responsive.h(12)),
                       CustomTextField(
+                        label: 'Middle name',
                         hint: 'Enter middle name',
                         controller: notifier.middleNameController,
                         isRequired: false,
@@ -454,7 +460,7 @@ class SignUpScreen extends ConsumerWidget {
                         hint: 'you@clinic.com',
                         controller: notifier.emailController,
                         keyboardType: TextInputType.emailAddress,
-                        isRequired: true,
+                        isRequired: false,
                       ),
                       height(Responsive.h(20)),
                       if (state.registrationType ==
@@ -462,6 +468,7 @@ class SignUpScreen extends ConsumerWidget {
                         _SectionHeader(title: 'PROFESSIONAL DETAILS'),
                         height(Responsive.h(12)),
                         _buildReferenceDropdown(
+                          isRequired: true,
                           label: 'Category',
                           emptyHint: 'Select Category',
                           isLoading: state.isCategoryLoading,
@@ -473,6 +480,7 @@ class SignUpScreen extends ConsumerWidget {
                         ),
                         height(Responsive.h(12)),
                         _buildReferenceDropdown(
+                          isRequired: false,
                           label: 'Speciality',
                           emptyHint: state.selectedCategory == null
                               ? 'Select a category first'
@@ -499,6 +507,7 @@ class SignUpScreen extends ConsumerWidget {
                         _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
                         height(Responsive.h(12)),
                         _buildReferenceDropdown(
+                          isRequired: true,
                           label: 'Category',
                           emptyHint: 'Select Category',
                           isLoading: state.isCategoryLoading,
@@ -513,19 +522,21 @@ class SignUpScreen extends ConsumerWidget {
                           label: 'Establishment Name',
                           hint: 'e.g. Mathur Multispeciality Clinic',
                           controller: notifier.establishmentNameController,
-                          isRequired: true,
+                          isRequired: false,
                         ),
                         height(Responsive.h(20)),
                       ],
                       const _SectionHeader(title: 'REFERRAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomTextField(
+                        isRequired: false,
                         label: 'Enter Your Organization Name',
                         hint: 'e.g. ABC Medical Organization',
                         controller: notifier.organizationCodeController,
                       ),
                       height(Responsive.h(12)),
                       CustomTextField(
+                        isRequired: false,
                         label: 'Where did you hear about us?',
                         hint: 'e.g. Webinar',
                         controller: notifier.associateCodeController,

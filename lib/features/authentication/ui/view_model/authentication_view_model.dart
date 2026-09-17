@@ -338,25 +338,29 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
     if (passwordController.text != confirmPasswordController.text) {
       throw const RegistrationValidationException('Passwords do not match');
     }
+
     if (s.selectedCategory == null) {
       throw const RegistrationValidationException('Please select a category');
     }
-    if (s.registrationType == RegistrationType.professional &&
-        s.selectedSpeciality == null) {
-      throw const RegistrationValidationException('Please select a speciality');
-    }
-    if (s.registrationType == RegistrationType.professional &&
-        s.selectedDegrees.isEmpty) {
-      throw const RegistrationValidationException(
-        'Please select at least one degree',
-      );
-    }
-    if (s.registrationType == RegistrationType.establishment &&
-        establishmentNameController.text.trim().isEmpty) {
-      throw const RegistrationValidationException(
-        'Please enter the establishment name',
-      );
-    }
+
+    // if (s.registrationType == RegistrationType.professional &&
+    //     s.selectedSpeciality == null) {
+    //   throw const RegistrationValidationException('Please select a speciality');
+    // }
+
+    // if (s.registrationType == RegistrationType.professional &&
+    //     s.selectedDegrees.isEmpty) {
+    //   throw const RegistrationValidationException(
+    //     'Please select at least one degree',
+    //   );
+    // }
+
+    // if (s.registrationType == RegistrationType.establishment &&
+    //     establishmentNameController.text.trim().isEmpty) {
+    //   throw const RegistrationValidationException(
+    //     'Please enter the establishment name',
+    //   );
+    // }
     if (!s.agreeTerms) {
       throw const RegistrationValidationException(
         'Please agree to the Terms & Conditions',

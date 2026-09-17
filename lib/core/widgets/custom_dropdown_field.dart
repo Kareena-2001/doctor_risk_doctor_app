@@ -1,8 +1,9 @@
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:flutter/material.dart';
+
 import '../../extensions/build_context_extension.dart';
 import '../../theme/app_colors.dart';
 import '../constants/dimensions.dart';
-import '../constants/values/app_text_style.dart';
 
 class CustomDropdownField<T> extends StatelessWidget {
   final String? label;
@@ -17,6 +18,7 @@ class CustomDropdownField<T> extends StatelessWidget {
   final bool isRequired;
   final FormFieldValidator<String>? validator;
   final bool isEnabled;
+  final bool showDropdownIcon;
 
   const CustomDropdownField({
     super.key,
@@ -32,6 +34,7 @@ class CustomDropdownField<T> extends StatelessWidget {
     this.isRequired = true,
     this.validator,
     this.isEnabled = true,
+    this.showDropdownIcon = true,
   });
 
   @override
@@ -69,11 +72,13 @@ class CustomDropdownField<T> extends StatelessWidget {
           style: customTextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           value: effectiveValue,
           decoration: InputDecoration(
-            suffixIcon: Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppColors.brown,
-              size: 22,
-            ),
+            suffixIcon: showDropdownIcon
+                ? Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.brown,
+                    size: 22,
+                  )
+                : null,
             prefixIcon: icon != null
                 ? Icon(icon, color: const Color(0xFF1565C0), size: 20)
                 : null,
@@ -91,17 +96,11 @@ class CustomDropdownField<T> extends StatelessWidget {
             fillColor: AppColors.white,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.fieldBorder,
-                // width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.fieldBorder),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.fieldBorder,
-                // width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.fieldBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -111,6 +110,9 @@ class CustomDropdownField<T> extends StatelessWidget {
               ),
             ),
           ),
+          icon: showDropdownIcon
+              ? const Icon(Icons.keyboard_arrow_down_rounded)
+              : const SizedBox.shrink(),
           items: items.map((item) {
             return DropdownMenuItem<T>(
               value: item,
@@ -121,19 +123,27 @@ class CustomDropdownField<T> extends StatelessWidget {
                   color: context.primaryTextColor,
                   fontWeight: FontWeight.w400,
                 ),
-
               ),
             );
           }).toList(),
+
           onChanged: (val) {
-            if (controller != null) controller!.text = val.toString();
-            if (onChanged != null) onChanged!(val);
+            if (controller != null) {
+              controller!.text = val.toString();
+            }
+
+            if (onChanged != null) {
+              onChanged!(val);
+            }
           },
+
           validator: (val) {
             if (!isRequired) return null;
+
             if (val == null || val.toString().isEmpty) {
               return 'Please select $label';
             }
+
             return null;
           },
         ),
