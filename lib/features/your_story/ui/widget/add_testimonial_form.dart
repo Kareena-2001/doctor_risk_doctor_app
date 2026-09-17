@@ -166,6 +166,7 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
     final isSubmitting = submitState.isLoading;
 
     return Scaffold(
+      backgroundColor: const Color(0xffF7F8FC),
       appBar: CustomAppBar(title: 'Share Testimonial'),
       body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );

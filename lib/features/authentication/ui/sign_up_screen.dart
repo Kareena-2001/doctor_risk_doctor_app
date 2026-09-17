@@ -526,7 +526,7 @@ class SignUpScreen extends ConsumerWidget {
                         ),
                         height(Responsive.h(20)),
                       ],
-                      const _SectionHeader(title: 'REFERRAL DETAILS'),
+                      _SectionHeader(title: 'REFERRAL DETAILS'),
                       height(Responsive.h(12)),
                       CustomTextField(
                         isRequired: false,
@@ -542,7 +542,7 @@ class SignUpScreen extends ConsumerWidget {
                         controller: notifier.associateCodeController,
                       ),
                       height(Responsive.h(20)),
-                      const _SectionHeader(title: 'SET YOUR PASSWORD'),
+                      _SectionHeader(title: 'SET YOUR PASSWORD'),
                       height(Responsive.h(12)),
                       CustomTextField(
                         label: 'Password',

@@ -70,21 +70,21 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
     await ref
         .read(communityViewModelProvider.notifier)
         .addReferral(
-      firstName: _firstNameController.text.trim(),
-      middleName: _middleNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      mobileNo: _mobileController.text.trim(),
-      email: _emailController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          middleName: _middleNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          mobileNo: _mobileController.text.trim(),
+          email: _emailController.text.trim(),
 
-      categoryId: communityState.selectedCategory?.id,
-      specialityId: communityState.selectedSpeciality?.id,
+          categoryId: communityState.selectedCategory?.id,
+          specialityId: communityState.selectedSpeciality?.id,
 
-      degree: communityState.selectedDegrees.isEmpty
-          ? null
-          : communityState.selectedDegrees.map((d) => d.name).join(', '),
+          degree: communityState.selectedDegrees.isEmpty
+              ? null
+              : communityState.selectedDegrees.map((d) => d.name).join(', '),
 
-      remark: _remarkController.text.trim(),
-    );
+          remark: _remarkController.text.trim(),
+        );
   }
 
   Future<void> _openDegreePicker(CommunityState state) async {
@@ -94,94 +94,98 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
     await AppDialog.customBottomSheet<void>(
       context: context,
       builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Degree(s)',
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(15),
-                      fontWeight: FontWeight.w700,
+        return Container(
+          color: Colors.white,
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              return Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select Degree(s)',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(15),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  height(Responsive.h(12)),
-                  if (state.degrees.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(
-                          'No degrees available',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(12),
-                            color: Color(0xFF94A3B8),
+                    height(Responsive.h(12)),
+                    if (state.degrees.isEmpty)
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'No degrees available',
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(12),
+                              color: Color(0xFF94A3B8),
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.degrees.length,
-                        itemBuilder: (context, index) {
-                          final degree = state.degrees[index];
-                          final isChecked = tempSelected.any(
-                            (item) => item.id == degree.id,
-                          );
+                      )
+                    else
+                      Flexible(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: state.degrees.length,
+                          itemBuilder: (context, index) {
+                            final degree = state.degrees[index];
+                            final isChecked = tempSelected.any(
+                              (item) => item.id == degree.id,
+                            );
 
-                          return CheckboxListTile(
-                            value: isChecked,
-                            title: Text(
-                              degree.name,
-                              style: customTextStyle(
-                                fontSize: Responsive.sp(13),
+                            return CheckboxListTile(
+                              tileColor: Colors.white,
+                              value: isChecked,
+                              title: Text(
+                                degree.name,
+                                style: customTextStyle(
+                                  fontSize: Responsive.sp(13),
+                                ),
                               ),
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.zero,
-                            onChanged: (checked) {
-                              setSheetState(() {
-                                if (checked == true) {
-                                  if (!tempSelected.any(
-                                    (item) => item.id == degree.id,
-                                  )) {
-                                    tempSelected.add(degree);
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              onChanged: (checked) {
+                                setSheetState(() {
+                                  if (checked == true) {
+                                    if (!tempSelected.any(
+                                      (item) => item.id == degree.id,
+                                    )) {
+                                      tempSelected.add(degree);
+                                    }
+                                  } else {
+                                    tempSelected.removeWhere(
+                                      (item) => item.id == degree.id,
+                                    );
                                   }
-                                } else {
-                                  tempSelected.removeWhere(
-                                    (item) => item.id == degree.id,
-                                  );
-                                }
-                              });
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    height(Responsive.h(12)),
+                    PrimaryButton(
+                      height: 46,
+                      fontSize: 14,
+                      text: 'Done',
+                      onPressed: state.degrees.isEmpty
+                          ? null
+                          : () {
+                              notifier.setSelectedDegrees(tempSelected);
+                              Navigator.of(sheetContext).pop();
                             },
-                          );
-                        },
+                      gradient: LinearGradient(
+                        colors: [AppColors.newPri, AppColors.primary],
                       ),
                     ),
-                  height(Responsive.h(12)),
-                  PrimaryButton(
-                    height: 46,
-                    fontSize: 14,
-                    text: 'Done',
-                    onPressed: state.degrees.isEmpty
-                        ? null
-                        : () {
-                            notifier.setSelectedDegrees(tempSelected);
-                            Navigator.of(sheetContext).pop();
-                          },
-                    gradient: LinearGradient(
-                      colors: [AppColors.newPri, AppColors.primary],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );

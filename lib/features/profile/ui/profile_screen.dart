@@ -10,6 +10,7 @@ import 'package:Doctors_App/core/widgets/section_card.dart';
 import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/home/model/policy_model.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 import 'package:Doctors_App/features/profile/model/profile_address_request.dart';
 import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
@@ -21,6 +22,8 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routing/routes.dart';
 import '../../product/ui/widgets/address_form_sheet.dart';
+
+const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -314,7 +317,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTopHeaderCard(),
+                    _buildTopHeaderCard(kCurrentDashboardStatus),
                     height(16),
                     SectionCard(
                       title: 'Personal Details',
@@ -892,7 +895,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildTopHeaderCard() {
+  Widget _buildTopHeaderCard(PolicyStatus status) {
+    final data = ref.watch(profileViewModelProvider).valueOrNull?.profileData;
+
+    if (data == null) {
+      return const SizedBox.shrink();
+    }
+
+    final fullName = data.fullName?.trim().isNotEmpty == true
+        ? data.fullName!.trim()
+        : [
+            data.prifix,
+            data.firstName,
+            data.middleName,
+            data.lastName,
+          ].where((e) => e != null && e.trim().isNotEmpty).join(' ');
+
+    final category = data.categoryName?.trim() ?? '';
+    final degree = data.degree?.trim() ?? '';
+    final doctorNo = data.doctorNo?.trim() ?? '';
+
+    final professionalDetails = [
+      if (category.isNotEmpty) category,
+      if (degree.isNotEmpty) degree,
+    ].join(' · ');
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -900,49 +927,176 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-            child: Text(
-              _firstNameCtrl.text.isNotEmpty ? _firstNameCtrl.text[0] : 'D',
-              style: customTextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-          width(12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${_prefixCtrl.text} ${_firstNameCtrl.text} ${_lastNameCtrl.text}'
-                      .trim(),
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                child: Text(
+                  data.firstName?.trim().isNotEmpty == true
+                      ? data.firstName!.trim()[0].toUpperCase()
+                      : 'D',
                   style: customTextStyle(
-                    fontSize: 16,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
                   ),
                 ),
-                height(2),
+              ),
+
+              width(12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      fullName.isEmpty ? 'Doctor' : fullName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: customTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    height(4),
+
+                    if (professionalDetails.isNotEmpty)
+                      Text(
+                        professionalDetails,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: 11.5,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+
+                    if (doctorNo.isNotEmpty) ...[
+                      height(3),
+                      Text(
+                        'Membership ID $doctorNo',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: 10.5,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: _toggleEdit,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: Icon(
+                  _isEditing ? Icons.close : Icons.edit_outlined,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+
+          height(14),
+
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _statusTag(status),
+
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.w(10),
+                  vertical: Responsive.h(5),
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+                  ),
+                  borderRadius: BorderRadius.circular(Responsive.w(20)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.workspace_premium_rounded,
+                      size: Responsive.sp(13),
+                      color: Colors.white,
+                    ),
+                    width(Responsive.w(4)),
+                    Text(
+                      'Gold II · Premium',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          height(12),
+
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.w(10),
+              vertical: Responsive.h(5),
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: status.heroBorder),
+              borderRadius: BorderRadius.circular(Responsive.w(20)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Text(
-                  _emailCtrl.text,
+                  'Profile 92% complete',
                   style: customTextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade700,
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: _toggleEdit,
-            icon: Icon(
-              _isEditing ? Icons.close : Icons.edit_outlined,
-              color: AppColors.primary,
+        ],
+      ),
+    );
+  }
+
+  Widget _statusTag(PolicyStatus status) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(12),
+        vertical: Responsive.h(5),
+      ),
+      decoration: BoxDecoration(
+        color: status.lightBg,
+        border: Border.all(color: status.lightBorder),
+        borderRadius: BorderRadius.circular(Responsive.w(20)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(status.icon, size: Responsive.sp(12), color: status.color),
+          width(Responsive.w(4)),
+          Text(
+            status.label,
+            style: customTextStyle(
+              fontSize: Responsive.sp(11.5),
+              fontWeight: FontWeight.w700,
+              color: status.color,
             ),
           ),
         ],

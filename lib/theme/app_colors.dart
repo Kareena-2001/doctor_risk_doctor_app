@@ -213,6 +213,7 @@ class AppColors {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? const Color(0xFF808080) : const Color(0xFF757575);
   }
+  static const bgColor = Color(0xffF7F8FC);
 
   static const Color labelColor = Color(0xFF383838);
 

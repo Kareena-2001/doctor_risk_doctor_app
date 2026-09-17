@@ -58,10 +58,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // SUBMIT
-  // ---------------------------------------------------------------------------
-
   Future<void> _submit() async {
     final title = _titleController.text.trim();
     final description = _textController.text.trim();
@@ -140,10 +136,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // VIDEO
-  // ---------------------------------------------------------------------------
-
   Future<void> _pickVideo() async {
     try {
       final picked = await ImagePicker().pickVideo(
@@ -217,10 +209,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // PDF
-  // ---------------------------------------------------------------------------
-
   Future<void> _pickPdf() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -255,10 +243,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // RESET
-  // ---------------------------------------------------------------------------
-
   void _resetForm() {
     _videoController?.dispose();
 
@@ -285,10 +269,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     Navigator.pop(context, _submittedExperience);
   }
 
-  // ---------------------------------------------------------------------------
-  // BUILD
-  // ---------------------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
     final isSubmitting = ref.watch(
@@ -298,15 +278,11 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: AppColors.bgColor,
       appBar: CustomAppBar(title: 'Share Experience'),
       body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // FORM
-  // ---------------------------------------------------------------------------
 
   Widget _buildForm(bool isSubmitting) {
     return SingleChildScrollView(
@@ -410,10 +386,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // HEADER
-  // ---------------------------------------------------------------------------
 
   Widget _buildHeader() {
     return Container(
@@ -578,14 +550,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text(
-        //   'Your Experience',
-        //   style: customTextStyle(
-        //     fontSize: Responsive.sp(12),
-        //     fontWeight: FontWeight.w600,
-        //   ),
-        // ),
-        // SizedBox(height: Responsive.h(8)),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -729,10 +693,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // PDF
-  // ---------------------------------------------------------------------------
-
   Widget _buildPdfInput() {
     if (_pdfFile != null) {
       return Container(
@@ -809,10 +769,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // SUCCESS
-  // ---------------------------------------------------------------------------
 
   Widget _buildSuccessView() {
     return Center(
@@ -894,10 +850,6 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// PLAY / PAUSE
-// -----------------------------------------------------------------------------
 
 class _PlayPauseOverlay extends StatefulWidget {
   final VideoPlayerController controller;
