@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/services/api_client.dart';
 import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
+import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
 import 'package:Doctors_App/features/community/model/testimonial_response.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -25,6 +26,15 @@ class CommunityRepository {
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
+
+  Future<PeerForumResponse> getAllPeerForumList() async {
+    final response = await _apiClient.get(
+      url: 'doctor/peerforumlist',
+      includeAuth: true,
+    );
+
+    return PeerForumResponse.fromJson(response);
+  }
 
   Future<TestimonialResponse> getAllTestimonialList() async {
     final response = await _apiClient.get(

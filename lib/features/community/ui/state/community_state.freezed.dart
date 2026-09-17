@@ -19,6 +19,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CommunityState {
   AsyncValue<TestimonialResponse> get testimonialList =>
       throw _privateConstructorUsedError;
+  AsyncValue<PeerForumResponse> get peerForumList =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +36,10 @@ abstract class $CommunityStateCopyWith<$Res> {
     $Res Function(CommunityState) then,
   ) = _$CommunityStateCopyWithImpl<$Res, CommunityState>;
   @useResult
-  $Res call({AsyncValue<TestimonialResponse> testimonialList});
+  $Res call({
+    AsyncValue<TestimonialResponse> testimonialList,
+    AsyncValue<PeerForumResponse> peerForumList,
+  });
 }
 
 /// @nodoc
@@ -51,13 +56,17 @@ class _$CommunityStateCopyWithImpl<$Res, $Val extends CommunityState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? testimonialList = null}) {
+  $Res call({Object? testimonialList = null, Object? peerForumList = null}) {
     return _then(
       _value.copyWith(
             testimonialList: null == testimonialList
                 ? _value.testimonialList
                 : testimonialList // ignore: cast_nullable_to_non_nullable
                       as AsyncValue<TestimonialResponse>,
+            peerForumList: null == peerForumList
+                ? _value.peerForumList
+                : peerForumList // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<PeerForumResponse>,
           )
           as $Val,
     );
@@ -73,7 +82,10 @@ abstract class _$$CommunityStateImplCopyWith<$Res>
   ) = __$$CommunityStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AsyncValue<TestimonialResponse> testimonialList});
+  $Res call({
+    AsyncValue<TestimonialResponse> testimonialList,
+    AsyncValue<PeerForumResponse> peerForumList,
+  });
 }
 
 /// @nodoc
@@ -89,13 +101,17 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? testimonialList = null}) {
+  $Res call({Object? testimonialList = null, Object? peerForumList = null}) {
     return _then(
       _$CommunityStateImpl(
         testimonialList: null == testimonialList
             ? _value.testimonialList
             : testimonialList // ignore: cast_nullable_to_non_nullable
                   as AsyncValue<TestimonialResponse>,
+        peerForumList: null == peerForumList
+            ? _value.peerForumList
+            : peerForumList // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<PeerForumResponse>,
       ),
     );
   }
@@ -104,15 +120,21 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CommunityStateImpl implements _CommunityState {
-  const _$CommunityStateImpl({this.testimonialList = const AsyncLoading()});
+  const _$CommunityStateImpl({
+    this.testimonialList = const AsyncLoading(),
+    this.peerForumList = const AsyncLoading(),
+  });
 
   @override
   @JsonKey()
   final AsyncValue<TestimonialResponse> testimonialList;
+  @override
+  @JsonKey()
+  final AsyncValue<PeerForumResponse> peerForumList;
 
   @override
   String toString() {
-    return 'CommunityState(testimonialList: $testimonialList)';
+    return 'CommunityState(testimonialList: $testimonialList, peerForumList: $peerForumList)';
   }
 
   @override
@@ -121,11 +143,13 @@ class _$CommunityStateImpl implements _CommunityState {
         (other.runtimeType == runtimeType &&
             other is _$CommunityStateImpl &&
             (identical(other.testimonialList, testimonialList) ||
-                other.testimonialList == testimonialList));
+                other.testimonialList == testimonialList) &&
+            (identical(other.peerForumList, peerForumList) ||
+                other.peerForumList == peerForumList));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, testimonialList);
+  int get hashCode => Object.hash(runtimeType, testimonialList, peerForumList);
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -142,10 +166,13 @@ class _$CommunityStateImpl implements _CommunityState {
 abstract class _CommunityState implements CommunityState {
   const factory _CommunityState({
     final AsyncValue<TestimonialResponse> testimonialList,
+    final AsyncValue<PeerForumResponse> peerForumList,
   }) = _$CommunityStateImpl;
 
   @override
   AsyncValue<TestimonialResponse> get testimonialList;
+  @override
+  AsyncValue<PeerForumResponse> get peerForumList;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.

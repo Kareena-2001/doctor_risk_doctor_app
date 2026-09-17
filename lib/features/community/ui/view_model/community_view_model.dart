@@ -22,4 +22,16 @@ class CommunityViewModel extends _$CommunityViewModel {
   }
 
   Future<void> refreshTestimonialList() => allTestimonialList();
+
+  Future<void> allPeerForumList() async {
+    state = state.copyWith(peerForumList: const AsyncLoading());
+
+    final result = await AsyncValue.guard(
+      () => ref.read(communityRepositoryProvider).getAllPeerForumList(),
+    );
+
+    state = state.copyWith(peerForumList: result);
+  }
+
+  Future<void> refreshPeerForumList() => allPeerForumList();
 }

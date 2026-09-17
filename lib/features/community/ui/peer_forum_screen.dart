@@ -1,4 +1,6 @@
 import 'package:Doctors_App/features/community/model/forum_post.dart';
+import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
+import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,106 +19,144 @@ class PeerForumTab extends ConsumerStatefulWidget {
 class _PeerForumTabState extends ConsumerState<PeerForumTab> {
   ForumContentType? _filter;
 
-  final List<ForumPost> _posts = [
-    const ForumPost(
-      type: ForumContentType.circular,
-      title: 'Supreme Court Ruling on Post-Operative Negligence Claims',
-      snippet:
-          'A recent judgment clarifies documentation standards expected during post-op monitoring...',
-      source: 'Doctors Risk Advisory',
-      date: '2 days ago',
-      likes: 42,
-    ),
-    const ForumPost(
-      type: ForumContentType.blog,
-      title: 'Understanding New NMC Guidelines for Doctors',
-      snippet:
-          'A breakdown of what changed in the latest compliance circular and what it means for your practice...',
-      source: 'Dr. Arun Sharma',
-      date: '4 days ago',
-      likes: 28,
-      likedByMe: true,
-    ),
-    const ForumPost(
-      type: ForumContentType.experience,
-      title: 'Telemedicine Laws Explained in 5 Minutes',
-      snippet: 'Quick-watch summary from our last webinar session',
-      source: 'Doctors Risk Team',
-      date: '1 week ago',
-      likes: 61,
-    ),
+  @override
+  void initState() {
+    super.initState();
 
-    // const ForumPost(
-    //   type: ForumContentType.testimonial,
-    //   title: 'How the legal support team helped resolve my case',
-    //   snippet:
-    //       'When I received a legal notice over a case I didn\'t even remember, the team guided me through every step...',
-    //   source: 'Dr. Anjali Mehta',
-    //   date: '1 week ago',
-    //   likes: 34,
-    // ),
-    // const ForumPost(
-    //   type: ForumContentType.testimonial,
-    //   title: 'Doctors Risk helped me handle a medico-legal issue',
-    //   snippet:
-    //   'Doctors Risk helped me handle a medico-legal issue professionally. Their guidance gave me confidence throughout the process.',
-    //   source: 'Dr. Paresh Mathur',
-    //   date: '15 Jul 2026',
-    //   likes: 0,
-    // ),
-    //
-    // const ForumPost(
-    //   type: ForumContentType.testimonial,
-    //   title: 'Video Testimonial',
-    //   snippet: 'Watch my experience with Doctors Risk.',
-    //   source: 'Dr. Neha Sharma',
-    //   date: '10 Jul 2026',
-    //   likes: 0,
-    // ),
-  ];
+    Future.microtask(() {
+      ref.read(communityViewModelProvider.notifier).allPeerForumList();
+    });
+  }
 
-  List<ForumPost> get _filteredPosts {
-    if (_filter == null) return _posts;
-    return _posts.where((p) => p.type == _filter).toList();
+  List<ForumPost> _convertPosts(List<PeerForumModel> items) {
+    return items.map((item) {
+      final type = item.type.toLowerCase() == 'news'
+          ? ForumContentType.circular
+          : ForumContentType.blog;
+
+      return ForumPost(
+        type: type,
+        title: item.title,
+        snippet: item.description,
+        source: item.type.toLowerCase() == 'news'
+            ? (item.source ?? 'Doctors Risk')
+            : (item.author ?? 'Doctors Risk'),
+        date: item.daysAgoLabel ?? '',
+        likes: 0,
+        likedByMe: false,
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        height(Responsive.h(14)),
-        _buildFilterChips(),
-        height(Responsive.h(10)),
-        // Expanded(
-        //   child: _filter == ForumContentType.testimonial
-        //       ? const CommunityTestimonialsList()
-        //       : ListView.separated(
-        //           padding: EdgeInsets.fromLTRB(
-        //             Responsive.w(16),
-        //             0,
-        //             Responsive.w(16),
-        //             Responsive.h(24),
-        //           ),
-        //           itemCount: _filteredPosts.length,
-        //           separatorBuilder: (_, __) => height(Responsive.h(14)),
-        //           itemBuilder: (_, index) =>
-        //               _buildPostCard(_filteredPosts[index]),
-        //         ),
-        // ),
-        Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(
-              Responsive.w(16),
-              0,
-              Responsive.w(16),
-              Responsive.h(24),
+    final peerForumState = ref.watch(
+      communityViewModelProvider.select((state) => state.peerForumList),
+    );
+
+    return peerForumState.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => _buildErrorState(error.toString()),
+      data: (response) {
+        final posts = _convertPosts(response.data);
+
+        final filteredPosts = _filter == null
+            ? posts
+            : posts.where((post) => post.type == _filter).toList();
+
+        return Column(
+          children: [
+            height(Responsive.h(14)),
+            _buildFilterChips(),
+            height(Responsive.h(10)),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () {
+                  return ref
+                      .read(communityViewModelProvider.notifier)
+                      .refreshPeerForumList();
+                },
+                child: filteredPosts.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: Responsive.h(300),
+                            child: Center(
+                              child: Text(
+                                'No forum posts found.',
+                                style: customTextStyle(
+                                  fontSize: Responsive.sp(13),
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(
+                          Responsive.w(16),
+                          0,
+                          Responsive.w(16),
+                          Responsive.h(24),
+                        ),
+                        itemCount: filteredPosts.length,
+                        separatorBuilder: (_, __) => height(Responsive.h(14)),
+                        itemBuilder: (_, index) {
+                          return _buildPostCard(filteredPosts[index]);
+                        },
+                      ),
+              ),
             ),
-            itemCount: _filteredPosts.length,
-            separatorBuilder: (_, __) => height(Responsive.h(14)),
-            itemBuilder: (_, index) => _buildPostCard(_filteredPosts[index]),
-          ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(Responsive.w(20)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: Responsive.sp(40),
+              color: Colors.grey,
+            ),
+            height(Responsive.h(10)),
+            Text(
+              'Something went wrong',
+              style: customTextStyle(
+                fontSize: Responsive.sp(14),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            height(Responsive.h(6)),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: customTextStyle(
+                fontSize: Responsive.sp(12),
+                color: Colors.grey.shade600,
+              ),
+            ),
+            height(Responsive.h(12)),
+            OutlinedButton(
+              onPressed: () {
+                ref
+                    .read(communityViewModelProvider.notifier)
+                    .allPeerForumList();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -130,19 +170,31 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
           _chip(
             label: 'All',
             selected: _filter == null,
-            onTap: () => setState(() => _filter = null),
+            onTap: () {
+              setState(() => _filter = null);
+            },
           ),
           width(Responsive.w(8)),
-          ...ForumContentType.values.map(
-            (type) => Padding(
-              padding: EdgeInsets.only(right: Responsive.w(8)),
-              child: _chip(
-                label: type.label,
-                selected: _filter == type,
-                color: type.color,
-                onTap: () => setState(() => _filter = type),
-              ),
-            ),
+          _chip(
+            label: 'News',
+            selected: _filter == ForumContentType.circular,
+            color: Colors.orange,
+            onTap: () {
+              setState(() {
+                _filter = ForumContentType.circular;
+              });
+            },
+          ),
+          width(Responsive.w(8)),
+          _chip(
+            label: 'Blog',
+            selected: _filter == ForumContentType.blog,
+            color: AppColors.newPri,
+            onTap: () {
+              setState(() {
+                _filter = ForumContentType.blog;
+              });
+            },
           ),
         ],
       ),
@@ -156,6 +208,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     Color? color,
   }) {
     final chipColor = color ?? AppColors.newPri;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -232,16 +285,19 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                 ),
               ),
               const Spacer(),
-              Text(
-                post.date,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11),
-                  color: Colors.grey.shade500,
+              if (post.date.isNotEmpty)
+                Text(
+                  post.date,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: Colors.grey.shade500,
+                  ),
                 ),
-              ),
             ],
           ),
+
           height(Responsive.h(10)),
+
           Text(
             post.title,
             style: customTextStyle(
@@ -250,7 +306,9 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
               color: AppColors.textColor.withValues(alpha: 0.85),
             ),
           ),
+
           height(Responsive.h(6)),
+
           Text(
             post.snippet,
             maxLines: 2,
@@ -260,34 +318,26 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
               color: Colors.grey.shade600,
             ).copyWith(height: 1.4),
           ),
+
           height(Responsive.h(12)),
+
           Row(
             children: [
-              Text(
-                post.source,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11.5),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.newPri,
+              Expanded(
+                child: Text(
+                  post.source,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11.5),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.newPri,
+                  ),
                 ),
               ),
-              const Spacer(),
-              Icon(
-                post.likedByMe
-                    ? Icons.thumb_up_rounded
-                    : Icons.thumb_up_outlined,
-                size: Responsive.sp(15),
-                color: post.likedByMe ? AppColors.newPri : Colors.grey.shade500,
-              ),
-              width(Responsive.w(4)),
-              Text(
-                '${post.likes}',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(12),
-                  color: Colors.grey.shade600,
-                ),
-              ),
+
               width(Responsive.w(14)),
+
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: Responsive.sp(12),

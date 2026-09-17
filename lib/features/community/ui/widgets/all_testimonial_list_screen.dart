@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:Doctors_App/features/community/ui/widgets/testimonial_card.dart';
@@ -18,7 +19,6 @@ class AllTestimonialListScreen extends ConsumerStatefulWidget {
 
 class _AllTestimonialListScreenState
     extends ConsumerState<AllTestimonialListScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -39,7 +39,7 @@ class _AllTestimonialListScreenState
         loading: () => const Center(child: Loading()),
         error: (error, _) => _buildError(error),
         data: (response) {
-          final testimonials = response?.data ?? [];
+          final testimonials = response.data ?? [];
 
           if (testimonials.isEmpty) {
             return _buildEmpty();
@@ -65,34 +65,12 @@ class _AllTestimonialListScreenState
 
   Widget _buildError(Object error) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.all(Responsive.w(24)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: Responsive.sp(42),
-              color: AppColors.cardRed,
-            ),
-            height(Responsive.h(12)),
-            Text(
-              error.toString(),
-              textAlign: TextAlign.center,
-              style: customTextStyle(
-                fontSize: Responsive.sp(13),
-                color: Colors.grey.shade700,
-              ),
-            ),
-            height(Responsive.h(16)),
-            OutlinedButton(
-              onPressed: () => ref
-                  .read(communityViewModelProvider.notifier)
-                  .allTestimonialList(),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
+      child: CommonErrorState(
+        title: 'Failed to load your testimonial',
+        message: error.toString(),
+        onRetry: () {
+          ref.read(communityViewModelProvider.notifier).refreshPeerForumList();
+        },
       ),
     );
   }

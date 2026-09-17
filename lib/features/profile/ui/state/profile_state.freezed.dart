@@ -23,8 +23,7 @@ mixin _$ProfileState {
   List<IdNameOption> get specialities => throw _privateConstructorUsedError;
   List<IdNameOption> get degrees => throw _privateConstructorUsedError;
   List<IdNameOption> get states => throw _privateConstructorUsedError;
-  List<IdNameOption> get cities =>
-      throw _privateConstructorUsedError; // Selected values (drives the dropdowns)
+  List<IdNameOption> get cities => throw _privateConstructorUsedError;
   IdNameOption? get selectedCategory => throw _privateConstructorUsedError;
   IdNameOption? get selectedSpeciality => throw _privateConstructorUsedError;
   List<IdNameOption> get selectedDegrees => throw _privateConstructorUsedError;
@@ -414,7 +413,6 @@ class _$ProfileStateImpl implements _ProfileState {
     return EqualUnmodifiableListView(_cities);
   }
 
-  // Selected values (drives the dropdowns)
   @override
   final IdNameOption? selectedCategory;
   @override
@@ -562,7 +560,7 @@ abstract class _ProfileState implements ProfileState {
   @override
   List<IdNameOption> get states;
   @override
-  List<IdNameOption> get cities; // Selected values (drives the dropdowns)
+  List<IdNameOption> get cities;
   @override
   IdNameOption? get selectedCategory;
   @override
