@@ -12,12 +12,13 @@ import '../config/environment_provider.dart';
 import '../exceptions/app_exception.dart';
 
 part 'api_client.g.dart';
+
 class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final includeAuth = options.extra['includeAuth'] as bool? ?? true;
 
     if (includeAuth) {

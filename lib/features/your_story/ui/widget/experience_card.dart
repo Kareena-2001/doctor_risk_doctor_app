@@ -26,6 +26,7 @@ class ExperienceCard extends StatelessWidget {
     final title = experience.title.trim().isNotEmpty
         ? experience.title.trim()
         : '-';
+
     final detailsStyle = customTextStyle(
       fontSize: Responsive.sp(13),
       color: Colors.grey.shade700,

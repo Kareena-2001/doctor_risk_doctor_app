@@ -3,8 +3,6 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Shows [text] truncated to [maxLines]; if it actually overflows, a
-/// "Show more" link appears that opens the full text in a dialog.
 class ExpandableText extends StatelessWidget {
   const ExpandableText({
     super.key,
@@ -33,28 +31,40 @@ class ExpandableText extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Responsive.w(16))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Responsive.w(16)),
+        ),
         title: dialogTitle != null
             ? Text(
-          dialogTitle!,
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            fontWeight: FontWeight.bold,
-            color: AppColors.textColor,
-          ),
-        )
+                dialogTitle!,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textColor,
+                ),
+              )
             : null,
         content: SingleChildScrollView(
           child: Text(
             text,
-            style: style?.copyWith(height: 1.6) ??
-                customTextStyle(fontSize: Responsive.sp(12), color: Colors.grey.shade700).copyWith(height: 1.6),
+            style:
+                style?.copyWith(height: 1.6) ??
+                customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  color: Colors.grey.shade700,
+                ).copyWith(height: 1.6),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Close', style: customTextStyle(color: AppColors.newPri, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Close',
+              style: customTextStyle(
+                color: AppColors.newPri,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -70,7 +80,12 @@ class ExpandableText extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(text, maxLines: maxLines, overflow: TextOverflow.ellipsis, style: style),
+            Text(
+              text,
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+              style: style,
+            ),
             if (overflows) ...[
               SizedBox(height: Responsive.h(4)),
               GestureDetector(

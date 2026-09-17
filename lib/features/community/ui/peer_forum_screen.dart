@@ -1,4 +1,6 @@
-import 'package:Doctors_App/features/community/model/forum_post.dart';
+import 'package:Doctors_App/core/widgets/common_empty_state.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../theme/app_colors.dart';
+import '../../your_story/ui/widget/expandable_text.dart';
 
 class PeerForumTab extends ConsumerStatefulWidget {
   const PeerForumTab({super.key});
@@ -17,147 +20,85 @@ class PeerForumTab extends ConsumerStatefulWidget {
 }
 
 class _PeerForumTabState extends ConsumerState<PeerForumTab> {
-  ForumContentType? _filter;
+  static const List<_TabOption> _tabs = [
+    _TabOption(label: 'All', value: null),
+    _TabOption(label: 'News', value: 'news'),
+    _TabOption(label: 'Experience', value: 'experience'),
+    _TabOption(label: 'Blog', value: 'blog'),
+  ];
+
+  String? _selectedTab;
 
   @override
   void initState() {
     super.initState();
-
-    Future.microtask(() {
+    _selectedTab = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(communityViewModelProvider.notifier).allPeerForumList();
     });
   }
 
-  List<ForumPost> _convertPosts(List<PeerForumModel> items) {
-    return items.map((item) {
-      final type = item.type.toLowerCase() == 'news'
-          ? ForumContentType.circular
-          : ForumContentType.blog;
-
-      return ForumPost(
-        type: type,
-        title: item.title,
-        snippet: item.description,
-        source: item.type.toLowerCase() == 'news'
-            ? (item.source ?? 'Doctors Risk')
-            : (item.author ?? 'Doctors Risk'),
-        date: item.daysAgoLabel ?? '',
-        likes: 0,
-        likedByMe: false,
-      );
-    }).toList();
+  void _onTabTap(String? tab) {
+    if (_selectedTab == tab) return;
+    setState(() => _selectedTab = tab);
+    ref.read(communityViewModelProvider.notifier).allPeerForumList(tab: tab);
   }
 
   @override
   Widget build(BuildContext context) {
     final peerForumState = ref.watch(
-      communityViewModelProvider.select((state) => state.peerForumList),
+      communityViewModelProvider.select((s) => s.peerForumList),
     );
 
-    return peerForumState.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _buildErrorState(error.toString()),
-      data: (response) {
-        final posts = _convertPosts(response.data);
-
-        final filteredPosts = _filter == null
-            ? posts
-            : posts.where((post) => post.type == _filter).toList();
-
-        return Column(
-          children: [
-            height(Responsive.h(14)),
-            _buildFilterChips(),
-            height(Responsive.h(10)),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () {
-                  return ref
-                      .read(communityViewModelProvider.notifier)
-                      .refreshPeerForumList();
-                },
-                child: filteredPosts.isEmpty
-                    ? ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          SizedBox(
-                            height: Responsive.h(300),
-                            child: Center(
-                              child: Text(
-                                'No forum posts found.',
-                                style: customTextStyle(
-                                  fontSize: Responsive.sp(13),
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(
-                          Responsive.w(16),
-                          0,
-                          Responsive.w(16),
-                          Responsive.h(24),
-                        ),
-                        itemCount: filteredPosts.length,
-                        separatorBuilder: (_, __) => height(Responsive.h(14)),
-                        itemBuilder: (_, index) {
-                          return _buildPostCard(filteredPosts[index]);
-                        },
-                      ),
-              ),
+    return Column(
+      children: [
+        height(Responsive.h(14)),
+        _buildFilterChips(),
+        height(Responsive.h(10)),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => ref
+                .read(communityViewModelProvider.notifier)
+                .refreshPeerForumList(),
+            child: peerForumState.when(
+              loading: () => Center(child: Loading()),
+              error: (err, _) => _buildError(err.toString()),
+              data: (response) {
+                final posts = response.data;
+                if (posts.isEmpty) {
+                  return _buildEmpty();
+                }
+                return ListView.separated(
+                  padding: EdgeInsets.fromLTRB(
+                    Responsive.w(16),
+                    0,
+                    Responsive.w(16),
+                    Responsive.h(24),
+                  ),
+                  itemCount: posts.length,
+                  separatorBuilder: (_, __) => height(Responsive.h(14)),
+                  itemBuilder: (_, index) => _buildPostCard(posts[index]),
+                );
+              },
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildErrorState(String error) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(Responsive.w(20)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: Responsive.sp(40),
-              color: Colors.grey,
-            ),
-            height(Responsive.h(10)),
-            Text(
-              'Something went wrong',
-              style: customTextStyle(
-                fontSize: Responsive.sp(14),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            height(Responsive.h(6)),
-            Text(
-              error,
-              textAlign: TextAlign.center,
-              style: customTextStyle(
-                fontSize: Responsive.sp(12),
-                color: Colors.grey.shade600,
-              ),
-            ),
-            height(Responsive.h(12)),
-            OutlinedButton(
-              onPressed: () {
-                ref
-                    .read(communityViewModelProvider.notifier)
-                    .allPeerForumList();
-              },
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildError(String message) {
+    return CommonErrorState(
+      title: 'Failed to load posts',
+      message: '',
+      onRetry: () => ref
+          .read(communityViewModelProvider.notifier)
+          .allPeerForumList(tab: _selectedTab),
     );
+  }
+
+  Widget _buildEmpty() {
+    return CommonEmptyState(title: 'No posts yet', icon: Icons.forum_outlined);
   }
 
   Widget _buildFilterChips() {
@@ -167,35 +108,14 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
         children: [
-          _chip(
-            label: 'All',
-            selected: _filter == null,
-            onTap: () {
-              setState(() => _filter = null);
-            },
-          ),
-          width(Responsive.w(8)),
-          _chip(
-            label: 'News',
-            selected: _filter == ForumContentType.circular,
-            color: Colors.orange,
-            onTap: () {
-              setState(() {
-                _filter = ForumContentType.circular;
-              });
-            },
-          ),
-          width(Responsive.w(8)),
-          _chip(
-            label: 'Blog',
-            selected: _filter == ForumContentType.blog,
-            color: AppColors.newPri,
-            onTap: () {
-              setState(() {
-                _filter = ForumContentType.blog;
-              });
-            },
-          ),
+          for (final tab in _tabs) ...[
+            _chip(
+              label: tab.label,
+              selected: _selectedTab == tab.value,
+              onTap: () => _onTabTap(tab.value),
+            ),
+            width(Responsive.w(8)),
+          ],
         ],
       ),
     );
@@ -205,10 +125,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     required String label,
     required bool selected,
     required VoidCallback onTap,
-    Color? color,
   }) {
-    final chipColor = color ?? AppColors.newPri;
-
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -218,7 +135,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
           vertical: Responsive.h(8),
         ),
         decoration: BoxDecoration(
-          color: selected ? chipColor : Colors.white,
+          color: selected ? AppColors.newPri : Colors.white,
           borderRadius: BorderRadius.circular(Responsive.w(30)),
           border: Border.all(
             color: selected ? Colors.transparent : Colors.grey.shade300,
@@ -236,7 +153,17 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     );
   }
 
-  Widget _buildPostCard(ForumPost post) {
+  Widget _buildPostCard(PeerForumModel post) {
+    final typeColor = _typeColor(post.type);
+    final typeIcon = _typeIcon(post.type);
+    final dateLabel = post.daysAgoLabel ?? post.date ?? post.createdOn ?? '';
+    final subtitle = post.author ?? post.source ?? '';
+
+    final detailsStyle = customTextStyle(
+      fontSize: Responsive.sp(13),
+      color: Colors.grey.shade700,
+    );
+
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
@@ -261,33 +188,29 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                   vertical: Responsive.h(4),
                 ),
                 decoration: BoxDecoration(
-                  color: post.type.color.withValues(alpha: 0.1),
+                  color: typeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(Responsive.w(20)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      post.type.icon,
-                      size: Responsive.sp(12),
-                      color: post.type.color,
-                    ),
+                    Icon(typeIcon, size: Responsive.sp(12), color: typeColor),
                     width(Responsive.w(4)),
                     Text(
-                      post.type.label,
+                      post.typeLabel,
                       style: customTextStyle(
                         fontSize: Responsive.sp(10.5),
                         fontWeight: FontWeight.bold,
-                        color: post.type.color,
+                        color: typeColor,
                       ),
                     ),
                   ],
                 ),
               ),
               const Spacer(),
-              if (post.date.isNotEmpty)
+              if (dateLabel.isNotEmpty)
                 Text(
-                  post.date,
+                  dateLabel,
                   style: customTextStyle(
                     fontSize: Responsive.sp(11),
                     color: Colors.grey.shade500,
@@ -295,9 +218,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                 ),
             ],
           ),
-
           height(Responsive.h(10)),
-
           Text(
             post.title,
             style: customTextStyle(
@@ -306,47 +227,116 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
               color: AppColors.textColor.withValues(alpha: 0.85),
             ),
           ),
-
           height(Responsive.h(6)),
-
-          Text(
-            post.snippet,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: customTextStyle(
-              fontSize: Responsive.sp(12.5),
-              color: Colors.grey.shade600,
-            ).copyWith(height: 1.4),
+          // GestureDetector(
+          //   onTap: () => _showDescriptionDialog(post),
+          //   child: Text(
+          //     post.description,
+          //     maxLines: 2,
+          //     overflow: TextOverflow.ellipsis,
+          //     style: customTextStyle(
+          //       fontSize: Responsive.sp(12.5),
+          //       color: Colors.grey.shade600,
+          //     ).copyWith(height: 1.4),
+          //   ),
+          // ),
+          ExpandableText(
+            text: post.description.trim().isEmpty
+                ? 'No description available.'
+                : post.description.trim(),
+            maxLines: 4,
+            style: detailsStyle.copyWith(height: 1.5),
+            dialogTitle: post.title,
           ),
 
           height(Responsive.h(12)),
-
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                child: Text(
-                  post.source,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11.5),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.newPri,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (subtitle.isNotEmpty)
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(11.5),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.newPri,
+                        ),
+                      ),
+
+                    if ((post.degree != null && post.degree!.isNotEmpty) ||
+                        (post.categoryName != null &&
+                            post.categoryName!.isNotEmpty)) ...[
+                      height(Responsive.h(3)),
+                      Text(
+                        [
+                          if (post.categoryName != null &&
+                              post.categoryName!.isNotEmpty)
+                            post.categoryName!,
+                          if (post.degree != null && post.degree!.isNotEmpty)
+                            post.degree!,
+                        ].join(', '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(10.5),
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
 
-              width(Responsive.w(14)),
-
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: Responsive.sp(12),
-                color: Colors.grey.shade400,
-              ),
+              // width(Responsive.w(8)),
+              //
+              // Icon(
+              //   Icons.arrow_forward_ios_rounded,
+              //   size: Responsive.sp(12),
+              //   color: Colors.grey.shade400,
+              // ),
             ],
           ),
         ],
       ),
     );
   }
+
+  Color _typeColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'news':
+        return Colors.blue;
+      case 'experience':
+        return Colors.orange;
+      case 'blog':
+        return AppColors.newPri;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _typeIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'news':
+        return Icons.article_rounded;
+      case 'experience':
+        return Icons.play_circle_outline_rounded;
+      case 'blog':
+        return Icons.edit_note_rounded;
+      default:
+        return Icons.forum_rounded;
+    }
+  }
+}
+
+class _TabOption {
+  final String label;
+  final String? value;
+
+  const _TabOption({required this.label, required this.value});
 }

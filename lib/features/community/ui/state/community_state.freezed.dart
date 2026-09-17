@@ -21,6 +21,12 @@ mixin _$CommunityState {
       throw _privateConstructorUsedError;
   AsyncValue<PeerForumResponse> get peerForumList =>
       throw _privateConstructorUsedError;
+  AsyncValue<DoctorNoResponse> get referralLink =>
+      throw _privateConstructorUsedError;
+  AsyncValue<ReferDoctorResponse>? get addReferral =>
+      throw _privateConstructorUsedError;
+  AsyncValue<ReferredDoctorsResponse> get referralList =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -39,6 +45,9 @@ abstract class $CommunityStateCopyWith<$Res> {
   $Res call({
     AsyncValue<TestimonialResponse> testimonialList,
     AsyncValue<PeerForumResponse> peerForumList,
+    AsyncValue<DoctorNoResponse> referralLink,
+    AsyncValue<ReferDoctorResponse>? addReferral,
+    AsyncValue<ReferredDoctorsResponse> referralList,
   });
 }
 
@@ -56,7 +65,13 @@ class _$CommunityStateCopyWithImpl<$Res, $Val extends CommunityState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? testimonialList = null, Object? peerForumList = null}) {
+  $Res call({
+    Object? testimonialList = null,
+    Object? peerForumList = null,
+    Object? referralLink = null,
+    Object? addReferral = freezed,
+    Object? referralList = null,
+  }) {
     return _then(
       _value.copyWith(
             testimonialList: null == testimonialList
@@ -67,6 +82,18 @@ class _$CommunityStateCopyWithImpl<$Res, $Val extends CommunityState>
                 ? _value.peerForumList
                 : peerForumList // ignore: cast_nullable_to_non_nullable
                       as AsyncValue<PeerForumResponse>,
+            referralLink: null == referralLink
+                ? _value.referralLink
+                : referralLink // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<DoctorNoResponse>,
+            addReferral: freezed == addReferral
+                ? _value.addReferral
+                : addReferral // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<ReferDoctorResponse>?,
+            referralList: null == referralList
+                ? _value.referralList
+                : referralList // ignore: cast_nullable_to_non_nullable
+                      as AsyncValue<ReferredDoctorsResponse>,
           )
           as $Val,
     );
@@ -85,6 +112,9 @@ abstract class _$$CommunityStateImplCopyWith<$Res>
   $Res call({
     AsyncValue<TestimonialResponse> testimonialList,
     AsyncValue<PeerForumResponse> peerForumList,
+    AsyncValue<DoctorNoResponse> referralLink,
+    AsyncValue<ReferDoctorResponse>? addReferral,
+    AsyncValue<ReferredDoctorsResponse> referralList,
   });
 }
 
@@ -101,7 +131,13 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? testimonialList = null, Object? peerForumList = null}) {
+  $Res call({
+    Object? testimonialList = null,
+    Object? peerForumList = null,
+    Object? referralLink = null,
+    Object? addReferral = freezed,
+    Object? referralList = null,
+  }) {
     return _then(
       _$CommunityStateImpl(
         testimonialList: null == testimonialList
@@ -112,6 +148,18 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
             ? _value.peerForumList
             : peerForumList // ignore: cast_nullable_to_non_nullable
                   as AsyncValue<PeerForumResponse>,
+        referralLink: null == referralLink
+            ? _value.referralLink
+            : referralLink // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<DoctorNoResponse>,
+        addReferral: freezed == addReferral
+            ? _value.addReferral
+            : addReferral // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<ReferDoctorResponse>?,
+        referralList: null == referralList
+            ? _value.referralList
+            : referralList // ignore: cast_nullable_to_non_nullable
+                  as AsyncValue<ReferredDoctorsResponse>,
       ),
     );
   }
@@ -123,6 +171,9 @@ class _$CommunityStateImpl implements _CommunityState {
   const _$CommunityStateImpl({
     this.testimonialList = const AsyncLoading(),
     this.peerForumList = const AsyncLoading(),
+    this.referralLink = const AsyncLoading(),
+    this.addReferral,
+    this.referralList = const AsyncLoading(),
   });
 
   @override
@@ -131,10 +182,18 @@ class _$CommunityStateImpl implements _CommunityState {
   @override
   @JsonKey()
   final AsyncValue<PeerForumResponse> peerForumList;
+  @override
+  @JsonKey()
+  final AsyncValue<DoctorNoResponse> referralLink;
+  @override
+  final AsyncValue<ReferDoctorResponse>? addReferral;
+  @override
+  @JsonKey()
+  final AsyncValue<ReferredDoctorsResponse> referralList;
 
   @override
   String toString() {
-    return 'CommunityState(testimonialList: $testimonialList, peerForumList: $peerForumList)';
+    return 'CommunityState(testimonialList: $testimonialList, peerForumList: $peerForumList, referralLink: $referralLink, addReferral: $addReferral, referralList: $referralList)';
   }
 
   @override
@@ -145,11 +204,24 @@ class _$CommunityStateImpl implements _CommunityState {
             (identical(other.testimonialList, testimonialList) ||
                 other.testimonialList == testimonialList) &&
             (identical(other.peerForumList, peerForumList) ||
-                other.peerForumList == peerForumList));
+                other.peerForumList == peerForumList) &&
+            (identical(other.referralLink, referralLink) ||
+                other.referralLink == referralLink) &&
+            (identical(other.addReferral, addReferral) ||
+                other.addReferral == addReferral) &&
+            (identical(other.referralList, referralList) ||
+                other.referralList == referralList));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, testimonialList, peerForumList);
+  int get hashCode => Object.hash(
+    runtimeType,
+    testimonialList,
+    peerForumList,
+    referralLink,
+    addReferral,
+    referralList,
+  );
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -167,12 +239,21 @@ abstract class _CommunityState implements CommunityState {
   const factory _CommunityState({
     final AsyncValue<TestimonialResponse> testimonialList,
     final AsyncValue<PeerForumResponse> peerForumList,
+    final AsyncValue<DoctorNoResponse> referralLink,
+    final AsyncValue<ReferDoctorResponse>? addReferral,
+    final AsyncValue<ReferredDoctorsResponse> referralList,
   }) = _$CommunityStateImpl;
 
   @override
   AsyncValue<TestimonialResponse> get testimonialList;
   @override
   AsyncValue<PeerForumResponse> get peerForumList;
+  @override
+  AsyncValue<DoctorNoResponse> get referralLink;
+  @override
+  AsyncValue<ReferDoctorResponse>? get addReferral;
+  @override
+  AsyncValue<ReferredDoctorsResponse> get referralList;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.

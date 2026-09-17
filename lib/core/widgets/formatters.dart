@@ -27,14 +27,11 @@ String formatFriendlyDate(String? raw, {String emptyFallback = 'N/A'}) {
   }
 }
 
-/// Capitalizes the first letter and lowercases the rest, e.g. "VIDEO" -> "Video".
 String capitalizeFirst(String value, {String fallback = ''}) {
   if (value.trim().isEmpty) return fallback;
   return value[0].toUpperCase() + value.substring(1).toLowerCase();
 }
 
-/// Title-cases a snake_case or space separated status string,
-/// e.g. "awaiting_admin_approval" -> "Awaiting Admin Approval".
 String titleCaseStatus(String? raw, {String fallback = ''}) {
   if (raw == null || raw.trim().isEmpty) return fallback;
 

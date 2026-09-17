@@ -28,7 +28,6 @@ class BlogViewModel extends _$BlogViewModel {
   }) async {
     state = state.copyWith(blogList: const AsyncLoading());
 
-    // Map drop-down values to API sort parameters
     String? mappedSortBy;
     if (sortBy == 'Newest first') {
       mappedSortBy = 'newest';
@@ -74,12 +73,10 @@ class BlogViewModel extends _$BlogViewModel {
   }
 
   Future<MySubmissionListViewResponse?> fetchMySubmissionDetails(
-      String id,
-      ) async {
+    String id,
+  ) async {
     try {
-      return await ref
-          .read(blogRepositoryProvider)
-          .mySubmissionView(id: id);
+      return await ref.read(blogRepositoryProvider).mySubmissionView(id: id);
     } catch (e, stackTrace) {
       debugPrint('fetchMySubmissionDetails error: $e');
       debugPrintStack(stackTrace: stackTrace);
