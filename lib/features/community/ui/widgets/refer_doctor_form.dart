@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
+import '../../../../core/widgets/custom_multi_select_dropdown.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../common/ui/widgets/primary_button.dart';
 
@@ -425,7 +426,30 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
             onSelected: communityNotifier.selectSpeciality,
           ),
           height(Responsive.h(20)),
-          _buildDegreeField(communityState),
+          CustomMultiSelectDropdownField<IdNameOption>(
+            label: 'Degree',
+            hint: communityState.degrees.isEmpty
+                ? 'No degrees available'
+                : 'Select Degree(s)',
+            items: communityState.degrees,
+            selectedItems: communityState.selectedDegrees,
+            itemLabel: (d) => d.name,
+            isEqual: (a, b) => a.id == b.id,
+            isLoading: communityState.isDegreeLoading,
+            errorText: communityState.degreeError != null
+                ? 'Failed to load — tap to retry'
+                : null,
+            onRetry: communityNotifier.degreeList,
+            allowCustomEntry: true,
+            customEntryLabel: 'Other',
+            onCreateCustomItem: (value) => IdNameOption(
+              id: -DateTime.now().millisecondsSinceEpoch,
+              name: value,
+            ),
+            onChanged: (selected) =>
+                communityNotifier.setSelectedDegrees(selected),
+          ),
+          // _buildDegreeField(communityState),
           height(Responsive.h(14)),
           CustomTextField(
             isRequired: false,

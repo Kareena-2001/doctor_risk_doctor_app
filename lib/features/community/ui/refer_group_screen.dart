@@ -77,6 +77,7 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
             ),
             height(Responsive.h(10)),
             _buildReferralList(state),
+            height(Responsive.h(100)),
           ],
         ),
       ),
@@ -179,8 +180,8 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
           height(Responsive.h(6)),
           Text(
             'When a referred professional joins and secures a membership, '
-                'you earn reward points — redeemable at your next renewal, '
-                'new plan purchase, or a paid event.',
+            'you earn reward points — redeemable at your next renewal, '
+            'new plan purchase, or a paid event.',
             style: customTextStyle(
               fontSize: Responsive.sp(11),
               color: Colors.white.withValues(alpha: 0.85),

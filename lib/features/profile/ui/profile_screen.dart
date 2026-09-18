@@ -979,7 +979,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 3),
+                            height(3),
                             Text(
                               fileName,
                               maxLines: 1,
@@ -992,7 +992,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 8),
+                      width(8),
                       Icon(
                         Icons.open_in_new,
                         size: 18,
@@ -1005,18 +1005,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             }).toList(),
           ),
         height(4),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () {
-              context.push(Routes.documentVault);
-            },
-            icon: Icon(Icons.folder_open_outlined, size: 18),
-            label: Text(
-              'Open Document Vault',
-              style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-          ),
+        PrimaryButton(
+          height: 45,
+          borderRadius: 25,
+          borderColor: AppColors.borderGrey,
+          width: 220,
+          fontSize: 13,
+          backgroundColor: AppColors.white,
+          textColor: AppColors.textColor,
+          onPressed: () {
+            context.push(Routes.documentVault);
+          },
+          icon: Icons.add,
+          text: 'Open Document Vault',
         ),
       ],
     );
