@@ -49,8 +49,9 @@ class _EventCollaborateScreenState
   // label (what the dropdown actually shows/stores) -> real option with id.
   // Rebuilt every build() from the latest states/cities, so it always
   // matches whatever is currently in the two dropdowns' `items`.
-  Map<String, IdNameOption> _stateByLabel = {};
-  Map<String, IdNameOption> _cityByLabel = {};
+
+  final Map<String, IdNameOption> _stateByLabel = {};
+  final Map<String, IdNameOption> _cityByLabel = {};
 
   IdNameOption? _selectedState;
   IdNameOption? _selectedCity;
@@ -72,12 +73,6 @@ class _EventCollaborateScreenState
     super.dispose();
   }
 
-  /// Turns a list of [IdNameOption] into unique display strings, and fills
-  /// [targetMap] with label -> option so we can recover the real `id` on
-  /// selection. If two options share a name ("Sirmaur" twice with
-  /// different ids), the 2nd+ gets a "(2)", "(3)"... suffix so
-  /// CustomDropdownField never sees two identical String items — that's
-  /// what was crashing the DropdownButtonFormField assertion.
   List<String> _uniqueLabels(
     List<IdNameOption> options,
     Map<String, IdNameOption> targetMap,
@@ -104,7 +99,7 @@ class _EventCollaborateScreenState
     final day = parts[0].padLeft(2, '0');
     final month = parts[1].padLeft(2, '0');
     final year = parts[2];
-    return '$year-$month-$day'; // -> 2026-09-18
+    return '$year-$month-$day';
   }
 
   Future<void> _submitCollaboration() async {
@@ -126,7 +121,6 @@ class _EventCollaborateScreenState
               ? null
               : _modeOfEventController.text.trim(),
           preferredDate: _dateToApiFormat(_preferredDateController.text),
-          // <-- changed
           preferredTime: _preferredTimeController.text.trim().isEmpty
               ? null
               : _preferredTimeController.text.trim(),
@@ -168,11 +162,6 @@ class _EventCollaborateScreenState
     final stateLabels = _uniqueLabels(states, _stateByLabel);
     final cityLabels = _uniqueLabels(cities, _cityByLabel);
 
-    // If the dropdowns' item set changed (e.g. cities reloaded after a
-    // new state), make sure the controller text still points at something
-    // that actually exists in the new label list — else clear it so
-    // CustomDropdownField's `items.contains(value)` check falls back to
-    // null instead of crashing/showing a stale value.
     if (_stateController.text.isNotEmpty &&
         !stateLabels.contains(_stateController.text)) {
       _stateController.clear();
