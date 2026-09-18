@@ -384,23 +384,108 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
 
   bool _isSelected(T item) => _selected.any((e) => widget.isEqual(e, item));
 
+  /// True if this row should render as checked. For a clean single-value
+  /// item this is just _isSelected. For a dirty combined entry like
+  /// "C, D" it's checked only when every comma-separated piece is
+  /// already present in the current selection.
+  bool _isRowSelected(T item) {
+    final parts = widget
+        .itemLabel(item)
+        .split(',')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    if (parts.length <= 1) return _isSelected(item);
+
+    return parts.every(
+      (token) => _selected.any(
+        (e) => widget.itemLabel(e).toLowerCase() == token.toLowerCase(),
+      ),
+    );
+  }
+
   void _toggle(T item) {
+    final parts = widget
+        .itemLabel(item)
+        .split(',')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    // Clean single-value item — original behavior.
+    if (parts.length <= 1) {
+      setState(() {
+        if (_isSelected(item)) {
+          _selected.removeWhere((e) => widget.isEqual(e, item));
+        } else {
+          _selected.add(item);
+        }
+      });
+      return;
+    }
+
+    // Dirty combined master-data entry (e.g. "C, D") — expand into
+    // real degrees where they exist in the list, else synthesize custom
+    // ones, and select/deselect each piece independently.
+    final expanded = parts.map((token) {
+      return widget.items.firstWhere(
+        (e) => widget.itemLabel(e).toLowerCase() == token.toLowerCase(),
+        orElse: () => widget.onCreateCustomItem?.call(token) ?? item,
+      );
+    }).toList();
+
+    final allSelected = expanded.every(_isSelected);
+
     setState(() {
-      if (_isSelected(item)) {
-        _selected.removeWhere((e) => widget.isEqual(e, item));
+      if (allSelected) {
+        for (final p in expanded) {
+          _selected.removeWhere((e) => widget.isEqual(e, p));
+        }
       } else {
-        _selected.add(item);
+        for (final p in expanded) {
+          if (!_isSelected(p)) _selected.add(p);
+        }
       }
     });
   }
 
+  // void _submitCustom() {
+  //   final text = _customController.text.trim();
+  //   if (text.isEmpty || widget.onCreateCustomItem == null) return;
+  //
+  //   final item = widget.onCreateCustomItem!(text);
+  //   setState(() {
+  //     _selected.add(item);
+  //     _customController.clear();
+  //     _showCustomInput = false;
+  //   });
+  // }
   void _submitCustom() {
-    final text = _customController.text.trim();
-    if (text.isEmpty || widget.onCreateCustomItem == null) return;
+    final raw = _customController.text.trim();
+    if (raw.isEmpty || widget.onCreateCustomItem == null) return;
 
-    final item = widget.onCreateCustomItem!(text);
+    final tokens = raw
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
+
+    if (tokens.isEmpty) return;
+
     setState(() {
-      _selected.add(item);
+      for (final token in tokens) {
+        final exists =
+            _selected.any(
+              (e) => widget.itemLabel(e).toLowerCase() == token.toLowerCase(),
+            ) ||
+            widget.items.any(
+              (e) => widget.itemLabel(e).toLowerCase() == token.toLowerCase(),
+            );
+        if (!exists) {
+          _selected.add(widget.onCreateCustomItem!(token));
+        }
+      }
       _customController.clear();
       _showCustomInput = false;
     });
@@ -491,7 +576,6 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     itemCount: totalRows,
                     itemBuilder: (context, index) {
-                      // Last row = "Other" custom entry
                       if (showOtherRow && index == filtered.length) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
@@ -583,10 +667,8 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
                                 ),
                         );
                       }
-
                       final item = filtered[index];
-                      final selected = _isSelected(item);
-
+                      final selected = _isRowSelected(item);
                       return InkWell(
                         onTap: () => _toggle(item),
                         child: Padding(

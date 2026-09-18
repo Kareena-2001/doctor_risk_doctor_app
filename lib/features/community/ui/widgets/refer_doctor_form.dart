@@ -1,10 +1,8 @@
-import 'package:Doctors_App/core/widgets/app_dialog.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart'
     show IdNameOption;
-import 'package:Doctors_App/features/community/ui/state/community_state.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +12,6 @@ import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../core/widgets/custom_multi_select_dropdown.dart';
 import '../../../../theme/app_colors.dart';
-import '../../../common/ui/widgets/primary_button.dart';
 
 class ReferDoctorForm extends ConsumerStatefulWidget {
   const ReferDoctorForm({super.key});
@@ -76,120 +73,13 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
           lastName: _lastNameController.text.trim(),
           mobileNo: _mobileController.text.trim(),
           email: _emailController.text.trim(),
-
           categoryId: communityState.selectedCategory?.id,
           specialityId: communityState.selectedSpeciality?.id,
-
-          degree: communityState.selectedDegrees.isEmpty
+          degrees: communityState.selectedDegrees.isEmpty
               ? null
-              : communityState.selectedDegrees.map((d) => d.name).join(', '),
-
+              : communityState.selectedDegrees.map((d) => d.name).toList(),
           remark: _remarkController.text.trim(),
         );
-  }
-
-  Future<void> _openDegreePicker(CommunityState state) async {
-    final notifier = ref.read(communityViewModelProvider.notifier);
-    final tempSelected = [...state.selectedDegrees];
-
-    await AppDialog.customBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) {
-        return Container(
-          color: Colors.white,
-          child: StatefulBuilder(
-            builder: (context, setSheetState) {
-              return Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Select Degree(s)',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(15),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    height(Responsive.h(12)),
-                    if (state.degrees.isEmpty)
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Center(
-                          child: Text(
-                            'No degrees available',
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(12),
-                              color: Color(0xFF94A3B8),
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Flexible(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.degrees.length,
-                          itemBuilder: (context, index) {
-                            final degree = state.degrees[index];
-                            final isChecked = tempSelected.any(
-                              (item) => item.id == degree.id,
-                            );
-
-                            return CheckboxListTile(
-                              tileColor: Colors.white,
-                              value: isChecked,
-                              title: Text(
-                                degree.name,
-                                style: customTextStyle(
-                                  fontSize: Responsive.sp(13),
-                                ),
-                              ),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: EdgeInsets.zero,
-                              onChanged: (checked) {
-                                setSheetState(() {
-                                  if (checked == true) {
-                                    if (!tempSelected.any(
-                                      (item) => item.id == degree.id,
-                                    )) {
-                                      tempSelected.add(degree);
-                                    }
-                                  } else {
-                                    tempSelected.removeWhere(
-                                      (item) => item.id == degree.id,
-                                    );
-                                  }
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    height(Responsive.h(12)),
-                    PrimaryButton(
-                      height: 46,
-                      fontSize: 14,
-                      text: 'Done',
-                      onPressed: state.degrees.isEmpty
-                          ? null
-                          : () {
-                              notifier.setSelectedDegrees(tempSelected);
-                              Navigator.of(sheetContext).pop();
-                            },
-                      gradient: LinearGradient(
-                        colors: [AppColors.newPri, AppColors.primary],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildReferenceDropdown({
@@ -231,74 +121,6 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
     return error != null
         ? GestureDetector(onTap: onRetry, child: field)
         : field;
-  }
-
-  Widget _buildDegreeField(CommunityState state) {
-    final hasError = state.degreeError != null;
-    final notifier = ref.read(communityViewModelProvider.notifier);
-
-    return GestureDetector(
-      onTap: () {
-        if (hasError) {
-          notifier.degreeList();
-          return;
-        }
-        _openDegreePicker(state);
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Degree',
-          suffixIcon: hasError
-              ? const Icon(Icons.refresh, size: 20)
-              : const Icon(Icons.arrow_drop_down),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: state.isDegreeLoading
-            ? Text(
-                'Loading...',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(13),
-                  color: const Color(0xFF94A3B8),
-                ),
-              )
-            : hasError
-            ? Text(
-                'Failed to load — tap to retry',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(12),
-                  color: Colors.red,
-                ),
-              )
-            : state.selectedDegrees.isEmpty
-            ? Text(
-                state.degrees.isEmpty
-                    ? 'No degrees available'
-                    : 'Select Degree(s)',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(13),
-                  color: const Color(0xFF94A3B8),
-                ),
-              )
-            : Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: state.selectedDegrees
-                    .map(
-                      (d) => Chip(
-                        label: Text(d.name),
-                        onDeleted: () {
-                          notifier.setSelectedDegrees(
-                            state.selectedDegrees
-                                .where((e) => e.id != d.id)
-                                .toList(),
-                          );
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-      ),
-    );
   }
 
   @override
@@ -381,6 +203,7 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
           CustomTextField(label: 'Last Name', controller: _lastNameController),
           height(Responsive.h(14)),
           CustomTextField(
+            maxLength: 10,
             label: 'Mobile Number',
             controller: _mobileController,
             keyboardType: TextInputType.phone,
@@ -449,7 +272,6 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
             onChanged: (selected) =>
                 communityNotifier.setSelectedDegrees(selected),
           ),
-          // _buildDegreeField(communityState),
           height(Responsive.h(14)),
           CustomTextField(
             isRequired: false,

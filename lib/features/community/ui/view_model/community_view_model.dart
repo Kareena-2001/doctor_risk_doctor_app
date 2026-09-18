@@ -60,30 +60,29 @@ class CommunityViewModel extends _$CommunityViewModel {
     String? email,
     int? categoryId,
     int? specialityId,
-    String? degree,
+    List<String>? degrees,  
     String? remark,
   }) async {
     state = state.copyWith(addReferral: const AsyncLoading());
 
     final result = await AsyncValue.guard(
-      () => ref
+          () => ref
           .read(communityRepositoryProvider)
           .addReferral(
-            firstName: firstName,
-            middleName: middleName,
-            lastName: lastName,
-            mobileNo: mobileNo,
-            email: email,
-            categoryId: categoryId,
-            specialityId: specialityId,
-            degree: degree,
-            remark: remark,
-          ),
+        firstName: firstName,
+        middleName: middleName,
+        lastName: lastName,
+        mobileNo: mobileNo,
+        email: email,
+        categoryId: categoryId,
+        specialityId: specialityId,
+        degrees: degrees,
+        remark: remark,
+      ),
     );
 
     state = state.copyWith(addReferral: result);
   }
-
   Future<void> referDoctorList() async {
     state = state.copyWith(referralList: const AsyncLoading());
 

@@ -278,6 +278,12 @@ class ProfileViewModel extends _$ProfileViewModel {
     _update((st) => st.copyWith(isSaving: true));
     try {
       final repository = ref.read(profileRepositoryProvider);
+
+      // Map selected degree IDs (or names) into a List<String>
+      final List<String> degreeList = s.selectedDegrees
+          .map((d) => d.id.toString())
+          .toList();
+
       await repository.updateProfile(
         prefix: prefix,
         firstName: firstName,
@@ -288,7 +294,8 @@ class ProfileViewModel extends _$ProfileViewModel {
         alternateNo: alternateNo,
         categoryId: s.selectedCategory!.id.toString(),
         specialityId: s.selectedSpeciality?.id.toString() ?? '',
-        degree: s.selectedDegrees.map((d) => d.name).join(', '),
+        degrees: degreeList,
+        // Pass mapped degree list here
         establishmentName: establishmentName,
         dob: dob,
         gender: gender,

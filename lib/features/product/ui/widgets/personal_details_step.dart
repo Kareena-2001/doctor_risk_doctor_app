@@ -51,9 +51,6 @@ class _PersonalDetailsStepState extends ConsumerState<PersonalDetailsStep> {
   final _middleNameCtrl = TextEditingController();
   final _lastNameCtrl = TextEditingController();
 
-  final _opdCtrl = TextEditingController();
-  final _ipdCtrl = TextEditingController();
-
   final _degreeCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _mobileCtrl = TextEditingController();

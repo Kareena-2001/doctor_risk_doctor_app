@@ -58,7 +58,9 @@ class ProfileRepository {
     String? alternateNo,
     required String categoryId,
     required String specialityId,
-    required String degree,
+
+    List<String>? degrees,
+    // required String degree,
     String? establishmentName,
     String? dob,
     String? gender,
@@ -92,11 +94,15 @@ class ProfileRepository {
         'alternate_no': alternateNo ?? '',
         'category_id': categoryId,
         'speciality_id': specialityId,
-        'degree': degree,
         'establishment_name': establishmentName ?? '',
         'dob': dob ?? '',
         'gender': gender ?? '',
       };
+      if (degrees != null && degrees.isNotEmpty) {
+        fields['degree'] = degrees.join(', ');
+      } else {
+        fields['degree'] = '';
+      }
 
       for (int i = 0; i < addresses.length; i++) {
         fields.addAll(addresses[i].toMultipartFields(i));

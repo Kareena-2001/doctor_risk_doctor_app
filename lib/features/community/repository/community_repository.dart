@@ -76,9 +76,7 @@ class CommunityRepository {
     );
 
     return DoctorNoResponse.fromJson(response);
-  }
-
-  Future<ReferDoctorResponse> addReferral({
+  }Future<ReferDoctorResponse> addReferral({
     required String firstName,
     String? middleName,
     required String lastName,
@@ -86,28 +84,36 @@ class CommunityRepository {
     String? email,
     int? categoryId,
     int? specialityId,
-    String? degree,
+    List<String>? degrees,
     String? remark,
   }) async {
+    final formData = <String, String>{
+      'first_name': firstName,
+      'middle_name': middleName ?? '',
+      'last_name': lastName,
+      'mobile_no': mobileNo,
+      'email': email ?? '',
+      'category_id': categoryId?.toString() ?? '',
+      'speciality_id': specialityId?.toString() ?? '',
+      'remark': remark ?? '',
+    };
+
+    if (degrees != null && degrees.isNotEmpty) {
+      for (var i = 0; i < degrees.length; i++) {
+        formData['degree[$i]'] = degrees[i];
+      }
+    } else {
+      formData['degree'] = '';
+    }
+
     final response = await _apiClient.post(
       url: 'doctor/referdoctor',
-      formData: {
-        'first_name': firstName,
-        'middle_name': middleName ?? '',
-        'last_name': lastName,
-        'mobile_no': mobileNo,
-        'email': email ?? '',
-        'category_id': categoryId?.toString() ?? '',
-        'speciality_id': specialityId?.toString() ?? '',
-        'degree': degree ?? '',
-        'remark': remark ?? '',
-      },
+      formData: formData,
       includeAuth: true,
     );
 
     return ReferDoctorResponse.fromJson(response);
   }
-
   Future<ReferredDoctorsResponse> referDoctorList() async {
     final response = await _apiClient.get(
       url: 'doctor/referdoctorlist',

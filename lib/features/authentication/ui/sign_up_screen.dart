@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/widgets/app_dialog.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_multi_select_dropdown.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
@@ -46,7 +47,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       }
     });
   }
-
 
   Future<void> _onSignUpPressed(BuildContext context, WidgetRef ref) async {
     final notifier = ref.read(authenticationViewModelProvider.notifier);
@@ -527,7 +527,25 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onSelected: notifier.selectSpeciality,
                         ),
                         height(Responsive.h(25)),
-                        _buildDegreeField(context, ref, state),
+                        // _buildDegreeField(context, ref, state),
+                        CustomMultiSelectDropdownField<IdNameOption>(
+                          label: 'Degree',
+                          hint: state.degrees.isEmpty
+                              ? 'No degrees available'
+                              : 'Select Degree(s)',
+                          items: state.degrees,
+                          selectedItems: state.selectedDegrees,
+                          itemLabel: (d) => d.name,
+                          isEqual: (a, b) => a.id == b.id,
+                          isLoading: state.isDegreeLoading,
+                          allowCustomEntry: true,
+                          customEntryLabel: 'Other',
+                          onCreateCustomItem: (value) => IdNameOption(
+                            id: -DateTime.now().millisecondsSinceEpoch,
+                            name: value,
+                          ),
+                          onChanged: notifier.setSelectedDegrees,
+                        ),
                         height(Responsive.h(20)),
                       ] else ...[
                         _SectionHeader(title: 'ESTABLISHMENT DETAILS'),
