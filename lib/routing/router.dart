@@ -5,9 +5,11 @@ import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_details_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/my_blogs_tab.dart';
+import 'package:Doctors_App/features/change_password/ui/change_password_screen.dart';
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dart';
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
+import 'package:Doctors_App/features/events/ui/event_collaborate_form.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/medical_law_faq/ui/medico_legal_faq_screen.dart';
@@ -227,7 +229,11 @@ final GoRouter router = GoRouter(
       path: Routes.homeScreen,
       pageBuilder: (context, state) => state.slidePage(HomeScreen()),
     ),
-
+    GoRoute(
+      path: Routes.addCollaboration,
+      pageBuilder: (context, state) =>
+          state.slidePage(EventCollaborateScreen()),
+    ),
     GoRoute(
       path: Routes.aboutUs,
       pageBuilder: (context, state) {
@@ -426,6 +432,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.scanScreen,
       pageBuilder: (context, state) => state.slidePage(const ScanScreen()),
+    ),
+    GoRoute(
+      path: Routes.changePassword,
+      pageBuilder: (context, state) =>
+          state.slidePage(const ChangePasswordScreen()),
     ),
   ],
 );

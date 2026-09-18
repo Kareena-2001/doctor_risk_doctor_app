@@ -249,8 +249,10 @@ ChangePasswordResponse _$ChangePasswordResponseFromJson(
 
 /// @nodoc
 mixin _$ChangePasswordResponse {
-  int get status => throw _privateConstructorUsedError;
+  bool get status => throw _privateConstructorUsedError;
+  int get code => throw _privateConstructorUsedError;
   String? get msg => throw _privateConstructorUsedError;
+  List<dynamic> get data => throw _privateConstructorUsedError;
 
   /// Serializes this ChangePasswordResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -269,7 +271,7 @@ abstract class $ChangePasswordResponseCopyWith<$Res> {
     $Res Function(ChangePasswordResponse) then,
   ) = _$ChangePasswordResponseCopyWithImpl<$Res, ChangePasswordResponse>;
   @useResult
-  $Res call({int status, String? msg});
+  $Res call({bool status, int code, String? msg, List<dynamic> data});
 }
 
 /// @nodoc
@@ -289,17 +291,30 @@ class _$ChangePasswordResponseCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? status = null, Object? msg = freezed}) {
+  $Res call({
+    Object? status = null,
+    Object? code = null,
+    Object? msg = freezed,
+    Object? data = null,
+  }) {
     return _then(
       _value.copyWith(
             status: null == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            code: null == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
                       as int,
             msg: freezed == msg
                 ? _value.msg
                 : msg // ignore: cast_nullable_to_non_nullable
                       as String?,
+            data: null == data
+                ? _value.data
+                : data // ignore: cast_nullable_to_non_nullable
+                      as List<dynamic>,
           )
           as $Val,
     );
@@ -315,7 +330,7 @@ abstract class _$$ChangePasswordResponseImplCopyWith<$Res>
   ) = __$$ChangePasswordResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int status, String? msg});
+  $Res call({bool status, int code, String? msg, List<dynamic> data});
 }
 
 /// @nodoc
@@ -332,17 +347,30 @@ class __$$ChangePasswordResponseImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? status = null, Object? msg = freezed}) {
+  $Res call({
+    Object? status = null,
+    Object? code = null,
+    Object? msg = freezed,
+    Object? data = null,
+  }) {
     return _then(
       _$ChangePasswordResponseImpl(
         status: null == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        code: null == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
                   as int,
         msg: freezed == msg
             ? _value.msg
             : msg // ignore: cast_nullable_to_non_nullable
                   as String?,
+        data: null == data
+            ? _value._data
+            : data // ignore: cast_nullable_to_non_nullable
+                  as List<dynamic>,
       ),
     );
   }
@@ -351,19 +379,34 @@ class __$$ChangePasswordResponseImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ChangePasswordResponseImpl implements _ChangePasswordResponse {
-  const _$ChangePasswordResponseImpl({required this.status, this.msg});
+  const _$ChangePasswordResponseImpl({
+    required this.status,
+    required this.code,
+    this.msg,
+    final List<dynamic> data = const [],
+  }) : _data = data;
 
   factory _$ChangePasswordResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ChangePasswordResponseImplFromJson(json);
 
   @override
-  final int status;
+  final bool status;
+  @override
+  final int code;
   @override
   final String? msg;
+  final List<dynamic> _data;
+  @override
+  @JsonKey()
+  List<dynamic> get data {
+    if (_data is EqualUnmodifiableListView) return _data;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_data);
+  }
 
   @override
   String toString() {
-    return 'ChangePasswordResponse(status: $status, msg: $msg)';
+    return 'ChangePasswordResponse(status: $status, code: $code, msg: $msg, data: $data)';
   }
 
   @override
@@ -372,12 +415,20 @@ class _$ChangePasswordResponseImpl implements _ChangePasswordResponse {
         (other.runtimeType == runtimeType &&
             other is _$ChangePasswordResponseImpl &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.msg, msg) || other.msg == msg));
+            (identical(other.code, code) || other.code == code) &&
+            (identical(other.msg, msg) || other.msg == msg) &&
+            const DeepCollectionEquality().equals(other._data, _data));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, status, msg);
+  int get hashCode => Object.hash(
+    runtimeType,
+    status,
+    code,
+    msg,
+    const DeepCollectionEquality().hash(_data),
+  );
 
   /// Create a copy of ChangePasswordResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -399,17 +450,23 @@ class _$ChangePasswordResponseImpl implements _ChangePasswordResponse {
 
 abstract class _ChangePasswordResponse implements ChangePasswordResponse {
   const factory _ChangePasswordResponse({
-    required final int status,
+    required final bool status,
+    required final int code,
     final String? msg,
+    final List<dynamic> data,
   }) = _$ChangePasswordResponseImpl;
 
   factory _ChangePasswordResponse.fromJson(Map<String, dynamic> json) =
       _$ChangePasswordResponseImpl.fromJson;
 
   @override
-  int get status;
+  bool get status;
+  @override
+  int get code;
   @override
   String? get msg;
+  @override
+  List<dynamic> get data;
 
   /// Create a copy of ChangePasswordResponse
   /// with the given fields replaced by the non-null parameter values.

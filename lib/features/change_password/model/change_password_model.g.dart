@@ -25,10 +25,17 @@ Map<String, dynamic> _$$ChangePasswordRequestImplToJson(
 _$ChangePasswordResponseImpl _$$ChangePasswordResponseImplFromJson(
   Map<String, dynamic> json,
 ) => _$ChangePasswordResponseImpl(
-  status: (json['status'] as num).toInt(),
+  status: json['status'] as bool,
+  code: (json['code'] as num).toInt(),
   msg: json['msg'] as String?,
+  data: json['data'] as List<dynamic>? ?? const [],
 );
 
 Map<String, dynamic> _$$ChangePasswordResponseImplToJson(
   _$ChangePasswordResponseImpl instance,
-) => <String, dynamic>{'status': instance.status, 'msg': instance.msg};
+) => <String, dynamic>{
+  'status': instance.status,
+  'code': instance.code,
+  'msg': instance.msg,
+  'data': instance.data,
+};

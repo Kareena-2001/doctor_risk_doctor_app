@@ -1,5 +1,8 @@
 import 'package:Doctors_App/core/exceptions/app_exception.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/core/widgets/common_empty_state.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/events/model/collaboration_response.dart';
 import 'package:Doctors_App/features/events/ui/view_model/events_view_model.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +20,11 @@ class CollaborateTab extends ConsumerStatefulWidget {
   ConsumerState<CollaborateTab> createState() => _CollaborateTabState();
 }
 
-class _CollaborateTabState extends ConsumerState<CollaborateTab> {
+class _CollaborateTabState extends ConsumerState<CollaborateTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -28,45 +35,47 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final listState = ref.watch(eventsViewModelProvider).collaborationList;
 
     return AppRefreshIndicator(
       onRefresh: () =>
           ref.read(eventsViewModelProvider.notifier).refreshCollaborationList(),
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(
-          Responsive.w(16),
-          0,
-          Responsive.w(16),
-          Responsive.h(24),
+      child: listState.when(
+        loading: () => Loading(),
+        error: (error, _) => CommonErrorState(
+          title: '',
+          message: error is ApiException ? error.message : error.toString(),
+          onRetry: () => ref
+              .read(eventsViewModelProvider.notifier)
+              .refreshCollaborationList(),
         ),
-        children: [
-          _buildInfoCard(),
-          height(Responsive.h(18)),
-          listState.when(
-            loading: () => const _CollabLoading(),
-            error: (error, _) => _CollabError(
-              message: error is ApiException ? error.message : error.toString(),
-              onRetry: () => ref
-                  .read(eventsViewModelProvider.notifier)
-                  .refreshCollaborationList(),
+        data: (response) {
+          final proposals = response.data;
+
+          return ListView.separated(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.w(16),
+              vertical: Responsive.h(16),
             ),
-            data: (response) {
-              final proposals = response.data ?? const [];
-              if (proposals.isEmpty) return const _CollabEmpty();
-              return Column(
-                children: proposals
-                    .map(
-                      (p) => Padding(
-                        padding: EdgeInsets.only(bottom: Responsive.h(14)),
-                        child: _CollaborationCard(proposal: p),
-                      ),
-                    )
-                    .toList(),
-              );
+            itemCount: proposals.isEmpty ? 2 : proposals.length + 1,
+            separatorBuilder: (_, __) => height(Responsive.h(14)),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _buildInfoCard();
+              }
+
+              if (proposals.isEmpty) {
+                return CommonEmptyState(
+                  title: 'No collaboration proposals yet.',
+                );
+              }
+
+              final proposal = proposals[index - 1];
+              return _CollaborationCard(proposal: proposal);
             },
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -75,9 +84,9 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab> {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.lightGreen,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: AppColors.border),
       ),
       child: Text(
         "Want to organise a session with DoctorsRisk — a joint CME, "
@@ -104,15 +113,16 @@ class _CollaborationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = proposal.title;
     final organisation = proposal.organization;
-
     final date = proposal.date;
     final preferredTime = proposal.preferedTime;
-
     final status = proposal.approveStatus;
 
-    final isCompleted =
-        status.toLowerCase() == 'completed' ||
-        status.toLowerCase() == 'approved';
+    final statusStyle = _getStatusStyle(status);
+
+    final detailsText = [
+      if (date != null && date.isNotEmpty) date,
+      if (preferredTime != null && preferredTime.isNotEmpty) preferredTime,
+    ].join(' · ');
 
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
@@ -128,75 +138,39 @@ class _CollaborationCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            title,
-            style: customTextStyle(
-              fontSize: Responsive.sp(13),
-              fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(7)),
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.business_outlined,
-                size: Responsive.sp(14),
-                color: AppColors.homeTextMuted,
+              Text(
+                title,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(13),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textColor,
+                ),
               ),
-              width(Responsive.w(5)),
-              Expanded(
-                child: Text(
-                  organisation,
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11),
-                    color: AppColors.homeTextMuted,
-                  ),
+              height(Responsive.h(7)),
+              Text(
+                detailsText.isNotEmpty
+                    ? '$organisation · $detailsText'
+                    : organisation,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(11),
+                  color: AppColors.homeTextMuted,
                 ),
               ),
             ],
           ),
-
-          if (date != null || preferredTime != null) ...[
-            height(Responsive.h(5)),
-            Row(
-              children: [
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: Responsive.sp(13),
-                  color: AppColors.homeTextMuted,
-                ),
-                width(Responsive.w(5)),
-                Expanded(
-                  child: Text(
-                    [
-                      if (date != null) date,
-                      if (preferredTime != null) preferredTime,
-                    ].join(' · '),
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(11),
-                      color: AppColors.homeTextMuted,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-
-          height(Responsive.h(10)),
-
+          Spacer(),
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.w(9),
               vertical: Responsive.h(5),
             ),
             decoration: BoxDecoration(
-              color: isCompleted
-                  ? Colors.green.withValues(alpha: 0.1)
-                  : Colors.orange.withValues(alpha: 0.1),
+              color: statusStyle.bgColor,
               borderRadius: BorderRadius.circular(Responsive.w(8)),
             ),
             child: Text(
@@ -204,7 +178,7 @@ class _CollaborationCard extends StatelessWidget {
               style: customTextStyle(
                 fontSize: Responsive.sp(10),
                 fontWeight: FontWeight.bold,
-                color: isCompleted ? Colors.green : Colors.orange.shade800,
+                color: statusStyle.textColor,
               ),
             ),
           ),
@@ -212,71 +186,38 @@ class _CollaborationCard extends StatelessWidget {
       ),
     );
   }
-}
 
-class _CollabLoading extends StatelessWidget {
-  const _CollabLoading();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: Responsive.h(40)),
-      child: const Center(child: CircularProgressIndicator()),
-    );
+  _StatusStyle _getStatusStyle(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'approved':
+        return _StatusStyle(
+          bgColor: Colors.green.withValues(alpha: 0.1),
+          textColor: Colors.green,
+        );
+      case 'under review':
+      case 'pending':
+        return _StatusStyle(
+          bgColor: Colors.orange.withValues(alpha: 0.1),
+          textColor: Colors.orange.shade800,
+        );
+      case 'rejected':
+        return _StatusStyle(
+          bgColor: Colors.red.withValues(alpha: 0.1),
+          textColor: Colors.red,
+        );
+      default:
+        return _StatusStyle(
+          bgColor: Colors.blue.withValues(alpha: 0.1),
+          textColor: Colors.blue,
+        );
+    }
   }
 }
 
-class _CollabError extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
+class _StatusStyle {
+  final Color bgColor;
+  final Color textColor;
 
-  const _CollabError({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(Responsive.w(16)),
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: Colors.red.shade300,
-            size: Responsive.sp(36),
-          ),
-          height(Responsive.h(8)),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(12),
-              color: AppColors.grey,
-            ),
-          ),
-          height(Responsive.h(10)),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
-      ),
-    );
-  }
-}
-
-class _CollabEmpty extends StatelessWidget {
-  const _CollabEmpty();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: Responsive.h(40)),
-      child: Center(
-        child: Text(
-          'No collaboration proposals yet.',
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            color: AppColors.homeTextMuted,
-          ),
-        ),
-      ),
-    );
-  }
+  _StatusStyle({required this.bgColor, required this.textColor});
 }

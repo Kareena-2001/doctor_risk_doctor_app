@@ -19,8 +19,34 @@ import '../../common/ui/widgets/primary_button.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 import 'view_model/authentication_view_model.dart';
 
-class SignUpScreen extends ConsumerWidget {
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notifier = ref.read(authenticationViewModelProvider.notifier);
+      final state = ref.read(authenticationViewModelProvider).valueOrNull;
+
+      if (state == null) return;
+
+      if (state.categories.isEmpty && !state.isCategoryLoading) {
+        notifier.categoryList();
+      }
+      if (state.registrationType == RegistrationType.professional &&
+          state.degrees.isEmpty &&
+          !state.isDegreeLoading) {
+        notifier.degreeList();
+      }
+    });
+  }
+
 
   Future<void> _onSignUpPressed(BuildContext context, WidgetRef ref) async {
     final notifier = ref.read(authenticationViewModelProvider.notifier);
@@ -335,7 +361,7 @@ class SignUpScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final authAsync = ref.watch(authenticationViewModelProvider);
     final notifier = ref.read(authenticationViewModelProvider.notifier);
     final state = authAsync.valueOrNull ?? const AuthenticationState();

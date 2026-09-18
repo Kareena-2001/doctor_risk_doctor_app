@@ -22,6 +22,7 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
+  final _memberIdController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _licenceController = TextEditingController();
@@ -29,6 +30,7 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _memberIdController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     _licenceController.dispose();
@@ -59,6 +61,12 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
               children: [
                 _buildEventSummaryCard(),
                 height(Responsive.h(24)),
+                CustomTextField(
+                  label: "Member Id",
+                  controller: _memberIdController,
+                  icon: Icons.person_outline_rounded,
+                ),
+                height(Responsive.h(16)),
                 CustomTextField(
                   label: "Full Name",
                   controller: _nameController,
@@ -99,11 +107,15 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
                 // ),
                 // height(Responsive.h(32)),
                 PrimaryButton(
+                  borderRadius: 25,
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.newPri],
+                  ),
+                  fontSize: 14,
+                  height: 48,
                   text: "Confirm Registration",
                   backgroundColor: AppColors.newPri,
                   onPressed: _submitRegistration,
-                  fontSize: 14,
-                  height: 48,
                 ),
               ],
             ),

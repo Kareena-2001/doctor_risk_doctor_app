@@ -69,13 +69,13 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
       confirmPasswordController.dispose();
     });
 
-    Future.microtask(() {
-      categoryList();
-
-      if (_current.registrationType == RegistrationType.professional) {
-        degreeList();
-      }
-    });
+    // Future.microtask(() {
+    //   categoryList();
+    //
+    //   if (_current.registrationType == RegistrationType.professional) {
+    //     degreeList();
+    //   }
+    // });
     return const AuthenticationState();
   }
 

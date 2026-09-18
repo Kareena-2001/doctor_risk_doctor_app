@@ -78,7 +78,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.viewAppointment),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,
@@ -89,7 +88,7 @@ class AppDrawer extends ConsumerWidget {
                       onTap: () => context.push(Routes.renewCentre),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       child: Divider(
                         color: isDark
                             ? Colors.white10
@@ -143,7 +142,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.newsAdvisory),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.menu_book_outlined,
@@ -152,7 +150,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.blogCentral),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.event_available_outlined,
@@ -160,6 +157,23 @@ class AppDrawer extends ConsumerWidget {
                       subtitle: 'Webinars, workshops and upcoming events',
                       isDark: isDark,
                       onTap: () => context.push(Routes.eventsScreen),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        color: isDark
+                            ? Colors.white10
+                            : Colors.black87.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    _sectionLabel('ACCOUNT', isDark),
+                    _tile(
+                      context,
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Change Password',
+                      subtitle: 'Update your account password',
+                      isDark: isDark,
+                      onTap: () => context.push(Routes.changePassword),
                     ),
                   ],
                 ),

@@ -1,5 +1,5 @@
-import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/features/change_password/ui/view_model/change_password_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../extensions/build_context_extension.dart';
+import '../../common/ui/widgets/primary_button.dart';
 import '../model/change_password_model.dart';
 
 class ChangePasswordScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   bool isConfirmPasswordVisible = false;
 
   final TextEditingController oldPasswordController = TextEditingController();
+
   final TextEditingController newPasswordController = TextEditingController();
+
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -42,6 +45,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           ),
         );
 
+    if (!mounted) return;
+
     if (success) {
       context.showSuccessSnackBar("Password Changed successfully!");
       Navigator.pop(context, true);
@@ -50,6 +55,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           .read(changePasswordViewModelProvider)
           .valueOrNull
           ?.errorMessage;
+
       if (error != null) {
         context.showErrorSnackBar(error);
       }
@@ -57,63 +63,135 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   }
 
   @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final asyncState = ref.watch(changePasswordViewModelProvider);
+
     final isLoading = asyncState.valueOrNull?.isLoading ?? false;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'Change Password', showBack: true),
+      appBar: CustomAppBar(
+        title: 'Change Password',
+        showBack: true,
+        subTitle: 'Choose a new password with at least 8 characters.',
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           child: Form(
             key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                height(50),
-                _buildPasswordField(
-                  label: "Old Password",
+                CustomTextField(
+                  label: 'Old Password',
+                  hint: 'Enter your old password',
                   controller: oldPasswordController,
-                  isVisible: isOldPasswordVisible,
+                  obscureText: !isOldPasswordVisible,
+                  keyboardType: TextInputType.visiblePassword,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isOldPasswordVisible = !isOldPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      isOldPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color(0xff909090),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your old password';
+                    }
+
+                    return null;
+                  },
                 ),
                 height(20),
-                _buildPasswordField(
-                  label: "New Password",
+                CustomTextField(
+                  hint: 'Enter new password (minimum 8 characters)',
+                  label: 'New Password',
                   controller: newPasswordController,
-                  isVisible: isNewPasswordVisible,
-                  isNewPassword: true,
+                  obscureText: !isNewPasswordVisible,
+                  keyboardType: TextInputType.visiblePassword,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isNewPasswordVisible = !isNewPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      isNewPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color(0xff909090),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your new password';
+                    }
+
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters long';
+                    }
+
+                    return null;
+                  },
                 ),
                 height(20),
-                _buildPasswordField(
-                  label: "Confirm New Password",
+                CustomTextField(
+                  label: 'Confirm New Password',
+                  hint: 'Re-enter your new password',
                   controller: confirmPasswordController,
-                  isVisible: isConfirmPasswordVisible,
-                  isConfirmPassword: true,
+                  obscureText: !isConfirmPasswordVisible,
+                  keyboardType: TextInputType.visiblePassword,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color(0xff909090),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please confirm your password';
+                    }
+
+                    if (value != newPasswordController.text) {
+                      return 'Passwords do not match';
+                    }
+
+                    return null;
+                  },
                 ),
                 height(40),
-                Material(
-                  child: Container(
-                    width: double.infinity * 0.911,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    child: TextButton(
-                      onPressed: isLoading ? null : () => _handleUpdate(),
-                      child: Text(
-                        "Update Password",
-                        style: customTextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                PrimaryButton(
+                  borderRadius: 25,
+                  height: 50,
+                  fontSize: 14,
+                  text: 'Update Password',
+                  isLoading: isLoading,
+                  onPressed: isLoading ? null : _handleUpdate,
+                  gradient: LinearGradient(
+                    colors: [AppColors.newPri, AppColors.primary],
                   ),
                 ),
               ],
@@ -121,65 +199,6 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required TextEditingController controller,
-    required bool isVisible,
-    bool isNewPassword = false,
-    bool isConfirmPassword = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: !isVisible,
-      keyboardType: TextInputType.visiblePassword,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.only(left: 30),
-        labelText: label,
-        labelStyle: customTextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        errorStyle: customTextStyle(color: Colors.redAccent),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xff8C8C8C), width: 2),
-        ),
-        suffixIcon: GestureDetector(
-          onTap: () {
-            setState(() {
-              if (label == "Old Password") {
-                isOldPasswordVisible = !isOldPasswordVisible;
-              } else if (label == "New Password") {
-                isNewPasswordVisible = !isNewPasswordVisible;
-              } else {
-                isConfirmPasswordVisible = !isConfirmPasswordVisible;
-              }
-            });
-          },
-          child: Icon(
-            isVisible ? Icons.visibility : Icons.visibility_off,
-            color: const Color(0xff909090),
-          ),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return isConfirmPassword
-              ? "Please confirm your password"
-              : "Please enter your password";
-        }
-        if (isNewPassword && value.length < 6) {
-          return "Password must be at least 6 characters long";
-        }
-        // if (isNewPassword && !RegExp(r'\d').hasMatch(value)) {
-        //   return "Password must contain at least one digit";
-        // }
-        if (isConfirmPassword && value != newPasswordController.text) {
-          return "Passwords do not match";
-        }
-        return null;
-      },
     );
   }
 }

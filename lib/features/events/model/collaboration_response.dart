@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'collaboration_response.freezed.dart';
+
 part 'collaboration_response.g.dart';
 
 @freezed
@@ -16,9 +17,8 @@ class CollaborationResponse with _$CollaborationResponse {
     int? perPage,
   }) = _CollaborationResponse;
 
-  factory CollaborationResponse.fromJson(
-      Map<String, dynamic> json,
-      ) => _$CollaborationResponseFromJson(json);
+  factory CollaborationResponse.fromJson(Map<String, dynamic> json) =>
+      _$CollaborationResponseFromJson(json);
 }
 
 @freezed
@@ -33,7 +33,6 @@ class CollaborationData with _$CollaborationData {
     @JsonKey(name: 'approve_status') required String approveStatus,
   }) = _CollaborationData;
 
-  factory CollaborationData.fromJson(
-      Map<String, dynamic> json,
-      ) => _$CollaborationDataFromJson(json);
+  factory CollaborationData.fromJson(Map<String, dynamic> json) =>
+      _$CollaborationDataFromJson(json);
 }

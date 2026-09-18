@@ -87,9 +87,6 @@ class BlogRepository {
       fields: {
         ...fields,
 
-        // IMPORTANT:
-        // This requires ApiClient.postMultipart to support
-        // multiple values for the same multipart field.
         for (final keyword in keywords) 'keywords[]': keyword,
       },
       files: files,

@@ -129,7 +129,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // OverlayEntry? _openDropdown;
   late final String userId;
 
   late AnimationController _animationController;

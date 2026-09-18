@@ -20,13 +20,13 @@ extension PolicyStatusX on PolicyStatus {
   Color get color {
     switch (this) {
       case PolicyStatus.active:
-        return const Color(0xFF166C3F); // --brand-700
+        return const Color(0xFF166C3F);
       case PolicyStatus.expired:
-        return const Color(0xFFE15C48); // --coral-500
+        return const Color(0xFFE15C48);
       case PolicyStatus.renewal:
-        return const Color(0xFFEF9F2E); // --amber-500
+        return const Color(0xFFEF9F2E);
       case PolicyStatus.noPlan:
-        return const Color(0xFF71847C); // --ink-400
+        return const Color(0xFF71847C);
     }
   }
 

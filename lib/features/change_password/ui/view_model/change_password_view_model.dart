@@ -22,6 +22,7 @@ class ChangePasswordViewModel extends _$ChangePasswordViewModel {
       final result = await repo.changePassword(
         oldPassword: request.oldPassword,
         newPassword: request.newPassword,
+        confirmNewPassword: request.confirmPassword,
       );
 
       state = AsyncData(state.value!.copyWith(isLoading: false, resp: result));

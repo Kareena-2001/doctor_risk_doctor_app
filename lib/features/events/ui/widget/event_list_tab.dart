@@ -1,16 +1,17 @@
-// widgets/event_list_tab.dart
+import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
-import '../event_register_screen.dart';
 
 class EventListTab extends StatelessWidget {
   final List<Map<String, String>> events;
-  final String activeTab; // 'upcoming' | 'past'
+  final String activeTab;
 
   const EventListTab({
     super.key,
@@ -20,7 +21,7 @@ class EventListTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (events.isEmpty) return const _EmptyState();
+    if (events.isEmpty) return CommonEmptyState(title: 'No items found here.');
 
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(
@@ -57,7 +58,7 @@ class _EventCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 16,
-            offset: const Offset(0, 8),
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -134,7 +135,7 @@ class _EventCard extends StatelessWidget {
                     color: AppColors.grey,
                   ),
                 ),
-                const Text('·'),
+                Text('·'),
                 Text(
                   event['time'] ?? '',
                   style: customTextStyle(
@@ -164,8 +165,8 @@ class _EventCard extends StatelessWidget {
                     : AppColors.textColor,
               ),
             ),
-            height(Responsive.h(16)),
             if (isPast) ...[
+              height(Responsive.h(5)),
               Row(
                 children: [
                   Expanded(
@@ -174,7 +175,7 @@ class _EventCard extends StatelessWidget {
                       height: 40,
                       borderRadius: 25,
                       fontSize: 12,
-                      borderColor: AppColors.grey,
+                      borderColor: AppColors.greyLight,
                       backgroundColor: AppColors.white,
                       textColor: AppColors.textColor,
                       onPressed: () {},
@@ -187,7 +188,7 @@ class _EventCard extends StatelessWidget {
                         height: 40,
                         borderRadius: 25,
                         fontSize: 12,
-                        borderColor: AppColors.grey,
+                        borderColor: AppColors.greyLight,
                         backgroundColor: AppColors.white,
                         textColor: AppColors.textColor,
                         onPressed: () {},
@@ -199,6 +200,7 @@ class _EventCard extends StatelessWidget {
               ),
             ] else if (activeTab != 'collaborate') ...[
               if (event['status'] == 'registered') ...[
+                height(Responsive.h(16)),
                 Row(
                   children: [
                     Icon(
@@ -218,52 +220,23 @@ class _EventCard extends StatelessWidget {
                   ],
                 ),
               ] else ...[
+                height(Responsive.h(16)),
                 PrimaryButton(
+                  borderRadius: 25,
                   text: 'Register',
-                  backgroundColor: AppColors.newPri,
-                  fontSize: 12,
-                  height: 40,
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.newPri],
+                  ),
+                  fontSize: 14,
+                  height: 45,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EventRegisterScreen(event: event),
-                      ),
-                    );
+                    context.push(Routes.eventRegister, extra: event);
                   },
                 ),
               ],
             ],
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.layers_clear_outlined,
-            size: Responsive.sp(44),
-            color: Colors.grey.shade300,
-          ),
-          height(Responsive.h(12)),
-          Text(
-            'No items found here.',
-            style: customTextStyle(
-              fontSize: Responsive.sp(13),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-        ],
       ),
     );
   }

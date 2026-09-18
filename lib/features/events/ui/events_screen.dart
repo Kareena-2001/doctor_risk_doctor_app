@@ -1,13 +1,14 @@
 import 'package:Doctors_App/features/events/ui/widget/collaborate_tab.dart';
 import 'package:Doctors_App/features/events/ui/widget/event_list_tab.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
-import 'event_collaborate_form.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -149,24 +150,49 @@ class _EventsScreenState extends State<EventsScreen>
       backgroundColor: const Color(0xffF6F7FB),
       appBar: CustomAppBar(title: "Events Hub"),
       floatingActionButton: _tabController.index == 2
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EventCollaborateScreen(
-                      event: {"title": "General Proposition"},
+          ? Container(
+              decoration: BoxDecoration(
+                gradient:  LinearGradient(
+                  colors: [AppColors.newPri, AppColors.primary],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () {
+                    context.push(Routes.addCollaboration);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.w(16),
+                      vertical: Responsive.h(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.add, color: Colors.white),
+                        width(Responsive.w(8)),
+                        Text(
+                          "Add Collaboration",
+                          style: customTextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-              backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: Text(
-                "Add Collaboration",
-                style: customTextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             )

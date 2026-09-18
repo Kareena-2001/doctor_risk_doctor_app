@@ -39,19 +39,17 @@ class _CommunityScreenState extends State<CommunityScreen>
         children: [
           Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
             child: TabBar(
               controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicatorColor: AppColors.newPri,
               labelColor: AppColors.newPri,
-              unselectedLabelColor: Colors.grey.shade500,
+              unselectedLabelColor: AppColors.homeTextMuted,
+              indicatorColor: AppColors.newPri,
+              indicatorSize: TabBarIndicatorSize.tab,
               labelStyle: customTextStyle(
-                fontSize: Responsive.sp(13),
                 fontWeight: FontWeight.bold,
+                fontSize: Responsive.sp(12),
               ),
-              tabs: [
+              tabs: const [
                 Tab(text: 'Peer Forum'),
                 Tab(text: 'Testimonials'),
                 Tab(text: 'Refer & Groups'),

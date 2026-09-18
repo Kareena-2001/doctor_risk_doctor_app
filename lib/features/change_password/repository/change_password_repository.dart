@@ -32,16 +32,21 @@ class ChangePasswordRepository {
   Future<ChangePasswordResponse> changePassword({
     required String oldPassword,
     required String newPassword,
+    required String confirmNewPassword,
   }) async {
     try {
       final response = await _apiClient.post(
-        url: 'change_password',
-        formData: {'old_password': oldPassword, 'new_password': newPassword},
+        url: 'doctor/change-password',
+        formData: {
+          'current_password': oldPassword,
+          'new_password': newPassword,
+          'confirmation_password': confirmNewPassword,
+        },
         includeAuth: true,
       );
       debugPrint('Change Password RESPONSE => $response');
 
-      if (response['status'] == 200) {
+      if (response['status'] == true) {
         return ChangePasswordResponse.fromJson(response);
       }
       throw response['msg'] ?? 'Change password failed';

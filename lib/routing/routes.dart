@@ -28,6 +28,7 @@ class Routes {
   static const premium = '/premium';
   static const offerLetter = '/offerLetter';
   static const homeScreen = '/homeScreen';
+  static const addCollaboration = '/addCollaboration';
 
   // static const planListScreen = '/planListScreen';
   static const String productHub = '/product-hub';
@@ -82,4 +83,6 @@ class Routes {
   static const legalScreen = '/legalScreen';
   static const addLegalNotice = '/addLegalNotice';
   static const scanScreen = '/scanScreen';
+
+  static const changePassword = '/changePassword';
 }

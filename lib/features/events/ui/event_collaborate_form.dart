@@ -1,4 +1,3 @@
-// ui/event_collaborate_form.dart
 import 'package:Doctors_App/core/exceptions/app_exception.dart';
 import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
@@ -20,9 +19,7 @@ import '../../../theme/app_colors.dart';
 import '../../authentication/ui/state/authentication_state.dart';
 
 class EventCollaborateScreen extends ConsumerStatefulWidget {
-  final Map<String, String> event;
-
-  const EventCollaborateScreen({super.key, required this.event});
+  const EventCollaborateScreen({super.key});
 
   @override
   ConsumerState<EventCollaborateScreen> createState() =>
@@ -45,10 +42,6 @@ class _EventCollaborateScreenState
   final _cityController = TextEditingController();
   final _stateController = TextEditingController();
   final _purposeController = TextEditingController();
-
-  // label (what the dropdown actually shows/stores) -> real option with id.
-  // Rebuilt every build() from the latest states/cities, so it always
-  // matches whatever is currently in the two dropdowns' `items`.
 
   final Map<String, IdNameOption> _stateByLabel = {};
   final Map<String, IdNameOption> _cityByLabel = {};
@@ -143,8 +136,6 @@ class _EventCollaborateScreenState
       return;
     }
 
-    // Backend ki asli validation msg dikhao (e.g. "Please enter a valid
-    // email address."), generic text nahi.
     final error = ref.read(eventsViewModelProvider).addCollaboration.error;
     final message = error is ApiException
         ? error.message
@@ -185,15 +176,6 @@ class _EventCollaborateScreenState
             children: [
               _buildContextSummaryCard(),
               height(Responsive.h(24)),
-              Text(
-                'Collaboration Details',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(14),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textColor,
-                ),
-              ),
-              height(Responsive.h(12)),
               CustomDropdownField(
                 hint: 'Select Option',
                 label: 'Collaboration Target',
@@ -308,7 +290,7 @@ class _EventCollaborateScreenState
                 isRequired: false,
                 label: 'State',
                 controller: _stateController,
-                icon: Icons.map_outlined,
+                // icon: Icons.map_outlined,
                 hint: 'Select state',
                 items: stateLabels,
                 value: _stateController.text.isEmpty
@@ -332,7 +314,7 @@ class _EventCollaborateScreenState
                 isRequired: false,
                 label: isCityLoading ? 'City (loading...)' : 'City',
                 controller: _cityController,
-                icon: Icons.location_city_outlined,
+                // icon: Icons.location_city_outlined,
                 hint: _selectedState == null
                     ? 'Select state first'
                     : 'Select city',
@@ -357,7 +339,6 @@ class _EventCollaborateScreenState
                 maxLines: 4,
               ),
               height(Responsive.h(32)),
-
               Row(
                 children: [
                   Expanded(

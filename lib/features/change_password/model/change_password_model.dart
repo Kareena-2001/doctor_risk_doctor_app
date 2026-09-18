@@ -18,8 +18,12 @@ class ChangePasswordRequest with _$ChangePasswordRequest {
 
 @freezed
 class ChangePasswordResponse with _$ChangePasswordResponse {
-  const factory ChangePasswordResponse({    required int status, String? msg}) =
-      _ChangePasswordResponse;
+  const factory ChangePasswordResponse({
+    required bool status,
+    required int code,
+    String? msg,
+    @Default([]) List<dynamic> data,
+  }) = _ChangePasswordResponse;
 
   factory ChangePasswordResponse.fromJson(Map<String, dynamic> json) =>
       _$ChangePasswordResponseFromJson(json);
