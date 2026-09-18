@@ -32,6 +32,7 @@ class BlogRepository {
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
+
   Future<BlogSubmitResponse> submitBlog({
     int? id,
     required String title,

@@ -1,0 +1,39 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'collaboration_response.freezed.dart';
+part 'collaboration_response.g.dart';
+
+@freezed
+class CollaborationResponse with _$CollaborationResponse {
+  const factory CollaborationResponse({
+    required bool status,
+    required int code,
+    required String msg,
+    required List<CollaborationData> data,
+    int? total,
+    int? currentPage,
+    int? lastPage,
+    int? perPage,
+  }) = _CollaborationResponse;
+
+  factory CollaborationResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$CollaborationResponseFromJson(json);
+}
+
+@freezed
+class CollaborationData with _$CollaborationData {
+  const factory CollaborationData({
+    required int id,
+    required String title,
+    required String organization,
+    String? date,
+    @JsonKey(name: 'prefered_time') String? preferedTime,
+    required String submitted,
+    @JsonKey(name: 'approve_status') required String approveStatus,
+  }) = _CollaborationData;
+
+  factory CollaborationData.fromJson(
+      Map<String, dynamic> json,
+      ) => _$CollaborationDataFromJson(json);
+}

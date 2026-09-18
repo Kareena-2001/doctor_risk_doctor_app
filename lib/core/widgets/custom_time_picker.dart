@@ -8,22 +8,20 @@ import '../../theme/app_theme.dart';
 import '../constants/dimensions.dart';
 import '../constants/values/app_text_style.dart';
 
-class CustomDatePicker extends ConsumerWidget {
+class CustomTimePicker extends ConsumerWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
   final VoidCallback onTap;
-  final bool isMonthYearPicker;
   final bool isRequired;
   final FormFieldValidator<String>? validator;
 
-  const CustomDatePicker({
+  const CustomTimePicker({
     super.key,
     required this.label,
     required this.hint,
     required this.controller,
     required this.onTap,
-    this.isMonthYearPicker = false,
     this.isRequired = true,
     this.validator,
   });
@@ -59,19 +57,21 @@ class CustomDatePicker extends ConsumerWidget {
           controller: controller,
           readOnly: true,
           onTap: onTap,
-          validator: (value) {
-            if (isRequired && (value == null || value.isEmpty)) {
-              return 'Please select date of birth';
-            }
-            return null;
-          },
+          validator:
+              validator ??
+              (value) {
+                if (isRequired && (value == null || value.isEmpty)) {
+                  return 'Please select time';
+                }
+                return null;
+              },
           style: AppTheme.label12,
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.white,
             hintText: hint,
             suffixIcon: Icon(
-              Icons.calendar_today_outlined,
+              Icons.access_time_outlined,
               size: 20,
               color: context.secondaryTextColor,
             ),
@@ -86,17 +86,11 @@ class CustomDatePicker extends ConsumerWidget {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.fieldBorder,
-                // width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.fieldBorder),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.fieldBorder,
-                // width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.fieldBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

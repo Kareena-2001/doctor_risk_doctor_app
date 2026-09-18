@@ -10,6 +10,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/custom_multi_select_dropdown.dart';
+
 class ProfessionalDetailsEditSection extends ConsumerWidget {
   const ProfessionalDetailsEditSection({
     super.key,
@@ -257,7 +259,25 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
           onSelected: notifier.selectSpeciality,
         ),
         height(20),
-        _degreeEditorField(context, ref, state),
+        CustomMultiSelectDropdownField<IdNameOption>(
+          label: 'Degree',
+          hint: state.degrees.isEmpty
+              ? 'No degrees available'
+              : 'Select Degree(s)',
+          items: state.degrees,
+          selectedItems: state.selectedDegrees,
+          itemLabel: (d) => d.name,
+          isEqual: (a, b) => a.id == b.id,
+          isLoading: state.isDegreeLoading,
+          allowCustomEntry: true,
+          customEntryLabel: 'Other',
+          onCreateCustomItem: (value) => IdNameOption(
+            id: -DateTime.now().millisecondsSinceEpoch,
+            name: value,
+          ),
+          onChanged: notifier.setSelectedDegrees,
+        ),
+        // _degreeEditorField(context, ref, state),
         height(12),
         Row(
           children: [

@@ -1,30 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'authentication_view_model.dart';
+part of 'change_password_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authenticationViewModelHash() =>
-    r'356b86ae36fd29fb69ecd6f6cdc28c2282c0021f';
+String _$changePasswordViewModelHash() =>
+    r'bd5db53289d3c43951f084ddbe86768ba4f74074';
 
-/// See also [AuthenticationViewModel].
-@ProviderFor(AuthenticationViewModel)
-final authenticationViewModelProvider =
+/// See also [ChangePasswordViewModel].
+@ProviderFor(ChangePasswordViewModel)
+final changePasswordViewModelProvider =
     AsyncNotifierProvider<
-      AuthenticationViewModel,
-      AuthenticationState
+      ChangePasswordViewModel,
+      ChangePasswordState
     >.internal(
-      AuthenticationViewModel.new,
-      name: r'authenticationViewModelProvider',
+      ChangePasswordViewModel.new,
+      name: r'changePasswordViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$authenticationViewModelHash,
+          : _$changePasswordViewModelHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$AuthenticationViewModel = AsyncNotifier<AuthenticationState>;
+typedef _$ChangePasswordViewModel = AsyncNotifier<ChangePasswordState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

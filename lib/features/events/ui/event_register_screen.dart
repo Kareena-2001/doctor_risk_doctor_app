@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,6 @@ class EventRegisterScreen extends StatefulWidget {
 class _EventRegisterScreenState extends State<EventRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for the input fields
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -37,14 +37,8 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
 
   void _submitRegistration() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Successfully registered for ${widget.event['title']}!',
-            style: customTextStyle(color: Colors.white, fontSize: 14),
-          ),
-          backgroundColor: Colors.green,
-        ),
+      context.showSuccessSnackBar(
+        'Successfully registered for ${widget.event['title']}!',
       );
       Navigator.pop(context);
     }
@@ -131,7 +125,6 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             widget.event['title'] ?? 'Unnamed Event',
             style: customTextStyle(
@@ -140,10 +133,7 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
               color: AppColors.textColor,
             ),
           ),
-
           height(Responsive.h(12)),
-
-          // Date + Time + Type
           Wrap(
             spacing: Responsive.w(12),
             runSpacing: Responsive.h(6),
