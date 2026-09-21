@@ -28,9 +28,9 @@ class PeerForumFilterBar extends StatefulWidget {
 class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
   static const List<_TimeOption> _timeOptions = [
     _TimeOption(label: 'All', value: null),
-    _TimeOption(label: '7D', value: 7),
-    _TimeOption(label: '30D', value: 30),
-    _TimeOption(label: '90D', value: 90),
+    _TimeOption(label: 'Last 7 Days', value: 7),
+    _TimeOption(label: 'Last 30 Days', value: 30),
+    _TimeOption(label: 'Last 90 Days', value: 90),
   ];
 
   late bool _searchExpanded = widget.searchQuery.isNotEmpty;

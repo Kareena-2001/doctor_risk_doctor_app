@@ -279,9 +279,8 @@ class ProfileViewModel extends _$ProfileViewModel {
     try {
       final repository = ref.read(profileRepositoryProvider);
 
-      // Map selected degree IDs (or names) into a List<String>
       final List<String> degreeList = s.selectedDegrees
-          .map((d) => d.id.toString())
+          .map((d) => d.name.toString())
           .toList();
 
       await repository.updateProfile(
@@ -295,7 +294,6 @@ class ProfileViewModel extends _$ProfileViewModel {
         categoryId: s.selectedCategory!.id.toString(),
         specialityId: s.selectedSpeciality?.id.toString() ?? '',
         degrees: degreeList,
-        // Pass mapped degree list here
         establishmentName: establishmentName,
         dob: dob,
         gender: gender,

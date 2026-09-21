@@ -361,6 +361,7 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
     //     'Please enter the establishment name',
     //   );
     // }
+
     if (!s.agreeTerms) {
       throw const RegistrationValidationException(
         'Please agree to the Terms & Conditions',

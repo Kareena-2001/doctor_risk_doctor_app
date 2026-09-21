@@ -60,7 +60,6 @@ class ProfileRepository {
     required String specialityId,
 
     List<String>? degrees,
-    // required String degree,
     String? establishmentName,
     String? dob,
     String? gender,

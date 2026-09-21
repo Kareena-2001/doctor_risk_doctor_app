@@ -14,7 +14,7 @@ part 'community_view_model.g.dart';
 class CommunityViewModel extends _$CommunityViewModel {
   String? _currentTab;
   String? _currentSearch;
-  int? _currentTime; // null = All
+  int? _currentTime;
   Timer? _searchDebounce;
 
   @override
