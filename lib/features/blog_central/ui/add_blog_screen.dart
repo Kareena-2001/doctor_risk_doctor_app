@@ -262,7 +262,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
         title: isEditing ? 'Edit Blog Submission' : 'Write a Blog',
       ),
@@ -282,7 +282,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                 'points once it\'s approved.',
                 style: customTextStyle(
                   fontSize: Responsive.sp(10.5),
-                  color: Colors.grey.shade700,
+                  color: context.secondaryTextColor,
                 ).copyWith(height: 1.5),
               ),
             height(22),
@@ -318,7 +318,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                   '(Optional)',
                   style: customTextStyle(
                     fontSize: Responsive.sp(10.5),
-                    color: Colors.grey.shade600,
+                    color: context.secondaryTextColor,
                   ),
                 ),
               ],
@@ -355,7 +355,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                       'my medical peers.',
                       style: customTextStyle(
                         fontSize: Responsive.sp(10.5),
-                        color: Colors.grey.shade700,
+                        color: context.secondaryTextColor,
                       ).copyWith(height: 1.45),
                     ),
                   ),
@@ -479,21 +479,21 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
               hintText: 'Add a keyword and tap +',
               hintStyle: customTextStyle(
                 fontSize: Responsive.sp(11),
-                color: Colors.grey.shade500,
+                color: context.secondaryTextColor,
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: context.secondaryBackgroundColor,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: Responsive.w(12),
                 vertical: Responsive.h(10),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: context.dividerColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(color: context.dividerColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -530,7 +530,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
             keyword,
             style: customTextStyle(fontSize: Responsive.sp(11)),
           ),
-          backgroundColor: Colors.grey.shade100,
+          backgroundColor: context.secondaryWidgetColor,
           deleteIcon: const Icon(Icons.close, size: 16),
           onDeleted: () => _removeKeyword(keyword),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -555,9 +555,9 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
           height: Responsive.h(160),
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: context.dividerColor),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -577,7 +577,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                 'Add a cover image to make your article stand out',
                 textAlign: TextAlign.center,
                 style: customTextStyle(
-                  color: Colors.grey.shade600,
+                  color: context.secondaryTextColor,
                   fontSize: Responsive.sp(10),
                 ),
               ),
@@ -605,7 +605,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
                     height: Responsive.h(160),
-                    color: Colors.grey.shade200,
+                    color: context.secondaryWidgetColor,
                     child: const Icon(Icons.broken_image_outlined),
                   ),
                 ),

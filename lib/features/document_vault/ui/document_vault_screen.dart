@@ -5,6 +5,7 @@ import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
+import '../../../extensions/build_context_extension.dart';
 import '../../../theme/app_colors.dart';
 import '../model/document_model.dart';
 
@@ -13,17 +14,11 @@ class DocumentVaultScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF0E0E10)
-          : const Color(0xFFF6F7FB),
-
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
         title: 'Document Vault',
         showBack: true,
-        backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -37,7 +32,7 @@ class DocumentVaultScreen extends ConsumerWidget {
             ),
             height(Responsive.h(12)),
             ...userUploadedDocuments.map(
-              (doc) => _buildUploadedDocTile(context, doc, isDark),
+              (doc) => _buildUploadedDocTile(context, doc),
             ),
             height(Responsive.h(24)),
             _buildSectionHeader(
@@ -46,10 +41,10 @@ class DocumentVaultScreen extends ConsumerWidget {
             ),
             height(Responsive.h(12)),
             ...companyIssuedDocuments.map(
-              (doc) => _buildIssuedDocTile(context, doc, isDark),
+              (doc) => _buildIssuedDocTile(context, doc),
             ),
             height(Responsive.h(20)),
-            _buildFaqBanner(isDark),
+            _buildFaqBanner(context),
             height(Responsive.h(40)),
           ],
         ),
@@ -84,7 +79,6 @@ class DocumentVaultScreen extends ConsumerWidget {
   Widget _buildUploadedDocTile(
     BuildContext context,
     DocumentItem doc,
-    bool isDark,
   ) {
     final isUploaded = doc.status == DocumentStatus.uploaded;
 
@@ -92,7 +86,7 @@ class DocumentVaultScreen extends ConsumerWidget {
       margin: EdgeInsets.only(bottom: Responsive.h(12)),
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1A1D) : Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
         border: Border.all(color: AppColors.fieldGrey.withValues(alpha: 0.5)),
       ),
@@ -168,7 +162,6 @@ class DocumentVaultScreen extends ConsumerWidget {
   Widget _buildIssuedDocTile(
     BuildContext context,
     DocumentItem doc,
-    bool isDark,
   ) {
     final isIssued = doc.status == DocumentStatus.issued;
 
@@ -176,7 +169,7 @@ class DocumentVaultScreen extends ConsumerWidget {
       margin: EdgeInsets.only(bottom: Responsive.h(12)),
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1A1D) : Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
         border: Border.all(color: AppColors.fieldGrey.withValues(alpha: 0.5)),
       ),
@@ -252,18 +245,22 @@ class DocumentVaultScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFaqBanner(bool isDark) {
+  Widget _buildFaqBanner(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
-        color: const Color(0xFFE4F0FA),
+        color: context.isDarkMode
+            ? AppColors.secondaryColor.withValues(alpha: 0.18)
+            : const Color(0xFFE4F0FA),
         borderRadius: BorderRadius.circular(Responsive.w(12)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.help_outline_rounded,
-            color: const Color(0xFF3E8FD0),
+            color: context.isDarkMode
+                ? Colors.blue.shade200
+                : const Color(0xFF3E8FD0),
             size: Responsive.sp(20),
           ),
           width(Responsive.w(10)),
@@ -272,7 +269,9 @@ class DocumentVaultScreen extends ConsumerWidget {
               'Wondering why a multi‑year membership gets more than one certificate? See "Will I get one certificate or several?" in FAQs.',
               style: customTextStyle(
                 fontSize: Responsive.sp(11.5),
-                color: const Color(0xFF3E8FD0),
+                color: context.isDarkMode
+                    ? Colors.blue.shade200
+                    : const Color(0xFF3E8FD0),
                 fontWeight: FontWeight.w500,
               ),
             ),

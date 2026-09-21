@@ -7,21 +7,21 @@ extension ThemeModeExtension on BuildContext {
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
   Color get primaryBackgroundColor =>
-      isDarkMode ? AppColors.mono100 : AppColors.mono0;
+      isDarkMode ? AppColors.darkPaper : AppColors.mono0;
 
   Color get secondaryBackgroundColor =>
-      isDarkMode ? AppColors.mono100 : AppColors.whiteBg;
+      isDarkMode ? AppColors.darkCard : AppColors.whiteBg;
 
   Color get secondaryWidgetColor =>
-      isDarkMode ? AppColors.mono90 : AppColors.mono0;
+      isDarkMode ? AppColors.darkMint100 : AppColors.mono0;
 
   Color get primaryTextColor =>
-      isDarkMode ? AppColors.mono20 : AppColors.mono100;
+      isDarkMode ? AppColors.darkInk900 : AppColors.mono100;
 
   Color get secondaryTextColor =>
-      isDarkMode ? AppColors.mono40 : AppColors.mono80;
+      isDarkMode ? AppColors.darkInk600 : AppColors.mono80;
 
-  Color get dividerColor => isDarkMode ? AppColors.mono80 : AppColors.mono20;
+  Color get dividerColor => isDarkMode ? AppColors.darkLine : AppColors.mono20;
 
   ThemeData get lightTheme => ThemeData.light().copyWith(
     scaffoldBackgroundColor: AppColors.mono0,
@@ -34,13 +34,37 @@ extension ThemeModeExtension on BuildContext {
   );
 
   ThemeData get darkTheme => ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: AppColors.mono100,
+    scaffoldBackgroundColor: AppColors.darkPaper,
+    canvasColor: AppColors.darkPaper,
+    cardColor: AppColors.darkCard,
+    cardTheme: const CardThemeData(
+      color: AppColors.darkCard,
+      surfaceTintColor: Colors.transparent,
+    ),
+    dialogTheme: const DialogThemeData(backgroundColor: AppColors.darkCard),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: AppColors.darkCard,
+      surfaceTintColor: Colors.transparent,
+    ),
     colorScheme: Theme.of(this).colorScheme.copyWith(
       brightness: Brightness.dark,
-      primary: AppColors.blueberry100,
+      primary: AppColors.darkBrand700,
+      secondary: AppColors.darkBrand500,
+      surface: AppColors.darkCard,
+      onSurface: AppColors.darkInk900,
+      outline: AppColors.darkLine,
       error: AppColors.rambutan100,
     ),
-    textTheme: Theme.of(this).textTheme.apply(bodyColor: AppColors.mono20),
+    dividerTheme: const DividerThemeData(color: AppColors.darkLine),
+    inputDecorationTheme: const InputDecorationTheme(
+      fillColor: AppColors.darkCard,
+      filled: true,
+      hintStyle: TextStyle(color: AppColors.darkInk400),
+    ),
+    textTheme: Theme.of(this).textTheme.apply(
+      bodyColor: AppColors.darkInk900,
+      displayColor: AppColors.darkInk900,
+    ),
   );
 
   void showSuccessSnackBar(String text) {

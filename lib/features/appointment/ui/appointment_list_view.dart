@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -195,7 +196,7 @@ class AppointmentListView extends ConsumerWidget {
               label,
               style: customTextStyle(
                 fontSize: 13,
-                color: Colors.grey[600],
+                color: context.secondaryTextColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -242,12 +243,12 @@ class AppointmentListView extends ConsumerWidget {
           children: [
             // Tab Filters Bar
             Container(
-              color: AppColors.white,
+              color: context.secondaryBackgroundColor,
               child: TabBar(
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
                 labelColor: AppColors.newPri,
-                unselectedLabelColor: Colors.grey[600],
+                unselectedLabelColor: context.secondaryTextColor,
                 indicatorColor: AppColors.newPri,
                 indicatorWeight: 2.5,
                 labelStyle: customTextStyle(
@@ -312,7 +313,7 @@ class AppointmentListView extends ConsumerWidget {
 
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Theme.of(context).colorScheme.outlineVariant,
@@ -368,7 +369,7 @@ class AppointmentListView extends ConsumerWidget {
                       'Legal · Ticket ${appt.id ?? "LS-2026-0142"} · ${DateFormat('dd MMM yyyy').format(appt.date)}, ${appt.time.format(context)}',
                       style: customTextStyle(
                         fontSize: 12,
-                        color: Colors.grey[700],
+                        color: context.secondaryTextColor,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -418,7 +419,7 @@ class AppointmentListView extends ConsumerWidget {
                           'Request Reschedule',
                           style: customTextStyle(
                             fontSize: 12,
-                            color: Colors.grey[800],
+                            color: context.primaryTextColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

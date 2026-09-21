@@ -58,7 +58,7 @@ class SectionCard extends ConsumerWidget {
                       style: customTextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textColor,
+                        color: AppColors.textPrimary(ref),
                       ),
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,

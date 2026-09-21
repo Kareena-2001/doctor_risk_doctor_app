@@ -39,8 +39,7 @@ mixin _$CommunityState {
       throw _privateConstructorUsedError;
   AsyncValue<ReferredDoctorsResponse> get referralList =>
       throw _privateConstructorUsedError;
-  int? get selectedPeerForumTime =>
-      throw _privateConstructorUsedError; // null = All
+  int? get selectedPeerForumTime => throw _privateConstructorUsedError;
   String get peerForumSearchQuery => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityState
@@ -447,7 +446,6 @@ class _$CommunityStateImpl implements _CommunityState {
   final AsyncValue<ReferredDoctorsResponse> referralList;
   @override
   final int? selectedPeerForumTime;
-  // null = All
   @override
   @JsonKey()
   final String peerForumSearchQuery;
@@ -601,7 +599,7 @@ abstract class _CommunityState implements CommunityState {
   @override
   AsyncValue<ReferredDoctorsResponse> get referralList;
   @override
-  int? get selectedPeerForumTime; // null = All
+  int? get selectedPeerForumTime;
   @override
   String get peerForumSearchQuery;
 

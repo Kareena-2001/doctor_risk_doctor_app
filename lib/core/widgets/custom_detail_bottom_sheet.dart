@@ -1,6 +1,5 @@
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:flutter/material.dart';
-import '../../features/legal/ui/legal_consultant_view.dart';
 import '../../theme/app_colors.dart';
 import '../constants/dimensions.dart';
 
@@ -18,9 +17,10 @@ class CustomOptionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? AppColors.darkCard : AppColors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -50,7 +50,7 @@ class CustomOptionsBottomSheet extends StatelessWidget {
                   style: customTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textColor,
+                    color: isDark ? AppColors.darkInk900 : AppColors.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -60,7 +60,9 @@ class CustomOptionsBottomSheet extends StatelessWidget {
                     subtitle!,
                     style: customTextStyle(
                       fontSize: 14,
-                      color: AppColors.textColor,
+                      color: isDark
+                          ? AppColors.darkInk600
+                          : AppColors.textColor,
                     ),
                     textAlign: TextAlign.center,
                   ),

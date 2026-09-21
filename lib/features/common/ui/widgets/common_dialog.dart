@@ -38,7 +38,7 @@ class CommonDialog extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: context.primaryBackgroundColor,
+          color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(

@@ -59,10 +59,10 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(
               context,
-            ).colorScheme.copyWith(surface: Colors.white),
+            ).colorScheme.copyWith(surface: context.secondaryBackgroundColor),
             timePickerTheme: Theme.of(context).timePickerTheme.copyWith(
-              backgroundColor: Colors.white,
-              dialBackgroundColor: Colors.grey[200],
+              backgroundColor: context.secondaryBackgroundColor,
+              dialBackgroundColor: context.secondaryWidgetColor,
             ),
           ),
           child: child!,
@@ -134,7 +134,7 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
                   showCheckmark: false,
                   selected: selected,
                   label: Text(mode.label),
-                  backgroundColor: Colors.white,
+                  backgroundColor: context.secondaryBackgroundColor,
                   avatar: Icon(
                     mode.icon,
                     color: selected ? Colors.white : AppColors.newPri,
@@ -209,7 +209,7 @@ class _AppointmentFormViewState extends ConsumerState<AppointmentFormView> {
                 children: List.generate(_pickedFiles.length, (i) {
                   final file = _pickedFiles[i];
                   return Chip(
-                    backgroundColor: AppColors.white,
+                    backgroundColor: context.secondaryWidgetColor,
                     label: Text(file.name, overflow: TextOverflow.ellipsis),
                     onDeleted: () => _removeFile(i),
                   );

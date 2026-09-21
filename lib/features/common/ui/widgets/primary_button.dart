@@ -46,6 +46,7 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final txtColor = textColor ?? Colors.white;
 
     return SizedBox(
@@ -67,7 +68,8 @@ class PrimaryButton extends StatelessWidget {
                       )
                     : null),
             color: gradientColors == null
-                ? (backgroundColor ?? AppColors.primary)
+                ? (backgroundColor ??
+                      (isDark ? AppColors.darkBrand700 : AppColors.primary))
                 : null,
             border: Border.all(
               color: borderColor ?? Colors.transparent,

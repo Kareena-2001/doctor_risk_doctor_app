@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,7 +39,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: const CustomAppBar(title: 'Blog Details'),
       body: detailAsync.when(
         loading: () => const Center(child: Loading()),
@@ -78,16 +79,16 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                               blog.categoryName!.isNotEmpty)
                             _buildBadge(
                               blog.categoryName!,
-                              Colors.blue.shade50,
-                              Colors.blue.shade800,
+                              context.isDarkMode ? Colors.blue.shade900 : Colors.blue.shade50,
+                              context.isDarkMode ? Colors.blue.shade200 : Colors.blue.shade800,
                             ),
                           if (blog.specialityName != null &&
                               blog.specialityName!.isNotEmpty) ...[
                             width(8),
                             _buildBadge(
                               blog.specialityName!,
-                              Colors.teal.shade50,
-                              Colors.teal.shade800,
+                              context.isDarkMode ? Colors.teal.shade900 : Colors.teal.shade50,
+                              context.isDarkMode ? Colors.teal.shade200 : Colors.teal.shade800,
                             ),
                           ],
                         ],
@@ -98,21 +99,21 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                         style: customTextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xff1F2937),
+                          color: context.primaryTextColor,
                         ).copyWith(height: 1.3),
                       ),
                       height(16),
                       _buildAuthorAndMetaCard(blog),
                       height(20),
 
-                      const Divider(thickness: 1, color: Color(0xffE5E7EB)),
+                      Divider(thickness: 1, color: context.dividerColor),
                       height(16),
                       Text(
                         'Content',
                         style: customTextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xff1F2937),
+                          color: context.primaryTextColor,
                         ),
                       ),
                       height(8),
@@ -120,21 +121,21 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                         blog.description,
                         style: customTextStyle(
                           fontSize: 13,
-                          color: const Color(0xff4B5563),
+                          color: context.secondaryTextColor,
                         ).copyWith(height: 1.7),
                       ),
                       height(24),
 
                       // Keywords Section
                       if (blog.keywords.isNotEmpty) ...[
-                        const Divider(thickness: 1, color: Color(0xffE5E7EB)),
+                        Divider(thickness: 1, color: context.dividerColor),
                         height(16),
                         Text(
                           'Keywords',
                           style: customTextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xff1F2937),
+                            color: context.primaryTextColor,
                           ),
                         ),
                         height(8),
@@ -148,10 +149,10 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                                 kw.keyword,
                                 style: customTextStyle(
                                   fontSize: 11,
-                                  color: const Color(0xff374151),
+                                  color: context.secondaryTextColor,
                                 ),
                               ),
-                              backgroundColor: const Color(0xffF3F4F6),
+                              backgroundColor: context.secondaryWidgetColor,
                               side: BorderSide.none,
                               visualDensity: VisualDensity.compact,
                             ),
@@ -195,9 +196,9 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xffE5E7EB)),
+        border: Border.all(color: context.dividerColor),
       ),
       child: Column(
         children: [
@@ -224,7 +225,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                       style: customTextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xff1F2937),
+                        color: context.primaryTextColor,
                       ),
                     ),
                     if (blog.degree != null && blog.degree!.isNotEmpty) ...[
@@ -233,7 +234,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                         blog.degree!,
                         style: customTextStyle(
                           fontSize: 11,
-                          color: const Color(0xff6B7280),
+                          color: context.secondaryTextColor,
                         ),
                       ),
                     ],
@@ -242,26 +243,26 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
               ),
             ],
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
-            child: Divider(height: 1, color: Color(0xffF3F4F6)),
+            child: Divider(height: 1, color: context.dividerColor),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_outlined,
                     size: 14,
-                    color: Color(0xff6B7280),
+                    color: context.secondaryTextColor,
                   ),
                   width(4),
                   Text(
                     blog.createdOn ?? 'N/A',
                     style: customTextStyle(
                       fontSize: 11,
-                      color: const Color(0xff6B7280),
+                      color: context.secondaryTextColor,
                     ),
                   ),
                 ],
@@ -269,17 +270,17 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
               if (blog.viewCount != null)
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.visibility_outlined,
                       size: 14,
-                      color: Color(0xff6B7280),
+                      color: context.secondaryTextColor,
                     ),
                     width(4),
                     Text(
                       '${blog.viewCount} views',
                       style: customTextStyle(
                         fontSize: 11,
-                        color: const Color(0xff6B7280),
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   ],

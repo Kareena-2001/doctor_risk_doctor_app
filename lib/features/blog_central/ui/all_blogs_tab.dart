@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/app_refresh_indicator.dart';
+import '../../../extensions/build_context_extension.dart';
 import '../../../routing/routes.dart';
 import '../../home/ui/widgets/social_link_widget.dart';
 
@@ -106,9 +107,9 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
       child: Container(
         padding: EdgeInsets.all(Responsive.w(16)),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(Responsive.w(16)),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.dividerColor),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -132,7 +133,7 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
                           vertical: Responsive.h(4),
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: context.secondaryWidgetColor,
                           borderRadius: BorderRadius.circular(Responsive.w(20)),
                         ),
                         child: Text(
@@ -140,7 +141,7 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
                           style: customTextStyle(
                             fontSize: Responsive.sp(9.5),
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade700,
+                            color: context.secondaryTextColor,
                           ),
                         ),
                       ),
@@ -156,12 +157,12 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
               style: customTextStyle(
                 fontSize: Responsive.sp(14),
                 fontWeight: FontWeight.bold,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ).copyWith(height: 1.35),
             ),
 
             height(Responsive.h(14)),
-            Divider(height: 1, thickness: 1, color: Colors.grey.shade100),
+            Divider(height: 1, thickness: 1, color: context.dividerColor),
             height(Responsive.h(12)),
 
             // Author row + reads count
@@ -190,7 +191,7 @@ class _AllBlogsTabState extends ConsumerState<AllBlogsTab> {
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
                           fontSize: Responsive.sp(10),
-                          color: Colors.grey.shade600,
+                          color: context.secondaryTextColor,
                         ),
                       ),
                     ],

@@ -24,7 +24,7 @@ class AppDialog {
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (_) => AlertDialog(
-        backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+        backgroundColor: isDark ? AppColors.darkCard : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
@@ -35,7 +35,7 @@ class AppDialog {
                 title,
                 style: customTextStyle(
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: isDark ? AppColors.darkInk900 : Colors.black,
                 ),
               ),
             ),
@@ -45,7 +45,7 @@ class AppDialog {
           message,
           style: customTextStyle(
             fontSize: 14,
-            color: isDark ? Colors.grey.shade300 : Colors.black87,
+            color: isDark ? AppColors.darkInk600 : Colors.black87,
           ),
         ),
         actions: [
@@ -187,7 +187,7 @@ class AppDialog {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
       builder: (_) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

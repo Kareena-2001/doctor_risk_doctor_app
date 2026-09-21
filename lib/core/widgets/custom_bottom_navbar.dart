@@ -35,7 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final barColor =
-        backgroundColor ?? (isDark ? const Color(0xFF1C1C1E) : Colors.white);
+        backgroundColor ?? (isDark ? AppColors.darkCard : Colors.white);
 
     return SafeArea(
       top: false,
@@ -73,7 +73,10 @@ class CustomBottomNavBar extends StatelessWidget {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: AppColors.newPri.withValues(alpha: 0.12),
+                        color: (isDark
+                                ? AppColors.darkBrand700
+                                : AppColors.newPri)
+                            .withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                     ),
