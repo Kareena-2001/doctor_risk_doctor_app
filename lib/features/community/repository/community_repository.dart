@@ -41,10 +41,10 @@ class CommunityRepository {
     String? sortBy,
     int page = 1,
     int limit = 10,
-    int time = 7,
+    int? time,
   }) async {
-    if (![7, 30, 90].contains(time)) {
-      throw ArgumentError('time must be 7, 30, or 90');
+    if (time != null && ![7, 30, 90].contains(time)) {
+      throw ArgumentError('time must be 7, 30, 90 or null (all)');
     }
 
     final response = await _apiClient.get(
@@ -57,7 +57,7 @@ class CommunityRepository {
         if (sortBy != null && sortBy.isNotEmpty) 'sort_by': sortBy,
         'page': page.toString(),
         'limit': limit.toString(),
-        'time': time.toString(),
+        if (time != null) 'time': time.toString(),
       },
     );
 
@@ -80,7 +80,9 @@ class CommunityRepository {
     );
 
     return DoctorNoResponse.fromJson(response);
-  }Future<ReferDoctorResponse> addReferral({
+  }
+
+  Future<ReferDoctorResponse> addReferral({
     required String firstName,
     String? middleName,
     required String lastName,
@@ -118,6 +120,7 @@ class CommunityRepository {
 
     return ReferDoctorResponse.fromJson(response);
   }
+
   Future<ReferredDoctorsResponse> referDoctorList() async {
     final response = await _apiClient.get(
       url: 'doctor/referdoctorlist',

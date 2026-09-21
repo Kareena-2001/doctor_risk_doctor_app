@@ -14,7 +14,7 @@ part 'community_view_model.g.dart';
 class CommunityViewModel extends _$CommunityViewModel {
   String? _currentTab;
   String? _currentSearch;
-  int _currentTime = 7;
+  int? _currentTime; // null = All
   Timer? _searchDebounce;
 
   @override
@@ -35,15 +35,15 @@ class CommunityViewModel extends _$CommunityViewModel {
 
   Future<void> refreshTestimonialList() => allTestimonialList();
 
-  /// Pass only what changed — tab/search/time not passed reuse last used value.
   Future<void> allPeerForumList({
     String? tab,
     String? search,
     int? time,
+    bool timeExplicit = false,
   }) async {
     _currentTab = tab ?? _currentTab;
     _currentSearch = search ?? _currentSearch;
-    _currentTime = time ?? _currentTime;
+    _currentTime = timeExplicit ? time : (time ?? _currentTime);
 
     state = state.copyWith(peerForumList: const AsyncLoading());
 
@@ -62,13 +62,12 @@ class CommunityViewModel extends _$CommunityViewModel {
 
   Future<void> refreshPeerForumList() => allPeerForumList();
 
-  void setPeerForumTime(int time) {
+  void setPeerForumTime(int? time) {
     if (_currentTime == time) return;
     state = state.copyWith(selectedPeerForumTime: time);
-    allPeerForumList(time: time);
+    allPeerForumList(time: time, timeExplicit: true);
   }
 
-  /// Debounced so we don't hit the API on every keystroke.
   void setPeerForumSearch(String query) {
     state = state.copyWith(peerForumSearchQuery: query);
     _searchDebounce?.cancel();

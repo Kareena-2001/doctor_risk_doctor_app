@@ -339,5 +339,6 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
 class _TabOption {
   final String label;
   final String? value;
+
   const _TabOption({required this.label, required this.value});
 }

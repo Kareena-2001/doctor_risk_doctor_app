@@ -3,12 +3,12 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Reusable time (7/30/90 day) + search filter row.
-/// Toggling search hides the time chips and shows a text field instead.
+import '../../../../core/widgets/custom_seachbar.dart';
+
 class PeerForumFilterBar extends StatefulWidget {
-  final int selectedTime;
+  final int? selectedTime;
   final String searchQuery;
-  final ValueChanged<int> onTimeChanged;
+  final ValueChanged<int?> onTimeChanged;
   final ValueChanged<String> onSearchChanged;
   final VoidCallback onSearchCleared;
 
@@ -27,14 +27,16 @@ class PeerForumFilterBar extends StatefulWidget {
 
 class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
   static const List<_TimeOption> _timeOptions = [
+    _TimeOption(label: 'All', value: null),
     _TimeOption(label: '7D', value: 7),
     _TimeOption(label: '30D', value: 30),
     _TimeOption(label: '90D', value: 90),
   ];
 
   late bool _searchExpanded = widget.searchQuery.isNotEmpty;
-  late final TextEditingController _searchController =
-  TextEditingController(text: widget.searchQuery);
+  late final TextEditingController _searchController = TextEditingController(
+    text: widget.searchQuery,
+  );
 
   @override
   void dispose() {
@@ -110,38 +112,23 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
   Widget _buildSearchField() {
     return SizedBox(
       height: Responsive.h(36),
-      child: TextField(
+      child: CustomSearchBar(
         controller: _searchController,
-        autofocus: true,
+        hint: 'Search posts...',
         onChanged: (value) {
           widget.onSearchChanged(value);
-          setState(() {}); // refresh clear icon visibility
+          setState(() {});
         },
-        style: customTextStyle(fontSize: Responsive.sp(12.5)),
-        decoration: InputDecoration(
-          hintText: 'Search posts...',
-          isDense: true,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: Responsive.w(14),
-            vertical: Responsive.h(8),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(Responsive.w(30)),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? GestureDetector(
-            onTap: () {
-              _searchController.clear();
-              widget.onSearchCleared();
-              setState(() {});
-            },
-            child: const Icon(Icons.close, size: 16),
-          )
-              : null,
-        ),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? GestureDetector(
+                onTap: () {
+                  _searchController.clear();
+                  widget.onSearchCleared();
+                  setState(() {});
+                },
+                child: const Icon(Icons.close, size: 16),
+              )
+            : null,
       ),
     );
   }
@@ -171,6 +158,7 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
 
 class _TimeOption {
   final String label;
-  final int value;
+  final int? value;
+
   const _TimeOption({required this.label, required this.value});
 }
