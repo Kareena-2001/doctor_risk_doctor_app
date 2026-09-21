@@ -24,7 +24,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
     super.initState();
 
     Future.microtask(
-          () => ref
+      () => ref
           .read(blogViewModelProvider.notifier)
           .fetchBlogDetails(widget.blogId),
     );
@@ -34,7 +34,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(
       blogViewModelProvider.select(
-            (s) => s.blogDetails[widget.blogId] ?? const AsyncLoading(),
+        (s) => s.blogDetails[widget.blogId] ?? const AsyncLoading(),
       ),
     );
 
@@ -65,7 +65,7 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                     height: Responsive.h(220),
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox.shrink(),
+                        const SizedBox.shrink(),
                   ),
 
                 Padding(
@@ -79,16 +79,24 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                               blog.categoryName!.isNotEmpty)
                             _buildBadge(
                               blog.categoryName!,
-                              context.isDarkMode ? Colors.blue.shade900 : Colors.blue.shade50,
-                              context.isDarkMode ? Colors.blue.shade200 : Colors.blue.shade800,
+                              context.isDarkMode
+                                  ? Colors.blue.shade900
+                                  : Colors.blue.shade50,
+                              context.isDarkMode
+                                  ? Colors.blue.shade200
+                                  : Colors.blue.shade800,
                             ),
                           if (blog.specialityName != null &&
                               blog.specialityName!.isNotEmpty) ...[
                             width(8),
                             _buildBadge(
                               blog.specialityName!,
-                              context.isDarkMode ? Colors.teal.shade900 : Colors.teal.shade50,
-                              context.isDarkMode ? Colors.teal.shade200 : Colors.teal.shade800,
+                              context.isDarkMode
+                                  ? Colors.teal.shade900
+                                  : Colors.teal.shade50,
+                              context.isDarkMode
+                                  ? Colors.teal.shade200
+                                  : Colors.teal.shade800,
                             ),
                           ],
                         ],
@@ -145,18 +153,18 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
                           children: blog.keywords
                               .map(
                                 (kw) => Chip(
-                              label: Text(
-                                kw.keyword,
-                                style: customTextStyle(
-                                  fontSize: 11,
-                                  color: context.secondaryTextColor,
+                                  label: Text(
+                                    kw.keyword,
+                                    style: customTextStyle(
+                                      fontSize: 11,
+                                      color: context.secondaryTextColor,
+                                    ),
+                                  ),
+                                  backgroundColor: context.secondaryWidgetColor,
+                                  side: BorderSide.none,
+                                  visualDensity: VisualDensity.compact,
                                 ),
-                              ),
-                              backgroundColor: context.secondaryWidgetColor,
-                              side: BorderSide.none,
-                              visualDensity: VisualDensity.compact,
-                            ),
-                          )
+                              )
                               .toList(),
                         ),
                         height(24),
@@ -206,7 +214,9 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
                 child: Icon(
                   Icons.person,
                   color: Theme.of(context).primaryColor,
