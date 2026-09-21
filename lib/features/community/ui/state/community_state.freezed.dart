@@ -39,6 +39,8 @@ mixin _$CommunityState {
       throw _privateConstructorUsedError;
   AsyncValue<ReferredDoctorsResponse> get referralList =>
       throw _privateConstructorUsedError;
+  int get selectedPeerForumTime => throw _privateConstructorUsedError;
+  String get peerForumSearchQuery => throw _privateConstructorUsedError;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -72,6 +74,8 @@ abstract class $CommunityStateCopyWith<$Res> {
     List<IdNameOption> selectedDegrees,
     AsyncValue<ReferDoctorResponse>? addReferral,
     AsyncValue<ReferredDoctorsResponse> referralList,
+    int selectedPeerForumTime,
+    String peerForumSearchQuery,
   });
 }
 
@@ -107,6 +111,8 @@ class _$CommunityStateCopyWithImpl<$Res, $Val extends CommunityState>
     Object? selectedDegrees = null,
     Object? addReferral = freezed,
     Object? referralList = null,
+    Object? selectedPeerForumTime = null,
+    Object? peerForumSearchQuery = null,
   }) {
     return _then(
       _value.copyWith(
@@ -178,6 +184,14 @@ class _$CommunityStateCopyWithImpl<$Res, $Val extends CommunityState>
                 ? _value.referralList
                 : referralList // ignore: cast_nullable_to_non_nullable
                       as AsyncValue<ReferredDoctorsResponse>,
+            selectedPeerForumTime: null == selectedPeerForumTime
+                ? _value.selectedPeerForumTime
+                : selectedPeerForumTime // ignore: cast_nullable_to_non_nullable
+                      as int,
+            peerForumSearchQuery: null == peerForumSearchQuery
+                ? _value.peerForumSearchQuery
+                : peerForumSearchQuery // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -211,6 +225,8 @@ abstract class _$$CommunityStateImplCopyWith<$Res>
     List<IdNameOption> selectedDegrees,
     AsyncValue<ReferDoctorResponse>? addReferral,
     AsyncValue<ReferredDoctorsResponse> referralList,
+    int selectedPeerForumTime,
+    String peerForumSearchQuery,
   });
 }
 
@@ -245,6 +261,8 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
     Object? selectedDegrees = null,
     Object? addReferral = freezed,
     Object? referralList = null,
+    Object? selectedPeerForumTime = null,
+    Object? peerForumSearchQuery = null,
   }) {
     return _then(
       _$CommunityStateImpl(
@@ -316,6 +334,14 @@ class __$$CommunityStateImplCopyWithImpl<$Res>
             ? _value.referralList
             : referralList // ignore: cast_nullable_to_non_nullable
                   as AsyncValue<ReferredDoctorsResponse>,
+        selectedPeerForumTime: null == selectedPeerForumTime
+            ? _value.selectedPeerForumTime
+            : selectedPeerForumTime // ignore: cast_nullable_to_non_nullable
+                  as int,
+        peerForumSearchQuery: null == peerForumSearchQuery
+            ? _value.peerForumSearchQuery
+            : peerForumSearchQuery // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -342,6 +368,8 @@ class _$CommunityStateImpl implements _CommunityState {
     final List<IdNameOption> selectedDegrees = const <IdNameOption>[],
     this.addReferral,
     this.referralList = const AsyncLoading(),
+    this.selectedPeerForumTime = 7,
+    this.peerForumSearchQuery = '',
   }) : _categories = categories,
        _specialities = specialities,
        _degrees = degrees,
@@ -416,10 +444,16 @@ class _$CommunityStateImpl implements _CommunityState {
   @override
   @JsonKey()
   final AsyncValue<ReferredDoctorsResponse> referralList;
+  @override
+  @JsonKey()
+  final int selectedPeerForumTime;
+  @override
+  @JsonKey()
+  final String peerForumSearchQuery;
 
   @override
   String toString() {
-    return 'CommunityState(testimonialList: $testimonialList, peerForumList: $peerForumList, referralLink: $referralLink, isCategoryLoading: $isCategoryLoading, categoryError: $categoryError, categories: $categories, selectedCategory: $selectedCategory, isSpecialityLoading: $isSpecialityLoading, specialityError: $specialityError, specialities: $specialities, selectedSpeciality: $selectedSpeciality, isDegreeLoading: $isDegreeLoading, degreeError: $degreeError, degrees: $degrees, selectedDegrees: $selectedDegrees, addReferral: $addReferral, referralList: $referralList)';
+    return 'CommunityState(testimonialList: $testimonialList, peerForumList: $peerForumList, referralLink: $referralLink, isCategoryLoading: $isCategoryLoading, categoryError: $categoryError, categories: $categories, selectedCategory: $selectedCategory, isSpecialityLoading: $isSpecialityLoading, specialityError: $specialityError, specialities: $specialities, selectedSpeciality: $selectedSpeciality, isDegreeLoading: $isDegreeLoading, degreeError: $degreeError, degrees: $degrees, selectedDegrees: $selectedDegrees, addReferral: $addReferral, referralList: $referralList, selectedPeerForumTime: $selectedPeerForumTime, peerForumSearchQuery: $peerForumSearchQuery)';
   }
 
   @override
@@ -465,11 +499,15 @@ class _$CommunityStateImpl implements _CommunityState {
             (identical(other.addReferral, addReferral) ||
                 other.addReferral == addReferral) &&
             (identical(other.referralList, referralList) ||
-                other.referralList == referralList));
+                other.referralList == referralList) &&
+            (identical(other.selectedPeerForumTime, selectedPeerForumTime) ||
+                other.selectedPeerForumTime == selectedPeerForumTime) &&
+            (identical(other.peerForumSearchQuery, peerForumSearchQuery) ||
+                other.peerForumSearchQuery == peerForumSearchQuery));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     testimonialList,
     peerForumList,
@@ -488,7 +526,9 @@ class _$CommunityStateImpl implements _CommunityState {
     const DeepCollectionEquality().hash(_selectedDegrees),
     addReferral,
     referralList,
-  );
+    selectedPeerForumTime,
+    peerForumSearchQuery,
+  ]);
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.
@@ -521,6 +561,8 @@ abstract class _CommunityState implements CommunityState {
     final List<IdNameOption> selectedDegrees,
     final AsyncValue<ReferDoctorResponse>? addReferral,
     final AsyncValue<ReferredDoctorsResponse> referralList,
+    final int selectedPeerForumTime,
+    final String peerForumSearchQuery,
   }) = _$CommunityStateImpl;
 
   @override
@@ -557,6 +599,10 @@ abstract class _CommunityState implements CommunityState {
   AsyncValue<ReferDoctorResponse>? get addReferral;
   @override
   AsyncValue<ReferredDoctorsResponse> get referralList;
+  @override
+  int get selectedPeerForumTime;
+  @override
+  String get peerForumSearchQuery;
 
   /// Create a copy of CommunityState
   /// with the given fields replaced by the non-null parameter values.

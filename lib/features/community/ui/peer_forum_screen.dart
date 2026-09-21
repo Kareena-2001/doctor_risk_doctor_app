@@ -1,8 +1,10 @@
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
+import 'package:Doctors_App/features/community/ui/widgets/peer_forum_filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,6 +27,8 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     _TabOption(label: 'News', value: 'news'),
     _TabOption(label: 'Experience', value: 'experience'),
     _TabOption(label: 'Blog', value: 'blog'),
+    _TabOption(label: 'Circulars', value: 'circular'),
+    _TabOption(label: 'Notifications', value: 'notification'),
   ];
 
   String? _selectedTab;
@@ -49,14 +53,34 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     final peerForumState = ref.watch(
       communityViewModelProvider.select((s) => s.peerForumList),
     );
+    final selectedTime = ref.watch(
+      communityViewModelProvider.select((s) => s.selectedPeerForumTime),
+    );
+    final searchQuery = ref.watch(
+      communityViewModelProvider.select((s) => s.peerForumSearchQuery),
+    );
 
     return Column(
       children: [
         height(Responsive.h(14)),
         _buildFilterChips(),
         height(Responsive.h(10)),
+        PeerForumFilterBar(
+          selectedTime: selectedTime,
+          searchQuery: searchQuery,
+          onTimeChanged: (time) => ref
+              .read(communityViewModelProvider.notifier)
+              .setPeerForumTime(time),
+          onSearchChanged: (query) => ref
+              .read(communityViewModelProvider.notifier)
+              .setPeerForumSearch(query),
+          onSearchCleared: () => ref
+              .read(communityViewModelProvider.notifier)
+              .clearPeerForumSearch(),
+        ),
+        height(Responsive.h(10)),
         Expanded(
-          child: RefreshIndicator(
+          child: AppRefreshIndicator(
             onRefresh: () => ref
                 .read(communityViewModelProvider.notifier)
                 .refreshPeerForumList(),
@@ -228,18 +252,6 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
             ),
           ),
           height(Responsive.h(6)),
-          // GestureDetector(
-          //   onTap: () => _showDescriptionDialog(post),
-          //   child: Text(
-          //     post.description,
-          //     maxLines: 2,
-          //     overflow: TextOverflow.ellipsis,
-          //     style: customTextStyle(
-          //       fontSize: Responsive.sp(12.5),
-          //       color: Colors.grey.shade600,
-          //     ).copyWith(height: 1.4),
-          //   ),
-          // ),
           ExpandableText(
             text: post.description.trim().isEmpty
                 ? 'No description available.'
@@ -248,7 +260,6 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
             style: detailsStyle.copyWith(height: 1.5),
             dialogTitle: post.title,
           ),
-
           height(Responsive.h(12)),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -268,7 +279,6 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                           color: AppColors.newPri,
                         ),
                       ),
-
                     if ((post.degree != null && post.degree!.isNotEmpty) ||
                         (post.categoryName != null &&
                             post.categoryName!.isNotEmpty)) ...[
@@ -292,14 +302,6 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                   ],
                 ),
               ),
-
-              // width(Responsive.w(8)),
-              //
-              // Icon(
-              //   Icons.arrow_forward_ios_rounded,
-              //   size: Responsive.sp(12),
-              //   color: Colors.grey.shade400,
-              // ),
             ],
           ),
         ],
@@ -337,6 +339,5 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
 class _TabOption {
   final String label;
   final String? value;
-
   const _TabOption({required this.label, required this.value});
 }

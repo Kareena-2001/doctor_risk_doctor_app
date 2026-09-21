@@ -41,7 +41,12 @@ class CommunityRepository {
     String? sortBy,
     int page = 1,
     int limit = 10,
+    int time = 7,
   }) async {
+    if (![7, 30, 90].contains(time)) {
+      throw ArgumentError('time must be 7, 30, or 90');
+    }
+
     final response = await _apiClient.get(
       url: 'doctor/peerforumlist',
       includeAuth: true,
@@ -49,11 +54,10 @@ class CommunityRepository {
         if (tab != null && tab.isNotEmpty) 'tab': tab,
         if (title != null && title.isNotEmpty) 'title': title,
         if (search != null && search.isNotEmpty) 'search': search,
-        //dr_name,title,description,details,news_source
         if (sortBy != null && sortBy.isNotEmpty) 'sort_by': sortBy,
-        //newest_first,oldest_first,most_read
         'page': page.toString(),
         'limit': limit.toString(),
+        'time': time.toString(),
       },
     );
 

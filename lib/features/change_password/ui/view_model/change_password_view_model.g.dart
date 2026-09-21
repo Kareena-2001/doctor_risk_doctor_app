@@ -7,7 +7,7 @@ part of 'change_password_view_model.dart';
 // **************************************************************************
 
 String _$changePasswordViewModelHash() =>
-    r'0582af82e51c338fd9d5a35f9416b2af44583d1c';
+    r'3cf1173743f52b8273c533c86e89f922c86f1f0d';
 
 /// See also [ChangePasswordViewModel].
 @ProviderFor(ChangePasswordViewModel)

@@ -21,6 +21,7 @@ class _CommunityScreenState extends State<CommunityScreen>
   @override
   void initState() {
     super.initState();
+
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -34,7 +35,7 @@ class _CommunityScreenState extends State<CommunityScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.newBg,
-      appBar: const CustomAppBar(title: 'Community', showBack: false),
+      appBar: CustomAppBar(title: 'Community', showBack: false),
       body: Column(
         children: [
           Container(
@@ -49,7 +50,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                 fontWeight: FontWeight.bold,
                 fontSize: Responsive.sp(12),
               ),
-              tabs: const [
+              tabs: [
                 Tab(text: 'Peer Forum'),
                 Tab(text: 'Testimonials'),
                 Tab(text: 'Refer & Groups'),

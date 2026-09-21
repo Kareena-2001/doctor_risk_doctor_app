@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Doctors_App/features/community/repository/community_repository.dart';
 import 'package:Doctors_App/features/community/ui/state/community_state.dart';
 import 'package:flutter/foundation.dart';
@@ -11,9 +13,13 @@ part 'community_view_model.g.dart';
 @riverpod
 class CommunityViewModel extends _$CommunityViewModel {
   String? _currentTab;
+  String? _currentSearch;
+  int _currentTime = 7;
+  Timer? _searchDebounce;
 
   @override
   CommunityState build() {
+    ref.onDispose(() => _searchDebounce?.cancel());
     return const CommunityState();
   }
 
@@ -29,18 +35,53 @@ class CommunityViewModel extends _$CommunityViewModel {
 
   Future<void> refreshTestimonialList() => allTestimonialList();
 
-  Future<void> allPeerForumList({String? tab}) async {
-    _currentTab = tab;
+  /// Pass only what changed — tab/search/time not passed reuse last used value.
+  Future<void> allPeerForumList({
+    String? tab,
+    String? search,
+    int? time,
+  }) async {
+    _currentTab = tab ?? _currentTab;
+    _currentSearch = search ?? _currentSearch;
+    _currentTime = time ?? _currentTime;
+
     state = state.copyWith(peerForumList: const AsyncLoading());
 
     final result = await AsyncValue.guard(
-      () => ref.read(communityRepositoryProvider).getAllPeerForumList(tab: tab),
+      () => ref
+          .read(communityRepositoryProvider)
+          .getAllPeerForumList(
+            tab: _currentTab,
+            search: _currentSearch,
+            time: _currentTime,
+          ),
     );
 
     state = state.copyWith(peerForumList: result);
   }
 
-  Future<void> refreshPeerForumList() => allPeerForumList(tab: _currentTab);
+  Future<void> refreshPeerForumList() => allPeerForumList();
+
+  void setPeerForumTime(int time) {
+    if (_currentTime == time) return;
+    state = state.copyWith(selectedPeerForumTime: time);
+    allPeerForumList(time: time);
+  }
+
+  /// Debounced so we don't hit the API on every keystroke.
+  void setPeerForumSearch(String query) {
+    state = state.copyWith(peerForumSearchQuery: query);
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 450), () {
+      allPeerForumList(search: query.trim().isEmpty ? null : query.trim());
+    });
+  }
+
+  void clearPeerForumSearch() {
+    _searchDebounce?.cancel();
+    state = state.copyWith(peerForumSearchQuery: '');
+    allPeerForumList(search: null);
+  }
 
   Future<void> getDoctorNo() async {
     state = state.copyWith(referralLink: const AsyncLoading());
@@ -60,29 +101,30 @@ class CommunityViewModel extends _$CommunityViewModel {
     String? email,
     int? categoryId,
     int? specialityId,
-    List<String>? degrees,  
+    List<String>? degrees,
     String? remark,
   }) async {
     state = state.copyWith(addReferral: const AsyncLoading());
 
     final result = await AsyncValue.guard(
-          () => ref
+      () => ref
           .read(communityRepositoryProvider)
           .addReferral(
-        firstName: firstName,
-        middleName: middleName,
-        lastName: lastName,
-        mobileNo: mobileNo,
-        email: email,
-        categoryId: categoryId,
-        specialityId: specialityId,
-        degrees: degrees,
-        remark: remark,
-      ),
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+            mobileNo: mobileNo,
+            email: email,
+            categoryId: categoryId,
+            specialityId: specialityId,
+            degrees: degrees,
+            remark: remark,
+          ),
     );
 
     state = state.copyWith(addReferral: result);
   }
+
   Future<void> referDoctorList() async {
     state = state.copyWith(referralList: const AsyncLoading());
 
@@ -103,8 +145,6 @@ class CommunityViewModel extends _$CommunityViewModel {
     state = state.copyWith(isCategoryLoading: true, categoryError: null);
     try {
       final repository = ref.read(communityRepositoryProvider);
-      // The refer-a-colleague flow is doctor-only; the API ignores this
-      // param today, but the repository signature still requires it.
       final response = await repository.categoryList(productTypeId: '1');
       state = state.copyWith(
         isCategoryLoading: false,

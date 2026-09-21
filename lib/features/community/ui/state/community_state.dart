@@ -37,5 +37,7 @@ class CommunityState with _$CommunityState {
     AsyncValue<ReferDoctorResponse>? addReferral,
 
     @Default(AsyncLoading()) AsyncValue<ReferredDoctorsResponse> referralList,
+    @Default(7) int selectedPeerForumTime,
+    @Default('') String peerForumSearchQuery,
   }) = _CommunityState;
 }
