@@ -84,7 +84,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
       builder: (context, child) {
         Responsive.init(context);
         SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(
+          SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             systemNavigationBarColor: Colors.transparent,
           ),
