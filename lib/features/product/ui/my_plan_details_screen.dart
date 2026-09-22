@@ -1,5 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/widgets/renew_form.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
@@ -53,7 +54,7 @@ class MyPlanDetailsScreen extends StatelessWidget {
     final statusColor = _statusColor(plan.status);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: const CustomAppBar(title: 'Plan Details'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -65,7 +66,7 @@ class MyPlanDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:  context.secondaryBackgroundColor,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
@@ -81,7 +82,7 @@ class MyPlanDetailsScreen extends StatelessWidget {
                             style: customTextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0F172A),
+                              color:context.primaryTextColor
                             ),
                           ),
                         ),

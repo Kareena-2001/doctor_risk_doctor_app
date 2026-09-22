@@ -92,6 +92,10 @@ class AppColors {
   static const Color sky500 = Color(0xFF3E8FD0);
   static const Color sky100 = Color(0xFFE4F0FA);
 
+  static const bgColor = Color(0xFFF6F7FB);
+
+  // static const bgColor = Color(0xffF7F8FC);
+
   static const Color brandGreen = Color(0xFF0D4B34);
   static const whiteBg = paper;
   static const premiumBackground = Color(0xFF000000);
@@ -243,8 +247,6 @@ class AppColors {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
     return isDark ? darkInk400 : const Color(0xFF757575);
   }
-
-  static const bgColor = Color(0xffF7F8FC);
 
   static const Color labelColor = Color(0xFF383838);
 

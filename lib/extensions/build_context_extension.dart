@@ -10,7 +10,7 @@ extension ThemeModeExtension on BuildContext {
       isDarkMode ? AppColors.darkPaper : AppColors.mono0;
 
   Color get secondaryBackgroundColor =>
-      isDarkMode ? AppColors.darkCard : AppColors.whiteBg;
+      isDarkMode ? AppColors.darkCard : AppColors.white;
 
   Color get secondaryWidgetColor =>
       isDarkMode ? AppColors.darkMint100 : AppColors.mono0;

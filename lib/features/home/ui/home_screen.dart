@@ -500,7 +500,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       children: [
         Scaffold(
           key: _scaffoldKey,
-          backgroundColor: context.primaryBackgroundColor,
+          backgroundColor: isDark ? AppColors.darkPaper : AppColors.bgColor,
           appBar: CustomAppBar(
             title: 'Dashboard',
             showBack: false,
