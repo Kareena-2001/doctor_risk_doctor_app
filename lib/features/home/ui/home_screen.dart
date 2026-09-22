@@ -18,6 +18,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/constants/assets.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/heading_widget.dart';
+import '../../../extensions/build_context_extension.dart';
 import '../../../routing/routes.dart';
 import '../../events/ui/event_register_screen.dart';
 import '../../notification/ui/viewmodel/notification_view_model.dart';
@@ -226,7 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: Container(
                   constraints: BoxConstraints(maxHeight: maxHeight),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.secondaryBackgroundColor,
                     borderRadius: BorderRadius.circular(Responsive.w(16)),
                     boxShadow: [
                       BoxShadow(
@@ -499,9 +500,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       children: [
         Scaffold(
           key: _scaffoldKey,
-          backgroundColor: isDark
-              ? const Color(0xFF0E0E10)
-              : const Color(0xFFF6F7FB),
+          backgroundColor: context.primaryBackgroundColor,
 
           appBar: CustomAppBar(
             title: 'Dashboard',
@@ -514,7 +513,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             onDrawer: () {
               context.push(Routes.appDrawer);
             },
-            backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
+            backgroundColor: context.secondaryBackgroundColor,
             showNotification: true,
             onNotification: _handleNotificationTap,
           ),
@@ -706,7 +705,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               Positioned.fill(
                 child: Container(
                   color: isDark
-                      ? const Color(0xFF1A1A1D)
+                      ? AppColors.darkCard
                       : status.heroBg.withValues(alpha: 0.55),
                 ),
               ),
@@ -719,7 +718,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.white.withValues(alpha: isDark ? 0.04 : 0.35),
-                        Colors.white,
+                        isDark ? AppColors.darkCard : AppColors.card,
                       ],
                     ),
                   ),
@@ -912,7 +911,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           Icon(
             Icons.star_rounded,
             size: Responsive.sp(13),
-            color: AppColors.white,
+            color: Colors.white,
           ),
           width(Responsive.w(3)),
           Text(
@@ -920,7 +919,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             style: customTextStyle(
               fontSize: Responsive.sp(11.5),
               fontWeight: FontWeight.w700,
-              color: AppColors.white,
+              color: context.secondaryBackgroundColor,
             ),
           ),
         ],
@@ -946,7 +945,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           Icon(
             Icons.workspace_premium_rounded,
             size: Responsive.sp(13),
-            color: Colors.white,
+            color: context.secondaryBackgroundColor,
           ),
           width(Responsive.w(4)),
           Text(
@@ -954,7 +953,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             style: customTextStyle(
               fontSize: Responsive.sp(11),
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: context.secondaryBackgroundColor,
             ),
           ),
         ],
@@ -1051,7 +1050,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           style: customTextStyle(
             fontSize: Responsive.sp(12.5),
             fontWeight: FontWeight.w700,
-            color: AppColors.textColor,
+            color: context.primaryTextColor,
           ),
         ),
       ],
@@ -1186,7 +1185,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     Text(
                       'POLICY NUMBER',
                       style: customTextStyle(
-                        color: AppColors.homeTextMuted,
+                        color: context.secondaryTextColor,
                         fontSize: Responsive.sp(9.5),
                         fontWeight: FontWeight.w600,
                       ).copyWith(letterSpacing: 1.1),
@@ -1397,11 +1396,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: Container(
               padding: EdgeInsets.all(Responsive.w(16)),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.white, Colors.white],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: context.secondaryBackgroundColor,
+                // gradient: LinearGradient(
+                //   colors: [AppColors.white, Colors.white],
+                //   begin: Alignment.topLeft,
+                //   end: Alignment.bottomRight,
+                // ),
                 borderRadius: BorderRadius.circular(Responsive.w(18)),
                 border: Border.all(
                   color: AppColors.iconPink.withValues(alpha: 0.10),
@@ -1451,7 +1451,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     width: Responsive.w(32),
                     height: Responsive.w(32),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.secondaryBackgroundColor,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -1587,7 +1587,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Container(
         padding: EdgeInsets.all(Responsive.w(16)),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(Responsive.w(18)),
           boxShadow: [
             BoxShadow(
@@ -1698,9 +1698,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           child: Container(
             padding: EdgeInsets.all(Responsive.w(12)),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.secondaryBackgroundColor,
               borderRadius: BorderRadius.circular(Responsive.w(20)),
-              border: Border.all(color: Colors.grey.shade200),
+              border: Border.all(color: context.dividerColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.035),
@@ -1817,7 +1817,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         vertical: Responsive.h(25),
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(30)),
         boxShadow: [
           BoxShadow(
@@ -1839,7 +1839,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
             child: Icon(
               Icons.help_outline,
-              color: AppColors.white,
+              color: context.secondaryBackgroundColor,
               size: Responsive.sp(25),
             ),
           ),
@@ -1919,7 +1919,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           return Container(
             width: Responsive.w(220),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.secondaryBackgroundColor,
               borderRadius: BorderRadius.circular(Responsive.w(20)),
               boxShadow: [
                 BoxShadow(
@@ -2043,9 +2043,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       margin: EdgeInsets.only(bottom: Responsive.h(12)),
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(18)),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.035),

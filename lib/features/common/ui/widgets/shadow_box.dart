@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/theme/app_colors.dart';
+import '/extensions/build_context_extension.dart';
 
 class ShadowBox extends StatelessWidget {
   final Widget child;
@@ -16,11 +16,13 @@ class ShadowBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.mono0,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(
-            color: AppColors.mono100.withAlpha(60),
+            color: context.isDarkMode
+                ? Colors.black.withValues(alpha: 0.24)
+                : Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),

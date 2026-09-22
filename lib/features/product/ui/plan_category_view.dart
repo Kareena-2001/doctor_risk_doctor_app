@@ -1,5 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class PlanCategoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: const CustomAppBar(title: 'Browse Plans'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -157,7 +158,7 @@ class _CategoryCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color:context.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
             boxShadow: [

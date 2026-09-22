@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
+import '../../../../extensions/build_context_extension.dart';
 import '../../../../theme/app_colors.dart';
 
 class EventListTab extends StatelessWidget {
@@ -52,7 +53,7 @@ class _EventCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:  context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(22)),
         boxShadow: [
           BoxShadow(

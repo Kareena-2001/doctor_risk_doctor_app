@@ -7,7 +7,6 @@ import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../extensions/build_context_extension.dart';
-import '../../../theme/app_colors.dart';
 
 enum YourStoryMode { text, video, document }
 
@@ -46,8 +45,8 @@ class _YourStoryScreenState extends State<YourStoryScreen>
             padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
             child: TabBar(
               controller: _tabController,
-              indicatorColor: AppColors.newPri,
-              labelColor: AppColors.newPri,
+              indicatorColor: Theme.of(context).colorScheme.primary,
+              labelColor: Theme.of(context).colorScheme.primary,
               unselectedLabelColor: context.secondaryTextColor,
               labelStyle: customTextStyle(
                 fontSize: Responsive.sp(13),

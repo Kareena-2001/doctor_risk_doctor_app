@@ -44,7 +44,7 @@ class ReferralLinkCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         boxShadow: [
           BoxShadow(
@@ -62,7 +62,7 @@ class ReferralLinkCard extends StatelessWidget {
             style: customTextStyle(
               fontSize: Responsive.sp(13),
               fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           height(Responsive.h(8)),
@@ -72,7 +72,7 @@ class ReferralLinkCard extends StatelessWidget {
               vertical: Responsive.h(10),
             ),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: context.secondaryWidgetColor,
               borderRadius: BorderRadius.circular(Responsive.w(10)),
             ),
             child: Row(
@@ -90,7 +90,7 @@ class ReferralLinkCard extends StatelessWidget {
                           maxLines: 1,
                           style: customTextStyle(
                             fontSize: Responsive.sp(12),
-                            color: AppColors.textColor,
+                            color: context.primaryTextColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

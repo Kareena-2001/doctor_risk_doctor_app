@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _RenewalCentreScreenState extends ConsumerState<RenewalCentreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8F9FA),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Renewal Centre'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -57,7 +58,7 @@ class _RenewalCentreScreenState extends ConsumerState<RenewalCentreScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
@@ -108,7 +109,10 @@ class _RenewalCentreScreenState extends ConsumerState<RenewalCentreScreen> {
                   children: [
                     Text(
                       'Plan',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: customTextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF6B7280),
+                      ),
                     ),
                     SizedBox(height: 2),
                     Text(
@@ -473,7 +477,7 @@ class _RenewalCentreScreenState extends ConsumerState<RenewalCentreScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFBFDBFE)),
       ),

@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:Doctors_App/features/community/ui/widgets/testimonial_card.dart';
@@ -34,7 +35,7 @@ class _AllTestimonialListScreenState
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: context.primaryBackgroundColor,
       body: testimonialState.when(
         loading: () => const Center(child: Loading()),
         error: (error, _) => _buildError(error),

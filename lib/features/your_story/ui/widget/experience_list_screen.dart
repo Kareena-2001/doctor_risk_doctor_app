@@ -9,6 +9,7 @@ import 'package:Doctors_App/features/your_story/ui/widget/experience_card.dart';
 import 'package:Doctors_App/features/your_story/ui/widget/share_experience_form.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExperienceListScreen extends ConsumerStatefulWidget {
@@ -35,7 +36,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: context.primaryBackgroundColor,
       floatingActionButton: FloatingActionButton(
         heroTag: 'addExperience',
         backgroundColor: AppColors.newPri,
@@ -83,7 +84,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
                       'You haven\'t shared any experiences yet',
                       style: customTextStyle(
                         fontSize: Responsive.sp(13),
-                        color: Colors.grey.shade600,
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   ),

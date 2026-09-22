@@ -166,7 +166,7 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
     final isSubmitting = submitState.isLoading;
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Share Testimonial'),
       body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
@@ -185,11 +185,8 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
             'Approved testimonials are published under Community → Testimonials, open for members and non-members to view.',
           ),
           height(Responsive.h(20)),
-
           _buildModeToggle(),
-
           height(Responsive.h(15)),
-
           if (_mode == YourStoryMode.text)
             _buildTextInput()
           else if (_mode == YourStoryMode.video)
@@ -219,7 +216,7 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              width(Responsive.w(8)),
               Expanded(
                 child: Text(
                   'I agree to share this content within the DoctorsRisk community for publishing and viewing purposes among my medical peers.',
@@ -257,7 +254,7 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
     return Container(
       padding: EdgeInsets.all(Responsive.w(4)),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(30)),
       ),
       child: Row(

@@ -5,6 +5,7 @@ import 'package:Doctors_App/features/community/ui/peer_forum_screen.dart';
 import 'package:Doctors_App/features/community/ui/refer_group_screen.dart';
 import 'package:Doctors_App/features/community/ui/widgets/all_testimonial_list_screen.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
 class CommunityScreen extends StatefulWidget {
@@ -34,12 +35,12 @@ class _CommunityScreenState extends State<CommunityScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.newBg,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Community', showBack: false),
       body: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: context.secondaryBackgroundColor,
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.newPri,

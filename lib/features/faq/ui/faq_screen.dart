@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/faq/ui/view_model/faq_view_model.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,6 @@ class FaqScreen extends ConsumerStatefulWidget {
 }
 
 class _FaqScreenState extends ConsumerState<FaqScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +27,6 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     Responsive.init(context);
@@ -35,7 +34,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     final faqState = ref.watch(faqViewModelProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: "FAQ's"),
       body: faqState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -60,7 +59,6 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         Text(
                           'Common questions about your policy, membership and how DoctorsRisk works as a service.',
                           style: customTextStyle(
@@ -108,7 +106,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
   Widget _buildQuesAns(String number, String question, String answer) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),

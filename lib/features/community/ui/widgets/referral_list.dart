@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/community/model/referred_doctors_response.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +20,7 @@ class ReferralList extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.all(Responsive.w(20)),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(Responsive.w(16)),
         ),
         child: Text(
@@ -62,7 +63,7 @@ class _ReferralTile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(14)),
         boxShadow: [
           BoxShadow(

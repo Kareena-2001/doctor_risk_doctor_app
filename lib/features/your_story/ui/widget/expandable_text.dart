@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
 class ExpandableText extends StatelessWidget {
@@ -30,7 +31,7 @@ class ExpandableText extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: context.secondaryBackgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Responsive.w(16)),
         ),
@@ -40,7 +41,7 @@ class ExpandableText extends StatelessWidget {
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textColor,
+                  color: context.primaryTextColor,
                 ),
               )
             : null,
@@ -51,7 +52,7 @@ class ExpandableText extends StatelessWidget {
                 style?.copyWith(height: 1.6) ??
                 customTextStyle(
                   fontSize: Responsive.sp(12),
-                  color: Colors.grey.shade700,
+                  color: context.secondaryTextColor,
                 ).copyWith(height: 1.6),
           ),
         ),
@@ -61,7 +62,7 @@ class ExpandableText extends StatelessWidget {
             child: Text(
               'Close',
               style: customTextStyle(
-                color: AppColors.newPri,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),

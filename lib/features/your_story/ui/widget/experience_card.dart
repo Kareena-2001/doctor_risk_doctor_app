@@ -5,6 +5,7 @@ import 'package:Doctors_App/core/widgets/formatters.dart';
 import 'package:Doctors_App/core/widgets/media_preview_tiles.dart';
 import 'package:Doctors_App/features/your_story/model/experience_response.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
 import 'approval_status.dart';
@@ -29,14 +30,14 @@ class ExperienceCard extends StatelessWidget {
 
     final detailsStyle = customTextStyle(
       fontSize: Responsive.sp(13),
-      color: Colors.grey.shade700,
+      color: context.secondaryTextColor,
     );
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: const Color(0xFFF3F4F6)),
+        border: Border.all(color: context.dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -75,7 +76,7 @@ class ExperienceCard extends StatelessWidget {
                 style: customTextStyle(
                   fontSize: Responsive.sp(11),
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF6B7280),
+                  color: context.secondaryTextColor,
                 ),
               ),
             ],
@@ -88,7 +89,7 @@ class ExperienceCard extends StatelessWidget {
             style: customTextStyle(
               fontSize: Responsive.sp(13),
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF111827),
+              color: context.primaryTextColor,
             ).copyWith(height: 1.3),
           ),
           height(Responsive.h(12)),
@@ -108,7 +109,7 @@ class ExperienceCard extends StatelessWidget {
             ),
 
           height(Responsive.h(14)),
-          const Divider(height: 1, color: Color(0xFFF3F4F6)),
+          Divider(height: 1, color: context.dividerColor),
           height(Responsive.h(12)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,7 +119,7 @@ class ExperienceCard extends StatelessWidget {
                   Icon(
                     Icons.calendar_today_outlined,
                     size: Responsive.w(14),
-                    color: const Color(0xFF6B7280),
+                    color: context.secondaryTextColor,
                   ),
                   width(Responsive.w(6)),
                   Text(
@@ -126,7 +127,7 @@ class ExperienceCard extends StatelessWidget {
                     style: customTextStyle(
                       fontSize: Responsive.sp(12),
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF6B7280),
+                      color: context.secondaryTextColor,
                     ),
                   ),
                 ],

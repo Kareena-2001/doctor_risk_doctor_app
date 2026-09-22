@@ -5,6 +5,7 @@ import 'package:Doctors_App/core/widgets/formatters.dart';
 import 'package:Doctors_App/core/widgets/media_preview_tiles.dart';
 import 'package:Doctors_App/features/community/model/testimonial_response.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../../your_story/ui/widget/approval_status.dart';
@@ -28,21 +29,17 @@ class TestimonialCard extends StatelessWidget {
         ? testimonial.drName!.trim()
         : 'Doctor';
 
-    final speciality = testimonial.specialityName?.trim().isNotEmpty == true
-        ? testimonial.specialityName!.trim()
-        : 'Medical Professional';
-
     final content = testimonial.details.trim();
     final detailsStyle = customTextStyle(
       fontSize: Responsive.sp(13),
-      color: Colors.grey.shade700,
+      color: context.secondaryTextColor,
     );
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: const Color(0xFFF3F4F6)),
+        border: Border.all(color: context.dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -101,7 +98,7 @@ class TestimonialCard extends StatelessWidget {
               dialogTitle: name,
             ),
           height(Responsive.h(14)),
-          const Divider(height: 1, color: Color(0xFFF3F4F6)),
+          Divider(height: 1, color: context.dividerColor),
           height(Responsive.h(12)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

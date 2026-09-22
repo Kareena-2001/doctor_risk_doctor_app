@@ -278,7 +278,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Share Experience'),
       body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
@@ -476,7 +476,8 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     return Container(
       padding: EdgeInsets.all(Responsive.w(4)),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: context.secondaryWidgetColor,
+        // color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(Responsive.w(30)),
       ),
       child: Row(

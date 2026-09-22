@@ -12,6 +12,7 @@ import '../../../theme/app_colors.dart';
 import '../../../utils/global_loading.dart';
 import '../../features/authentication/ui/view_model/authentication_view_model.dart';
 import '../../features/common/ui/widgets/common_dialog.dart';
+import '../../features/common/ui/providers/app_theme_mode_provider.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -43,6 +44,7 @@ class AppDrawer extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sectionLabel('CORE SERVICES', isDark),
+                    const SizedBox(height: 8),
                     _tile(
                       context,
                       icon: Icons.shopping_bag_outlined,
@@ -167,6 +169,7 @@ class AppDrawer extends ConsumerWidget {
                       ),
                     ),
                     _sectionLabel('ACCOUNT', isDark),
+                    _themeToggle(context, ref, isDark),
                     _tile(
                       context,
                       icon: Icons.lock_outline_rounded,
@@ -199,6 +202,50 @@ class AppDrawer extends ConsumerWidget {
           fontWeight: FontWeight.w800,
           color: isDark ? Colors.white38 : AppColors.mono60,
         ).copyWith(letterSpacing: 1.2),
+      ),
+    );
+  }
+
+  Widget _themeToggle(BuildContext context, WidgetRef ref, bool isDark) {
+    final mode = ref.watch(appThemeModeProvider).value ?? ThemeMode.system;
+    final enabled = mode == ThemeMode.dark;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? AppColors.darkLine : AppColors.lineLight,
+        ),
+      ),
+      child: SwitchListTile.adaptive(
+        value: enabled,
+        onChanged: (value) {
+          ref
+              .read(appThemeModeProvider.notifier)
+              .updateMode(value ? ThemeMode.dark : ThemeMode.light);
+        },
+        secondary: Icon(
+          enabled ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+          color: AppColors.brand500,
+        ),
+        title: Text(
+          'Dark mode',
+          style: customTextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: isDark ? AppColors.darkInk900 : AppColors.ink900,
+          ),
+        ),
+        subtitle: Text(
+          'Use the DoctorsRisk dark palette',
+          style: customTextStyle(
+            fontSize: 11.5,
+            color: isDark ? AppColors.darkInk600 : AppColors.ink600,
+          ),
+        ),
+        activeThumbColor: AppColors.brand500,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
       ),
     );
   }

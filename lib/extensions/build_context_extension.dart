@@ -25,12 +25,33 @@ extension ThemeModeExtension on BuildContext {
 
   ThemeData get lightTheme => ThemeData.light().copyWith(
     scaffoldBackgroundColor: AppColors.mono0,
+    canvasColor: AppColors.mono0,
+    cardColor: AppColors.mono0,
     colorScheme: Theme.of(this).colorScheme.copyWith(
       brightness: Brightness.light,
-      primary: AppColors.blueberry100,
+      primary: AppColors.brand700,
+      secondary: AppColors.brand500,
+      surface: AppColors.mono0,
+      onSurface: AppColors.ink900,
+      outline: AppColors.lineLight,
       error: AppColors.rambutan100,
     ),
-    textTheme: Theme.of(this).textTheme.apply(bodyColor: AppColors.mono100),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.mono0,
+      foregroundColor: AppColors.ink900,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+    ),
+    dividerTheme: const DividerThemeData(color: AppColors.lineLight),
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.mono0,
+      hintStyle: TextStyle(color: AppColors.ink400),
+    ),
+    textTheme: Theme.of(this).textTheme.apply(
+      bodyColor: AppColors.ink900,
+      displayColor: AppColors.ink900,
+    ),
   );
 
   ThemeData get darkTheme => ThemeData.dark().copyWith(
@@ -54,6 +75,12 @@ extension ThemeModeExtension on BuildContext {
       onSurface: AppColors.darkInk900,
       outline: AppColors.darkLine,
       error: AppColors.rambutan100,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.darkCard,
+      foregroundColor: AppColors.darkInk900,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
     ),
     dividerTheme: const DividerThemeData(color: AppColors.darkLine),
     inputDecorationTheme: const InputDecorationTheme(

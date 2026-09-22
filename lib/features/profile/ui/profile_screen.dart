@@ -341,7 +341,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(title: 'Profile & Account', showBack: false),
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: context.primaryBackgroundColor,
       body: profileAsync.when(
         loading: () => const Center(child: Loading()),
         error: (error, _) => _buildErrorState(error),
@@ -575,7 +575,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey.shade200),
       ),
@@ -771,12 +771,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildAddressCard(dynamic address, int index) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: context.secondaryBackgroundColor,
+        // color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+
+        border: Border.all(
+          color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

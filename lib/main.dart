@@ -9,7 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/responsive.dart';
+import 'extensions/build_context_extension.dart';
 import 'features/common/ui/widgets/offline_container.dart';
+import 'features/common/ui/providers/app_theme_mode_provider.dart';
 import 'features/fcm/notification_service.dart';
 import 'firebase_options.dart';
 
@@ -71,12 +73,12 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // final themeMode = ref.watch(appThemeModeProvider);
+    final themeMode = ref.watch(appThemeModeProvider);
 
     return MaterialApp.router(
-      // theme: context.lightTheme,
-      // darkTheme: context.darkTheme,
-      // themeMode: themeMode.value,
+      theme: context.lightTheme,
+      darkTheme: context.darkTheme,
+      themeMode: themeMode.value ?? ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

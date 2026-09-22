@@ -94,7 +94,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           Text(
             title,
             style: customTextStyle(
-              color: AppColors.watermelon100,
+              color: AppColors.appBarText(ref),
               fontSize: Responsive.sp(16),
               fontWeight: FontWeight.w700,
             ),

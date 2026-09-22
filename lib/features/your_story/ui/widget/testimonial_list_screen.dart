@@ -7,6 +7,7 @@ import 'package:Doctors_App/features/your_story/ui/widget/add_testimonial_form.d
 import 'package:Doctors_App/features/your_story/ui/widget/testimonial_card.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TestimonialListScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: context.primaryBackgroundColor,
       body: testimonialState.when(
         loading: () => const Center(child: Loading()),
         error: (error, _) => _buildError(error),
@@ -101,7 +102,7 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
               textAlign: TextAlign.center,
               style: customTextStyle(
                 fontSize: Responsive.sp(13),
-                color: Colors.grey.shade700,
+                color: context.secondaryTextColor,
               ),
             ),
             height(Responsive.h(16)),

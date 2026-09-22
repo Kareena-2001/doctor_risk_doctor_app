@@ -71,8 +71,26 @@ class AppColors {
   static const buttonColor2 = Color(0xFF166C3F);
 
   static const lightGreen = Color(0xFFE9F7EC);
-  static const Color brand600 = Color(0xFF16A34A);
-  static const Color brand800 = Color(0xFF166C3F);
+  static const Color brand900 = Color(0xFF0E3323);
+  static const Color brand800 = Color(0xFF124430);
+  static const Color brand700 = Color(0xFF166C3F);
+  static const Color brand600 = Color(0xFF1F8B4C);
+  static const Color brand500 = Color(0xFF2FAE5E);
+  static const Color brand400 = Color(0xFF57C97E);
+  static const Color mint100 = Color(0xFFE9F7EC);
+  static const Color mint200 = Color(0xFFD5F0DC);
+  static const Color paper = Color(0xFFF7FAF8);
+  static const Color card = Color(0xFFFFFFFF);
+  static const Color ink900 = Color(0xFF122019);
+  static const Color ink600 = Color(0xFF41524A);
+  static const Color ink400 = Color(0xFF71847C);
+  static const Color lineLight = Color(0x1A122019);
+  static const Color amber500 = Color(0xFFEF9F2E);
+  static const Color amber100 = Color(0xFFFCEFD9);
+  static const Color coral500 = Color(0xFFE15C48);
+  static const Color coral100 = Color(0xFFFBE6E2);
+  static const Color sky500 = Color(0xFF3E8FD0);
+  static const Color sky100 = Color(0xFFE4F0FA);
 
   static const LinearGradient brandLinearGradient = LinearGradient(
     colors: [brand600, brand800],
@@ -80,12 +98,12 @@ class AppColors {
   );
 
   static const Color brandGreen = Color(0xFF0D4B34);
-  static const whiteBg = Color(0xFFFFF5EE);
+  static const whiteBg = paper;
   static const premiumBackground = Color(0xFF000000);
   static const Color newPri = Color(0xFF166C3F);
   static const Color newSec = Color(0xFFedf4f4);
   static const Color newTer = Color(0xFFE4E8EA);
-  static const Color newBg = Color(0xffF6F7FB);
+  static const Color newBg = paper;
   static const Color homeProduct = Color(0xFF166C3F);
   static const Color homeProductBg = Color(0xFFEAF5EF);
 

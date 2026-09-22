@@ -49,7 +49,7 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: const CustomAppBar(title: "Event Registration"),
       body: SingleChildScrollView(
         child: Padding(
@@ -130,7 +130,7 @@ class _EventRegisterScreenState extends State<EventRegisterScreen> {
       width: double.infinity,
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         border: Border.all(color: Colors.grey.shade200),
       ),

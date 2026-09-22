@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/viewmodel/news_advisory_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
@@ -43,7 +44,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
     final newsState = ref.watch(newsAdvisoryViewModelProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: const CustomAppBar(title: 'News & Advisories'),
       body: newsState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -119,7 +120,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.shade200),
         ),

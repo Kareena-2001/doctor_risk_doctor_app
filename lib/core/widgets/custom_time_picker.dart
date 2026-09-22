@@ -28,6 +28,7 @@ class CustomTimePicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,7 +37,7 @@ class CustomTimePicker extends ConsumerWidget {
             Text(
               label,
               style: customTextStyle(
-                color: AppColors.labelColor,
+                color: isDark ? AppColors.darkInk600 : AppColors.labelColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
@@ -68,7 +69,7 @@ class CustomTimePicker extends ConsumerWidget {
           style: AppTheme.label12,
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: isDark ? AppColors.darkCard : AppColors.white,
             hintText: hint,
             suffixIcon: Icon(
               Icons.access_time_outlined,
@@ -84,20 +85,27 @@ class CustomTimePicker extends ConsumerWidget {
               horizontal: 16,
               vertical: 14,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.fieldBorder),
-            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.fieldBorder),
+              borderSide: BorderSide(
+                color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+                // width: 1.5,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
+              borderSide: BorderSide(
+                color: isDark ? AppColors.darkBrand500 : AppColors.primary,
                 width: 1.5,
               ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.red),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Colors.red, width: 1.5),
             ),
           ),
         ),

@@ -77,7 +77,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final isLoading = asyncState.valueOrNull?.isLoading ?? false;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
         title: 'Change Password',
         showBack: true,

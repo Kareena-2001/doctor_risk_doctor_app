@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/routing/routes.dart';
@@ -37,7 +38,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
         title: 'My Submissions & Rewards',
         subTitle:
@@ -163,7 +164,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [

@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/events/ui/widget/collaborate_tab.dart';
 import 'package:Doctors_App/features/events/ui/widget/event_list_tab.dart';
 import 'package:Doctors_App/routing/routes.dart';
@@ -147,12 +148,12 @@ class _EventsScreenState extends State<EventsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: "Events Hub"),
       floatingActionButton: _tabController.index == 2
           ? Container(
               decoration: BoxDecoration(
-                gradient:  LinearGradient(
+                gradient: LinearGradient(
                   colors: [AppColors.newPri, AppColors.primary],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -200,7 +201,7 @@ class _EventsScreenState extends State<EventsScreen>
       body: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: context.secondaryBackgroundColor,
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.newPri,
@@ -267,7 +268,7 @@ class _EventsScreenState extends State<EventsScreen>
                           colors: [AppColors.newPri, AppColors.primary],
                         )
                       : null,
-                  color: selected ? null : Colors.white,
+                  color: selected ? null : context.secondaryWidgetColor,
                   borderRadius: BorderRadius.circular(Responsive.w(30)),
                   border: Border.all(
                     color: selected ? Colors.transparent : Colors.grey.shade300,

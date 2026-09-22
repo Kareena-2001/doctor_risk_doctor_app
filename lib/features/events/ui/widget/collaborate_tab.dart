@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/exceptions/app_exception.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/events/model/collaboration_response.dart';
 import 'package:Doctors_App/features/events/ui/view_model/events_view_model.dart';
@@ -127,7 +128,7 @@ class _CollaborationCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:  context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [

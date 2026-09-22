@@ -165,7 +165,7 @@ class _EventCollaborateScreenState
     }
 
     return Scaffold(
-      backgroundColor: Color(0xffF6F7FB),
+      backgroundColor:context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Collaborate Proposal'),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(Responsive.w(16)),
@@ -384,7 +384,7 @@ class _EventCollaborateScreenState
       width: double.infinity,
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         border: Border.all(color: Colors.grey.shade200),
       ),

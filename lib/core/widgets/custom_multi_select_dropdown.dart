@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/dimensions.dart';
@@ -129,7 +130,6 @@ class _CustomMultiSelectDropdownFieldState<T>
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // Scrim to catch outside taps
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -177,6 +177,7 @@ class _CustomMultiSelectDropdownFieldState<T>
   @override
   Widget build(BuildContext context) {
     final selected = widget.selectedItems;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CompositedTransformTarget(
       link: _layerLink,
@@ -191,7 +192,7 @@ class _CustomMultiSelectDropdownFieldState<T>
                 Text(
                   widget.label,
                   style: customTextStyle(
-                    color: AppColors.labelColor,
+                    color: isDark ? AppColors.darkInk600 : AppColors.labelColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -215,7 +216,7 @@ class _CustomMultiSelectDropdownFieldState<T>
               decoration: BoxDecoration(
                 color: _blocked && !_hasError
                     ? const Color(0xFFF8F9FA)
-                    : AppColors.white,
+                    : context.secondaryBackgroundColor,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _hasError
@@ -511,7 +512,7 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
       width: widget.width,
       constraints: BoxConstraints(maxHeight: widget.maxHeight),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(

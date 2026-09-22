@@ -4,6 +4,7 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/blog_central/model/blog_list_response.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
@@ -58,8 +59,8 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar:  CustomAppBar(title: 'Blog Central'),
+      backgroundColor: context.primaryBackgroundColor,
+      appBar: CustomAppBar(title: 'Blog Central'),
       body: AppRefreshIndicator(
         onRefresh: () async => _fetchData(),
         child: SingleChildScrollView(
@@ -178,7 +179,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
       width: double.infinity,
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F8F5),
+        color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
         border: Border.all(color: const Color(0xFFD4EADF)),
       ),
@@ -281,7 +282,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
       child: Container(
         padding: EdgeInsets.all(Responsive.w(14)),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.secondaryWidgetColor,
           borderRadius: BorderRadius.circular(Responsive.w(12)),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [

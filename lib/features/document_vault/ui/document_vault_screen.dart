@@ -27,6 +27,7 @@ class DocumentVaultScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionHeader(
+              context,
               'Your Uploaded Documents',
               'Required for registration and to activate policies where relevant.',
             ),
@@ -36,6 +37,7 @@ class DocumentVaultScreen extends ConsumerWidget {
             ),
             height(Responsive.h(24)),
             _buildSectionHeader(
+              context,
               'Company‑Issued Documents',
               'Issued by DoctorsRisk once your plan and payment are confirmed.',
             ),
@@ -52,7 +54,11 @@ class DocumentVaultScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, String subtitle) {
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    String subtitle,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,7 +67,7 @@ class DocumentVaultScreen extends ConsumerWidget {
           style: customTextStyle(
             fontSize: Responsive.sp(16),
             fontWeight: FontWeight.w700,
-            color: AppColors.textColor,
+            color: context.primaryTextColor,
           ),
         ),
         height(Responsive.h(4)),
@@ -88,7 +94,7 @@ class DocumentVaultScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: AppColors.fieldGrey.withValues(alpha: 0.5)),
+        border: Border.all(color: context.dividerColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,7 +116,7 @@ class DocumentVaultScreen extends ConsumerWidget {
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textColor,
+                    color: context.primaryTextColor,
                   ),
                 ),
                 if (doc.fileName != null) ...[
@@ -171,7 +177,7 @@ class DocumentVaultScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: AppColors.fieldGrey.withValues(alpha: 0.5)),
+        border: Border.all(color: context.dividerColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -193,7 +199,7 @@ class DocumentVaultScreen extends ConsumerWidget {
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textColor,
+                    color: context.primaryTextColor,
                   ),
                 ),
                 if (doc.subtitle != null) ...[
@@ -259,8 +265,8 @@ class DocumentVaultScreen extends ConsumerWidget {
           Icon(
             Icons.help_outline_rounded,
             color: context.isDarkMode
-                ? Colors.blue.shade200
-                : const Color(0xFF3E8FD0),
+                ? AppColors.darkBrand500
+                : AppColors.sky500,
             size: Responsive.sp(20),
           ),
           width(Responsive.w(10)),
@@ -270,8 +276,8 @@ class DocumentVaultScreen extends ConsumerWidget {
               style: customTextStyle(
                 fontSize: Responsive.sp(11.5),
                 color: context.isDarkMode
-                    ? Colors.blue.shade200
-                    : const Color(0xFF3E8FD0),
+                    ? AppColors.darkBrand500
+                    : AppColors.sky500,
                 fontWeight: FontWeight.w500,
               ),
             ),

@@ -159,7 +159,7 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         boxShadow: [
           BoxShadow(

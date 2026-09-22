@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/state/plan_finder_state.dart';
 import 'package:Doctors_App/features/product/ui/view_model/plan_finder_view_model.dart';
@@ -67,7 +68,7 @@ class PlanFinderView extends ConsumerWidget {
     final vm = ref.read(planFinderViewModelProvider(args).notifier);
 
     return Scaffold(
-      backgroundColor: Color(0xFFF8FAFC),
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Browse Plans'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -135,7 +136,7 @@ class _OrgBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFECFDF5),
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -182,7 +183,7 @@ class _ActivePolicyWarning extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFBEB),
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFFFDE68A)),
       ),
@@ -230,7 +231,7 @@ class _FilterCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
@@ -357,7 +358,7 @@ class _IntroCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
@@ -408,7 +409,7 @@ class _ComparePlansCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xFFECFDF5),
+        color:context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -489,9 +490,10 @@ class _ComparisonBottomSheetState extends State<_ComparisonBottomSheet> {
     final sh = MediaQuery.of(context).size.height;
     return Container(
       height: sh * 0.88,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color:
+        context.secondaryBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -965,7 +967,7 @@ class _QuoteResultCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
