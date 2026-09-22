@@ -8,6 +8,7 @@ import '/theme/app_theme.dart';
 import 'material_ink_well.dart';
 
 class SecondaryButton extends ConsumerWidget {
+  final Color? borderColor;
   final String text;
   final Function() onPressed;
   final Widget? icon;
@@ -18,6 +19,7 @@ class SecondaryButton extends ConsumerWidget {
 
   const SecondaryButton({
     super.key,
+    this.borderColor,
     required this.text,
     required this.onPressed,
     this.icon,
@@ -37,7 +39,7 @@ class SecondaryButton extends ConsumerWidget {
         color: isEnable ? bgColor : AppColors.mono20,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isEnable ? txtColor : AppColors.mono20,
+          color: borderColor ?? Colors.transparent,
           width: 1,
         ),
       ),

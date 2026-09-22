@@ -133,40 +133,58 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     late final Color statusColor;
     late final Color statusBgColor;
 
+    final isDark = context.isDarkMode;
+
     switch (rawStatus) {
       case 'published_to_forum':
       case 'published to forum':
       case 'approved':
       case 'published':
         statusLabel = 'Published to Forum';
-        statusColor = const Color(0xFF15803D);
-        statusBgColor = const Color(0xFFDCFCE7);
+        statusColor = isDark
+            ? const Color(0xFF57D485)
+            : const Color(0xFF15803D);
+        statusBgColor = isDark
+            ? const Color(0xFF143522)
+            : const Color(0xFFDCFCE7);
         break;
+
       case 'draft':
         statusLabel = 'Draft';
-        statusColor = const Color(0xFF4B5563);
-        statusBgColor = const Color(0xFFF3F4F6);
+        statusColor = isDark ? AppColors.darkInk400 : const Color(0xFF4B5563);
+        statusBgColor = isDark
+            ? const Color(0xFF242A2D)
+            : const Color(0xFFF3F4F6);
         break;
+
       case 'rejected':
       case 'not_approved':
         statusLabel = 'Not Approved';
-        statusColor = const Color(0xFFB91C1C);
-        statusBgColor = const Color(0xFFFEE2E2);
+        statusColor = isDark
+            ? const Color(0xFFFF7777)
+            : const Color(0xFFB91C1C);
+        statusBgColor = isDark
+            ? const Color(0xFF351B1D)
+            : const Color(0xFFFEE2E2);
         break;
+
       case 'awaiting_admin_approval':
       case 'awaiting admin approval':
       default:
         statusLabel = 'Awaiting Admin Approval';
-        statusColor = const Color(0xFFB45309);
-        statusBgColor = const Color(0xFFFEF3C7);
+        statusColor = isDark
+            ? const Color(0xFFFFC857)
+            : const Color(0xFFB45309);
+        statusBgColor = isDark
+            ? const Color(0xFF352B17)
+            : const Color(0xFFFEF3C7);
         break;
     }
-
     return Container(
       decoration: BoxDecoration(
-        color: context.secondaryWidgetColor,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: context.borderColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -191,7 +209,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     style: customTextStyle(
                       fontSize: Responsive.sp(14),
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1F2937),
+                      color: context.primaryTextColor,
                     ).copyWith(height: 1.3),
                   ),
                 ),
@@ -238,7 +256,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
               ),
             ),
             height(Responsive.h(12)),
-            Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+            Divider(height: 1, thickness: 1, color: context.borderColor),
             height(Responsive.h(10)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

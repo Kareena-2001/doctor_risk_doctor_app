@@ -366,7 +366,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.borderGrey),
+                border: Border.all(color: context.borderColor),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -388,7 +388,8 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
                       'or contact our helpline.',
                       style: customTextStyle(
                         fontSize: Responsive.sp(10.5),
-                        color: AppColors.textColor,
+                        // color: AppColors.textColor,
+                        color: context.secondaryTextColor,
                       ).copyWith(height: 1.5),
                     ),
                   ),
@@ -416,6 +417,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
             children: [
               Expanded(
                 child: SecondaryButton(
+                  borderColor: context.borderColor,
                   onPressed: () => Navigator.pop(context),
                   text: 'Cancel',
                 ),
@@ -423,6 +425,7 @@ class _AddBlogScreenState extends ConsumerState<AddBlogScreen> {
               width(12),
               Expanded(
                 child: SecondaryButton(
+                  borderColor: context.borderColor,
                   onPressed: isSubmitting ? () {} : _saveAsDraft,
                   text: isEditing ? 'Save Changes' : 'Save as Draft',
                 ),

@@ -16,43 +16,61 @@ import '../provider/appointment_provider.dart';
 class AppointmentListView extends ConsumerWidget {
   const AppointmentListView({super.key});
 
-  Color _statusColor(String status) {
+  Color _statusColor(BuildContext context, String status) {
+    final isDark = context.isDarkMode;
+
     switch (status.toLowerCase()) {
       case 'completed':
       case 'closed':
-        return Colors.green;
+        return isDark
+            ? AppColors.darkBrand500
+            : Colors.green;
+
       case 'cancelled':
-        return Colors.red;
+        return isDark
+            ? const Color(0xFFFF6B6B)
+            : Colors.red;
+
       case 'open':
       case 'scheduled':
-        return AppColors.newPri;
+        return isDark
+            ? AppColors.darkBrand500
+            : AppColors.newPri;
+
       default:
-        return AppColors.newPri;
+        return isDark
+            ? AppColors.darkBrand500
+            : AppColors.newPri;
     }
   }
 
-  void _showAppointmentDetails(BuildContext context, AppointmentModel appt) {
-    final statusColor = _statusColor(appt.status);
+  void _showAppointmentDetails(
+      BuildContext context,
+      AppointmentModel appt,
+      ) {
+    final statusColor = _statusColor(context, appt.status);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: context.secondaryBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
             left: 20,
             right: 20,
             top: 20,
-            bottom: MediaQuery.of(context).padding.bottom + 20,
+            bottom: MediaQuery.of(sheetContext).padding.bottom + 20,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header & Close Button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -62,20 +80,23 @@ class AppointmentListView extends ConsumerWidget {
                       style: customTextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: sheetContext.primaryTextColor,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close,
+                      color: sheetContext.primaryTextColor,
+                    ),
+                    onPressed: () => Navigator.pop(sheetContext),
                   ),
                 ],
               ),
               height(16),
 
-              // Detail Key-Value Rows
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Status',
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -96,78 +117,95 @@ class AppointmentListView extends ConsumerWidget {
                   ),
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Linked ticket',
                 Text(
                   'LS-2026-0142',
-                  // Replace with dynamic field if present: appt.ticketId
                   style: customTextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: sheetContext.primaryTextColor,
                   ),
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Type',
                 Text(
-                  'Legal', // Replace with dynamic field if present: appt.type
+                  'Legal',
                   style: customTextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: sheetContext.primaryTextColor,
                   ),
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Date',
                 Text(
                   DateFormat('dd MMM yyyy').format(appt.date),
                   style: customTextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: sheetContext.primaryTextColor,
                   ),
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Time',
                 Text(
-                  appt.time.format(context),
+                  appt.time.format(sheetContext),
                   style: customTextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: sheetContext.primaryTextColor,
                   ),
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Mode',
                 Row(
                   children: [
-                    Icon(appt.mode.icon, size: 14, color: AppColors.newPri),
+                    Icon(
+                      appt.mode.icon,
+                      size: 14,
+                      color: sheetContext.isDarkMode
+                          ? AppColors.darkBrand500
+                          : AppColors.newPri,
+                    ),
                     width(6),
                     Text(
                       appt.mode.label,
                       style: customTextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
+                        color: sheetContext.primaryTextColor,
                       ),
                     ),
                   ],
                 ),
               ),
+
               _buildDetailRow(
-                context,
+                sheetContext,
                 'Link',
                 Flexible(
                   child: SelectableText(
                     'https://meet.doctorsrisk.in/dr-mathur-142',
-                    // Replace with appt.meetingLink
                     style: customTextStyle(
                       fontSize: 12,
-                      color: AppColors.newPri,
+                      color: sheetContext.isDarkMode
+                          ? AppColors.darkBrand500
+                          : AppColors.newPri,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -181,12 +219,12 @@ class AppointmentListView extends ConsumerWidget {
   }
 
   Widget _buildDetailRow(
-    BuildContext context,
-    String label,
-    Widget valueWidget,
-  ) {
+      BuildContext context,
+      String label,
+      Widget valueWidget,
+      ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -201,55 +239,79 @@ class AppointmentListView extends ConsumerWidget {
               ),
             ),
           ),
-          Expanded(child: valueWidget),
+          Expanded(
+            child: valueWidget,
+          ),
         ],
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(
+      BuildContext context,
+      WidgetRef ref,
+      ) {
     final appointments = ref.watch(appointmentProvider);
 
     final openAppointments = appointments
         .where(
           (a) =>
-              a.status.toLowerCase() == 'open' ||
-              a.status.toLowerCase() == 'scheduled',
-        )
+      a.status.toLowerCase() == 'open' ||
+          a.status.toLowerCase() == 'scheduled',
+    )
         .toList();
+
     final completedAppointments = appointments
         .where(
           (a) =>
-              a.status.toLowerCase() == 'completed' ||
-              a.status.toLowerCase() == 'closed',
-        )
+      a.status.toLowerCase() == 'completed' ||
+          a.status.toLowerCase() == 'closed',
+    )
         .toList();
+
     final cancelledAppointments = appointments
-        .where((a) => a.status.toLowerCase() == 'cancelled')
+        .where(
+          (a) => a.status.toLowerCase() == 'cancelled',
+    )
         .toList();
 
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'Appointments'),
+        backgroundColor: context.primaryBackgroundColor,
+        appBar: const CustomAppBar(
+          title: 'Appointments',
+        ),
         floatingActionButton: FloatingActionButton(
           shape: const CircleBorder(),
-          backgroundColor: AppColors.newPri,
-          onPressed: () => context.push(Routes.addAppointment),
-          child: const Icon(Icons.add, color: AppColors.white, size: 25),
+          backgroundColor: context.isDarkMode
+              ? AppColors.darkBrand700
+              : AppColors.newPri,
+          onPressed: () => context.push(
+            Routes.addAppointment,
+          ),
+          child: const Icon(
+            Icons.add,
+            color: AppColors.white,
+            size: 25,
+          ),
         ),
         body: Column(
           children: [
-            // Tab Filters Bar
             Container(
               color: context.secondaryBackgroundColor,
               child: TabBar(
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
-                labelColor: AppColors.newPri,
-                unselectedLabelColor: context.secondaryTextColor,
-                indicatorColor: AppColors.newPri,
+                labelColor: context.isDarkMode
+                    ? AppColors.darkBrand500
+                    : AppColors.newPri,
+                unselectedLabelColor:
+                context.secondaryTextColor,
+                indicatorColor: context.isDarkMode
+                    ? AppColors.darkBrand500
+                    : AppColors.newPri,
                 indicatorWeight: 2.5,
                 labelStyle: customTextStyle(
                   fontSize: 13,
@@ -260,26 +322,49 @@ class AppointmentListView extends ConsumerWidget {
                   fontWeight: FontWeight.w500,
                 ),
                 tabs: [
-                  Tab(text: 'All (${appointments.length})'),
-                  Tab(text: 'Open (${openAppointments.length})'),
-                  Tab(text: 'Closed (${completedAppointments.length})'),
-                  Tab(text: 'Cancelled (${cancelledAppointments.length})'),
+                  Tab(
+                    text: 'All (${appointments.length})',
+                  ),
+                  Tab(
+                    text:
+                    'Open (${openAppointments.length})',
+                  ),
+                  Tab(
+                    text:
+                    'Closed (${completedAppointments.length})',
+                  ),
+                  Tab(
+                    text:
+                    'Cancelled (${cancelledAppointments.length})',
+                  ),
                 ],
               ),
             ),
+
             Divider(
               height: 1,
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: context.dividerColor,
             ),
 
-            // Tab Content List
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildAppointmentList(context, appointments),
-                  _buildAppointmentList(context, openAppointments),
-                  _buildAppointmentList(context, completedAppointments),
-                  _buildAppointmentList(context, cancelledAppointments),
+                  _buildAppointmentList(
+                    context,
+                    appointments,
+                  ),
+                  _buildAppointmentList(
+                    context,
+                    openAppointments,
+                  ),
+                  _buildAppointmentList(
+                    context,
+                    completedAppointments,
+                  ),
+                  _buildAppointmentList(
+                    context,
+                    cancelledAppointments,
+                  ),
                 ],
               ),
             ),
@@ -290,9 +375,9 @@ class AppointmentListView extends ConsumerWidget {
   }
 
   Widget _buildAppointmentList(
-    BuildContext context,
-    List<AppointmentModel> items,
-  ) {
+      BuildContext context,
+      List<AppointmentModel> items,
+      ) {
     if (items.isEmpty) {
       return const CommonEmptyState(
         icon: Icons.calendar_month_outlined,
@@ -306,31 +391,41 @@ class AppointmentListView extends ConsumerWidget {
       separatorBuilder: (_, __) => height(12),
       itemBuilder: (context, index) {
         final appt = items[index];
-        final statusColor = _statusColor(appt.status);
+
+        final statusColor = _statusColor(
+          context,
+          appt.status,
+        );
+
         final isCancelable =
             appt.status.toLowerCase() == 'open' ||
-            appt.status.toLowerCase() == 'scheduled';
+                appt.status.toLowerCase() == 'scheduled';
 
         return Container(
           decoration: BoxDecoration(
             color: context.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: context.borderColor,
             ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Main Info Padding Section
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                padding: const EdgeInsets.fromLTRB(
+                  16,
+                  14,
+                  16,
+                  12,
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
                   children: [
-                    // Top Row: Title + Status Chip
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
@@ -338,18 +433,24 @@ class AppointmentListView extends ConsumerWidget {
                             style: customTextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
+                              color:
+                              context.primaryTextColor,
                             ),
                           ),
                         ),
                         width(8),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding:
+                          const EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            color: statusColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius:
+                            BorderRadius.circular(12),
                           ),
                           child: Text(
                             appt.status,
@@ -364,12 +465,12 @@ class AppointmentListView extends ConsumerWidget {
                     ),
                     height(6),
 
-                    // Subtitle Metadata Row: Type · Ticket ID · Date & Time
                     Text(
                       'Legal · Ticket ${appt.id ?? "LS-2026-0142"} · ${DateFormat('dd MMM yyyy').format(appt.date)}, ${appt.time.format(context)}',
                       style: customTextStyle(
                         fontSize: 12,
-                        color: context.secondaryTextColor,
+                        color:
+                        context.secondaryTextColor,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -379,10 +480,9 @@ class AppointmentListView extends ConsumerWidget {
 
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: context.dividerColor,
               ),
 
-              // Bottom Action Buttons Strip
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -391,52 +491,76 @@ class AppointmentListView extends ConsumerWidget {
                 child: Row(
                   children: [
                     TextButton(
-                      onPressed: () => _showAppointmentDetails(context, appt),
+                      onPressed: () =>
+                          _showAppointmentDetails(
+                            context,
+                            appt,
+                          ),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        visualDensity: VisualDensity.compact,
+                        padding:
+                        const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
+                        visualDensity:
+                        VisualDensity.compact,
                       ),
                       child: Text(
                         'View Details',
                         style: customTextStyle(
                           fontSize: 12,
-                          color: AppColors.newPri,
+                          color: context.isDarkMode
+                              ? AppColors.darkBrand500
+                              : AppColors.newPri,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
+
                     const Spacer(),
+
                     if (isCancelable) ...[
                       TextButton(
                         onPressed: () {
                           // Trigger Reschedule action/modal
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          visualDensity: VisualDensity.compact,
+                          padding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
+                          visualDensity:
+                          VisualDensity.compact,
                         ),
                         child: Text(
                           'Request Reschedule',
                           style: customTextStyle(
                             fontSize: 12,
-                            color: context.primaryTextColor,
+                            color:
+                            context.primaryTextColor,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
+
                       TextButton(
                         onPressed: () {
                           // Trigger Cancel action/modal
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          visualDensity: VisualDensity.compact,
+                          padding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
+                          visualDensity:
+                          VisualDensity.compact,
                         ),
                         child: Text(
                           'Cancel',
                           style: customTextStyle(
                             fontSize: 12,
-                            color: Colors.red[700],
+                            color: context.isDarkMode
+                                ? const Color(0xFFFF6B6B)
+                                : Colors.red.shade700,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../extensions/build_context_extension.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../constants/dimensions.dart';
@@ -74,7 +75,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     Responsive.init(context);
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: backgroundColor ?? AppColors.surfaceBackground(ref),
+      backgroundColor: backgroundColor ?? context.primaryBackgroundColor,
       elevation: 0,
       centerTitle: true,
       flexibleSpace: gradient != null
@@ -94,7 +95,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           Text(
             title,
             style: customTextStyle(
-              color: AppColors.appBarText(ref),
+              color: context.primaryTextColor,
               fontSize: Responsive.sp(16),
               fontWeight: FontWeight.w700,
             ),

@@ -79,14 +79,14 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 style: customTextStyle(
                   fontSize: Responsive.sp(16),
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textColor,
+                  color: context.primaryTextColor,
                 ),
               ),
               Text(
                 'What other doctors in the group are sharing.',
                 style: customTextStyle(
                   fontSize: Responsive.sp(11.5),
-                  color: Colors.grey.shade600,
+                  color: context.secondaryTextColor,
                 ),
               ),
               height(Responsive.h(12)),
@@ -181,7 +181,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
       decoration: BoxDecoration(
         color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: const Color(0xFFD4EADF)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,13 +196,13 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                   style: customTextStyle(
                     fontSize: Responsive.sp(15),
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: context.primaryTextColor,
                   ),
                 ),
               ),
               PrimaryButton(
-                borderColor: AppColors.border,
-                backgroundColor: AppColors.white,
+                borderColor: context.borderColor,
+                backgroundColor: context.primaryBackgroundColor,
                 textColor: AppColors.newPri,
                 text: 'My Submissions',
                 width: 130,
@@ -220,23 +220,23 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
             'A private space for the DoctorsRisk consultation group — read how peers across specialties are navigating medico-legal risk, share your own experience to help someone facing the same situation, and earn recognition points every time your insight goes live.',
             style: customTextStyle(
               fontSize: Responsive.sp(11),
-              color: Colors.grey.shade700,
+              color: context.secondaryTextColor,
             ).copyWith(height: 1.4),
           ),
           height(Responsive.h(12)),
           Container(
             padding: EdgeInsets.all(Responsive.w(10)),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.secondaryBackgroundColor,
+              border: Border.all(color: context.borderColor),
               borderRadius: BorderRadius.circular(Responsive.w(8)),
-              border: Border.all(color: const Color(0xFFE2EFE8)),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.lock_outline,
                   size: Responsive.sp(14),
-                  color: Colors.grey.shade600,
+                  color: context.secondaryTextColor,
                 ),
                 width(Responsive.w(8)),
                 Expanded(
@@ -244,7 +244,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                     'Private to this consultation group. Nothing here is public or searchable outside DoctorsRisk unless you personally choose to export or share a specific article.',
                     style: customTextStyle(
                       fontSize: Responsive.sp(10),
-                      color: Colors.grey.shade600,
+                      color: context.secondaryTextColor,
                     ),
                   ),
                 ),
@@ -284,7 +284,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
         decoration: BoxDecoration(
           color: context.secondaryWidgetColor,
           borderRadius: BorderRadius.circular(Responsive.w(12)),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -308,7 +308,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                       vertical: Responsive.h(2),
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: context.secondaryBackgroundColor,
                       borderRadius: BorderRadius.circular(Responsive.w(4)),
                     ),
                     child: Text(
@@ -318,7 +318,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                       style: customTextStyle(
                         fontSize: Responsive.sp(8.5),
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade700,
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   );
@@ -333,7 +333,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
               style: customTextStyle(
                 fontSize: Responsive.sp(12.5),
                 fontWeight: FontWeight.bold,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ).copyWith(height: 1.3),
             ),
             height(Responsive.h(8)),
@@ -354,7 +354,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                         style: customTextStyle(
                           fontSize: Responsive.sp(10.5),
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textColor,
+                          color: context.primaryTextColor,
                         ),
                       ),
                       height(Responsive.h(1)),
@@ -364,7 +364,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
                           fontSize: Responsive.sp(9),
-                          color: Colors.grey.shade600,
+                          color: context.secondaryTextColor,
                         ),
                       ),
                     ],
@@ -373,21 +373,21 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
               ],
             ),
             height(Responsive.h(8)),
-            Divider(color: AppColors.divider),
+            Divider(color: context.borderColor),
             height(Responsive.h(8)),
             Row(
               children: [
                 Icon(
                   Icons.visibility_outlined,
                   size: Responsive.sp(13),
-                  color: Colors.grey.shade600,
+                  color: context.secondaryTextColor,
                 ),
                 width(Responsive.w(4)),
                 Text(
                   '${blog.viewCount ?? '0'} Peer Reads',
                   style: customTextStyle(
                     fontSize: Responsive.sp(9),
-                    color: Colors.grey.shade600,
+                    color: context.secondaryTextColor,
                   ),
                 ),
                 if (hasDate) ...[
@@ -396,13 +396,13 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                     child: Container(
                       width: 1,
                       height: Responsive.h(14),
-                      color: Colors.grey.shade300,
+                      color: context.secondaryTextColor,
                     ),
                   ),
                   Icon(
                     Icons.calendar_today_outlined,
                     size: Responsive.sp(12),
-                    color: Colors.grey.shade500,
+                    color: context.secondaryTextColor,
                   ),
                   width(Responsive.w(4)),
                   Flexible(
@@ -412,7 +412,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
                         fontSize: Responsive.sp(9),
-                        color: Colors.grey.shade600,
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   ),
@@ -447,23 +447,30 @@ class _AuthorAvatar extends StatelessWidget {
         .split(RegExp(r'\s+'))
         .where((p) => p.isNotEmpty)
         .toList();
+
     if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+
     return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
         .toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+
     return CircleAvatar(
       radius: Responsive.w(12),
-      backgroundColor: const Color(0xFFDFF1E9),
+      backgroundColor: isDark ? AppColors.darkMint200 : const Color(0xFFDFF1E9),
       child: Text(
         _initials,
         style: customTextStyle(
           fontSize: Responsive.sp(9.5),
           fontWeight: FontWeight.bold,
-          color: const Color(0xFF0F5A47),
+          color: isDark ? AppColors.darkBrand500 : const Color(0xFF0F5A47),
         ),
       ),
     );
