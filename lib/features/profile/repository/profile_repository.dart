@@ -5,6 +5,7 @@ import 'package:Doctors_App/core/services/credentials_storage_service.dart';
 import 'package:Doctors_App/features/authentication/model/register/category_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/degree_response.dart';
 import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
+import 'package:Doctors_App/features/profile/model/add_address_response.dart';
 import 'package:Doctors_App/features/profile/model/city_response.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 import 'package:Doctors_App/features/profile/model/profile_update_response.dart';
@@ -224,5 +225,41 @@ class ProfileRepository {
     );
     if (response['status'] == true) return DegreeResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch degrees');
+  }
+
+  Future<AddAddressResponse> addOrEditAddress({
+    int? id,
+    required String addressType,
+    required String ownVisiting,
+    required String address1,
+    required String address2,
+    required String landmark,
+    required String area,
+    required String state,
+    required String city,
+    required String pincode,
+  }) async {
+    final response = await _apiClient.post(
+      url: 'doctor/addressaddedit',
+      formData: {
+        'id': id.toString(),
+        'address_type': addressType,
+        'own_visiting': ownVisiting,
+        'address1': address1,
+        'address2': address2,
+        'landmark': landmark,
+        'area': area,
+        'state': state,
+        'city': city,
+        'pincode': pincode,
+      },
+      includeAuth: true,
+    );
+
+    if (response['status'] == true) {
+      return AddAddressResponse.fromJson(response);
+    }
+
+    throw Exception(response['msg'] ?? 'Failed to add/edit address');
   }
 }

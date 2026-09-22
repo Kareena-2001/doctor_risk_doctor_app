@@ -1,8 +1,14 @@
+import 'dart:async';
+
+import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/features/events/ui/view_model/events_view_model.dart';
 import 'package:Doctors_App/features/events/ui/widget/collaborate_tab.dart';
 import 'package:Doctors_App/features/events/ui/widget/event_list_tab.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/dimensions.dart';
@@ -11,142 +17,68 @@ import '../../../core/constants/values/app_text_style.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 
-class EventsScreen extends StatefulWidget {
+class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({super.key});
 
   @override
-  State<EventsScreen> createState() => _EventsScreenState();
+  ConsumerState<EventsScreen> createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends State<EventsScreen>
+class _EventsScreenState extends ConsumerState<EventsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _searchController = TextEditingController();
   String _typeFilter = 'All';
+  String _searchQuery = '';
+  Timer? _debounce;
 
-  final List<Map<String, String>> _events = const [
-    {
-      'title': 'Managing Consent Disputes in Elective Surgery',
-      'day': '14',
-      'month': 'AUG',
-      'date': '14 Aug 2026',
-      'time': '5:00 PM IST',
-      'type': 'Online',
-      'category': 'Informed Consent',
-      'price': 'Free — Included in Membership',
-      'status': 'registered',
-      'eventStatus': 'upcoming',
-    },
-    {
-      'title': 'Telemedicine & the New NMC Circular: What Changes for You',
-      'day': '22',
-      'month': 'AUG',
-      'date': '22 Aug 2026',
-      'time': '6:30 PM IST',
-      'type': 'Online',
-      'category': 'Regulatory',
-      'price': 'Free — Included in Membership',
-      'status': 'register',
-      'eventStatus': 'upcoming',
-    },
-    {
-      'title': 'Advanced Workshop: Defensive Documentation for Surgeons',
-      'day': '05',
-      'month': 'SEP',
-      'date': '05 Sep 2026',
-      'time': '10:00 AM IST',
-      'type': 'Offline',
-      'category': 'Documentation',
-      'price': '₹1,499 (Members: 20% off)',
-      'status': 'register',
-      'eventStatus': 'upcoming',
-    },
-    {
-      'title': 'Annual Medico-Legal Conclave 2026',
-      'day': '19',
-      'month': 'SEP',
-      'date': '19 Sep 2026',
-      'time': '9:00 AM IST',
-      'type': 'Offline',
-      'category': 'Conclave',
-      'price': '₹2,999',
-      'status': 'register',
-      'eventStatus': 'upcoming',
-    },
-  ];
-
-  final List<Map<String, String>> _pastEvents = const [
-    {
-      'title': 'Handling Police Visits: A Practical Walkthrough',
-      'day': '10',
-      'month': 'JUN',
-      'date': '10 Jun 2026',
-      'time': '',
-      'type': 'Online',
-      'category': 'Emergency Response',
-      'status': 'past',
-      'eventStatus': 'past',
-      'recording': 'true',
-      'certificate': 'true',
-    },
-    {
-      'title': "Bail Cost Coverage — What's Actually Included",
-      'day': '22',
-      'month': 'MAY',
-      'date': '22 May 2026',
-      'time': '',
-      'type': 'Online',
-      'category': 'Coverage',
-      'status': 'past',
-      'eventStatus': 'past',
-      'recording': 'true',
-      'certificate': 'true',
-    },
-    {
-      'title': 'Regional Workshop: Clinical Establishment Act Compliance',
-      'day': '02',
-      'month': 'APR',
-      'date': '02 Apr 2026',
-      'time': '',
-      'type': 'Offline',
-      'category': 'Compliance',
-      'status': 'past',
-      'eventStatus': 'past',
-      'recording': 'true',
-      'certificate': 'false',
-    },
-  ];
+  // String get _apiType => _typeFilter == 'All' ? '' : _typeFilter;
+  String get _apiType => _typeFilter;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
+
+    Future.microtask(_fetchAll);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
-  List<Map<String, String>> _getFilteredEvents(String activeTab) {
-    final source = activeTab == 'past' ? _pastEvents : _events;
+  void _fetchAll() {
+    ref
+        .read(eventsViewModelProvider.notifier)
+        .fetchUpcomingEvents(type: _apiType, query: _searchQuery);
+    ref
+        .read(eventsViewModelProvider.notifier)
+        .fetchPastEvents(type: _apiType, query: _searchQuery);
+  }
 
-    return source.where((event) {
-      final matchesType = _typeFilter == 'All' || event['type'] == _typeFilter;
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      setState(() => _searchQuery = value.trim());
+      _fetchAll();
+    });
+  }
 
-      if (activeTab == 'upcoming') {
-        return event['eventStatus'] == 'upcoming' && matchesType;
-      }
-      if (activeTab == 'past') {
-        return event['eventStatus'] == 'past' && matchesType;
-      }
-      return event['eventStatus'] == 'collaborate' && matchesType;
-    }).toList();
+  void _onTypeChanged(String option) {
+    setState(() => _typeFilter = option);
+    _fetchAll();
   }
 
   @override
   Widget build(BuildContext context) {
+    final eventsState = ref.watch(eventsViewModelProvider);
+    final viewModel = ref.read(eventsViewModelProvider.notifier);
+
     return Scaffold(
       backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: "Events Hub"),
@@ -182,7 +114,7 @@ class _EventsScreenState extends State<EventsScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.add, color: Colors.white),
+                        Icon(Icons.add, color: Colors.white),
                         width(Responsive.w(8)),
                         Text(
                           "Add Collaboration",
@@ -221,25 +153,91 @@ class _EventsScreenState extends State<EventsScreen>
           ),
           height(Responsive.h(14)),
           if (_tabController.index != 2) ...[
+            _buildSearchField(),
+            height(Responsive.h(10)),
             _buildFilterChips(),
             height(Responsive.h(14)),
           ],
+
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                EventListTab(
-                  events: _getFilteredEvents('upcoming'),
-                  activeTab: 'upcoming',
+                eventsState.upcomingEvents.when(
+                  data: (response) => RefreshIndicator(
+                    onRefresh: () => viewModel.refreshUpcomingEvents(
+                      type: _apiType,
+                      query: _searchQuery,
+                    ),
+                    child: EventListTab(
+                      events: response.data,
+                      activeTab: 'upcoming',
+                    ),
+                  ),
+                  loading: () => const Center(child: Loading()),
+                  error: (error, _) => _buildErrorState(
+                    error.toString(),
+                    () => viewModel.refreshUpcomingEvents(
+                      type: _apiType,
+                      query: _searchQuery,
+                    ),
+                  ),
                 ),
-                EventListTab(
-                  events: _getFilteredEvents('past'),
-                  activeTab: 'past',
+                eventsState.pastEvents.when(
+                  data: (response) => RefreshIndicator(
+                    onRefresh: () => viewModel.refreshPastEvents(
+                      type: _apiType,
+                      query: _searchQuery,
+                    ),
+                    child: EventListTab(
+                      events: response.data,
+                      activeTab: 'past',
+                    ),
+                  ),
+                  loading: () => const Center(child: Loading()),
+                  error: (error, _) => _buildErrorState(
+                    error.toString(),
+                    () => viewModel.refreshPastEvents(
+                      type: _apiType,
+                      query: _searchQuery,
+                    ),
+                  ),
                 ),
-                const CollaborateTab(),
+                CollaborateTab(),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
+      child: CustomSearchBar(
+        controller: _searchController,
+        hint: 'Search Events',
+        onChanged: _onSearchChanged,
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, Future<void> Function() onRetry) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: customTextStyle(
+              fontSize: Responsive.sp(12),
+              color: AppColors.homeTextMuted,
+            ),
+          ),
+          height(Responsive.h(12)),
+          TextButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
@@ -255,7 +253,7 @@ class _EventsScreenState extends State<EventsScreen>
           return Padding(
             padding: EdgeInsets.only(right: Responsive.w(10)),
             child: GestureDetector(
-              onTap: () => setState(() => _typeFilter = option),
+              onTap: () => _onTypeChanged(option),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: EdgeInsets.symmetric(

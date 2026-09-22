@@ -84,4 +84,90 @@ class EventsViewModel extends _$EventsViewModel {
   }
 
   Future<void> refreshCollaborationList() => collaborationList();
+
+  /// Fetches the logged-in doctor's profile, used to prefill the event
+  /// registration form (name / email / mobile).
+  Future<void> fetchDoctorDetails() async {
+    state = state.copyWith(doctorDetails: const AsyncLoading());
+
+    final result = await AsyncValue.guard(
+      () => ref.read(eventsRepositoryProvider).getDoctorDetails(),
+    );
+
+    state = state.copyWith(doctorDetails: result);
+  }
+  Future<void> fetchUpcomingEvents({String type = '', String query = ''}) async {
+    state = state.copyWith(upcomingEvents: const AsyncLoading());
+
+    final result = await AsyncValue.guard(
+          () => ref
+          .read(eventsRepositoryProvider)
+          .eventList(search: 'upcoming', tab: type, title: query),
+    );
+
+    state = state.copyWith(upcomingEvents: result);
+  }
+
+  Future<void> fetchPastEvents({String type = '', String query = ''}) async {
+    state = state.copyWith(pastEvents: const AsyncLoading());
+
+    final result = await AsyncValue.guard(
+          () => ref
+          .read(eventsRepositoryProvider)
+          .eventList(search: 'past', tab: type, title: query),
+    );
+
+    state = state.copyWith(pastEvents: result);
+  }
+
+  Future<void> refreshUpcomingEvents({String type = '', String query = ''}) =>
+      fetchUpcomingEvents(type: type, query: query);
+
+  Future<void> refreshPastEvents({String type = '', String query = ''}) =>
+      fetchPastEvents(type: type, query: query);
+  Future<bool> submitEventRegistration({
+    required int eventId,
+    required int doctorId,
+    required String fullName,
+    required String emailId,
+    required String mobileNo,
+    required String membershipStatus,
+  }) async {
+    state = state.copyWith(registerEvent: const AsyncLoading());
+
+    final result = await AsyncValue.guard(
+      () => ref
+          .read(eventsRepositoryProvider)
+          .registerEvent(
+            eventId: eventId,
+            doctorId: doctorId,
+            fullName: fullName,
+            emailId: emailId,
+            mobileNo: mobileNo,
+            membershipStatus: membershipStatus,
+          ),
+    );
+
+    if (result.hasError) {
+      state = state.copyWith(
+        registerEvent: AsyncValue.error(result.error!, result.stackTrace!),
+      );
+      return false;
+    }
+
+    final response = result.value!;
+
+    if (!response.status) {
+      state = state.copyWith(
+        registerEvent: AsyncValue.error(
+          Exception(response.msg?.toString() ?? 'Registration failed'),
+          StackTrace.current,
+        ),
+      );
+      return false;
+    }
+
+    state = state.copyWith(registerEvent: AsyncValue.data(response));
+    return true;
+  }
 }

@@ -9,6 +9,7 @@ import 'package:Doctors_App/features/change_password/ui/change_password_screen.d
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
 import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dart';
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
+import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/features/events/ui/event_collaborate_form.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
@@ -329,8 +330,9 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.eventRegister,
-      pageBuilder: (context, state) =>
-          state.slidePage(const EventRegisterScreen(event: {})),
+      pageBuilder: (context, state) => state.slidePage(
+        EventRegisterScreen(event: state.extra as EventModel),
+      ),
     ),
     GoRoute(
       path: Routes.communityScreen,

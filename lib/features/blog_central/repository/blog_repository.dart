@@ -75,7 +75,7 @@ class BlogRepository {
       files.forEach((key, file) {
         debugPrint(
           '  $key → ${file.path.split('/').last} '
-              '(${file.lengthSync()} bytes)',
+          '(${file.lengthSync()} bytes)',
         );
       });
     }
@@ -95,6 +95,7 @@ class BlogRepository {
 
     return BlogSubmitResponse.fromJson(response);
   }
+
   Future<MySubmissionListModel> mySubmissionList() async {
     final response = await _apiClient.post(
       url: 'doctor/mysubmissionlist',

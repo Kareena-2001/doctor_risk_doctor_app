@@ -17,6 +17,14 @@ extension DateTimeExtension on DateTime {
     return DateFormat('dd/MM/yyyy').format(this);
   }
 
+  String toEventDate() {
+    return DateFormat('dd MMM yyyy').format(this);
+  }
+
+  String toEventTime() {
+    return DateFormat('h:mm a').format(this);
+  }
+
   bool isSameDay(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
   }

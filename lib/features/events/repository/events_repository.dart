@@ -3,6 +3,9 @@ import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
 import 'package:Doctors_App/features/events/model/add_collaboration_response.dart';
 import 'package:Doctors_App/features/events/model/collaboration_response.dart';
+import 'package:Doctors_App/features/events/model/doctor_no_response.dart';
+import 'package:Doctors_App/features/events/model/event_list_response.dart';
+import 'package:Doctors_App/features/events/model/event_registration_response.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'events_repository.g.dart';
@@ -72,5 +75,52 @@ class EventsRepository {
     );
 
     return CollaborationResponse.fromJson(response);
+  }
+
+  Future<EventListResponse> eventList({
+    required String search,
+    String tab = '',
+    String title = '',
+  }) async {
+    final response = await _apiClient.post(
+      url: 'doctor/Eventlist',
+      formData: {'search': search, 'tab': tab, 'title': title},
+      includeAuth: true,
+    );
+
+    return EventListResponse.fromJson(response);
+  }
+
+  Future<EventRegistrationResponse> registerEvent({
+    required int eventId,
+    required int doctorId,
+    required String fullName,
+    required String emailId,
+    required String mobileNo,
+    required String membershipStatus,
+  }) async {
+    final response = await _apiClient.post(
+      url: 'doctor/eventregister',
+      formData: {
+        'event_id': eventId.toString(),
+        'doctor_id': doctorId.toString(),
+        'full_name': fullName,
+        'email_id': emailId,
+        'mobile_no': mobileNo,
+        'membership_status': membershipStatus,
+      },
+      includeAuth: true,
+    );
+
+    return EventRegistrationResponse.fromJson(response);
+  }
+
+  Future<DoctorNoResponse> getDoctorDetails() async {
+    final response = await _apiClient.get(
+      url: 'doctor/doctordetails',
+      includeAuth: true,
+    );
+
+    return DoctorNoResponse.fromJson(response);
   }
 }

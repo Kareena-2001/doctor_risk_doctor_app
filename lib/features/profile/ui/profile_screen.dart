@@ -350,13 +350,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           if (data == null) {
             return const Center(child: Loading());
           }
-
           return AppRefreshIndicator(
             onRefresh: () =>
                 ref.read(profileViewModelProvider.notifier).refreshProfile(),
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
                 child: Column(

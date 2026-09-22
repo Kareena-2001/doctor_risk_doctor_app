@@ -5,11 +5,15 @@ import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/author_avatar.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/home/ui/view_model/home_view_model.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
+import 'package:Doctors_App/features/news_advisiories/ui/viewmodel/news_advisory_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -153,6 +157,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     _animationController.forward();
     _startSessionCheck();
+
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(newsAdvisoryViewModelProvider.notifier).newsList();
+      ref.read(blogViewModelProvider.notifier).fetchBlogList();
+    });
   }
 
   void _closeDropdown() {
@@ -386,6 +396,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     try {
       ref.invalidate(homeViewModelProvider);
       ref.invalidate(notificationViewModelProvider);
+      await ref.read(newsAdvisoryViewModelProvider.notifier).newsList();
+      await ref.read(blogViewModelProvider.notifier).fetchBlogList();
     } catch (e) {
       debugPrint('Refresh failed: $e');
     }
@@ -1472,19 +1484,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             },
           ),
           height(Responsive.h(10)),
-          _buildNewsTile(
-            source: 'Supreme Court of India',
-            title:
-                'Independent expert opinion now mandatory before prosecuting doctors',
-            date: 'Jan 2025 • Legal Update',
-            icon: Icons.gavel_rounded,
-          ),
-          _buildNewsTile(
-            source: 'National Medical Commission',
-            title: 'NMC Junked Negligence Complaints Without Seeking...',
-            date: 'Aug 2025 • Policy Watch',
-            icon: Icons.cancel_outlined,
-          ),
+          _buildNewsSection(),
           height(Responsive.h(28)),
           HeadingWidget(
             headingTitle: 'Blog Central',
@@ -1650,159 +1650,349 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildBlogCentral() {
-    final blogs = [
-      {
-        'title': 'Medical Negligence in Post-Operative Care',
-        'description':
-            'Key legal precedents, liability risks, and essential documentation protocols every operating surgeon must maintain.',
-        'date': '12 Jul 2026',
-        'read': '5 min',
-        'image': 'assets/images/blog.png',
-      },
-      {
-        'title': 'Understanding New NMC Guidelines for Doctors',
-        'description':
-            'A comprehensive breakdown of recent ethical codes, teleconsultation mandates, and compliance updates.',
-        'date': '08 Jul 2026',
-        'read': '3 min',
-        'image': 'assets/images/blog.png',
-      },
-      {
-        'title': 'Professional Indemnity: Common Claim Mistakes',
-        'description':
-            'Learn about avoidable errors during malpractice claims and how to properly report adverse clinical events.',
-        'date': '02 Jul 2026',
-        'read': '6 min',
-        'image': 'assets/images/blog.png',
-      },
-    ];
+  Widget _buildNewsSection() {
+    final newsAsync = ref.watch(newsAdvisoryViewModelProvider);
 
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      itemCount: blogs.length,
-      separatorBuilder: (_, __) => SizedBox(height: Responsive.h(12)),
-      itemBuilder: (context, index) {
-        final blog = blogs[index];
+    return newsAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (state) {
+        final items = state.news.take(2).toList();
+        if (items.isEmpty) return const SizedBox.shrink();
+        return Column(
+          children: items.map((item) => _buildHomeNewsCard(item)).toList(),
+        );
+      },
+    );
+  }
 
-        return InkWell(
-          borderRadius: BorderRadius.circular(Responsive.w(20)),
-          onTap: () => context.push(Routes.blogCentral),
-          child: Container(
-            padding: EdgeInsets.all(Responsive.w(12)),
-            decoration: BoxDecoration(
-              color: context.secondaryBackgroundColor,
-              borderRadius: BorderRadius.circular(Responsive.w(20)),
-              border: Border.all(color: context.dividerColor),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.035),
-                  blurRadius: 12,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(Responsive.w(14)),
-                  child: Image.asset(
-                    blog['image']!,
-                    width: Responsive.w(84),
-                    height: Responsive.w(84),
-                    fit: BoxFit.cover,
+  Widget _buildHomeNewsCard(dynamic item) {
+    return Container(
+      margin: EdgeInsets.only(bottom: Responsive.h(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(Responsive.w(16)),
+        onTap: () => context.push(Routes.newsAdvisory),
+        child: Container(
+          padding: EdgeInsets.all(Responsive.w(16)),
+          decoration: BoxDecoration(
+            color: context.secondaryBackgroundColor,
+            borderRadius: BorderRadius.circular(Responsive.w(16)),
+            border: Border.all(color: context.dividerColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Source + date header row
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.newsSource,
+                      overflow: TextOverflow.ellipsis,
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(11),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.newPri,
+                      ),
+                    ),
                   ),
-                ),
-                width(Responsive.w(14)),
+                  width(Responsive.w(8)),
+                  Text(
+                    _formatNewsDate(item.sourceDate),
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.newPri,
+                    ),
+                  ),
+                ],
+              ),
+              height(Responsive.h(14)),
+              Text(
+                item.title,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(12),
+                  fontWeight: FontWeight.w700,
+                  color: context.primaryTextColor,
+                ).copyWith(height: 1.35),
+              ),
+              height(Responsive.h(9)),
+              Text(
+                item.description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(11),
+                  color: Colors.grey.shade700,
+                ).copyWith(height: 1.5),
+              ),
+              height(Responsive.h(14)),
+              Row(
+                children: [
+                  Text(
+                    item.sourceUrl.isNotEmpty ? 'Read source' : 'Read more',
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.newPri,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: Responsive.sp(15),
+                    color: AppColors.newPri,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatNewsDate(String date) {
+    try {
+      final parsedDate = DateTime.parse(date);
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      return '${parsedDate.day.toString().padLeft(2, '0')} '
+          '${months[parsedDate.month - 1]} '
+          '${parsedDate.year}';
+    } catch (_) {
+      return date;
+    }
+  }
+
+  Widget _buildBlogCentral() {
+    final blogListAsync = ref.watch(
+      blogViewModelProvider.select((s) => s.blogList),
+    );
+
+    return blogListAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (response) {
+        final blogs = (response?.data ?? []).take(3).toList();
+        if (blogs.isEmpty) return const SizedBox.shrink();
+
+        return ListView.separated(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          itemCount: blogs.length,
+          separatorBuilder: (_, __) => height(Responsive.h(14)),
+          itemBuilder: (context, index) {
+            final blog = blogs[index];
+            return _buildHomeBlogCard(blog);
+          },
+        );
+      },
+    );
+  }
+
+  String _formatBlogDate(String? value) {
+    if (value == null || value.isEmpty) return '';
+    try {
+      final date = DateTime.parse(value);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (_) {
+      return value;
+    }
+  }
+
+  Widget _buildHomeBlogCard(dynamic blog) {
+    final keywords = (blog.keywords as List?) ?? [];
+
+    final formattedDate = _formatBlogDate(blog.date);
+    final hasDate = formattedDate.isNotEmpty;
+
+    return InkWell(
+      onTap: () =>
+          context.push(Routes.blogCentralDetails, extra: blog.id.toString()),
+      borderRadius: BorderRadius.circular(Responsive.w(16)),
+      child: Container(
+        padding: EdgeInsets.all(Responsive.w(14)),
+        decoration: BoxDecoration(
+          color: context.secondaryWidgetColor,
+          borderRadius: BorderRadius.circular(Responsive.w(12)),
+          border: Border.all(color: context.borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (keywords.isNotEmpty) ...[
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: keywords.take(2).map((keyword) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.w(6),
+                      vertical: Responsive.h(2),
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.secondaryBackgroundColor,
+                      borderRadius: BorderRadius.circular(Responsive.w(4)),
+                    ),
+                    child: Text(
+                      keyword.toString(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(8.5),
+                        fontWeight: FontWeight.w500,
+                        color: context.secondaryTextColor,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              height(Responsive.h(6)),
+            ],
+            Text(
+              blog.title ?? '',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: customTextStyle(
+                fontSize: Responsive.sp(12.5),
+                fontWeight: FontWeight.bold,
+                color: context.primaryTextColor,
+              ).copyWith(height: 1.3),
+            ),
+            height(Responsive.h(8)),
+            Row(
+              children: [
+                AuthorAvatar(name: blog.drName ?? ''),
+                width(Responsive.w(8)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Title
                       Text(
-                        blog['title']!,
-                        maxLines: 2,
+                        'Dr. ${blog.drName ?? ''}'
+                        '${(blog.degree ?? '').toString().isNotEmpty ? ', ${blog.degree}' : ''}',
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
-                          fontSize: Responsive.sp(13),
-                          fontWeight: FontWeight.w700,
+                          fontSize: Responsive.sp(10.5),
+                          fontWeight: FontWeight.w600,
+                          color: context.primaryTextColor,
+                        ),
+                      ),
+                      height(Responsive.h(1)),
+                      Text(
+                        blog.specialityName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(9),
                           color: context.secondaryTextColor,
-                        ).copyWith(height: 1.3),
-                      ),
-                      height(Responsive.h(4)),
-
-                      // Description
-                      Text(
-                        blog['description']!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: customTextStyle(
-                          fontSize: Responsive.sp(11),
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey.shade600,
-                        ).copyWith(height: 1.3),
-                      ),
-                      height(Responsive.h(10)),
-
-                      // Read time, Date & Action Arrow
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.schedule_outlined,
-                            size: Responsive.sp(13),
-                            color: AppColors.homeTextMuted,
-                          ),
-                          width(Responsive.w(4)),
-                          Text(
-                            blog['read']!,
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(10.5),
-                              color: AppColors.homeTextMuted,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          width(Responsive.w(10)),
-                          Icon(
-                            Icons.calendar_today_outlined,
-                            size: Responsive.sp(13),
-                            color: AppColors.homeTextMuted,
-                          ),
-                          width(Responsive.w(4)),
-                          Text(
-                            blog['date']!,
-                            style: customTextStyle(
-                              fontSize: Responsive.sp(10.5),
-                              color: AppColors.homeTextMuted,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: EdgeInsets.all(Responsive.w(6)),
-                            decoration: BoxDecoration(
-                              color: context.primaryBackgroundColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.arrow_forward_rounded,
-                              size: Responsive.sp(12),
-                              color: AppColors.homeBlog,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+            height(Responsive.h(8)),
+            Divider(color: context.borderColor),
+            height(Responsive.h(8)),
+            Row(
+              children: [
+                Icon(
+                  Icons.visibility_outlined,
+                  size: Responsive.sp(13),
+                  color: context.secondaryTextColor,
+                ),
+                width(Responsive.w(4)),
+                Text(
+                  '${blog.viewCount ?? '0'} Peer Reads',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(9),
+                    color: context.secondaryTextColor,
+                  ),
+                ),
+                if (hasDate) ...[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: Responsive.w(10)),
+                    child: Container(
+                      width: 1,
+                      height: Responsive.h(14),
+                      color: context.secondaryTextColor,
+                    ),
+                  ),
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: Responsive.sp(12),
+                    color: context.secondaryTextColor,
+                  ),
+                  width(Responsive.w(4)),
+                  Flexible(
+                    child: Text(
+                      formattedDate,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(9),
+                        color: context.secondaryTextColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  String _getInitials(String name) {
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
   }
 
   Widget _buildFAQCard() {
@@ -1975,13 +2165,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               fontWeight: FontWeight.w700,
                               fontSize: Responsive.sp(12),
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EventRegisterScreen(event: {}),
-                                  ),
-                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) =>
+                                //         EventRegisterScreen(),
+                                //   ),
+                                // );
                               },
                               height: Responsive.h(42),
                               gradientColors: avail
@@ -2027,94 +2217,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildNewsTile({
-    required String source,
-    required String title,
-    required String date,
-    required IconData icon,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: Responsive.h(12)),
-      padding: EdgeInsets.all(Responsive.w(14)),
-      decoration: BoxDecoration(
-        color: context.secondaryBackgroundColor,
-        borderRadius: BorderRadius.circular(Responsive.w(18)),
-        border: Border.all(color: context.dividerColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(Responsive.w(18)),
-        onTap: () => context.push(Routes.newsAdvisory),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    source,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(11),
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.newPri,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            height(Responsive.h(10)),
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: customTextStyle(
-                fontWeight: FontWeight.w700,
-                color: context.secondaryTextColor,
-                fontSize: Responsive.sp(12.5),
-              ).copyWith(height: 1.3),
-            ),
-            height(Responsive.h(10)),
-            Row(
-              children: [
-                Text(
-                  date,
-                  style: customTextStyle(
-                    color: AppColors.homeTextMuted,
-                    fontSize: Responsive.sp(10.5),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'Read more',
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11),
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                width(Responsive.w(4)),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: Responsive.sp(13),
-                  color: AppColors.homeNews,
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
