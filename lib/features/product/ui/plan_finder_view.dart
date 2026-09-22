@@ -185,7 +185,7 @@ class _ActivePolicyWarning extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFFDE68A)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ class _FilterCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +322,7 @@ class _FilterCard extends StatelessWidget {
                   borderRadius: 25,
                   fontSize: 14,
                   onPressed: vm.clear,
-                  backgroundColor: AppColors.white,
+                  backgroundColor: context.secondaryBackgroundColor,
                   text: '',
                   child: const Text('Clear'),
                 ),
@@ -358,9 +358,9 @@ class _IntroCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:context.secondaryBackgroundColor,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Text.rich(
         TextSpan(
@@ -409,7 +409,7 @@ class _ComparePlansCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:context.secondaryBackgroundColor,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -442,7 +442,7 @@ class _ComparePlansCard extends StatelessWidget {
               text: 'Compare Plans',
               textColor: Colors.black,
               borderColor: AppColors.border,
-              backgroundColor: AppColors.white,
+              backgroundColor: context.secondaryBackgroundColor,
               onPressed: onTap,
             ),
           ),
@@ -491,8 +491,7 @@ class _ComparisonBottomSheetState extends State<_ComparisonBottomSheet> {
     return Container(
       height: sh * 0.88,
       decoration: BoxDecoration(
-        color:
-        context.secondaryBackgroundColor,
+        color: context.secondaryBackgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
@@ -762,7 +761,7 @@ class _MobileComparisonTable extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
         borderRadius: BorderRadius.circular(12),
       ),
       clipBehavior: Clip.antiAlias,
@@ -967,9 +966,9 @@ class _QuoteResultCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:context.secondaryBackgroundColor,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

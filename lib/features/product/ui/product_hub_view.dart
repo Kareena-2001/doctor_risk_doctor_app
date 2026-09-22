@@ -26,20 +26,6 @@ class ProductHubView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text(
-              //   'My Products',
-              //   style: customTextStyle(
-              //     fontSize: 20,
-              //     fontWeight: FontWeight.w700,
-              //     color: const Color(0xFF0F172A),
-              //   ),
-              // ),
-              // height(4),
-              // Text(
-              //   'Everything covered under your medico-legal membership.',
-              //   style: customTextStyle(fontSize: 12, color: Color(0xFF64748B)),
-              // ),
-              // height(16),
               IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,7 +62,7 @@ class ProductHubView extends StatelessWidget {
                 style: customTextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textColor,
+                  color: context.primaryTextColor,
                 ),
               ),
               height(12),
@@ -158,12 +144,11 @@ class _EntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // height: Responsive.h(200),
       padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +167,7 @@ class _EntryCard extends StatelessWidget {
             style: customTextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           height(4),
@@ -190,7 +175,7 @@ class _EntryCard extends StatelessWidget {
             subtitle,
             style: customTextStyle(
               fontSize: 11,
-              color: AppColors.grey,
+              color: context.secondaryTextColor,
             ).copyWith(height: 1.3),
           ),
           height(14),
@@ -236,7 +221,7 @@ class _ServiceIcon extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: context.borderColor),
         ),
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -245,10 +230,10 @@ class _ServiceIcon extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.newPri.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.newPri, size: 18),
+              child: Icon(icon, color: AppColors.primary, size: 18),
             ),
             height(6),
             Text(
@@ -259,7 +244,7 @@ class _ServiceIcon extends StatelessWidget {
               style: customTextStyle(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
           ],

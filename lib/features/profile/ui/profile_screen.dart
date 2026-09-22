@@ -518,10 +518,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           PrimaryButton(
                             height: 45,
                             borderRadius: 25,
-                            borderColor: AppColors.borderGrey,
+                            borderColor: context.borderColor,
                             width: 150,
                             fontSize: 13,
-                            backgroundColor: AppColors.white,
+                            backgroundColor: context.secondaryBackgroundColor,
                             textColor: AppColors.textColor,
                             onPressed: _addAddress,
                             icon: Icons.add,
@@ -577,7 +577,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.secondaryWidgetColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -608,6 +608,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
+                        color: context.primaryTextColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -757,13 +758,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             style: customTextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Colors.grey.shade500,
+              color: context.secondaryTextColor,
             ),
           ),
           height(4),
           Text(
             value.isEmpty ? '-' : value,
-            style: customTextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            style: customTextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: context.primaryTextColor,
+            ),
           ),
         ],
       ),
@@ -776,7 +781,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
-        // color: const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(10),
 
         border: Border.all(
@@ -881,13 +885,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: context.borderColor),
           ),
           child: Text(
             'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
             style: customTextStyle(
               fontSize: 11,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ).copyWith(height: 1.4),
           ),
         ),
@@ -900,9 +904,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
@@ -959,7 +963,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: context.secondaryBackgroundColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
@@ -967,7 +971,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ? Icons.picture_as_pdf_outlined
                               : Icons.image_outlined,
                           size: 20,
-                          color: Colors.grey.shade600,
+                          color: context.secondaryTextColor,
                         ),
                       ),
                       SizedBox(width: 12),
@@ -980,6 +984,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: customTextStyle(
+                                color: context.primaryTextColor,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -1013,10 +1018,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         PrimaryButton(
           height: 45,
           borderRadius: 25,
-          borderColor: AppColors.borderGrey,
+          borderColor: context.borderColor,
           width: 220,
           fontSize: 13,
-          backgroundColor: AppColors.white,
+          backgroundColor: context.primaryBackgroundColor,
           textColor: AppColors.textColor,
           onPressed: () {
             context.push(Routes.documentVault);

@@ -84,7 +84,7 @@ class _ReferralTile extends StatelessWidget {
                   style: customTextStyle(
                     fontSize: Responsive.sp(13),
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: context.primaryTextColor,
                   ),
                 ),
                 height(Responsive.h(3)),

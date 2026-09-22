@@ -20,6 +20,7 @@ class HeadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0.0),
       child: Row(
@@ -34,6 +35,8 @@ class HeadingWidget extends StatelessWidget {
                 style: customTextStyle(
                   fontSize: Responsive.sp(15),
                   fontWeight: FontWeight.w600,
+
+                  color: isDark ? AppColors.darkInk600 : AppColors.labelColor,
                 ),
               ),
 

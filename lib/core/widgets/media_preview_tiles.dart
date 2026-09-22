@@ -2,12 +2,11 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/video_player_screen.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Tappable 16:9 video banner — gradient background, play button and a
-/// "Tap to watch" label. Opens [VideoPlayerScreen] with [videoUrl].
 class VideoPreviewTile extends StatelessWidget {
   const VideoPreviewTile({super.key, required this.videoUrl, this.title});
 
@@ -22,13 +21,14 @@ class VideoPreviewTile extends StatelessWidget {
       onTap: !hasVideo
           ? null
           : () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => VideoPlayerScreen(videoUrl: videoUrl, title: title),
-          ),
-        );
-      },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      VideoPlayerScreen(videoUrl: videoUrl, title: title),
+                ),
+              );
+            },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(Responsive.w(14)),
         child: AspectRatio(
@@ -87,7 +87,9 @@ class VideoPreviewTile extends StatelessWidget {
                     ],
                   ),
                   child: Icon(
-                    hasVideo ? Icons.play_arrow_rounded : Icons.videocam_off_rounded,
+                    hasVideo
+                        ? Icons.play_arrow_rounded
+                        : Icons.videocam_off_rounded,
                     color: AppColors.newPri,
                     size: Responsive.sp(28),
                   ),
@@ -99,7 +101,11 @@ class VideoPreviewTile extends StatelessWidget {
                 bottom: Responsive.h(10),
                 child: Row(
                   children: [
-                    Icon(Icons.videocam_rounded, color: Colors.white, size: Responsive.sp(14)),
+                    Icon(
+                      Icons.videocam_rounded,
+                      color: Colors.white,
+                      size: Responsive.sp(14),
+                    ),
                     width(Responsive.w(6)),
                     Expanded(
                       child: Text(
@@ -124,13 +130,12 @@ class VideoPreviewTile extends StatelessWidget {
   }
 }
 
-/// Tappable document row with a circular icon badge. Opens [fileUrl]
-/// in an external viewer.
-///
-/// Requires the `url_launcher` package:
-///   url_launcher: ^6.3.1
 class DocumentPreviewTile extends StatelessWidget {
-  const DocumentPreviewTile({super.key, required this.fileUrl, this.label = 'Document'});
+  const DocumentPreviewTile({
+    super.key,
+    required this.fileUrl,
+    this.label = 'Document',
+  });
 
   final String fileUrl;
   final String label;
@@ -160,9 +165,9 @@ class DocumentPreviewTile extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(Responsive.w(14)),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAFAFA),
+          color: context.secondaryWidgetColor,
           borderRadius: BorderRadius.circular(Responsive.w(14)),
-          border: Border.all(color: const Color(0xFFF0F0F0)),
+          border: Border.all(color: context.secondaryWidgetColor,),
         ),
         child: Row(
           children: [
@@ -172,7 +177,11 @@ class DocumentPreviewTile extends StatelessWidget {
                 color: Colors.red.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.picture_as_pdf_rounded, color: Colors.red, size: Responsive.sp(22)),
+              child: Icon(
+                Icons.picture_as_pdf_rounded,
+                color: Colors.red,
+                size: Responsive.sp(22),
+              ),
             ),
             width(Responsive.w(12)),
             Expanded(
@@ -186,19 +195,26 @@ class DocumentPreviewTile extends StatelessWidget {
                     style: customTextStyle(
                       fontSize: Responsive.sp(12.5),
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textColor,
+                      color: context.secondaryTextColor,
                     ),
                   ),
                   height(Responsive.h(2)),
                   Text(
                     hasFile ? 'Tap to open document' : 'No document attached',
-                    style: customTextStyle(fontSize: Responsive.sp(10.5), color: Colors.grey.shade500),
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(10.5),
+                      color: Colors.grey.shade500,
+                    ),
                   ),
                 ],
               ),
             ),
             if (hasFile)
-              Icon(Icons.open_in_new_rounded, size: Responsive.sp(18), color: AppColors.newPri),
+              Icon(
+                Icons.open_in_new_rounded,
+                size: Responsive.sp(18),
+                color: AppColors.newPri,
+              ),
           ],
         ),
       ),

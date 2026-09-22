@@ -65,113 +65,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     }
   }
 
-  Future<void> _openDegreePicker(
-    BuildContext context,
-    WidgetRef ref,
-    AuthenticationState state,
-  ) async {
-    final notifier = ref.read(authenticationViewModelProvider.notifier);
-
-    final tempSelected = [...state.selectedDegrees];
-
-    await AppDialog.customBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Degree(s)',
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(15),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  height(Responsive.h(12)),
-                  if (state.degrees.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(
-                          'No degrees available',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(12),
-                            color: Color(0xFF94A3B8),
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.degrees.length,
-                        itemBuilder: (context, index) {
-                          final degree = state.degrees[index];
-
-                          final isChecked = tempSelected.any(
-                            (item) => item.id == degree.id,
-                          );
-
-                          return CheckboxListTile(
-                            value: isChecked,
-                            title: Text(
-                              degree.name,
-                              style: customTextStyle(
-                                fontSize: Responsive.sp(13),
-                              ),
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.zero,
-                            onChanged: (checked) {
-                              setSheetState(() {
-                                if (checked == true) {
-                                  if (!tempSelected.any(
-                                    (item) => item.id == degree.id,
-                                  )) {
-                                    tempSelected.add(degree);
-                                  }
-                                } else {
-                                  tempSelected.removeWhere(
-                                    (item) => item.id == degree.id,
-                                  );
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  height(Responsive.h(12)),
-                  PrimaryButton(
-                    height: 46,
-                    fontSize: 14,
-                    text: 'Done',
-                    onPressed: state.degrees.isEmpty
-                        ? null
-                        : () {
-                            notifier.setSelectedDegrees(tempSelected);
-
-                            Navigator.of(sheetContext).pop();
-                          },
-                    gradient: LinearGradient(
-                      colors: [AppColors.newPri, AppColors.primary],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   Widget _buildReferenceDropdown({
     required String label,
     required String emptyHint,
@@ -211,79 +104,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     return error != null
         ? GestureDetector(onTap: onRetry, child: field)
         : field;
-  }
-
-  Widget _buildDegreeField(
-    BuildContext context,
-    WidgetRef ref,
-    AuthenticationState state,
-  ) {
-    final hasError = state.degreeError != null;
-
-    return GestureDetector(
-      onTap: () {
-        if (hasError) {
-          ref.read(authenticationViewModelProvider.notifier).degreeList();
-          return;
-        }
-        _openDegreePicker(context, ref, state);
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Degree',
-          suffixIcon: hasError
-              ? const Icon(Icons.refresh, size: 20)
-              : const Icon(Icons.arrow_drop_down),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: state.isDegreeLoading
-            ? Text(
-                'Loading...',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(13),
-                  color: const Color(0xFF94A3B8),
-                ),
-              )
-            : hasError
-            ? Text(
-                'Failed to load — tap to retry',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(12),
-                  color: Colors.red,
-                ),
-              )
-            : state.selectedDegrees.isEmpty
-            ? Text(
-                state.degrees.isEmpty
-                    ? 'No degrees available'
-                    : 'Select Degree(s)',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(13),
-                  color: const Color(0xFF94A3B8),
-                ),
-              )
-            : Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: state.selectedDegrees
-                    .map(
-                      (d) => Chip(
-                        label: Text(d.name),
-                        onDeleted: () {
-                          ref
-                              .read(authenticationViewModelProvider.notifier)
-                              .setSelectedDegrees(
-                                state.selectedDegrees
-                                    .where((e) => e.id != d.id)
-                                    .toList(),
-                              );
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-      ),
-    );
   }
 
   Widget _buildTypeToggle({
@@ -368,7 +188,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final isLoading = state.isSubmitting || authAsync.isLoading;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Membership Registration'),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -527,7 +347,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onSelected: notifier.selectSpeciality,
                         ),
                         height(Responsive.h(25)),
-                        // _buildDegreeField(context, ref, state),
                         CustomMultiSelectDropdownField<IdNameOption>(
                           label: 'Degree',
                           hint: state.degrees.isEmpty
@@ -775,7 +594,7 @@ class _SimpleCaptchaFieldState extends State<_SimpleCaptchaField> {
       if (entered != null && entered == _a + _b) {
         _verified = true;
         _error = null;
-        widget.onVerified('captcha-${_a}-${_b}-verified');
+        widget.onVerified('captcha-$_a-$_b-verified');
       } else {
         _verified = false;
         _error = 'That\'s not quite right, try again';

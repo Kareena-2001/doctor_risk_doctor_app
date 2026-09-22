@@ -102,7 +102,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
                     return Card(
                       elevation: 0,
-                      color: AppColors.white,
+                      color: context.secondaryBackgroundColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: BorderSide(color: context.dividerColor),

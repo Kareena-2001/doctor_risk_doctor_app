@@ -4,6 +4,7 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/custom_seachbar.dart';
+import '../../../../extensions/build_context_extension.dart';
 
 class PeerForumFilterBar extends StatefulWidget {
   final int? selectedTime;
@@ -69,6 +70,8 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
   }
 
   Widget _buildTimeChips() {
+    final isDark = context.isDarkMode;
+
     return SizedBox(
       height: Responsive.h(32),
       child: ListView.separated(
@@ -78,6 +81,7 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
         itemBuilder: (_, index) {
           final option = _timeOptions[index];
           final selected = option.value == widget.selectedTime;
+
           return GestureDetector(
             onTap: () => widget.onTimeChanged(option.value),
             child: AnimatedContainer(
@@ -87,10 +91,14 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
                 vertical: Responsive.h(6),
               ),
               decoration: BoxDecoration(
-                color: selected ? AppColors.newPri : Colors.white,
+                color: selected
+                    ? (isDark ? AppColors.darkBrand700 : AppColors.newPri)
+                    : (isDark ? AppColors.darkCard : Colors.white),
                 borderRadius: BorderRadius.circular(Responsive.w(30)),
                 border: Border.all(
-                  color: selected ? Colors.transparent : Colors.grey.shade300,
+                  color: selected
+                      ? Colors.transparent
+                      : (isDark ? AppColors.darkLine : Colors.grey.shade300),
                 ),
               ),
               alignment: Alignment.center,
@@ -99,12 +107,44 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
                 style: customTextStyle(
                   fontSize: Responsive.sp(11.5),
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : Colors.grey.shade700,
+                  color: selected
+                      ? Colors.white
+                      : (isDark ? AppColors.darkInk600 : Colors.grey.shade700),
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSearchToggle() {
+    final isDark = context.isDarkMode;
+
+    return GestureDetector(
+      onTap: _toggleSearch,
+      child: Container(
+        height: Responsive.h(32),
+        width: Responsive.h(32),
+        decoration: BoxDecoration(
+          color: _searchExpanded
+              ? (isDark ? AppColors.darkBrand700 : AppColors.newPri)
+              : (isDark ? AppColors.darkCard : Colors.white),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: _searchExpanded
+                ? Colors.transparent
+                : (isDark ? AppColors.darkLine : Colors.grey.shade300),
+          ),
+        ),
+        child: Icon(
+          _searchExpanded ? Icons.close : Icons.search,
+          size: Responsive.sp(16),
+          color: _searchExpanded
+              ? Colors.white
+              : (isDark ? AppColors.darkInk600 : Colors.grey.shade700),
+        ),
       ),
     );
   }
@@ -129,28 +169,6 @@ class _PeerForumFilterBarState extends State<PeerForumFilterBar> {
                 child: const Icon(Icons.close, size: 16),
               )
             : null,
-      ),
-    );
-  }
-
-  Widget _buildSearchToggle() {
-    return GestureDetector(
-      onTap: _toggleSearch,
-      child: Container(
-        height: Responsive.h(32),
-        width: Responsive.h(32),
-        decoration: BoxDecoration(
-          color: _searchExpanded ? AppColors.newPri : Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: _searchExpanded ? Colors.transparent : Colors.grey.shade300,
-          ),
-        ),
-        child: Icon(
-          _searchExpanded ? Icons.close : Icons.search,
-          size: Responsive.sp(16),
-          color: _searchExpanded ? Colors.white : Colors.grey.shade700,
-        ),
       ),
     );
   }

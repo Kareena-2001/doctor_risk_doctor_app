@@ -434,7 +434,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               style: customTextStyle(
                 fontSize: Responsive.sp(12.5),
                 fontWeight: FontWeight.w700,
-                color: AppColors.textColor,
+                color: AppColors.textPrimary(ref),
               ).copyWith(height: 1.4),
             ),
             TextSpan(
@@ -501,7 +501,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         Scaffold(
           key: _scaffoldKey,
           backgroundColor: context.primaryBackgroundColor,
-
           appBar: CustomAppBar(
             title: 'Dashboard',
             showBack: false,
@@ -522,7 +521,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
+                physics: AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
                 child: Column(
@@ -770,8 +769,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             textAlign: TextAlign.center,
                             style: customTextStyle(
                               fontSize: Responsive.sp(16),
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textColor,
+                              fontWeight: FontWeight.w700,
+                              color: context.primaryTextColor,
                             ),
                           ),
                         ),
@@ -786,7 +785,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       'General Practitioner · B.A.M.S.',
                       style: customTextStyle(
                         fontSize: Responsive.sp(11.5),
-                        color: AppColors.homeTextMuted,
+                        color: context.secondaryTextColor,
+                        // color: AppColors.homeTextMuted,
                       ),
                     ),
                     height(Responsive.h(12)),
@@ -901,7 +901,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       ),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+          colors: [AppColors.goldColor, Color(0xFFB8912F)],
         ),
         borderRadius: BorderRadius.circular(Responsive.w(20)),
       ),
@@ -1397,11 +1397,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               padding: EdgeInsets.all(Responsive.w(16)),
               decoration: BoxDecoration(
                 color: context.secondaryBackgroundColor,
-                // gradient: LinearGradient(
-                //   colors: [AppColors.white, Colors.white],
-                //   begin: Alignment.topLeft,
-                //   end: Alignment.bottomRight,
-                // ),
                 borderRadius: BorderRadius.circular(Responsive.w(18)),
                 border: Border.all(
                   color: AppColors.iconPink.withValues(alpha: 0.10),
@@ -1432,7 +1427,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           style: customTextStyle(
                             fontSize: Responsive.sp(13.5),
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textColor,
+                            color: context.primaryTextColor,
                           ),
                         ),
                         height(Responsive.h(4)),
@@ -1533,7 +1528,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               title: 'Support Hub',
               subtitle: '2 open tickets · avg response 4 hrs',
               ctaLabel: 'Raise a query',
-              ctaColor: AppColors.brand800,
+              ctaColor: AppColors.primary,
               onTap: () => context.push(Routes.supportHub),
             ),
           ),
@@ -1565,7 +1560,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         subtitle:
             '320 pts · earn more by sharing experiences, testimonials, referrals & events',
         ctaLabel: 'Redeem at renewal or purchase',
-        ctaColor: AppColors.brand800,
+        ctaColor: AppColors.primary,
         onTap: () => context.push(Routes.supportHub),
       ),
     );
@@ -1616,7 +1611,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               style: customTextStyle(
                 fontSize: Responsive.sp(13.5),
                 fontWeight: FontWeight.w700,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
             height(Responsive.h(5)),
@@ -1734,7 +1729,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         style: customTextStyle(
                           fontSize: Responsive.sp(13),
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textColor,
+                          color: context.secondaryTextColor,
                         ).copyWith(height: 1.3),
                       ),
                       height(Responsive.h(4)),
@@ -1788,7 +1783,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           Container(
                             padding: EdgeInsets.all(Responsive.w(6)),
                             decoration: BoxDecoration(
-                              color: AppColors.homeBlogBg,
+                              color: context.primaryBackgroundColor,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -1850,7 +1845,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             style: customTextStyle(
               fontSize: Responsive.sp(14),
               fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           height(Responsive.h(8)),
@@ -1860,7 +1855,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             style: customTextStyle(
               fontSize: Responsive.sp(12),
               fontWeight: FontWeight.w400,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           height(Responsive.h(16)),
@@ -2008,15 +2003,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               width: Responsive.w(42),
                               height: Responsive.h(42),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: context.primaryBackgroundColor,
                                 borderRadius: BorderRadius.circular(
                                   Responsive.w(10),
                                 ),
-                                border: Border.all(color: AppColors.homeBorder),
+                                border: Border.all(
+                                  color: context.secondaryBackgroundColor,
+                                ),
                               ),
                               child: Icon(
                                 Icons.share_outlined,
                                 size: Responsive.sp(20),
+                                color: context.secondaryTextColor,
                               ),
                             ),
                           ),
@@ -2083,7 +2081,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               overflow: TextOverflow.ellipsis,
               style: customTextStyle(
                 fontWeight: FontWeight.w700,
-                color: AppColors.mono100,
+                color: context.secondaryTextColor,
                 fontSize: Responsive.sp(12.5),
               ).copyWith(height: 1.3),
             ),

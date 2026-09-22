@@ -1,5 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/product/ui/view_model/my_plans_view_model.dart';
 import 'package:Doctors_App/features/product/ui/widgets/renew_form.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class MyPlansView extends ConsumerWidget {
     final plansAsync = ref.watch(myPlansViewModelProvider);
 
     return Scaffold(
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
         title: 'My Plans',
         subTitle: 'All memberships secured under Membership ID DR‑2026‑084213',
@@ -135,9 +137,9 @@ class _MyPlanCard extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: context.borderColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -197,7 +199,7 @@ class _MyPlanCard extends ConsumerWidget {
             style: customTextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF0F172A),
+              color: context.primaryTextColor,
             ),
           ),
           SizedBox(height: 2),

@@ -120,7 +120,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -233,7 +233,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             duration: const Duration(milliseconds: 200),
                             decoration: BoxDecoration(
                               color: _isSignInTab
-                                  ? Colors.white
+                                  ? context.secondaryWidgetColor
                                   : AppColors.lightGreen,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: _isSignInTab
@@ -383,7 +383,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               style: customTextStyle(
                 fontSize: Responsive.sp(18),
                 fontWeight: FontWeight.w900,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
             height(Responsive.h(4)),
@@ -506,7 +506,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               'New to DoctorsRisk?',
               style: customTextStyle(
                 fontWeight: FontWeight.w900,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
                 fontSize: Responsive.sp(18),
               ),
             ),

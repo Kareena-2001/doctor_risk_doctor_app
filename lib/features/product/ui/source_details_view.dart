@@ -77,7 +77,7 @@ class _SourceDetailsViewState extends State<SourceDetailsView> {
                       style: customTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textColor,
+                        color: context.primaryTextColor,
                       ),
                     ),
                   ],

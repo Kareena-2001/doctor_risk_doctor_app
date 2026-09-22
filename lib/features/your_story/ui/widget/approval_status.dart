@@ -17,27 +17,60 @@ const _publishedStatuses = {
 
 const _rejectedStatuses = {'rejected', 'not_approved', 'not approved'};
 
-/// Resolves an `approve_status` value from the API into a display label + colors.
-ApprovalStatusInfo resolveApprovalStatus(String? rawStatus) {
+ApprovalStatusInfo resolveApprovalStatus(
+    BuildContext context,
+    String? rawStatus,
+    ) {
   final status = (rawStatus ?? 'awaiting_admin_approval').toLowerCase().trim();
+  final isDark = Theme.of(context).brightness == Brightness.dark;
 
   if (_publishedStatuses.contains(status)) {
-    return const ApprovalStatusInfo('Published', Color(0xFF16A34A), Color(0xFFF0FDF4));
+    return ApprovalStatusInfo(
+      'Published',
+      const Color(0xFF16A34A),
+      isDark
+          ? const Color(0xFF14281D)
+          : const Color(0xFFF0FDF4),
+    );
   }
 
   if (_rejectedStatuses.contains(status)) {
-    return const ApprovalStatusInfo('Not Approved', Color(0xFFDC2626), Color(0xFFFEF2F2));
+    return ApprovalStatusInfo(
+      'Not Approved',
+      const Color(0xFFDC2626),
+      isDark
+          ? const Color(0xFF2A1719)
+          : const Color(0xFFFEF2F2),
+    );
   }
 
   if (status == 'draft') {
-    return const ApprovalStatusInfo('Draft', Color(0xFF4B5563), Color(0xFFF3F4F6));
+    return ApprovalStatusInfo(
+      'Draft',
+      isDark
+          ? const Color(0xFFB3C0BC)
+          : const Color(0xFF4B5563),
+      isDark
+          ? const Color(0xFF242A2D)
+          : const Color(0xFFF3F4F6),
+    );
   }
 
-  return const ApprovalStatusInfo('Awaiting Admin Approval', Color(0xFFD97706), Color(0xFFFFFBEB));
+  return ApprovalStatusInfo(
+    'Awaiting Admin Approval',
+    isDark
+        ? const Color(0xFFFFB84D)
+        : const Color(0xFFD97706),
+    isDark
+        ? const Color(0xFF2A2418)
+        : const Color(0xFFFFFBEB),
+  );
 }
 
-/// "+15 Pts" once published/approved, "+15 Pts on Approval" while pending.
 String pointsLabelFor(String? rawStatus) {
   final status = (rawStatus ?? '').toLowerCase().trim();
-  return _publishedStatuses.contains(status) ? '+15 Pts' : '+15 Pts on Approval';
+
+  return _publishedStatuses.contains(status)
+      ? '+15 Pts'
+      : '+15 Pts on Approval';
 }

@@ -18,7 +18,7 @@ class ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = resolveApprovalStatus(experience.approveStatus);
+    final status = resolveApprovalStatus(context, experience.approveStatus);
     final type = experience.experienceType.isEmpty
         ? 'text'
         : experience.experienceType.toLowerCase();

@@ -92,11 +92,6 @@ class AppColors {
   static const Color sky500 = Color(0xFF3E8FD0);
   static const Color sky100 = Color(0xFFE4F0FA);
 
-  static const LinearGradient brandLinearGradient = LinearGradient(
-    colors: [brand600, brand800],
-    transform: GradientRotation(0.785398),
-  );
-
   static const Color brandGreen = Color(0xFF0D4B34);
   static const whiteBg = paper;
   static const premiumBackground = Color(0xFF000000);
@@ -160,6 +155,7 @@ class AppColors {
   static const Color darkInk600 = Color(0xFFB3C0BC);
   static const Color darkInk400 = Color(0xFF82918D);
   static const Color darkLine = Color(0x17EEF3F1);
+  static const Color goldColor = Color(0xFFE6C878);
 
   static Color baseColor(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
@@ -237,6 +233,11 @@ class AppColors {
   }
 
   static const Color bottomNavSelected = primary;
+
+  static const LinearGradient brandLinearGradient = LinearGradient(
+    colors: [brand600, brand800],
+    transform: GradientRotation(0.785398),
+  );
 
   static Color bottomNavUnselected(WidgetRef ref) {
     final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;

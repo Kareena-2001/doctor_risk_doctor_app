@@ -18,7 +18,7 @@ class TestimonialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = resolveApprovalStatus(testimonial.approveStatus);
+    final status = resolveApprovalStatus(context, testimonial.approveStatus);
     final type = testimonial.testimonialType.isEmpty
         ? 'text'
         : testimonial.testimonialType.toLowerCase();

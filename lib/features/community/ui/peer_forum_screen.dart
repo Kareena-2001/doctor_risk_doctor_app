@@ -151,6 +151,8 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     required bool selected,
     required VoidCallback onTap,
   }) {
+    final isDark = context.isDarkMode;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -160,10 +162,14 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
           vertical: Responsive.h(8),
         ),
         decoration: BoxDecoration(
-          color: selected ? AppColors.newPri : Colors.white,
+          color: selected
+              ? (isDark ? AppColors.darkBrand700 : AppColors.newPri)
+              : (isDark ? AppColors.darkCard : Colors.white),
           borderRadius: BorderRadius.circular(Responsive.w(30)),
           border: Border.all(
-            color: selected ? Colors.transparent : Colors.grey.shade300,
+            color: selected
+                ? Colors.transparent
+                : (isDark ? AppColors.darkLine : Colors.grey.shade300),
           ),
         ),
         child: Text(
@@ -171,7 +177,9 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
           style: customTextStyle(
             fontSize: Responsive.sp(12),
             fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : Colors.grey.shade700,
+            color: selected
+                ? Colors.white
+                : (isDark ? AppColors.darkInk600 : Colors.grey.shade700),
           ),
         ),
       ),
@@ -249,7 +257,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
             style: customTextStyle(
               fontSize: Responsive.sp(13),
               fontWeight: FontWeight.bold,
-              color: AppColors.textColor.withValues(alpha: 0.85),
+              color: context.primaryTextColor.withValues(alpha: 0.85),
             ),
           ),
           height(Responsive.h(6)),
@@ -311,15 +319,20 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
   }
 
   Color _typeColor(String type) {
+    final isDark = context.isDarkMode;
+
     switch (type.toLowerCase()) {
       case 'news':
-        return Colors.blue;
+        return isDark ? const Color(0xFF60A5FA) : Colors.blue;
+
       case 'experience':
-        return Colors.orange;
+        return isDark ? const Color(0xFFFFB74D) : Colors.orange;
+
       case 'blog':
-        return AppColors.newPri;
+        return isDark ? AppColors.darkBrand500 : AppColors.newPri;
+
       default:
-        return Colors.grey;
+        return isDark ? AppColors.darkInk400 : Colors.grey;
     }
   }
 

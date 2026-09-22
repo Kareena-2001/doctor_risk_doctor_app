@@ -80,7 +80,10 @@ class CustomTextField extends StatelessWidget {
         ),
         height(8),
         TextFormField(
-          style: customTextStyle(fontSize: 12),
+          style: customTextStyle(
+            fontSize: 12,
+            color: isDark ? AppColors.darkInk900 : AppColors.textColor,
+          ),
           textCapitalization: textCapitalization,
           maxLength: maxLength,
           controller: controller,
@@ -99,7 +102,6 @@ class CustomTextField extends StatelessWidget {
             if (validator != null) return validator!(val);
             return null;
           },
-          // style: AppTheme.label12,
           decoration: InputDecoration(
             // prefixIcon: icon != null
             //     ? Icon(icon, color: const Color(0xFF1565C0), size: 20)

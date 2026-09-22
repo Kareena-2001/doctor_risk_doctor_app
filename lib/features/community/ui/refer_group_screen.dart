@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/community/ui/state/community_state.dart';
 import 'package:Doctors_App/features/community/ui/view_model/community_view_model.dart';
 import 'package:Doctors_App/features/community/ui/widgets/refer_doctor_form.dart';
@@ -72,7 +73,7 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
               style: customTextStyle(
                 fontSize: Responsive.sp(15),
                 fontWeight: FontWeight.bold,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
             height(Responsive.h(10)),

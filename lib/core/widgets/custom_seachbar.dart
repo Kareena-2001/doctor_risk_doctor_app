@@ -20,6 +20,7 @@ class CustomSearchBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: controller,
       onChanged: onChanged,
@@ -29,7 +30,6 @@ class CustomSearchBar extends ConsumerWidget {
       ),
       decoration: InputDecoration(
         hintText: hint,
-
         hintStyle: customTextStyle(
           fontSize: 13,
           color: const Color(0xFFAAAAAA),
@@ -49,27 +49,36 @@ class CustomSearchBar extends ConsumerWidget {
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: AppColors.fieldGrey),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+            // width: 1.5,
+          ),
         ),
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: AppColors.fieldBorder, width: 2),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkBrand500 : AppColors.primary,
+            width: 2,
+          ),
         ),
-
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: AppColors.fieldBorder),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+            // width: 1.5,
+          ),
         ),
-
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: Colors.red),
         ),
-
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkBrand500 : AppColors.primary,
+            width: 1.5,
+          ),
         ),
       ),
     );

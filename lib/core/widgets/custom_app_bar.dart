@@ -143,6 +143,7 @@ class AppBarAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: IconButton.outlined(
@@ -150,7 +151,10 @@ class AppBarAction extends StatelessWidget {
         icon: Icon(icon, size: Responsive.sp(22), color: AppColors.newPri),
         style: IconButton.styleFrom(
           shape: const CircleBorder(),
-          side: const BorderSide(color: AppColors.greyLight),
+          side: BorderSide(
+            color: isDark ? AppColors.darkLine : AppColors.greyLight,
+            // width: 1.5,
+          ),
           padding: const EdgeInsets.all(10),
         ),
       ),

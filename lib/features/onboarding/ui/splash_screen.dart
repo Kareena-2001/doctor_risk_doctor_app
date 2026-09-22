@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,14 +48,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.primaryBackgroundColor,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(),
+            SizedBox(),
             Column(
               children: [
                 Container(
@@ -69,11 +70,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ],
             ),
             Padding(
-              // padding: EdgeInsets.only(bottom: 20.0),
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).padding.bottom + 40,
               ),
-              // bottom: MediaQuery.of(context).padding.bottom + 40,
               child: Text(
                 "Designed & Developed By\n Mobisoftseo Technologies",
                 textAlign: TextAlign.center,

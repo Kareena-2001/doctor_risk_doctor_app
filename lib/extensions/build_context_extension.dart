@@ -23,6 +23,10 @@ extension ThemeModeExtension on BuildContext {
 
   Color get dividerColor => isDarkMode ? AppColors.darkLine : AppColors.mono20;
 
+  // Border color
+  Color get borderColor =>
+      isDarkMode ? AppColors.darkLine : AppColors.lineLight;
+
   ThemeData get lightTheme => ThemeData.light().copyWith(
     scaffoldBackgroundColor: AppColors.mono0,
     canvasColor: AppColors.mono0,
