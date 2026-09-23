@@ -4,6 +4,7 @@ import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/dimensions.dart';
@@ -14,7 +15,7 @@ import '../../../../extensions/build_context_extension.dart';
 import '../../../../extensions/date_time_extension.dart';
 import '../../../../theme/app_colors.dart';
 
-class EventListTab extends StatelessWidget {
+class EventListTab extends ConsumerStatefulWidget {
   final List<EventModel> events;
   final String activeTab;
 
@@ -25,9 +26,32 @@ class EventListTab extends StatelessWidget {
   });
 
   @override
+  ConsumerState<EventListTab> createState() => _EventListTabState();
+}
+
+class _EventListTabState extends ConsumerState<EventListTab> {
+  late List<EventModel> _events;
+
+  @override
+  void initState() {
+    super.initState();
+    _events = List<EventModel>.from(widget.events);
+  }
+
+  @override
+  void didUpdateWidget(covariant EventListTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.events != widget.events) {
+      _events = List<EventModel>.from(widget.events);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (events.isEmpty)
+    if (_events.isEmpty) {
       return CommonEmptyState(icon: Icons.info, title: 'No items found here.');
+    }
 
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(
@@ -36,10 +60,17 @@ class EventListTab extends StatelessWidget {
         Responsive.w(16),
         Responsive.h(24),
       ),
-      itemCount: events.length,
+      itemCount: _events.length,
       separatorBuilder: (_, __) => height(Responsive.h(18)),
-      itemBuilder: (context, index) =>
-          _EventCard(event: events[index], activeTab: activeTab),
+      itemBuilder: (context, index) => _EventCard(
+        event: _events[index],
+        activeTab: widget.activeTab,
+        onRegistrationSuccess: () {
+          setState(() {
+            _events[index] = _events[index].copyWith(registerButton: false);
+          });
+        },
+      ),
     );
   }
 }
@@ -47,8 +78,13 @@ class EventListTab extends StatelessWidget {
 class _EventCard extends StatelessWidget {
   final EventModel event;
   final String activeTab;
+  final VoidCallback? onRegistrationSuccess;
 
-  const _EventCard({required this.event, required this.activeTab});
+  const _EventCard({
+    required this.event,
+    required this.activeTab,
+    this.onRegistrationSuccess,
+  });
 
   String _formatEventDateTime() {
     final date = DateFormat('yyyy-MM-dd').parse(event.date.trim());
@@ -75,7 +111,7 @@ class _EventCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text('OK'),
           ),
         ],
       ),
@@ -99,7 +135,6 @@ class _EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Expanded(
@@ -122,10 +157,7 @@ class _EventCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 height(Responsive.h(8)),
-
-                // Event title
                 Text(
                   event.title,
                   style: customTextStyle(
@@ -134,19 +166,13 @@ class _EventCard extends StatelessWidget {
                     color: AppColors.textColor,
                   ),
                 ),
-
                 height(Responsive.h(14)),
-
-                // Date & Time
                 _buildDetailRow(
                   icon: Icons.calendar_month_outlined,
                   title: 'Date & Time',
                   value: _formatEventDateTime(),
                 ),
-
                 height(Responsive.h(12)),
-
-                // Event Type
                 _buildDetailRow(
                   icon: isOnline
                       ? Icons.videocam_rounded
@@ -154,8 +180,6 @@ class _EventCard extends StatelessWidget {
                   title: 'Event Type',
                   value: event.eventType,
                 ),
-
-                // Address for Offline
                 if (!isOnline &&
                     event.address != null &&
                     event.address!.isNotEmpty) ...[
@@ -166,16 +190,12 @@ class _EventCard extends StatelessWidget {
                     value: event.address!,
                   ),
                 ],
-
-                // Price
                 height(Responsive.h(12)),
                 _buildDetailRow(
                   icon: Icons.currency_rupee_rounded,
                   title: 'Price',
                   value: event.price == '0.00' ? 'Free' : '₹${event.price}',
                 ),
-
-                // Price description
                 if (event.priceDescription != null &&
                     event.priceDescription!.isNotEmpty) ...[
                   height(Responsive.h(12)),
@@ -185,8 +205,6 @@ class _EventCard extends StatelessWidget {
                     value: event.priceDescription!,
                   ),
                 ],
-
-                // Description
                 height(Responsive.h(12)),
                 Text(
                   'Description',
@@ -206,10 +224,7 @@ class _EventCard extends StatelessWidget {
                     color: AppColors.homeTextMuted,
                   ),
                 ),
-
                 height(Responsive.h(20)),
-
-                // Close button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -312,7 +327,6 @@ class _EventCard extends StatelessWidget {
     final isOnline = event.eventType == 'Online';
     final isPast = activeTab == 'past';
     final accent = isOnline ? Colors.blue : Colors.orange;
-    final isRegistered = event.attendanceStatus != null;
 
     return Container(
       decoration: BoxDecoration(
@@ -377,8 +391,6 @@ class _EventCard extends StatelessWidget {
               ),
             ),
             height(Responsive.h(8)),
-
-            // Date + time on a single line, e.g. "14 Aug 2026 · 5:00 PM IST"
             Text(
               _formatEventDateTime(),
               style: customTextStyle(
@@ -387,9 +399,6 @@ class _EventCard extends StatelessWidget {
               ),
             ),
             height(Responsive.h(6)),
-
-            // Offline -> address. Online -> tap-for-details link.
-            // Offline -> show address
             if (!isOnline &&
                 event.address != null &&
                 event.address!.isNotEmpty) ...[
@@ -416,7 +425,6 @@ class _EventCard extends StatelessWidget {
               height(Responsive.h(8)),
             ],
 
-            // Details -> available for BOTH Online and Offline
             GestureDetector(
               onTap: () => _showDescriptionDialog(context),
               child: Row(
@@ -447,8 +455,6 @@ class _EventCard extends StatelessWidget {
             ),
             height(Responsive.h(8)),
 
-            // Price + description on a single line, e.g.
-            // "₹499 (Non-member rate — free for members)"
             Text(
               event.priceDescription != null &&
                       event.priceDescription!.isNotEmpty
@@ -524,7 +530,7 @@ class _EventCard extends StatelessWidget {
                 ),
               ],
             ] else if (activeTab != 'collaborate') ...[
-              if (isRegistered) ...[
+              if (event.registerButton == false) ...[
                 height(Responsive.h(16)),
                 Row(
                   children: [
@@ -555,10 +561,14 @@ class _EventCard extends StatelessWidget {
                   fontSize: 14,
                   height: 45,
                   onPressed: () async {
-                    await context.push<bool>(
+                    final registered = await context.push<bool>(
                       Routes.eventRegister,
                       extra: event,
                     );
+
+                    if (registered == true) {
+                      onRegistrationSuccess?.call();
+                    }
                   },
                 ),
               ],

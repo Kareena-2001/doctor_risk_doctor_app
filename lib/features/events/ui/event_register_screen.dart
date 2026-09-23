@@ -72,11 +72,7 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_doctorId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Unable to load your profile. Please retry.'),
-        ),
-      );
+      context.showWarningSnackBar('Unable to load your profile. Please retry.');
       return;
     }
 
@@ -100,11 +96,10 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
         'Successfully registered for ${widget.event.title}!',
       );
       Navigator.pop(context, true);
+
     } else {
       registerState.whenOrNull(
-        error: (error, _) => ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error.toString()))),
+        error: (error, _) => context.showErrorSnackBar(error.toString()),
       );
     }
   }
@@ -114,7 +109,6 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
     final doctorDetails = ref.watch(eventsViewModelProvider).doctorDetails;
     final registerState = ref.watch(eventsViewModelProvider).registerEvent;
 
-    // Prefill as soon as the doctor profile arrives.
     _prefillFromDoctorDetails();
 
     final isLoadingProfile = doctorDetails.isLoading && !_prefilled;
@@ -136,8 +130,6 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
                       _buildEventSummaryCard(),
                       height(Responsive.h(24)),
                       CustomTextField(
-                        // NOTE: if CustomTextField doesn't support `readOnly`,
-                        // just drop that param — field is only prefilled here.
                         label: "Member Id",
                         controller: _memberIdController,
                         icon: Icons.person_outline_rounded,
@@ -162,7 +154,7 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
                           if (!RegExp(
                             r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                           ).hasMatch(val)) {
-                            return 'Please enter a valid email address';
+                            return 'Please enter a valid  email address';
                           }
                           return null;
                         },
