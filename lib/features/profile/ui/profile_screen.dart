@@ -574,6 +574,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: context.isDarkMode
+                ? Colors.black.withValues(alpha: 0.22)
+                : Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: Offset(0, -5),
+          ),
+        ],
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: context.secondaryWidgetColor),

@@ -174,7 +174,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                       activeTab: 'upcoming',
                     ),
                   ),
-                  loading: () => const Center(child: Loading()),
+                  loading: () =>  Center(child: Loading()),
                   error: (error, _) => _buildErrorState(
                     error.toString(),
                     () => viewModel.refreshUpcomingEvents(
