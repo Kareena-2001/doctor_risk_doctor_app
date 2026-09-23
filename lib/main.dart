@@ -10,8 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/responsive.dart';
 import 'extensions/build_context_extension.dart';
-import 'features/common/ui/widgets/offline_container.dart';
 import 'features/common/ui/providers/app_theme_mode_provider.dart';
+import 'features/common/ui/widgets/offline_container.dart';
 import 'features/fcm/notification_service.dart';
 import 'firebase_options.dart';
 

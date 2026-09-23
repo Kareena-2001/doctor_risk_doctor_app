@@ -16,10 +16,7 @@ class DocumentVaultScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: context.primaryBackgroundColor,
-      appBar: CustomAppBar(
-        title: 'Document Vault',
-        showBack: true,
-      ),
+      appBar: CustomAppBar(title: 'Document Vault', showBack: true),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.all(Responsive.w(16)),
@@ -82,10 +79,7 @@ class DocumentVaultScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildUploadedDocTile(
-    BuildContext context,
-    DocumentItem doc,
-  ) {
+  Widget _buildUploadedDocTile(BuildContext context, DocumentItem doc) {
     final isUploaded = doc.status == DocumentStatus.uploaded;
 
     return Container(
@@ -165,10 +159,7 @@ class DocumentVaultScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildIssuedDocTile(
-    BuildContext context,
-    DocumentItem doc,
-  ) {
+  Widget _buildIssuedDocTile(BuildContext context, DocumentItem doc) {
     final isIssued = doc.status == DocumentStatus.issued;
 
     return Container(
