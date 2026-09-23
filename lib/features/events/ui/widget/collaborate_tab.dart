@@ -128,7 +128,7 @@ class _CollaborationCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
-        color:  context.secondaryWidgetColor,
+        color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
