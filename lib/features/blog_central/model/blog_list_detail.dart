@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'blog_list_detail.freezed.dart';
+
 part 'blog_list_detail.g.dart';
 
 @freezed
