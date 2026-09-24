@@ -1,4 +1,5 @@
 import 'package:Doctors_App/features/product/model/product_tier.dart';
+import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../model/product_model.dart';
@@ -17,12 +18,14 @@ class PurchaseWizardController extends _$PurchaseWizardController {
     double sumAssured,
     double premium,
   ) {
+    Future.microtask(loadAddresses);
     return PurchaseWizardState(
       product: product,
       tier: tier,
       duration: duration,
       sumAssured: sumAssured,
       premium: premium,
+      isLoadingAddresses: true,
     );
   }
 
@@ -60,20 +63,71 @@ class PurchaseWizardController extends _$PurchaseWizardController {
     nextStep();
   }
 
-  void addAddress(WizardAddress address) {
-    state = state.copyWith(addresses: [...state.addresses, address]);
+  Future<void> loadAddresses() async {
+    state = state.copyWith(isLoadingAddresses: true, errorMessage: null);
+    try {
+      var data = ref.read(profileViewModelProvider).valueOrNull?.profileData;
+      if (data == null) {
+        await ref
+            .read(profileViewModelProvider.notifier)
+            .getProfile(silent: true);
+        data = ref.read(profileViewModelProvider).valueOrNull?.profileData;
+      }
+      state = state.copyWith(
+        addresses: data?.addresses ?? const [],
+        isLoadingAddresses: false,
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoadingAddresses: false,
+        errorMessage: 'Failed to load addresses. Please try again.',
+      );
+    }
   }
 
-  void updateAddress(WizardAddress address) {
-    final updated = state.addresses
-        .map((a) => a.id == address.id ? address : a)
-        .toList();
-    state = state.copyWith(addresses: updated);
+  void _syncAddressesFromProfile() {
+    final addresses =
+        ref
+            .read(profileViewModelProvider)
+            .valueOrNull
+            ?.profileData
+            ?.addresses ??
+        const [];
+    state = state.copyWith(addresses: addresses, isLoadingAddresses: false);
   }
 
-  void removeAddress(String addressId) {
-    final updated = state.addresses.where((a) => a.id != addressId).toList();
-    state = state.copyWith(addresses: updated);
+  Future<void> addOrEditAddress({
+    int? id,
+    required String addressType,
+    required String ownVisiting,
+    required String address1,
+    required String address2,
+    required String landmark,
+    required String area,
+    required String stateName,
+    required String city,
+    required String pincode,
+  }) async {
+    await ref
+        .read(profileViewModelProvider.notifier)
+        .addOrEditAddress(
+          id: id,
+          addressType: addressType,
+          ownVisiting: ownVisiting,
+          address1: address1,
+          address2: address2,
+          landmark: landmark,
+          area: area,
+          stateId: stateName,
+          cityId: city,
+          pincode: pincode,
+        );
+    _syncAddressesFromProfile();
+  }
+
+  Future<void> deleteAddress(int id) async {
+    await ref.read(profileViewModelProvider.notifier).deleteAddress(id);
+    _syncAddressesFromProfile();
   }
 
   Future<bool> submit() async {

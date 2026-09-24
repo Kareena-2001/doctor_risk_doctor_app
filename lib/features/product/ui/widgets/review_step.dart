@@ -77,7 +77,8 @@ class ReviewStep extends ConsumerWidget {
                   title: 'Addresses (${state.addresses.length})',
                   rows: {
                     for (final a in state.addresses)
-                      a.type.label: '${a.address1}, ${a.city} - ${a.pinCode}',
+                      '${a.addressType ?? 'Address'} (${a.id})':
+                          '${a.address1 ?? ''}, ${a.city ?? ''} - ${a.pincode ?? ''}',
                   },
                 ),
               ],

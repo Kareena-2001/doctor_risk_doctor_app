@@ -22,7 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routing/routes.dart';
-import '../../product/ui/widgets/address_form_sheet.dart';
+import 'widgets/profile_address_form_sheet.dart';
 
 const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
 
@@ -311,14 +311,91 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  void _addAddress() {
-    showModalBottomSheet(
+  Future<void> _openAddressSheet({DoctorAddress? existing}) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) =>
-          AddressFormSheet(onSave: (address) {}, existing: null),
+      builder: (_) {
+        return ProfileAddressFormSheet(
+          existing: existing,
+          onSave: ({
+            required addressType,
+            required ownVisiting,
+            required address1,
+            required address2,
+            required landmark,
+            required area,
+            required stateId,
+            required cityId,
+            required pincode,
+          }) async {
+            try {
+              await ref.read(profileViewModelProvider.notifier).addOrEditAddress(
+                id: existing?.id,
+                addressType: addressType,
+                ownVisiting: ownVisiting,
+                address1: address1,
+                address2: address2,
+                landmark: landmark,
+                area: area,
+                stateId: stateId,
+                cityId: cityId,
+                pincode: pincode,
+              );
+              if (!mounted) return;
+
+              context.showSuccessSnackBar(
+                existing == null
+                    ? 'Address added successfully.'
+                    : 'Address updated successfully.',
+              );
+            } catch (e) {
+              if (!mounted) return;
+              context.showErrorSnackBar(
+                e.toString().replaceFirst('Exception: ', ''),
+              );
+              rethrow;
+            }
+          },
+        );
+      },
     );
+  }
+
+  Future<void> _deleteAddress(DoctorAddress address) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete address'),
+        content: const Text('Are you sure you want to delete this address?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref
+          .read(profileViewModelProvider.notifier)
+          .deleteAddress(address.id);
+      if (!mounted) return;
+      context.showSuccessSnackBar('Address deleted successfully.');
+    } catch (e) {
+      if (!mounted) return;
+      context.showErrorSnackBar(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
 
   @override
@@ -502,7 +579,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontSize: 13,
                             backgroundColor: AppColors.white,
                             textColor: AppColors.textColor,
-                            onPressed: _addAddress,
+                            onPressed: () => _openAddressSheet(),
                             icon: Icons.add,
                             text: 'Add Address',
                           ),
@@ -522,7 +599,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontSize: 13,
                             backgroundColor: context.secondaryBackgroundColor,
                             textColor: AppColors.textColor,
-                            onPressed: _addAddress,
+                            onPressed: () => _openAddressSheet(),
                             icon: Icons.add,
                             text: 'Add Address',
                           ),
@@ -783,7 +860,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildAddressCard(dynamic address, int index) {
+  Widget _buildAddressCard(DoctorAddress address, int index) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(12),
@@ -812,12 +889,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Row(
                 children: [
                   InkWell(
-                    onTap: () {},
+                    onTap: () => _openAddressSheet(existing: address),
                     child: const Icon(Icons.edit, size: 18, color: Colors.blue),
                   ),
                   width(8),
                   InkWell(
-                    onTap: () {},
+                    onTap: () => _deleteAddress(address),
                     child: const Icon(
                       Icons.delete_outline,
                       size: 18,

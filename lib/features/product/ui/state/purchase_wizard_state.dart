@@ -1,4 +1,5 @@
 import 'package:Doctors_App/features/product/model/product_tier.dart';
+import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 
 import '../../model/product_model.dart';
 import '../../model/purchase_model.dart';
@@ -26,10 +27,11 @@ class PurchaseWizardState {
   final WizardStep currentStep;
   final PersonalDetails? personalDetails;
   final HospitalDetails? hospitalDetails;
-  final List<WizardAddress> addresses;
+  final List<DoctorAddress> addresses;
 
   final bool isSubmitting;
   final bool isSubmitted;
+  final bool isLoadingAddresses;
   final String? errorMessage;
 
   const PurchaseWizardState({
@@ -44,6 +46,7 @@ class PurchaseWizardState {
     this.addresses = const [],
     this.isSubmitting = false,
     this.isSubmitted = false,
+    this.isLoadingAddresses = false,
     this.errorMessage,
   });
 
@@ -65,9 +68,10 @@ class PurchaseWizardState {
     WizardStep? currentStep,
     PersonalDetails? personalDetails,
     HospitalDetails? hospitalDetails,
-    List<WizardAddress>? addresses,
+    List<DoctorAddress>? addresses,
     bool? isSubmitting,
     bool? isSubmitted,
+    bool? isLoadingAddresses,
     String? errorMessage,
   }) {
     return PurchaseWizardState(
@@ -82,6 +86,7 @@ class PurchaseWizardState {
       addresses: addresses ?? this.addresses,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
+      isLoadingAddresses: isLoadingAddresses ?? this.isLoadingAddresses,
       errorMessage: errorMessage,
     );
   }

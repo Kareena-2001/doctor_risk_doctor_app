@@ -49,7 +49,8 @@ class HospitalDetails {
   final String medicalRegNo;
   final String medicalRegYear;
   final String? diplomaCertificatePath;
-  final String? previousPolicyPath;final DateTime? retroactiveDate;
+  final String? previousPolicyPath;
+  final DateTime? retroactiveDate;
   final bool retroActive;
   final bool worldwide;
   final bool hasUnqualifiedStaff;
@@ -69,19 +70,19 @@ class HospitalDetails {
   });
 }
 
-enum AddressType { home, hospital }
+enum AddressType { home, clinic, hospital, office }
 
 extension AddressTypeX on AddressType {
   String get label {
     switch (this) {
       case AddressType.home:
         return 'Residential';
-      // case AddressType.clinic:
-      //   return 'Clinic';
+      case AddressType.clinic:
+        return 'Clinic';
       case AddressType.hospital:
         return 'Hospital/Clinic';
-      // case AddressType.office:
-      //   return 'Office';
+      case AddressType.office:
+        return 'Office';
     }
   }
 }
@@ -92,49 +93,3 @@ extension OwnOrVisitingX on OwnOrVisiting {
   String get label => this == OwnOrVisiting.own ? 'Own' : 'Visiting';
 }
 
-class WizardAddress {
-  final String id;
-  final AddressType type;
-  final OwnOrVisiting ownOrVisiting;
-  final String address1;
-  final String address2;
-  final String landmark;
-  final String pinCode;
-  final String city;
-  final String state;
-
-  const WizardAddress({
-    required this.id,
-    required this.type,
-    required this.ownOrVisiting,
-    required this.address1,
-    required this.address2,
-    required this.landmark,
-    required this.pinCode,
-    required this.city,
-    required this.state,
-  });
-
-  WizardAddress copyWith({
-    AddressType? type,
-    OwnOrVisiting? ownOrVisiting,
-    String? address1,
-    String? address2,
-    String? landmark,
-    String? pinCode,
-    String? city,
-    String? state,
-  }) {
-    return WizardAddress(
-      id: id,
-      type: type ?? this.type,
-      ownOrVisiting: ownOrVisiting ?? this.ownOrVisiting,
-      address1: address1 ?? this.address1,
-      address2: address2 ?? this.address2,
-      landmark: landmark ?? this.landmark,
-      pinCode: pinCode ?? this.pinCode,
-      city: city ?? this.city,
-      state: state ?? this.state,
-    );
-  }
-}

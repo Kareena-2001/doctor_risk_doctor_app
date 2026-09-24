@@ -4,6 +4,7 @@ import 'package:Doctors_App/features/authentication/ui/state/authentication_stat
 import 'package:Doctors_App/features/profile/model/profile_address_request.dart';
 import 'package:Doctors_App/features/profile/repository/profile_repository.dart';
 import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_view_model.g.dart';
@@ -29,9 +30,11 @@ class ProfileViewModel extends _$ProfileViewModel {
         .toList();
   }
 
-  Future<void> getProfile() async {
+  Future<void> getProfile({bool silent = false}) async {
     final current = _current;
-    state = AsyncData(current.copyWith(profileData: null));
+    if (!silent) {
+      state = AsyncData(current.copyWith(profileData: null));
+    }
     try {
       final repository = ref.read(profileRepositoryProvider);
       final response = await repository.getProfileList();
@@ -82,6 +85,56 @@ class ProfileViewModel extends _$ProfileViewModel {
       await _prefillFromProfile();
     } catch (_) {
       _update((s) => s.copyWith(isCategoryLoading: false));
+    }
+  }
+
+  Future<bool> addOrEditAddress({
+    int? id,
+    required String addressType,
+    required String ownVisiting,
+    required String address1,
+    required String address2,
+    required String landmark,
+    required String area,
+    required String stateId,   // was stateName
+    required String cityId,    // was city
+    required String pincode,
+  }) async {
+    _update((s) => s.copyWith(isSaving: true));
+    try {
+      await ref.read(profileRepositoryProvider).addOrEditAddress(
+            id: id,
+            addressType: addressType,
+            ownVisiting: ownVisiting,
+            address1: address1,
+            address2: address2,
+            landmark: landmark,
+            area: area,
+            stateId: stateId,
+            cityId: cityId,
+            pincode: pincode,
+          );
+      await getProfile(silent: true);
+      _update((s) => s.copyWith(isSaving: false));
+      return true;
+    } catch (e) {
+      debugPrint('Address add/edit error: $e');
+      _update((s) => s.copyWith(isSaving: false));
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteAddress(int id) async {
+    _update((s) => s.copyWith(isSaving: true));
+    try {
+      await ref.read(profileRepositoryProvider).addressDelete(id.toString());
+      await getProfile(silent: true);
+      _update((s) => s.copyWith(isSaving: false));
+      return true;
+    } catch (e) {
+      debugPrint('Address delete error: $e');
+      _update((s) => s.copyWith(isSaving: false));
+      rethrow;
     }
   }
 

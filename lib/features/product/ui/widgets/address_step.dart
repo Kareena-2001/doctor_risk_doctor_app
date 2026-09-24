@@ -1,17 +1,16 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
-import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
-import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/product/ui/state/purchase_wizard_state.dart';
+import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
+import 'package:Doctors_App/features/profile/ui/widgets/profile_address_form_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
-import '../../model/purchase_model.dart';
 import '../view_model/purchase_wizard_controller.dart';
-import 'address_form_sheet.dart';
 
 class AddressStep extends ConsumerWidget {
   final WizardArgs controllerArgs;
@@ -32,29 +31,7 @@ class AddressStep extends ConsumerWidget {
 
     return Column(
       children: [
-        Expanded(
-          child: state.addresses.isEmpty
-              ? Center(
-                  child: Text(
-                    'No addresses added yet',
-                    style: customTextStyle(fontSize: 13, color: AppColors.grey),
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.addresses.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) {
-                    final a = state.addresses[i];
-                    return _AddressCard(
-                      address: a,
-                      onEdit: () =>
-                          _openAddressSheet(context, notifier, existing: a),
-                      onDelete: () => notifier.removeAddress(a.id),
-                    );
-                  },
-                ),
-        ),
+        Expanded(child: _buildBody(context, state, notifier)),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Column(
@@ -85,31 +62,129 @@ class AddressStep extends ConsumerWidget {
     );
   }
 
-  void _openAddressSheet(
+  Widget _buildBody(
+    BuildContext context,
+    PurchaseWizardState state,
+    PurchaseWizardController notifier,
+  ) {
+    if (state.isLoadingAddresses) {
+      return const Center(child: Loading());
+    }
+    if (state.addresses.isEmpty) {
+      return Center(
+        child: Text(
+          'No addresses added yet',
+          style: customTextStyle(fontSize: 13, color: AppColors.grey),
+        ),
+      );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: state.addresses.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (_, i) {
+        final a = state.addresses[i];
+        return _AddressCard(
+          address: a,
+          onEdit: () => _openAddressSheet(context, notifier, existing: a),
+          onDelete: () => _deleteAddress(context, notifier, a),
+        );
+      },
+    );
+  }
+
+  Future<void> _openAddressSheet(
     BuildContext context,
     PurchaseWizardController notifier, {
-    WizardAddress? existing,
-  }) {
-    showModalBottomSheet(
+    DoctorAddress? existing,
+  }) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AddressFormSheet(
+      builder: (_) => ProfileAddressFormSheet(
         existing: existing,
-        onSave: (address) {
-          if (existing == null) {
-            notifier.addAddress(address);
-          } else {
-            notifier.updateAddress(address);
-          }
-        },
+        onSave:
+            ({
+              required addressType,
+              required ownVisiting,
+              required address1,
+              required address2,
+              required landmark,
+              required area,
+              required stateId,
+              required cityId,
+              required pincode,
+            }) async {
+              try {
+                await notifier.addOrEditAddress(
+                  id: existing?.id,
+                  addressType: addressType,
+                  ownVisiting: ownVisiting,
+                  address1: address1,
+                  address2: address2,
+                  landmark: landmark,
+                  area: area,
+                  stateName: stateId,
+                  city: cityId,
+                  pincode: pincode,
+                );
+
+                if (!context.mounted) return;
+                context.showSuccessSnackBar(
+                  existing == null
+                      ? 'Address added successfully.'
+                      : 'Address updated successfully.',
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                context.showErrorSnackBar(
+                  e.toString().replaceFirst('Exception: ', ''),
+                );
+                rethrow;
+              }
+            },
       ),
     );
+  }
+
+  Future<void> _deleteAddress(
+    BuildContext context,
+    PurchaseWizardController notifier,
+    DoctorAddress address,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete address'),
+        content: const Text('Are you sure you want to delete this address?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await notifier.deleteAddress(address.id);
+      if (!context.mounted) return;
+      context.showSuccessSnackBar('Address deleted successfully.');
+    } catch (e) {
+      if (!context.mounted) return;
+      context.showErrorSnackBar(e.toString().replaceFirst('Exception: ', ''));
+    }
   }
 }
 
 class _AddressCard extends StatelessWidget {
-  final WizardAddress address;
+  final DoctorAddress address;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -121,6 +196,18 @@ class _AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final line1 = [
+      address.address1,
+      address.address2,
+    ].where((e) => e != null && e.trim().isNotEmpty).join(', ');
+    final line2 = [
+      if (address.landmark != null && address.landmark!.trim().isNotEmpty)
+        address.landmark,
+      address.city,
+      address.state,
+    ].where((e) => e != null && e.toString().trim().isNotEmpty).join(', ');
+    final pin = address.pincode?.trim() ?? '';
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -138,7 +225,7 @@ class _AddressCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              address.type.label,
+              address.addressType ?? 'Address',
               style: customTextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
@@ -152,7 +239,7 @@ class _AddressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${address.address1}, ${address.address2}',
+                  line1.isEmpty ? '-' : line1,
                   style: customTextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
@@ -160,7 +247,7 @@ class _AddressCard extends StatelessWidget {
                 ),
                 height(2),
                 Text(
-                  '${address.landmark}, ${address.city}, ${address.state} - ${address.pinCode}',
+                  pin.isEmpty ? line2 : '$line2 - $pin',
                   style: customTextStyle(fontSize: 11, color: AppColors.grey),
                 ),
               ],
@@ -179,4 +266,3 @@ class _AddressCard extends StatelessWidget {
     );
   }
 }
-

@@ -228,7 +228,6 @@ class ProfileRepository {
     if (response['status'] == true) return DegreeResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch degrees');
   }
-
   Future<AddAddressResponse> addOrEditAddress({
     int? id,
     required String addressType,
@@ -237,24 +236,28 @@ class ProfileRepository {
     required String address2,
     required String landmark,
     required String area,
-    required String state,
-    required String city,
+    required String stateId,
+    required String cityId,
     required String pincode,
   }) async {
+    final formData = <String, String>{
+      'address_type': addressType,
+      'own_visiting': ownVisiting,
+      'address1': address1,
+      'address2': address2,
+      'landmark': landmark,
+      'area': area,
+      'state': stateId, // ID goes in the same key the name used before
+      'city': cityId,
+      'pincode': pincode,
+    };
+    if (id != null) {
+      formData['id'] = id.toString();
+    }
+
     final response = await _apiClient.post(
       url: 'doctor/addressaddedit',
-      formData: {
-        'id': id.toString(),
-        'address_type': addressType,
-        'own_visiting': ownVisiting,
-        'address1': address1,
-        'address2': address2,
-        'landmark': landmark,
-        'area': area,
-        'state': state,
-        'city': city,
-        'pincode': pincode,
-      },
+      formData: formData,
       includeAuth: true,
     );
 
@@ -264,7 +267,6 @@ class ProfileRepository {
 
     throw Exception(response['msg'] ?? 'Failed to add/edit address');
   }
-
   Future<DeleteAddressResponse> addressDelete(String id) async {
     final response = await _apiClient.delete(
       url: 'doctor/addressdelete/$id',
@@ -273,6 +275,6 @@ class ProfileRepository {
     if (response['status'] == true) {
       return DeleteAddressResponse.fromJson(response);
     }
-    throw Exception(response['msg'] ?? 'Failed to fetch degrees');
+    throw Exception(response['msg'] ?? 'Failed to delete address');
   }
 }

@@ -15,7 +15,6 @@ String? resolveDocumentUrl(String? raw) {
   return '$kDocumentBaseUrl${value.startsWith('/') ? value.substring(1) : value}';
 }
 
-/// "…/doctor_documents/1/1790161691_6ab3b31b79d1d.jpg" -> "1790161691_6ab3b31b79d1d.jpg"
 String? documentFileName(String? raw) {
   final value = raw?.trim();
   if (value == null || value.isEmpty) return null;
