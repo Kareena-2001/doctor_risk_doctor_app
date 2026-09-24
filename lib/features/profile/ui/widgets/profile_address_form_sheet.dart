@@ -305,8 +305,8 @@ class _ProfileAddressFormSheetState
                 height(10),
                 CustomTextField(label: 'Landmark', controller: _landmarkCtrl),
                 height(10),
-                CustomTextField(label: 'Area', controller: _areaCtrl),
-                height(10),
+                // CustomTextField(label: 'Area', controller: _areaCtrl),
+                // height(10),
                 CustomDropdownField(
                   label: 'State',
                   controller: _stateCtrl,

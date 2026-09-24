@@ -107,7 +107,7 @@ class _EventCard extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(label),
-        content:  Text('Not applicable for this event.'),
+        content: Text('Not applicable for this event.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

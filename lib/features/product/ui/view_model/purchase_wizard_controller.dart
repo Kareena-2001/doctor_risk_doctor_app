@@ -117,7 +117,7 @@ class PurchaseWizardController extends _$PurchaseWizardController {
           address1: address1,
           address2: address2,
           landmark: landmark,
-          area: area,
+          // area: area,
           stateId: stateName,
           cityId: city,
           pincode: pincode,

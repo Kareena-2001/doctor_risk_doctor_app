@@ -319,45 +319,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (_) {
         return ProfileAddressFormSheet(
           existing: existing,
-          onSave: ({
-            required addressType,
-            required ownVisiting,
-            required address1,
-            required address2,
-            required landmark,
-            required area,
-            required stateId,
-            required cityId,
-            required pincode,
-          }) async {
-            try {
-              await ref.read(profileViewModelProvider.notifier).addOrEditAddress(
-                id: existing?.id,
-                addressType: addressType,
-                ownVisiting: ownVisiting,
-                address1: address1,
-                address2: address2,
-                landmark: landmark,
-                area: area,
-                stateId: stateId,
-                cityId: cityId,
-                pincode: pincode,
-              );
-              if (!mounted) return;
+          onSave:
+              ({
+                required addressType,
+                required ownVisiting,
+                required address1,
+                required address2,
+                required landmark,
+                required area,
+                required stateId,
+                required cityId,
+                required pincode,
+              }) async {
+                try {
+                  await ref
+                      .read(profileViewModelProvider.notifier)
+                      .addOrEditAddress(
+                        id: existing?.id,
+                        addressType: addressType,
+                        ownVisiting: ownVisiting,
+                        address1: address1,
+                        address2: address2,
+                        landmark: landmark,
+                        // area: area,
+                        stateId: stateId,
+                        cityId: cityId,
+                        pincode: pincode,
+                      );
+                  if (!mounted) return;
 
-              context.showSuccessSnackBar(
-                existing == null
-                    ? 'Address added successfully.'
-                    : 'Address updated successfully.',
-              );
-            } catch (e) {
-              if (!mounted) return;
-              context.showErrorSnackBar(
-                e.toString().replaceFirst('Exception: ', ''),
-              );
-              rethrow;
-            }
-          },
+                  context.showSuccessSnackBar(
+                    existing == null
+                        ? 'Address added successfully.'
+                        : 'Address updated successfully.',
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  context.showErrorSnackBar(
+                    e.toString().replaceFirst('Exception: ', ''),
+                  );
+                  rethrow;
+                }
+              },
         );
       },
     );
@@ -392,9 +395,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context.showSuccessSnackBar('Address deleted successfully.');
     } catch (e) {
       if (!mounted) return;
-      context.showErrorSnackBar(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      context.showErrorSnackBar(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 

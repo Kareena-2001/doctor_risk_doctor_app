@@ -95,9 +95,9 @@ class ProfileViewModel extends _$ProfileViewModel {
     required String address1,
     required String address2,
     required String landmark,
-    required String area,
-    required String stateId,   // was stateName
-    required String cityId,    // was city
+    // required String area,
+    required String stateId,
+    required String cityId,
     required String pincode,
   }) async {
     _update((s) => s.copyWith(isSaving: true));
@@ -109,7 +109,7 @@ class ProfileViewModel extends _$ProfileViewModel {
             address1: address1,
             address2: address2,
             landmark: landmark,
-            area: area,
+            // area: area,
             stateId: stateId,
             cityId: cityId,
             pincode: pincode,

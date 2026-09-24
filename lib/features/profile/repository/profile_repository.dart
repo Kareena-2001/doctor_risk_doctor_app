@@ -228,6 +228,7 @@ class ProfileRepository {
     if (response['status'] == true) return DegreeResponse.fromJson(response);
     throw Exception(response['msg'] ?? 'Failed to fetch degrees');
   }
+
   Future<AddAddressResponse> addOrEditAddress({
     int? id,
     required String addressType,
@@ -235,7 +236,7 @@ class ProfileRepository {
     required String address1,
     required String address2,
     required String landmark,
-    required String area,
+    // required String area,
     required String stateId,
     required String cityId,
     required String pincode,
@@ -246,8 +247,8 @@ class ProfileRepository {
       'address1': address1,
       'address2': address2,
       'landmark': landmark,
-      'area': area,
-      'state': stateId, // ID goes in the same key the name used before
+      // 'area': area,
+      'state': stateId,
       'city': cityId,
       'pincode': pincode,
     };
@@ -267,6 +268,7 @@ class ProfileRepository {
 
     throw Exception(response['msg'] ?? 'Failed to add/edit address');
   }
+
   Future<DeleteAddressResponse> addressDelete(String id) async {
     final response = await _apiClient.delete(
       url: 'doctor/addressdelete/$id',

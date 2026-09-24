@@ -40,12 +40,12 @@ class AddressModel with _$AddressModel {
     required String address1,
     required String address2,
     required String landmark,
-    required String area,
+    // required String area,
     required String state,
     required String city,
     required String pincode,
 
-    String? status,
+    // String? status,
   }) = _AddressModel;
 
   factory AddressModel.fromJson(Map<String, dynamic> json) =>

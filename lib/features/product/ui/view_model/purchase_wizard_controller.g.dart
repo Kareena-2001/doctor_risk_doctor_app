@@ -7,7 +7,7 @@ part of 'purchase_wizard_controller.dart';
 // **************************************************************************
 
 String _$purchaseWizardControllerHash() =>
-    r'd0750a4dce7090149d374e412f9a391a27253e58';
+    r'3ccd533be19e2c6c293da1ffda4d50d47686f2d1';
 
 /// Copied from Dart SDK
 class _SystemHash {
