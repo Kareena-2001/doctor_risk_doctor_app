@@ -7,6 +7,7 @@ import 'package:Doctors_App/features/authentication/model/register/degree_respon
 import 'package:Doctors_App/features/authentication/model/register/speciality_response.dart';
 import 'package:Doctors_App/features/profile/model/add_address_response.dart';
 import 'package:Doctors_App/features/profile/model/city_response.dart';
+import 'package:Doctors_App/features/profile/model/delete_address_response.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 import 'package:Doctors_App/features/profile/model/profile_update_response.dart';
 import 'package:Doctors_App/features/profile/model/state_response.dart';
@@ -53,6 +54,7 @@ class ProfileRepository {
     required String prefix,
     required String firstName,
     String? middleName,
+
     required String lastName,
     required String email,
     required String mobileNo,
@@ -261,5 +263,16 @@ class ProfileRepository {
     }
 
     throw Exception(response['msg'] ?? 'Failed to add/edit address');
+  }
+
+  Future<DeleteAddressResponse> addressDelete(String id) async {
+    final response = await _apiClient.delete(
+      url: 'doctor/addressdelete/$id',
+      includeAuth: true,
+    );
+    if (response['status'] == true) {
+      return DeleteAddressResponse.fromJson(response);
+    }
+    throw Exception(response['msg'] ?? 'Failed to fetch degrees');
   }
 }
