@@ -144,7 +144,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                 fontWeight: FontWeight.bold,
                 fontSize: Responsive.sp(12),
               ),
-              tabs: const [
+              tabs: [
                 Tab(text: "Upcoming"),
                 Tab(text: "Past Events"),
                 Tab(text: "Collaborate"),
