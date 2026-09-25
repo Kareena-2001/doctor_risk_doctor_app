@@ -23,7 +23,6 @@ class CollaborateTab extends ConsumerStatefulWidget {
 
 class _CollaborateTabState extends ConsumerState<CollaborateTab>
     with AutomaticKeepAliveClientMixin {
-
   @override
   bool get wantKeepAlive => true;
 
