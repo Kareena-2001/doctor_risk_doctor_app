@@ -85,6 +85,15 @@ class CustomDatePicker extends ConsumerWidget {
               horizontal: 16,
               vertical: 14,
             ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+                // width: 1.5,
+              ),
+            ),
+
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(

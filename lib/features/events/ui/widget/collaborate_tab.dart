@@ -114,16 +114,10 @@ class _CollaborationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = proposal.title;
     final organisation = proposal.organization;
-    final date = proposal.date;
-    final preferredTime = proposal.preferedTime;
     final status = proposal.approveStatus;
 
+    final submitted = proposal.submitted;
     final statusStyle = _getStatusStyle(status);
-
-    final detailsText = [
-      if (date != null && date.isNotEmpty) date,
-      if (preferredTime != null && preferredTime.isNotEmpty) preferredTime,
-    ].join(' · ');
 
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
@@ -141,30 +135,32 @@ class _CollaborationCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(13),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textColor,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(13),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textColor,
+                  ),
                 ),
-              ),
-              height(Responsive.h(7)),
-              Text(
-                detailsText.isNotEmpty
-                    ? '$organisation · $detailsText'
-                    : organisation,
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11),
-                  color: AppColors.homeTextMuted,
+                height(Responsive.h(7)),
+                Text(
+                  submitted.isNotEmpty
+                      ? '$organisation · $submitted'
+                      : organisation,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: AppColors.homeTextMuted,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          Spacer(),
+          width(Responsive.w(8)),
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.w(9),
@@ -183,8 +179,169 @@ class _CollaborationCard extends StatelessWidget {
               ),
             ),
           ),
+          PopupMenuButton<String>(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.more_vert,
+              size: Responsive.sp(18),
+              color: AppColors.homeTextMuted,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Responsive.w(12)),
+            ),
+            onSelected: (value) {
+              if (value == 'view') {
+                _showCollaborationDetails(context, proposal);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'view',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.visibility_outlined,
+                      size: Responsive.sp(16),
+                      color: AppColors.textColor,
+                    ),
+                    width(Responsive.w(8)),
+                    Text(
+                      'View',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(12),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  void _showCollaborationDetails(
+    BuildContext context,
+    CollaborationData proposal,
+  ) {
+    final statusStyle = _getStatusStyle(proposal.approveStatus);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.35,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: context.secondaryWidgetColor,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(Responsive.w(20)),
+                ),
+              ),
+              child: Column(
+                children: [
+                  height(Responsive.h(10)),
+                  Container(
+                    width: Responsive.w(40),
+                    height: Responsive.h(4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(Responsive.w(4)),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.w(16),
+                      vertical: Responsive.h(14),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Collaboration details',
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(15),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textColor,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Responsive.w(9),
+                            vertical: Responsive.h(5),
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusStyle.bgColor,
+                            borderRadius: BorderRadius.circular(
+                              Responsive.w(8),
+                            ),
+                          ),
+                          child: Text(
+                            proposal.approveStatus,
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(10),
+                              fontWeight: FontWeight.bold,
+                              color: statusStyle.textColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(height: 1, color: Colors.grey.shade200),
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: EdgeInsets.all(Responsive.w(16)),
+                      children: [
+                        _DetailRow(label: 'Title', value: proposal.title),
+                        _DetailRow(
+                          label: 'Organisation',
+                          value: proposal.organization,
+                        ),
+                        _DetailRow(
+                          label: 'Mode of event',
+                          value: proposal.modeOfEvent,
+                        ),
+                        _DetailRow(
+                          label: 'Preferred date',
+                          value: proposal.date,
+                        ),
+                        _DetailRow(
+                          label: 'Preferred time',
+                          value: proposal.preferedTime,
+                        ),
+                        _DetailRow(label: 'State', value: proposal.state),
+                        _DetailRow(label: 'City', value: proposal.city),
+                        _DetailRow(label: 'Area', value: proposal.area),
+                        _DetailRow(label: 'Purpose', value: proposal.purpose),
+                        _DetailRow(
+                          label: 'Submitted',
+                          value: proposal.submitted,
+                        ),
+                        _DetailRow(
+                          label: 'Status',
+                          value: proposal.approveStatus,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -213,6 +370,46 @@ class _CollaborationCard extends StatelessWidget {
           textColor: Colors.blue,
         );
     }
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String? value;
+
+  const _DetailRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    if (value == null || value!.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: Responsive.h(14)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: customTextStyle(
+              fontSize: Responsive.sp(11),
+              fontWeight: FontWeight.w500,
+              color: AppColors.homeTextMuted,
+            ),
+          ),
+          height(Responsive.h(3)),
+          Text(
+            value!,
+            style: customTextStyle(
+              fontSize: Responsive.sp(13),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -49,6 +49,8 @@ class _EventCollaborateScreenState
   IdNameOption? _selectedState;
   IdNameOption? _selectedCity;
 
+  bool get _isOffline => _modeOfEventController.text.trim() == 'Offline';
+
   @override
   void dispose() {
     _targetController.dispose();
@@ -67,9 +69,9 @@ class _EventCollaborateScreenState
   }
 
   List<String> _uniqueLabels(
-    List<IdNameOption> options,
-    Map<String, IdNameOption> targetMap,
-  ) {
+      List<IdNameOption> options,
+      Map<String, IdNameOption> targetMap,
+      ) {
     targetMap.clear();
     final counts = <String, int>{};
     final labels = <String>[];
@@ -103,29 +105,29 @@ class _EventCollaborateScreenState
     final success = await ref
         .read(eventsViewModelProvider.notifier)
         .addCollaboration(
-          collaborationTarget: _targetController.text.trim(),
-          fullName: _nameController.text.trim(),
-          emailId: _emailController.text.trim().isEmpty
-              ? null
-              : _emailController.text.trim(),
-          mobileNo: _mobileController.text.trim(),
-          organisation: _organisationController.text.trim(),
-          modeOfEvent: _modeOfEventController.text.trim().isEmpty
-              ? null
-              : _modeOfEventController.text.trim(),
-          preferredDate: _dateToApiFormat(_preferredDateController.text),
-          preferredTime: _preferredTimeController.text.trim().isEmpty
-              ? null
-              : _preferredTimeController.text.trim(),
-          stateId: _selectedState?.id.toString(),
-          cityId: _selectedCity?.id.toString(),
-          area: _areaController.text.trim().isEmpty
-              ? null
-              : _areaController.text.trim(),
-          purpose: _purposeController.text.trim().isEmpty
-              ? null
-              : _purposeController.text.trim(),
-        );
+      collaborationTarget: _targetController.text.trim(),
+      fullName: _nameController.text.trim(),
+      emailId: _emailController.text.trim().isEmpty
+          ? null
+          : _emailController.text.trim(),
+      mobileNo: _mobileController.text.trim(),
+      organisation: _organisationController.text.trim(),
+      modeOfEvent: _modeOfEventController.text.trim().isEmpty
+          ? null
+          : _modeOfEventController.text.trim(),
+      preferredDate: _dateToApiFormat(_preferredDateController.text),
+      preferredTime: _preferredTimeController.text.trim().isEmpty
+          ? null
+          : _preferredTimeController.text.trim(),
+      stateId: _isOffline ? _selectedState?.id.toString() : null,
+      cityId: _isOffline ? _selectedCity?.id.toString() : null,
+      area: _areaController.text.trim().isEmpty
+          ? null
+          : _areaController.text.trim(),
+      purpose: _purposeController.text.trim().isEmpty
+          ? null
+          : _purposeController.text.trim(),
+    );
     if (!mounted) return;
 
     if (success) {
@@ -165,7 +167,7 @@ class _EventCollaborateScreenState
     }
 
     return Scaffold(
-      backgroundColor:context.primaryBackgroundColor,
+      backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Collaborate Proposal'),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(Responsive.w(16)),
@@ -197,12 +199,10 @@ class _EventCollaborateScreenState
               ),
               height(Responsive.h(16)),
               CustomTextField(
-                isRequired: false,
-                label: 'Email',
-                controller: _emailController,
-                icon: Icons.email_outlined,
-                hint: 'Your email address',
-                keyboardType: TextInputType.emailAddress,
+                label: 'Organisation',
+                controller: _organisationController,
+                icon: Icons.business_outlined,
+                hint: 'Hospital / association / institute',
               ),
               height(Responsive.h(16)),
               CustomTextField(
@@ -212,13 +212,18 @@ class _EventCollaborateScreenState
                 hint: 'Your mobile number',
                 keyboardType: TextInputType.phone,
               ),
+
               height(Responsive.h(16)),
+
               CustomTextField(
-                label: 'Organisation',
-                controller: _organisationController,
-                icon: Icons.business_outlined,
-                hint: 'Hospital / association / institute',
+                isRequired: false,
+                label: 'Email',
+                controller: _emailController,
+                icon: Icons.email_outlined,
+                hint: 'Your email address',
+                keyboardType: TextInputType.emailAddress,
               ),
+
               height(Responsive.h(16)),
               CustomDropdownField(
                 isRequired: false,
@@ -227,6 +232,21 @@ class _EventCollaborateScreenState
                 icon: Icons.event_available_outlined,
                 hint: 'Select mode',
                 items: const ['Online', 'Offline'],
+                value: _modeOfEventController.text.isEmpty
+                    ? null
+                    : _modeOfEventController.text,
+                onChanged: (value) {
+                  setState(() {
+                    _modeOfEventController.text = value ?? '';
+                    if (!_isOffline) {
+                      // Clear state/city when switching away from Offline
+                      _selectedState = null;
+                      _selectedCity = null;
+                      _stateController.clear();
+                      _cityController.clear();
+                    }
+                  });
+                },
               ),
               height(Responsive.h(16)),
               CustomDatePicker(
@@ -244,7 +264,7 @@ class _EventCollaborateScreenState
 
                   if (date != null) {
                     _preferredDateController.text =
-                        '${date.day.toString().padLeft(2, '0')}/'
+                    '${date.day.toString().padLeft(2, '0')}/'
                         '${date.month.toString().padLeft(2, '0')}/'
                         '${date.year}';
                   }
@@ -285,50 +305,53 @@ class _EventCollaborateScreenState
                 icon: Icons.location_on_outlined,
                 hint: 'Locality',
               ),
-              height(Responsive.h(16)),
-              CustomDropdownField(
-                isRequired: false,
-                label: 'State',
-                controller: _stateController,
-                // icon: Icons.map_outlined,
-                hint: 'Select state',
-                items: stateLabels,
-                value: _stateController.text.isEmpty
-                    ? null
-                    : _stateController.text,
-                onChanged: (label) {
-                  final option = label == null ? null : _stateByLabel[label];
-                  if (option == null) return;
-                  setState(() {
-                    _selectedState = option;
-                    _selectedCity = null;
-                    _cityController.clear();
-                  });
-                  ref
-                      .read(profileViewModelProvider.notifier)
-                      .selectState(option);
-                },
-              ),
-              height(Responsive.h(16)),
-              CustomDropdownField(
-                isRequired: false,
-                label: isCityLoading ? 'City (loading...)' : 'City',
-                controller: _cityController,
-                // icon: Icons.location_city_outlined,
-                hint: _selectedState == null
-                    ? 'Select state first'
-                    : 'Select city',
-                items: cityLabels,
-                value: _cityController.text.isEmpty
-                    ? null
-                    : _cityController.text,
-                isEnabled: _selectedState != null,
-                onChanged: (label) {
-                  final option = label == null ? null : _cityByLabel[label];
-                  if (option == null) return;
-                  setState(() => _selectedCity = option);
-                },
-              ),
+              if (_isOffline) ...[
+                height(Responsive.h(16)),
+                CustomDropdownField(
+                  isRequired: false,
+                  label: 'State',
+                  controller: _stateController,
+                  // icon: Icons.map_outlined,
+                  hint: 'Select state',
+                  items: stateLabels,
+                  value: _stateController.text.isEmpty
+                      ? null
+                      : _stateController.text,
+                  onChanged: (label) {
+                    final option =
+                    label == null ? null : _stateByLabel[label];
+                    if (option == null) return;
+                    setState(() {
+                      _selectedState = option;
+                      _selectedCity = null;
+                      _cityController.clear();
+                    });
+                    ref
+                        .read(profileViewModelProvider.notifier)
+                        .selectState(option);
+                  },
+                ),
+                height(Responsive.h(16)),
+                CustomDropdownField(
+                  isRequired: false,
+                  label: isCityLoading ? 'City (loading...)' : 'City',
+                  controller: _cityController,
+                  // icon: Icons.location_city_outlined,
+                  hint: _selectedState == null
+                      ? 'Select state first'
+                      : 'Select city',
+                  items: cityLabels,
+                  value: _cityController.text.isEmpty
+                      ? null
+                      : _cityController.text,
+                  isEnabled: _selectedState != null,
+                  onChanged: (label) {
+                    final option = label == null ? null : _cityByLabel[label];
+                    if (option == null) return;
+                    setState(() => _selectedCity = option);
+                  },
+                ),
+              ],
               height(Responsive.h(16)),
               CustomTextField(
                 isRequired: false,
