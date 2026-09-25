@@ -147,4 +147,16 @@ class YourStoryRepository {
 
     return TestimonialResponse.fromJson(response);
   }
+
+  // Future<DeleteAddressResponse> addressDelete(String id) async {
+  //   final response = await _apiClient.delete(
+  //     url: 'doctor/addressdelete/$id',
+  //     includeAuth: true,
+  //   );
+  //   if (response['status'] == true) {
+  //     return DeleteAddressResponse.fromJson(response);
+  //   }
+  //   throw Exception(response['msg'] ?? 'Failed to delete address');
+  // }
+
 }

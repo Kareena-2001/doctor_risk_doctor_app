@@ -13,20 +13,14 @@ class YourStoryViewModel extends _$YourStoryViewModel {
     return const YourStoryState();
   }
 
-  // ==================== EXPERIENCE ====================
-
   Future<void> experienceList() async {
-    state = state.copyWith(
-      experienceList: const AsyncLoading(),
-    );
+    state = state.copyWith(experienceList: AsyncLoading());
 
     final result = await AsyncValue.guard(
-          () => ref.read(yourStoryRepositoryProvider).experienceList(),
+      () => ref.read(yourStoryRepositoryProvider).experienceList(),
     );
 
-    state = state.copyWith(
-      experienceList: result,
-    );
+    state = state.copyWith(experienceList: result);
   }
 
   Future<void> refreshExperienceList() => experienceList();
@@ -39,61 +33,45 @@ class YourStoryViewModel extends _$YourStoryViewModel {
     required String iAgreeAccepted,
     File? file,
   }) async {
-    state = state.copyWith(
-      submitExperienceStatus: const AsyncLoading(),
-    );
+    state = state.copyWith(submitExperienceStatus: const AsyncLoading());
 
     try {
       final response = await ref
           .read(yourStoryRepositoryProvider)
           .addOrEditExperience(
-        id: id,
-        title: title,
-        experienceType: experienceType,
-        description: description,
-        iAgreeAccepted: iAgreeAccepted,
-        coverImage: file,
-      );
+            id: id,
+            title: title,
+            experienceType: experienceType,
+            description: description,
+            iAgreeAccepted: iAgreeAccepted,
+            coverImage: file,
+          );
 
       if (response.status) {
-        state = state.copyWith(
-          submitExperienceStatus: AsyncData(response),
-        );
-
+        state = state.copyWith(submitExperienceStatus: AsyncData(response));
         return true;
       }
 
       state = state.copyWith(
-        submitExperienceStatus: AsyncError(
-          response.msg,
-          StackTrace.current,
-        ),
+        submitExperienceStatus: AsyncError(response.msg, StackTrace.current),
       );
 
       return false;
     } catch (e, st) {
-      state = state.copyWith(
-        submitExperienceStatus: AsyncError(e, st),
-      );
+      state = state.copyWith(submitExperienceStatus: AsyncError(e, st));
 
       return false;
     }
   }
 
-  // ==================== TESTIMONIAL ====================
-
   Future<void> testimonialList() async {
-    state = state.copyWith(
-      testimonialList: const AsyncLoading(),
-    );
+    state = state.copyWith(testimonialList: AsyncLoading());
 
     final result = await AsyncValue.guard(
-          () => ref.read(yourStoryRepositoryProvider).testimonialList(),
+      () => ref.read(yourStoryRepositoryProvider).testimonialList(),
     );
 
-    state = state.copyWith(
-      testimonialList: result,
-    );
+    state = state.copyWith(testimonialList: result);
   }
 
   Future<void> refreshTestimonialList() => testimonialList();
@@ -105,41 +83,32 @@ class YourStoryViewModel extends _$YourStoryViewModel {
     required String iAgreeAccepted,
     File? file,
   }) async {
-    state = state.copyWith(
-      submitTestimonialStatus: const AsyncLoading(),
-    );
+    state = state.copyWith(submitTestimonialStatus: const AsyncLoading());
 
     try {
       final response = await ref
           .read(yourStoryRepositoryProvider)
           .addOrEditTestimonial(
-        id: id,
-        testimonialType: testimonialType,
-        description: description,
-        iAgreeAccepted: iAgreeAccepted,
-        file: file,
-      );
+            id: id,
+            testimonialType: testimonialType,
+            description: description,
+            iAgreeAccepted: iAgreeAccepted,
+            file: file,
+          );
 
       if (response.status) {
-        state = state.copyWith(
-          submitTestimonialStatus: AsyncData(response),
-        );
+        state = state.copyWith(submitTestimonialStatus: AsyncData(response));
 
         return true;
       }
 
       state = state.copyWith(
-        submitTestimonialStatus: AsyncError(
-          response.msg,
-          StackTrace.current,
-        ),
+        submitTestimonialStatus: AsyncError(response.msg, StackTrace.current),
       );
 
       return false;
     } catch (e, st) {
-      state = state.copyWith(
-        submitTestimonialStatus: AsyncError(e, st),
-      );
+      state = state.copyWith(submitTestimonialStatus: AsyncError(e, st));
 
       return false;
     }

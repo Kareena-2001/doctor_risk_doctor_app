@@ -85,8 +85,6 @@ class EventsViewModel extends _$EventsViewModel {
 
   Future<void> refreshCollaborationList() => collaborationList();
 
-  /// Fetches the logged-in doctor's profile, used to prefill the event
-  /// registration form (name / email / mobile).
   Future<void> fetchDoctorDetails() async {
     state = state.copyWith(doctorDetails: const AsyncLoading());
 
@@ -96,11 +94,15 @@ class EventsViewModel extends _$EventsViewModel {
 
     state = state.copyWith(doctorDetails: result);
   }
-  Future<void> fetchUpcomingEvents({String type = '', String query = ''}) async {
+
+  Future<void> fetchUpcomingEvents({
+    String type = '',
+    String query = '',
+  }) async {
     state = state.copyWith(upcomingEvents: const AsyncLoading());
 
     final result = await AsyncValue.guard(
-          () => ref
+      () => ref
           .read(eventsRepositoryProvider)
           .eventList(search: 'upcoming', tab: type, title: query),
     );
@@ -112,7 +114,7 @@ class EventsViewModel extends _$EventsViewModel {
     state = state.copyWith(pastEvents: const AsyncLoading());
 
     final result = await AsyncValue.guard(
-          () => ref
+      () => ref
           .read(eventsRepositoryProvider)
           .eventList(search: 'past', tab: type, title: query),
     );
@@ -125,6 +127,7 @@ class EventsViewModel extends _$EventsViewModel {
 
   Future<void> refreshPastEvents({String type = '', String query = ''}) =>
       fetchPastEvents(type: type, query: query);
+
   Future<bool> submitEventRegistration({
     required int eventId,
     required int doctorId,
