@@ -23,6 +23,7 @@ class CollaborateTab extends ConsumerStatefulWidget {
 
 class _CollaborateTabState extends ConsumerState<CollaborateTab>
     with AutomaticKeepAliveClientMixin {
+
   @override
   bool get wantKeepAlive => true;
 
@@ -119,106 +120,84 @@ class _CollaborationCard extends StatelessWidget {
     final submitted = proposal.submitted;
     final statusStyle = _getStatusStyle(status);
 
-    return Container(
-      padding: EdgeInsets.all(Responsive.w(16)),
-      decoration: BoxDecoration(
-        color: context.secondaryWidgetColor,
-        borderRadius: BorderRadius.circular(Responsive.w(16)),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(13),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
-                  ),
-                ),
-                height(Responsive.h(7)),
-                Text(
-                  submitted.isNotEmpty
-                      ? '$organisation · $submitted'
-                      : organisation,
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11),
-                    color: AppColors.homeTextMuted,
-                  ),
-                ),
-              ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(Responsive.w(16)),
+      onTap: () => _showCollaborationDetails(context, proposal),
+      child: Container(
+        padding: EdgeInsets.all(Responsive.w(16)),
+        decoration: BoxDecoration(
+          color: context.secondaryWidgetColor,
+          borderRadius: BorderRadius.circular(Responsive.w(16)),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-          width(Responsive.w(8)),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: Responsive.w(9),
-              vertical: Responsive.h(5),
-            ),
-            decoration: BoxDecoration(
-              color: statusStyle.bgColor,
-              borderRadius: BorderRadius.circular(Responsive.w(8)),
-            ),
-            child: Text(
-              status,
-              style: customTextStyle(
-                fontSize: Responsive.sp(10),
-                fontWeight: FontWeight.bold,
-                color: statusStyle.textColor,
-              ),
-            ),
-          ),
-          PopupMenuButton<String>(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.more_vert,
-              size: Responsive.sp(18),
-              color: AppColors.homeTextMuted,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Responsive.w(12)),
-            ),
-            onSelected: (value) {
-              if (value == 'view') {
-                _showCollaborationDetails(context, proposal);
-              }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'view',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.visibility_outlined,
-                      size: Responsive.sp(16),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(13),
+                      fontWeight: FontWeight.bold,
                       color: AppColors.textColor,
                     ),
-                    width(Responsive.w(8)),
-                    Text(
-                      'View',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(12),
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textColor,
-                      ),
+                  ),
+                  height(Responsive.h(7)),
+                  Text(
+                    submitted.isNotEmpty
+                        ? '$organisation · $submitted'
+                        : organisation,
+                    style: customTextStyle(
+                      fontSize: Responsive.sp(11),
+                      color: AppColors.homeTextMuted,
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            width(Responsive.w(8)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.w(9),
+                vertical: Responsive.h(5),
+              ),
+              decoration: BoxDecoration(
+                color: statusStyle.bgColor,
+                borderRadius: BorderRadius.circular(Responsive.w(8)),
+              ),
+              child: Text(
+                status,
+                style: customTextStyle(
+                  fontSize: Responsive.sp(10),
+                  fontWeight: FontWeight.bold,
+                  color: statusStyle.textColor,
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            width(Responsive.w(6)),
+            InkWell(
+              borderRadius: BorderRadius.circular(Responsive.w(20)),
+              onTap: () => _showCollaborationDetails(context, proposal),
+              child: Padding(
+                padding: EdgeInsets.all(Responsive.w(4)),
+                child: Icon(
+                  Icons.visibility_outlined,
+                  size: Responsive.sp(18),
+                  color: AppColors.homeTextMuted,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -321,8 +300,16 @@ class _CollaborationCard extends StatelessWidget {
                           label: 'Preferred time',
                           value: proposal.preferedTime,
                         ),
-                        _DetailRow(label: 'State', value: proposal.state),
-                        _DetailRow(label: 'City', value: proposal.city),
+                        _DetailRow(
+                          label: 'State',
+                          value: proposal.state,
+                          alwaysShow: true,
+                        ),
+                        _DetailRow(
+                          label: 'City',
+                          value: proposal.city,
+                          alwaysShow: true,
+                        ),
                         _DetailRow(label: 'Area', value: proposal.area),
                         _DetailRow(label: 'Purpose', value: proposal.purpose),
                         _DetailRow(
@@ -376,14 +363,23 @@ class _CollaborationCard extends StatelessWidget {
 class _DetailRow extends StatelessWidget {
   final String label;
   final String? value;
+  final bool alwaysShow;
 
-  const _DetailRow({required this.label, required this.value});
+  const _DetailRow({
+    required this.label,
+    required this.value,
+    this.alwaysShow = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (value == null || value!.trim().isEmpty) {
+    final isEmpty = value == null || value!.trim().isEmpty;
+
+    if (isEmpty && !alwaysShow) {
       return const SizedBox.shrink();
     }
+
+    final displayValue = isEmpty ? 'Not provided' : value!;
 
     return Padding(
       padding: EdgeInsets.only(bottom: Responsive.h(14)),
@@ -400,11 +396,11 @@ class _DetailRow extends StatelessWidget {
           ),
           height(Responsive.h(3)),
           Text(
-            value!,
+            displayValue,
             style: customTextStyle(
               fontSize: Responsive.sp(13),
               fontWeight: FontWeight.w600,
-              color: AppColors.textColor,
+              color: isEmpty ? AppColors.homeTextMuted : AppColors.textColor,
             ),
           ),
         ],
