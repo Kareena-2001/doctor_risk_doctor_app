@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Used only when the API returns a relative path like "uploads/doctor_documents/1/a.jpg".
-/// Full http(s) URLs (what your web app shows) are used as they are.
 const String kDocumentBaseUrl =
     'https://medicolegalsupport.in/doctors_risk_api/';
 

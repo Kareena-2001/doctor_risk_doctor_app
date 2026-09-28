@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
 import 'package:Doctors_App/core/services/credentials_storage_service.dart';
+import 'package:Doctors_App/features/your_story/model/experience_delete_response.dart';
 import 'package:Doctors_App/features/your_story/model/experience_response.dart';
 import 'package:Doctors_App/features/your_story/model/experience_submit_response.dart';
 import 'package:Doctors_App/features/your_story/model/testimonial_response.dart';
@@ -148,15 +149,14 @@ class YourStoryRepository {
     return TestimonialResponse.fromJson(response);
   }
 
-  // Future<DeleteAddressResponse> addressDelete(String id) async {
-  //   final response = await _apiClient.delete(
-  //     url: 'doctor/addressdelete/$id',
-  //     includeAuth: true,
-  //   );
-  //   if (response['status'] == true) {
-  //     return DeleteAddressResponse.fromJson(response);
-  //   }
-  //   throw Exception(response['msg'] ?? 'Failed to delete address');
-  // }
-
+  Future<ExperienceDeleteResponse> experienceDelete(String id) async {
+    final response = await _apiClient.delete(
+      url: 'doctor/experienceDelete/$id',
+      includeAuth: true,
+    );
+    if (response['status'] == true) {
+      return ExperienceDeleteResponse.fromJson(response);
+    }
+    throw Exception(response['msg'] ?? 'Failed to delete address');
+  }
 }

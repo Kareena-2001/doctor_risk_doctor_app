@@ -165,9 +165,9 @@ class DocumentPreviewTile extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(Responsive.w(14)),
         decoration: BoxDecoration(
-          color: context.secondaryWidgetColor,
+          color: context.dividerColor,
           borderRadius: BorderRadius.circular(Responsive.w(14)),
-          border: Border.all(color: context.secondaryWidgetColor,),
+          border: Border.all(color: context.secondaryWidgetColor),
         ),
         child: Row(
           children: [
