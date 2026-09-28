@@ -46,6 +46,7 @@ _$SubmissionModelImpl _$$SubmissionModelImplFromJson(
   iAgreeAccepted: json['i_agree_accepted'] as String,
   createdOn: json['created_on'] as String,
   updatedOn: json['updated_on'] as String,
+  canEdit: json['can_edit'] as bool,
   keywords:
       (json['keywords'] as List<dynamic>?)
           ?.map((e) => KeywordModel.fromJson(e as Map<String, dynamic>))
@@ -65,6 +66,7 @@ Map<String, dynamic> _$$SubmissionModelImplToJson(
   'i_agree_accepted': instance.iAgreeAccepted,
   'created_on': instance.createdOn,
   'updated_on': instance.updatedOn,
+  'can_edit': instance.canEdit,
   'keywords': instance.keywords,
 };
 

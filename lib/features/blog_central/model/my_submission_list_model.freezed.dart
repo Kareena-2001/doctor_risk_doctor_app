@@ -375,6 +375,8 @@ mixin _$SubmissionModel {
   String get createdOn => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_on')
   String get updatedOn => throw _privateConstructorUsedError;
+  @JsonKey(name: 'can_edit')
+  bool get canEdit => throw _privateConstructorUsedError;
   List<KeywordModel> get keywords => throw _privateConstructorUsedError;
 
   /// Serializes this SubmissionModel to a JSON map.
@@ -404,6 +406,7 @@ abstract class $SubmissionModelCopyWith<$Res> {
     @JsonKey(name: 'i_agree_accepted') String iAgreeAccepted,
     @JsonKey(name: 'created_on') String createdOn,
     @JsonKey(name: 'updated_on') String updatedOn,
+    @JsonKey(name: 'can_edit') bool canEdit,
     List<KeywordModel> keywords,
   });
 }
@@ -432,6 +435,7 @@ class _$SubmissionModelCopyWithImpl<$Res, $Val extends SubmissionModel>
     Object? iAgreeAccepted = null,
     Object? createdOn = null,
     Object? updatedOn = null,
+    Object? canEdit = null,
     Object? keywords = null,
   }) {
     return _then(
@@ -472,6 +476,10 @@ class _$SubmissionModelCopyWithImpl<$Res, $Val extends SubmissionModel>
                 ? _value.updatedOn
                 : updatedOn // ignore: cast_nullable_to_non_nullable
                       as String,
+            canEdit: null == canEdit
+                ? _value.canEdit
+                : canEdit // ignore: cast_nullable_to_non_nullable
+                      as bool,
             keywords: null == keywords
                 ? _value.keywords
                 : keywords // ignore: cast_nullable_to_non_nullable
@@ -501,6 +509,7 @@ abstract class _$$SubmissionModelImplCopyWith<$Res>
     @JsonKey(name: 'i_agree_accepted') String iAgreeAccepted,
     @JsonKey(name: 'created_on') String createdOn,
     @JsonKey(name: 'updated_on') String updatedOn,
+    @JsonKey(name: 'can_edit') bool canEdit,
     List<KeywordModel> keywords,
   });
 }
@@ -528,6 +537,7 @@ class __$$SubmissionModelImplCopyWithImpl<$Res>
     Object? iAgreeAccepted = null,
     Object? createdOn = null,
     Object? updatedOn = null,
+    Object? canEdit = null,
     Object? keywords = null,
   }) {
     return _then(
@@ -568,6 +578,10 @@ class __$$SubmissionModelImplCopyWithImpl<$Res>
             ? _value.updatedOn
             : updatedOn // ignore: cast_nullable_to_non_nullable
                   as String,
+        canEdit: null == canEdit
+            ? _value.canEdit
+            : canEdit // ignore: cast_nullable_to_non_nullable
+                  as bool,
         keywords: null == keywords
             ? _value._keywords
             : keywords // ignore: cast_nullable_to_non_nullable
@@ -590,6 +604,7 @@ class _$SubmissionModelImpl implements _SubmissionModel {
     @JsonKey(name: 'i_agree_accepted') required this.iAgreeAccepted,
     @JsonKey(name: 'created_on') required this.createdOn,
     @JsonKey(name: 'updated_on') required this.updatedOn,
+    @JsonKey(name: 'can_edit') required this.canEdit,
     final List<KeywordModel> keywords = const <KeywordModel>[],
   }) : _keywords = keywords;
 
@@ -619,6 +634,9 @@ class _$SubmissionModelImpl implements _SubmissionModel {
   @override
   @JsonKey(name: 'updated_on')
   final String updatedOn;
+  @override
+  @JsonKey(name: 'can_edit')
+  final bool canEdit;
   final List<KeywordModel> _keywords;
   @override
   @JsonKey()
@@ -630,7 +648,7 @@ class _$SubmissionModelImpl implements _SubmissionModel {
 
   @override
   String toString() {
-    return 'SubmissionModel(id: $id, title: $title, image: $image, description: $description, approveStatus: $approveStatus, viewCount: $viewCount, iAgreeAccepted: $iAgreeAccepted, createdOn: $createdOn, updatedOn: $updatedOn, keywords: $keywords)';
+    return 'SubmissionModel(id: $id, title: $title, image: $image, description: $description, approveStatus: $approveStatus, viewCount: $viewCount, iAgreeAccepted: $iAgreeAccepted, createdOn: $createdOn, updatedOn: $updatedOn, canEdit: $canEdit, keywords: $keywords)';
   }
 
   @override
@@ -653,6 +671,7 @@ class _$SubmissionModelImpl implements _SubmissionModel {
                 other.createdOn == createdOn) &&
             (identical(other.updatedOn, updatedOn) ||
                 other.updatedOn == updatedOn) &&
+            (identical(other.canEdit, canEdit) || other.canEdit == canEdit) &&
             const DeepCollectionEquality().equals(other._keywords, _keywords));
   }
 
@@ -669,6 +688,7 @@ class _$SubmissionModelImpl implements _SubmissionModel {
     iAgreeAccepted,
     createdOn,
     updatedOn,
+    canEdit,
     const DeepCollectionEquality().hash(_keywords),
   );
 
@@ -700,6 +720,7 @@ abstract class _SubmissionModel implements SubmissionModel {
     @JsonKey(name: 'i_agree_accepted') required final String iAgreeAccepted,
     @JsonKey(name: 'created_on') required final String createdOn,
     @JsonKey(name: 'updated_on') required final String updatedOn,
+    @JsonKey(name: 'can_edit') required final bool canEdit,
     final List<KeywordModel> keywords,
   }) = _$SubmissionModelImpl;
 
@@ -729,6 +750,9 @@ abstract class _SubmissionModel implements SubmissionModel {
   @override
   @JsonKey(name: 'updated_on')
   String get updatedOn;
+  @override
+  @JsonKey(name: 'can_edit')
+  bool get canEdit;
   @override
   List<KeywordModel> get keywords;
 

@@ -25,6 +25,10 @@ class YourStoryViewModel extends _$YourStoryViewModel {
 
   Future<void> refreshExperienceList() => experienceList();
 
+  Future<void> deleteExperience(int id) async {
+    await ref.read(yourStoryRepositoryProvider).experienceDelete(id.toString());
+  }
+
   Future<bool> submitExperience({
     int? id,
     required String title,

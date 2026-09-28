@@ -157,6 +157,6 @@ class YourStoryRepository {
     if (response['status'] == true) {
       return ExperienceDeleteResponse.fromJson(response);
     }
-    throw Exception(response['msg'] ?? 'Failed to delete address');
+    throw Exception(response['msg'] ?? 'Failed to delete experience');
   }
 }

@@ -5,8 +5,10 @@ import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/core/widgets/media_preview_tiles.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/your_story/model/experience_response.dart';
 import 'package:Doctors_App/features/your_story/model/experience_submit_response.dart';
 import 'package:Doctors_App/features/your_story/ui/viewmodel/your_story_view_model.dart';
 import 'package:Doctors_App/features/your_story/ui/your_story_screen.dart';
@@ -19,11 +21,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 class ShareExperienceForm extends ConsumerStatefulWidget {
+  final ExperienceData? experience;
   final String authorName;
   final String authorSpeciality;
 
   const ShareExperienceForm({
     super.key,
+    this.experience,
     this.authorName = 'You',
     this.authorSpeciality = '',
   });
@@ -44,11 +48,33 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
 
   File? _pdfFile;
   String? _pdfName;
+  String? _existingFile;
 
   bool _isSubmitted = false;
   bool _rememberMe = false;
 
   ExperienceSubmitData? _submittedExperience;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final experience = widget.experience;
+    if (experience == null) return;
+
+    _titleController.text = experience.title;
+    _textController.text = experience.details;
+    _mode = switch (experience.experienceType.trim().toLowerCase()) {
+      'video' => YourStoryMode.video,
+      'document' => YourStoryMode.document,
+      _ => YourStoryMode.text,
+    };
+    final existingFile = experience.file?.trim();
+    _existingFile = existingFile == null || existingFile.isEmpty
+        ? null
+        : existingFile;
+    _rememberMe = experience.iAgreeAccepted == '1';
+  }
 
   @override
   void dispose() {
@@ -67,12 +93,16 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       return;
     }
 
-    if (_mode == YourStoryMode.video && _videoFile == null) {
+    if (_mode == YourStoryMode.video &&
+        _videoFile == null &&
+        !_hasExistingAttachment(YourStoryMode.video)) {
       context.showWarningSnackBar('Please add a video first');
       return;
     }
 
-    if (_mode == YourStoryMode.document && _pdfFile == null) {
+    if (_mode == YourStoryMode.document &&
+        _pdfFile == null &&
+        !_hasExistingAttachment(YourStoryMode.document)) {
       context.showWarningSnackBar('Please upload a PDF first');
       return;
     }
@@ -97,6 +127,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     final success = await ref
         .read(yourStoryViewModelProvider.notifier)
         .submitExperience(
+          id: widget.experience?.id,
           title: title,
           experienceType: experienceType,
           description: description,
@@ -122,7 +153,11 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
         },
       );
 
-      context.showSuccessSnackBar('Experience submitted successfully');
+      context.showSuccessSnackBar(
+        widget.experience == null
+            ? 'Experience submitted successfully'
+            : 'Experience updated successfully',
+      );
     } else {
       final submitStatus = ref
           .read(yourStoryViewModelProvider)
@@ -134,6 +169,18 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
         },
       );
     }
+  }
+
+  bool _hasExistingAttachment(YourStoryMode mode) {
+    final experience = widget.experience;
+    if (experience == null || _existingFile == null) return false;
+
+    final expectedType = switch (mode) {
+      YourStoryMode.text => 'text',
+      YourStoryMode.video => 'video',
+      YourStoryMode.document => 'document',
+    };
+    return experience.experienceType.trim().toLowerCase() == expectedType;
   }
 
   Future<void> _pickVideo() async {
@@ -216,6 +263,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
         allowedExtensions: ['pdf'],
       );
 
+      if (!mounted) return;
       if (result == null) return;
 
       final path = result.files.single.path;
@@ -279,7 +327,11 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
 
     return Scaffold(
       backgroundColor: context.primaryBackgroundColor,
-      appBar: CustomAppBar(title: 'Share Experience'),
+      appBar: CustomAppBar(
+        title: widget.experience == null
+            ? 'Share Experience'
+            : 'Edit Experience',
+      ),
       body: _isSubmitted ? _buildSuccessView() : _buildForm(isSubmitting),
     );
   }
@@ -376,7 +428,11 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
 
           PrimaryButton(
             backgroundColor: AppColors.newPri,
-            text: isSubmitting ? 'Submitting...' : 'Share Experience',
+            text: isSubmitting
+                ? (widget.experience == null ? 'Submitting...' : 'Saving...')
+                : (widget.experience == null
+                      ? 'Share Experience'
+                      : 'Save Changes'),
             onPressed: isSubmitting ? null : _submit,
             icon: Icons.send_rounded,
           ),
@@ -626,6 +682,27 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       );
     }
 
+    if (_hasExistingAttachment(YourStoryMode.video)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          VideoPreviewTile(
+            videoUrl: _existingFile!,
+            title: _titleController.text,
+          ),
+          height(Responsive.h(12)),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _pickVideo,
+              icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+              label: const Text('Replace video'),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Column(
       children: [
         Container(
@@ -743,6 +820,26 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       );
     }
 
+    if (_hasExistingAttachment(YourStoryMode.document)) {
+      return Column(
+        children: [
+          DocumentPreviewTile(
+            fileUrl: _existingFile!,
+            label: 'Current PDF attachment',
+          ),
+          height(Responsive.h(12)),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _pickPdf,
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Replace PDF'),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -794,7 +891,9 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
             height(Responsive.h(20)),
 
             Text(
-              'Thank You for Sharing!',
+              widget.experience == null
+                  ? 'Thank You for Sharing!'
+                  : 'Experience Updated',
               style: customTextStyle(
                 fontSize: Responsive.sp(18),
                 fontWeight: FontWeight.bold,
@@ -805,7 +904,10 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
             height(Responsive.h(8)),
 
             Text(
-              _submittedExperience?.approveStatus == 'awaiting_admin_approval'
+              widget.experience != null
+                  ? 'Your experience has been updated successfully.'
+                  : _submittedExperience?.approveStatus ==
+                        'awaiting_admin_approval'
                   ? 'Your experience has been submitted and is awaiting admin approval.'
                   : 'Your experience has been submitted successfully.',
               textAlign: TextAlign.center,
@@ -828,23 +930,24 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
 
             height(Responsive.h(12)),
 
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: _resetForm,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.newPri, width: 1.5),
-                  padding: EdgeInsets.symmetric(vertical: Responsive.h(14)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(Responsive.w(12)),
+            if (widget.experience == null)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _resetForm,
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.newPri, width: 1.5),
+                    padding: EdgeInsets.symmetric(vertical: Responsive.h(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Responsive.w(12)),
+                    ),
+                  ),
+                  child: Text(
+                    'Share Another Story',
+                    style: AppTheme.label14.copyWith(color: AppColors.newPri),
                   ),
                 ),
-                child: Text(
-                  'Share Another Story',
-                  style: AppTheme.label14.copyWith(color: AppColors.newPri),
-                ),
               ),
-            ),
           ],
         ),
       ),

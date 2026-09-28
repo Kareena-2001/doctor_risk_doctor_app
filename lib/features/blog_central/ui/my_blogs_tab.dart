@@ -368,6 +368,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
                         IconButton(
                           onPressed: () => Navigator.pop(context),
                           icon: const Icon(Icons.close),

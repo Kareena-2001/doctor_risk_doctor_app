@@ -4,6 +4,7 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/features/your_story/model/experience_response.dart';
 import 'package:Doctors_App/features/your_story/ui/viewmodel/your_story_view_model.dart';
 import 'package:Doctors_App/features/your_story/ui/widget/experience_card.dart';
 import 'package:Doctors_App/features/your_story/ui/widget/share_experience_form.dart';
@@ -21,12 +22,76 @@ class ExperienceListScreen extends ConsumerStatefulWidget {
 }
 
 class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
+  int? _deletingExperienceId;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(
       () => ref.read(yourStoryViewModelProvider.notifier).experienceList(),
     );
+  }
+
+  Future<void> _openExperienceForm({ExperienceData? experience}) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ShareExperienceForm(experience: experience),
+      ),
+    );
+
+    if (!mounted) return;
+    await ref.read(yourStoryViewModelProvider.notifier).refreshExperienceList();
+  }
+
+  Future<void> _confirmDelete(ExperienceData experience) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Delete experience?'),
+        content: Text(
+          '“${experience.title.trim().isEmpty ? 'Untitled experience' : experience.title.trim()}” will be permanently deleted.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _deletingExperienceId = experience.id);
+
+    try {
+      await ref
+          .read(yourStoryViewModelProvider.notifier)
+          .deleteExperience(experience.id);
+
+      if (!mounted) return;
+      context.showSuccessSnackBar('Experience deleted successfully');
+      await ref
+          .read(yourStoryViewModelProvider.notifier)
+          .refreshExperienceList();
+    } catch (error) {
+      if (mounted) {
+        context.showErrorSnackBar(error.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _deletingExperienceId = null);
+      }
+    }
   }
 
   @override
@@ -43,16 +108,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
         foregroundColor: Colors.white,
         elevation: 5,
         shape: const CircleBorder(),
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ShareExperienceForm()),
-          );
-
-          await ref
-              .read(yourStoryViewModelProvider.notifier)
-              .refreshExperienceList();
-        },
+        onPressed: () => _openExperienceForm(),
         child: Icon(Icons.add_rounded, size: Responsive.sp(26)),
       ),
       body: experiencesAsync.when(
@@ -107,7 +163,13 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
               itemCount: experiences.length,
               separatorBuilder: (_, __) => height(Responsive.h(14)),
               itemBuilder: (context, index) {
-                return ExperienceCard(experience: experiences[index]);
+                final experience = experiences[index];
+                return ExperienceCard(
+                  experience: experience,
+                  isDeleting: _deletingExperienceId == experience.id,
+                  onEdit: () => _openExperienceForm(experience: experience),
+                  onDelete: () => _confirmDelete(experience),
+                );
               },
             ),
           );

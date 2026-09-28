@@ -12,9 +12,18 @@ import 'approval_status.dart';
 import 'expandable_text.dart';
 
 class ExperienceCard extends StatelessWidget {
-  const ExperienceCard({super.key, required this.experience});
+  const ExperienceCard({
+    super.key,
+    required this.experience,
+    required this.onEdit,
+    required this.onDelete,
+    this.isDeleting = false,
+  });
 
   final ExperienceData experience;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final bool isDeleting;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +88,59 @@ class ExperienceCard extends StatelessWidget {
                   color: context.secondaryTextColor,
                 ),
               ),
+              const Spacer(),
+              if (isDeleting)
+                SizedBox(
+                  width: Responsive.w(20),
+                  height: Responsive.w(20),
+                  child: const CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                PopupMenuButton<String>(
+                  color: Colors.white,
+                  tooltip: 'Experience actions',
+                  onSelected: (action) {
+                    if (action == 'edit') {
+                      onEdit();
+                    } else if (action == 'delete') {
+                      onDelete();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.edit_outlined),
+                        title: Text('Edit'),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        title: Text(
+                          'Delete',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  child: Padding(
+                    padding: EdgeInsets.all(Responsive.w(4)),
+                    child: Icon(
+                      Icons.more_vert,
+                      size: Responsive.sp(20),
+                      color: context.secondaryTextColor,
+                    ),
+                  ),
+                ),
             ],
           ),
           height(Responsive.h(8)),

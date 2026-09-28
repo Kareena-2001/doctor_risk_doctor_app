@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'blog_submit_response_model.freezed.dart';
+
 part 'blog_submit_response_model.g.dart';
 
 @freezed
