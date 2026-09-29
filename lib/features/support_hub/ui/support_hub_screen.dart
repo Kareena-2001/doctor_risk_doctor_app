@@ -1,8 +1,8 @@
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
+import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import '../../../core/constants/dimensions.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_theme.dart';
 import 'service_support_screen.dart';
 import 'legal_support_screen.dart';
 

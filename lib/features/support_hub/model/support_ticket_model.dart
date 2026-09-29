@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'support_ticket_model.freezed.dart';
+
 part 'support_ticket_model.g.dart';
 
 @freezed
@@ -12,8 +13,6 @@ class SupportTicketResponse with _$SupportTicketResponse {
     required List<dynamic> data,
   }) = _SupportTicketResponse;
 
-  factory SupportTicketResponse.fromJson(
-      Map<String, dynamic> json,
-      ) =>
+  factory SupportTicketResponse.fromJson(Map<String, dynamic> json) =>
       _$SupportTicketResponseFromJson(json);
 }

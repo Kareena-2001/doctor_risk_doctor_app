@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'service_ticket_model.freezed.dart';
+
 part 'service_ticket_model.g.dart';
+
 enum TicketStatus { open, inProgress, escalated, closed, cancelled }
 
 extension TicketStatusX on TicketStatus {
@@ -57,7 +59,6 @@ extension TicketStatusX on TicketStatus {
   }
 }
 
-
 @freezed
 class ServiceTicketResponse with _$ServiceTicketResponse {
   const factory ServiceTicketResponse({
@@ -76,19 +77,15 @@ class ServiceTicketData with _$ServiceTicketData {
   const factory ServiceTicketData({
     required ServiceTicketCounts counts,
 
-    @JsonKey(name: 'data')
-    required List<ServiceTicket> tickets,
+    @JsonKey(name: 'data') required List<ServiceTicket> tickets,
 
     required int total,
 
-    @JsonKey(name: 'current_page')
-    required int currentPage,
+    @JsonKey(name: 'current_page') required int currentPage,
 
-    @JsonKey(name: 'last_page')
-    required int lastPage,
+    @JsonKey(name: 'last_page') required int lastPage,
 
-    @JsonKey(name: 'per_page')
-    required int perPage,
+    @JsonKey(name: 'per_page') required int perPage,
   }) = _ServiceTicketData;
 
   factory ServiceTicketData.fromJson(Map<String, dynamic> json) =>
@@ -113,17 +110,13 @@ class ServiceTicket with _$ServiceTicket {
   const factory ServiceTicket({
     required int id,
 
-    @JsonKey(name: 'ticket_no')
-    required String ticketNo,
+    @JsonKey(name: 'ticket_no') required String ticketNo,
 
-    @JsonKey(name: 'query_type')
-    required String queryType,
+    @JsonKey(name: 'query_type') required String queryType,
 
-    @JsonKey(name: 'common_query')
-    String? commonQuery,
+    @JsonKey(name: 'common_query') String? commonQuery,
 
-    @JsonKey(name: 'preferred_contact')
-    String? preferredContact,
+    @JsonKey(name: 'preferred_contact') String? preferredContact,
 
     required String priority,
 
@@ -131,11 +124,9 @@ class ServiceTicket with _$ServiceTicket {
 
     String? attachment,
 
-    @JsonKey(name: 'tickete_status')
-    required String ticketStatus,
+    @JsonKey(name: 'tickete_status') required String ticketStatus,
 
-    @JsonKey(name: 'created_on')
-    required String createdOn,
+    @JsonKey(name: 'created_on') required String createdOn,
 
     required ServiceTicketActions actions,
   }) = _ServiceTicket;
@@ -152,8 +143,7 @@ class ServiceTicketActions with _$ServiceTicketActions {
     required bool edit,
     required bool cancel,
 
-    @JsonKey(name: 'edit_label')
-    String? editLabel,
+    @JsonKey(name: 'edit_label') String? editLabel,
   }) = _ServiceTicketActions;
 
   factory ServiceTicketActions.fromJson(Map<String, dynamic> json) =>

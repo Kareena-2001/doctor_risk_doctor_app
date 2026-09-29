@@ -1,18 +1,18 @@
 import 'dart:io';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_attachment_field.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
-import 'package:Doctors_App/features/support_hub/ui/state/support_hub_state.dart';
+import 'package:Doctors_App/features/support_hub/model/suppport_enums.dart';
+import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:Doctors_App/features/support_hub//ui/view_model/support_hub_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/constants/dimensions.dart';
-import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../../extensions/build_context_extension.dart';
-import '../model/suppport_enums.dart';
 import 'widgets/success_view.dart';
 
 class RegisterQueryScreen extends ConsumerStatefulWidget {

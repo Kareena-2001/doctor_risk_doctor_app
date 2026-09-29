@@ -14,7 +14,7 @@ class SuccessView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final helpState = ref.watch(helpViewModelProvider);
+    final helpState = ref.watch(supportHubViewModelProvider);
 
     return Center(
       child: Padding(

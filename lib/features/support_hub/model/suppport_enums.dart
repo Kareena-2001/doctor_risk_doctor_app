@@ -36,18 +36,17 @@ enum RequestType {
 }
 
 enum PriorityLevel {
-  low,
-  medium,
-  high;
-
+  normal,
+  high,
+  urgent;
   String get displayName {
     switch (this) {
-      case PriorityLevel.low:
-        return 'Low';
-      case PriorityLevel.medium:
-        return 'Medium';
+      case PriorityLevel.normal:
+        return 'Normal';
       case PriorityLevel.high:
         return 'High';
+      case PriorityLevel.urgent:
+        return 'Urgent';
     }
   }
 }

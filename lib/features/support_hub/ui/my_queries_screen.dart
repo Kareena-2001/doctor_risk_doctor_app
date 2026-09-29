@@ -1,18 +1,19 @@
+import 'package:Doctors_App/features/support_hub/model/query_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/dimensions.dart';
-import '../../../core/constants/values/app_text_style.dart';
-import '../../../core/widgets/common_empty_state.dart';
-import '../../../core/widgets/common_error_state.dart';
-import '../../../extensions/build_context_extension.dart';
-import '../../../routing/routes.dart';
-import '../../../theme/app_colors.dart';
-import '../../common/ui/widgets/loading.dart';
-import '../model/query_list_model.dart';
-import 'view_model/support_hub_view_model.dart';import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/common_empty_state.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/routing/routes.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'view_model/support_hub_view_model.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 class MyQueriesScreen extends ConsumerStatefulWidget {
   const MyQueriesScreen({super.key});

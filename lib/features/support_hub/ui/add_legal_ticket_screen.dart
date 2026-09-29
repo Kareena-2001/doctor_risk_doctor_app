@@ -1,45 +1,65 @@
-import 'dart:math';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_attachment_field.dart';
+import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
+
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
+import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/core/widgets/custom_time_picker.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
+import 'package:Doctors_App/features/support_hub/model/suppport_enums.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import '../../../core/constants/dimensions.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_dropdown_field.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_attachment_field.dart';
-import '../../../theme/app_colors.dart';
-import '../../common/ui/widgets/primary_button.dart';
-import '../model/service_ticket_model.dart';
-import '../model/support_ticket_enums.dart';
-import '../model/suppport_enums.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
+import 'view_model/support_hub_view_model.dart';
 
-class AddLegalTicketScreen extends StatefulWidget {
+class AddLegalTicketScreen extends ConsumerStatefulWidget {
   const AddLegalTicketScreen({super.key});
 
   @override
-  State<AddLegalTicketScreen> createState() => _AddLegalTicketScreenState();
+  ConsumerState<AddLegalTicketScreen> createState() =>
+      _AddLegalTicketScreenState();
 }
 
-class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
+class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
   final _detailsController = TextEditingController();
   final _attachmentController = TextEditingController();
-
+  final _preferredDateController = TextEditingController();
+  final _preferredTimeController = TextEditingController();
   LegalQueryType _queryType = LegalQueryType.registerQuery;
   String? _commonQuery;
+  LegalType? _legalType;
   AppointmentMode? _appointmentMode;
   DateTime? _preferredDate;
   TimeOfDay? _preferredTime;
   PriorityLevel? _priority;
   PlatformFile? _selectedFile;
-  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(supportHubViewModelProvider.notifier).resetState();
+    });
+  }
 
   @override
   void dispose() {
     _detailsController.dispose();
     _attachmentController.dispose();
+    _preferredDateController.dispose();
+    _preferredTimeController.dispose();
     super.dispose();
   }
 
   List<String> get _commonQueryOptions => kLegalCommonQueries[_queryType]!;
+
+  /// Legal Type is only asked for "Register / Request a Query" and
+  /// "On-Call Support". Not for "Book Appointment".
+  bool get _showLegalType => _queryType != LegalQueryType.bookAppointment;
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
@@ -51,88 +71,111 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
     }
   }
 
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) setState(() => _preferredDate = picked);
-  }
-
   Future<void> _pickTime() async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _preferredTime ?? TimeOfDay.now(),
     );
-    if (picked != null) setState(() => _preferredTime = picked);
+
+    if (picked != null) {
+      setState(() {
+        _preferredTime = picked;
+        _preferredTimeController.text = picked.format(context);
+      });
+    }
   }
 
-  String? _mapCategory() {
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate:
+          _preferredDate ?? DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _preferredDate = picked;
+
+        _preferredDateController.text =
+            '${picked.day.toString().padLeft(2, '0')}/'
+            '${picked.month.toString().padLeft(2, '0')}/'
+            '${picked.year}';
+      });
+    }
+  }
+
+  String _mapLegalType() {
+    // Register / On-call -> comes from the Legal Type dropdown.
+    if (_showLegalType && _legalType != null) return _legalType!.apiValue;
+
+    // Book appointment -> no dropdown, keep the previous mapping.
     final q = _commonQuery ?? '';
-    if (q.contains('Notice')) return 'Notice';
-    if (_queryType == LegalQueryType.bookAppointment) return 'Case';
-    return 'Consultation';
+    if (q.contains('Notice')) return 'notice';
+    if (_queryType == LegalQueryType.bookAppointment) return 'case';
+    return 'consultation';
   }
 
-  void _submit() {
-    if (_commonQuery == null || _priority == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all required fields')),
-      );
+  String _buildDescription() {
+    var desc = _detailsController.text.trim();
+    if (_queryType == LegalQueryType.bookAppointment &&
+        _preferredDate != null &&
+        _preferredTime != null) {
+      final timeStr = _preferredTime!.format(context);
+      desc =
+          'Mode: ${_appointmentMode?.displayName ?? ''}\n'
+          'Preferred Date: ${_preferredDate!.day}/${_preferredDate!.month}/${_preferredDate!.year}\n'
+          'Preferred Time: $timeStr\n$desc';
+    }
+    return desc;
+  }
+
+  Future<void> _submit() async {
+    if (_commonQuery == null ||
+        _priority == null ||
+        (_showLegalType && _legalType == null)) {
+      context.showErrorSnackBar('Please fill in all required fields');
       return;
     }
     if (_detailsController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please describe your query')),
-      );
+      context.showErrorSnackBar('Please describe your query');
       return;
     }
     if (_queryType == LegalQueryType.bookAppointment &&
         (_appointmentMode == null ||
             _preferredDate == null ||
             _preferredTime == null)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please complete the appointment details'),
-        ),
-      );
+      context.showErrorSnackBar('Please complete the appointment details');
       return;
     }
 
-    setState(() => _isSubmitting = true);
+    final ok = await ref
+        .read(supportHubViewModelProvider.notifier)
+        .addTicket(
+          ticketType: 'legal',
+          queryType: _queryType.displayName,
+          commonQuery: _commonQuery!,
+          preferredContact: '',
+          priority: _priority!.displayName,
+          description: _buildDescription(),
+          legalType: _mapLegalType(),
+        );
 
-    final ref = 'LS-2026-0${100 + Random().nextInt(899)}';
-    var description = _detailsController.text.trim();
-    if (_queryType == LegalQueryType.bookAppointment) {
-      final time = _preferredTime!.format(context);
-      description =
-          'Mode: ${_appointmentMode!.displayName}\n'
-          'Preferred Date: ${_preferredDate!.day}/${_preferredDate!.month}/${_preferredDate!.year}\n'
-          'Preferred Time: $time\n$description';
+    if (!mounted) return;
+
+    if (ok) {
+      context.showSuccessSnackBar('Legal ticket raised successfully');
+      Navigator.pop(context, true);
+    } else {
+      final err = ref.read(supportHubViewModelProvider).error;
+      if (err != null) context.showErrorSnackBar(err);
     }
-
-    final ticket = SupportTicket(
-      ref: ref,
-      typeLabel: '${_queryType.displayName} — $_commonQuery',
-      category: _mapCategory(),
-      priority: _priority!.displayName,
-      status: TicketStatus.open,
-      description: description,
-      raisedAt: DateTime.now(),
-    );
-
-    // TODO: replace with a real call, e.g.
-    // ref.read(helpViewModelProvider.notifier).registerLegalTicket(...)
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
-      Navigator.pop(context, ticket);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting = ref.watch(supportHubViewModelProvider).isLoading;
     final isAppointment = _queryType == LegalQueryType.bookAppointment;
 
     return Scaffold(
@@ -150,9 +193,21 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
               itemBuilder: (v) => v.displayName,
               onChanged: (v) {
                 if (v == null) return;
+
                 setState(() {
                   _queryType = v;
                   _commonQuery = null;
+
+                  if (v == LegalQueryType.bookAppointment) {
+                    // Legal Type is not applicable for appointments.
+                    _legalType = null;
+                  } else {
+                    _appointmentMode = null;
+                    _preferredDate = null;
+                    _preferredTime = null;
+                    _preferredDateController.clear();
+                    _preferredTimeController.clear();
+                  }
                 });
               },
             ),
@@ -165,6 +220,18 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
               itemBuilder: (v) => v,
               onChanged: (v) => setState(() => _commonQuery = v),
             ),
+            if (_showLegalType) ...[
+              height(16),
+              CustomDropdownField<LegalType>(
+                label: 'Legal type',
+                hint: 'Select legal type',
+                value: _legalType,
+                items: LegalType.values,
+                itemBuilder: (v) => v.displayName,
+                onChanged: (v) => setState(() => _legalType = v),
+              ),
+            ],
+
             if (isAppointment) ...[
               height(16),
               CustomDropdownField<AppointmentMode>(
@@ -179,26 +246,22 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickDate,
-                      icon: const Icon(Icons.calendar_today_rounded, size: 16),
-                      label: Text(
-                        _preferredDate == null
-                            ? 'Preferred date'
-                            : '${_preferredDate!.day}/${_preferredDate!.month}/${_preferredDate!.year}',
-                      ),
+                    child: CustomDatePicker(
+                      label: 'Preferred date',
+                      hint: 'Select preferred date',
+                      controller: _preferredDateController,
+                      onTap: _pickDate,
+                      isRequired: true,
                     ),
                   ),
                   width(12),
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickTime,
-                      icon: const Icon(Icons.access_time_rounded, size: 16),
-                      label: Text(
-                        _preferredTime == null
-                            ? 'Preferred time'
-                            : _preferredTime!.format(context),
-                      ),
+                    child: CustomTimePicker(
+                      label: 'Preferred time',
+                      hint: 'Select preferred time',
+                      controller: _preferredTimeController,
+                      onTap: _pickTime,
+                      isRequired: true,
                     ),
                   ),
                 ],
@@ -215,6 +278,7 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
             ),
             height(16),
             CustomTextField(
+              isRequired: false,
               label: 'Describe your query',
               hint: "Tell us what's going on…",
               maxLines: 5,
@@ -226,13 +290,23 @@ class _AddLegalTicketScreenState extends State<AddLegalTicketScreen> {
               hint: 'Choose file',
               controller: _attachmentController,
               onTap: _pickFile,
+              isRequired:  false,
             ),
             height(24),
-            PrimaryButton(
-              backgroundColor: AppColors.newPri,
-              text: 'Submit Ticket',
-              onPressed: _isSubmitting ? null : _submit,
+            Center(
+              child: PrimaryButton(
+                gradient: LinearGradient(
+                  colors: [AppColors.newPri, AppColors.primary],
+                ),
+                borderRadius: 25,
+                text: 'Submit Ticket',
+                height: 40,
+                width: 180, fontSize: 14,
+                isLoading: isSubmitting,
+                onPressed: isSubmitting ? null : _submit,
+              ),
             ),
+            height(50),
           ],
         ),
       ),

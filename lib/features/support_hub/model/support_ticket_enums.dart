@@ -1,5 +1,31 @@
 enum LegalQueryType { registerQuery, onCallSupport, bookAppointment }
 
+enum LegalType { legalNotice, legalConsultation, legalCase }
+
+extension LegalTypeX on LegalType {
+  String get displayName {
+    switch (this) {
+      case LegalType.legalNotice:
+        return 'Legal Notice';
+      case LegalType.legalConsultation:
+        return 'Legal Consultation';
+      case LegalType.legalCase:
+        return 'Legal Case';
+    }
+  }
+
+  String get apiValue {
+    switch (this) {
+      case LegalType.legalNotice:
+        return 'NOTICE';
+      case LegalType.legalConsultation:
+        return 'consultation';
+      case LegalType.legalCase:
+        return 'CASE';
+    }
+  }
+}
+
 extension LegalQueryTypeX on LegalQueryType {
   String get displayName {
     switch (this) {

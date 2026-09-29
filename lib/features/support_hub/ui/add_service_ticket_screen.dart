@@ -1,24 +1,28 @@
-import 'dart:math';
+import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/custom_attachment_field.dart';
+import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
+import 'package:Doctors_App/core/widgets/custom_text_field.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/support_hub//model/suppport_enums.dart';
+import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
+import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import '../../../core/constants/dimensions.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_dropdown_field.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../../core/widgets/custom_attachment_field.dart';
-import '../../../theme/app_colors.dart';
-import '../../common/ui/widgets/primary_button.dart';
-import '../model/service_ticket_model.dart';
-import '../model/support_ticket_enums.dart';
-class AddServiceTicketScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'view_model/support_hub_view_model.dart';
+
+class AddServiceTicketScreen extends ConsumerStatefulWidget {
   const AddServiceTicketScreen({super.key});
 
   @override
-  State<AddServiceTicketScreen> createState() => _AddServiceTicketScreenState();
+  ConsumerState<AddServiceTicketScreen> createState() =>
+      _AddServiceTicketScreenState();
 }
 
-class _AddServiceTicketScreenState extends State<AddServiceTicketScreen> {
+class _AddServiceTicketScreenState
+    extends ConsumerState<AddServiceTicketScreen> {
   final _detailsController = TextEditingController();
   final _attachmentController = TextEditingController();
 
@@ -27,7 +31,14 @@ class _AddServiceTicketScreenState extends State<AddServiceTicketScreen> {
   PreferredContact? _preferredContact;
   PriorityLevel? _priority;
   PlatformFile? _selectedFile;
-  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(supportHubViewModelProvider.notifier).resetState();
+    });
+  }
 
   @override
   void dispose() {
@@ -48,42 +59,50 @@ class _AddServiceTicketScreenState extends State<AddServiceTicketScreen> {
     }
   }
 
-  void _submit() {
-    if (_commonQuery == null || _preferredContact == null || _priority == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all required fields')),
-      );
+  Future<void> _submit() async {
+    if (_commonQuery == null ||
+        _preferredContact == null ||
+        _priority == null) {
+      context.showErrorSnackBar('Please fill in all required fields');
       return;
     }
     if (_detailsController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please describe your query')),
-      );
+      context.showErrorSnackBar('Please describe your query');
       return;
     }
 
-    setState(() => _isSubmitting = true);
+    final ok = await ref.read(supportHubViewModelProvider.notifier).addTicket(
+          ticketType: 'service',
+          queryType: _relatedTo.displayName,
+          commonQuery: _commonQuery!,
+          preferredContact: _preferredContact!.displayName,
+          priority: _priority!.displayName,
+          description: _detailsController.text.trim(),
+          legalType: '',
+        );
 
-    final ref = 'SS-2026-0${100 + Random().nextInt(899)}';
-    final ticket = SupportTicket(
-      ref: ref,
-      typeLabel: '${_relatedTo.displayName} — $_commonQuery',
-      priority: _priority!.displayName,
-      status: TicketStatus.open,
-      description: _detailsController.text.trim(),
-      raisedAt: DateTime.now(),
-    );
-
-    // TODO: replace with a real call, e.g.
-    // ref.read(helpViewModelProvider.notifier).registerServiceTicket(...)
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
-      Navigator.pop(context, ticket);
-    });
+    if (ok && mounted) {
+      final ticketNo =
+          ref.read(supportHubViewModelProvider).tktNumber ?? '';
+      if (mounted) {
+        context.showSuccessSnackBar(
+          ticketNo.isNotEmpty
+              ? 'Service ticket raised — reference $ticketNo'
+              : 'Service ticket raised successfully',
+        );
+        Navigator.pop(context, true);
+      }
+    } else if (mounted) {
+      final err = ref.read(supportHubViewModelProvider).error;
+      if (err != null) context.showErrorSnackBar(err);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting =
+        ref.watch(supportHubViewModelProvider).isLoading;
+
     return Scaffold(
       appBar: CustomAppBar(title: 'Raise a Service Support Query'),
       body: SingleChildScrollView(
@@ -148,9 +167,10 @@ class _AddServiceTicketScreenState extends State<AddServiceTicketScreen> {
             ),
             height(24),
             PrimaryButton(
-              backgroundColor: AppColors.newPri,
+              backgroundColor: AppColors
+                  .newPri,
               text: 'Submit Ticket',
-              onPressed: _isSubmitting ? null : _submit,
+              onPressed: isSubmitting ? null : _submit,
             ),
           ],
         ),

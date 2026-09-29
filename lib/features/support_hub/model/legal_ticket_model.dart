@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'legal_ticket_model.freezed.dart';
+
 part 'legal_ticket_model.g.dart';
 
 @freezed
@@ -21,19 +22,15 @@ class LegalTicketData with _$LegalTicketData {
   const factory LegalTicketData({
     required LegalTicketCounts counts,
 
-    @JsonKey(name: 'data')
-    required List<LegalTicket> tickets,
+    @JsonKey(name: 'data') required List<LegalTicket> tickets,
 
     required int total,
 
-    @JsonKey(name: 'current_page')
-    required int currentPage,
+    @JsonKey(name: 'current_page') required int currentPage,
 
-    @JsonKey(name: 'last_page')
-    required int lastPage,
+    @JsonKey(name: 'last_page') required int lastPage,
 
-    @JsonKey(name: 'per_page')
-    required int perPage,
+    @JsonKey(name: 'per_page') required int perPage,
   }) = _LegalTicketData;
 
   factory LegalTicketData.fromJson(Map<String, dynamic> json) =>
@@ -58,17 +55,13 @@ class LegalTicket with _$LegalTicket {
   const factory LegalTicket({
     required int id,
 
-    @JsonKey(name: 'ticket_no')
-    required String ticketNo,
+    @JsonKey(name: 'ticket_no') required String ticketNo,
 
-    @JsonKey(name: 'query_type')
-    required String queryType,
+    @JsonKey(name: 'query_type') required String queryType,
 
-    @JsonKey(name: 'common_query')
-    String? commonQuery,
+    @JsonKey(name: 'common_query') String? commonQuery,
 
-    @JsonKey(name: 'legal_type')
-    String? legalType,
+    @JsonKey(name: 'legal_type') String? legalType,
 
     required String priority,
 
@@ -76,11 +69,9 @@ class LegalTicket with _$LegalTicket {
 
     String? attachment,
 
-    @JsonKey(name: 'tickete_status')
-    required String ticketStatus,
+    @JsonKey(name: 'tickete_status') required String ticketStatus,
 
-    @JsonKey(name: 'created_on')
-    required String createdOn,
+    @JsonKey(name: 'created_on') required String createdOn,
 
     required LegalTicketActions actions,
   }) = _LegalTicket;
@@ -97,8 +88,7 @@ class LegalTicketActions with _$LegalTicketActions {
     required bool edit,
     required bool cancel,
 
-    @JsonKey(name: 'edit_label')
-    String? editLabel,
+    @JsonKey(name: 'edit_label') String? editLabel,
   }) = _LegalTicketActions;
 
   factory LegalTicketActions.fromJson(Map<String, dynamic> json) =>

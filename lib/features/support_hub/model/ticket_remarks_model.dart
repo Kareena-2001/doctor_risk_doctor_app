@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ticket_remarks_model.freezed.dart';
+
 part 'ticket_remarks_model.g.dart';
 
 @freezed
@@ -12,9 +13,7 @@ class TicketRemarksResponse with _$TicketRemarksResponse {
     required TicketRemarksData data,
   }) = _TicketRemarksResponse;
 
-  factory TicketRemarksResponse.fromJson(
-      Map<String, dynamic> json,
-      ) =>
+  factory TicketRemarksResponse.fromJson(Map<String, dynamic> json) =>
       _$TicketRemarksResponseFromJson(json);
 }
 
@@ -25,9 +24,7 @@ class TicketRemarksData with _$TicketRemarksData {
     required List<TicketRemark> remarks,
   }) = _TicketRemarksData;
 
-  factory TicketRemarksData.fromJson(
-      Map<String, dynamic> json,
-      ) =>
+  factory TicketRemarksData.fromJson(Map<String, dynamic> json) =>
       _$TicketRemarksDataFromJson(json);
 }
 
@@ -36,18 +33,14 @@ class TicketRemarkTicket with _$TicketRemarkTicket {
   const factory TicketRemarkTicket({
     required int id,
 
-    @JsonKey(name: 'ticket_no')
-    required String ticketNo,
+    @JsonKey(name: 'ticket_no') required String ticketNo,
 
     String? description,
 
-    @JsonKey(name: 'tickete_status')
-    required String ticketStatus,
+    @JsonKey(name: 'tickete_status') required String ticketStatus,
   }) = _TicketRemarkTicket;
 
-  factory TicketRemarkTicket.fromJson(
-      Map<String, dynamic> json,
-      ) =>
+  factory TicketRemarkTicket.fromJson(Map<String, dynamic> json) =>
       _$TicketRemarkTicketFromJson(json);
 }
 
@@ -58,20 +51,15 @@ class TicketRemark with _$TicketRemark {
 
     required String remark,
 
-    @JsonKey(name: 'attachment_type')
-    String? attachmentType,
+    @JsonKey(name: 'attachment_type') String? attachmentType,
 
     String? attachment,
 
-    @JsonKey(name: 'tickete_status')
-    required String ticketStatus,
+    @JsonKey(name: 'tickete_status') required String ticketStatus,
 
-    @JsonKey(name: 'date_time')
-    required String dateTime,
+    @JsonKey(name: 'date_time') required String dateTime,
   }) = _TicketRemark;
 
-  factory TicketRemark.fromJson(
-      Map<String, dynamic> json,
-      ) =>
+  factory TicketRemark.fromJson(Map<String, dynamic> json) =>
       _$TicketRemarkFromJson(json);
 }

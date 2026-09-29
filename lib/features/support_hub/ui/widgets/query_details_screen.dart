@@ -11,7 +11,9 @@ import '../../../../routing/routes.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../common/ui/widgets/loading.dart';
 import '../../../common/ui/widgets/secondary_button.dart';
+import '../../model/query_detail_model.dart';
 import '../view_model/support_hub_view_model.dart';
+
 
 class QueryDetailsScreen extends ConsumerStatefulWidget {
   final String queryId;
@@ -28,14 +30,14 @@ class _QueryDetailsScreenState extends ConsumerState<QueryDetailsScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(helpViewModelProvider.notifier).fetchQueryDetail(widget.queryId);
+      ref.read(supportHubViewModelProvider.notifier).fetchQueryDetail(widget.queryId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final state = ref.watch(helpViewModelProvider);
+    final state = ref.watch(supportHubViewModelProvider);
 
     if (state.isFetchingQueryDetail) {
       return const Scaffold(

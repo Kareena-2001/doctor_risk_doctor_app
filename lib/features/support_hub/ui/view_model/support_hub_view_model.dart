@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:Doctors_App/features/support_hub/model/query_detail_model.dart';
+import 'package:Doctors_App/features/support_hub/model/query_list_model.dart';
+import 'package:Doctors_App/features/support_hub/repository/support_hub_repository.dart';
+import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../repository/support_hub_repository.dart';
-import '../state/support_hub_state.dart';
+part 'support_hub_view_model.g.dart';
 
-part 'support_view_model.g.dart';
+/// Legacy alias — screens that import helpViewModelProvider continue to work.
+final helpViewModelProvider = supportHubViewModelProvider;
 
 /// Last-used list arguments, so lists can be refreshed after a mutation.
 class _ListArgs {
@@ -43,10 +49,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     final s = e.toString();
     return s.startsWith('Exception: ') ? s.substring('Exception: '.length) : s;
   }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Create ticket
-  // ───────────────────────────────────────────────────────────────────────
 
   Future<bool> addTicket({
     required String ticketType,
@@ -88,6 +90,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         isLoading: false,
         isSuccess: true,
         createdTicket: resp,
+        tktNumber: resp.msg,
       );
 
       await _refreshLoadedLists();
@@ -170,10 +173,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     final hasPriority = priority != null && priority.isNotEmpty;
 
     if (!hasDescription && !hasPriority) {
-      state = state.copyWith(
-        isSuccess: false,
-        error: 'Nothing to update',
-      );
+      state = state.copyWith(isSuccess: false, error: 'Nothing to update');
       return false;
     }
 
@@ -327,10 +327,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         page: page,
         limit: limit,
       );
-      state = state.copyWith(
-        isFetchingLegalTickets: false,
-        legalTickets: resp,
-      );
+      state = state.copyWith(isFetchingLegalTickets: false, legalTickets: resp);
     } catch (e) {
       state = state.copyWith(
         isFetchingLegalTickets: false,
@@ -402,7 +399,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     }
   }
 
-  /// Refresh whichever lists the user has already opened.
   Future<void> _refreshLoadedLists() async {
     await Future.wait([
       if (_serviceArgs != null) refreshServiceTickets(),
@@ -412,5 +408,97 @@ class SupportHubViewModel extends _$SupportHubViewModel {
 
   void resetState() {
     state = state.copyWith(isSuccess: false, error: null, createdTicket: null);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // Legacy helpers — kept so older screens compile until they are fully
+  // migrated to the new API-based flows.
+  // ───────────────────────────────────────────────────────────────────────
+
+  /// Used by RegisterQueryScreen: maps old enum-style params to addTicket.
+  Future<void> registerQuery({
+    required dynamic queryType,
+    required dynamic requestType,
+    required dynamic priority,
+    String details = '',
+    File? userAttachment,
+  }) async {
+    await addTicket(
+      ticketType: queryType.toString().split('.').last,
+      queryType: requestType.toString().split('.').last,
+      commonQuery: '',
+      preferredContact: '',
+      priority: priority.toString().split('.').last,
+      description: details,
+      legalType: '',
+    );
+  }
+
+  /// Used by MyQueriesScreen: fetches service tickets and maps them to
+  /// QueryListItem objects so the screen's queries list is populated.
+  Future<void> fetchQueries() async {
+    state = state.copyWith(isFetchingQueries: true, error: null);
+    try {
+      final resp = await _repo.serviceTicketList();
+      final items = resp.data.tickets.map((t) {
+        return QueryListItem(
+          id: t.id.toString(),
+          ticketNumber: t.ticketNo,
+          question: t.queryType,
+          category: t.commonQuery ?? t.queryType,
+          description: t.description ?? '',
+          ticketStatus: t.ticketStatus,
+          querySubmit: t.createdOn,
+        );
+      }).toList();
+      state = state.copyWith(
+        isFetchingQueries: false,
+        serviceTickets: resp,
+        queries: items,
+      );
+    } catch (e) {
+      state = state.copyWith(isFetchingQueries: false, error: _errorMessage(e));
+    }
+  }
+
+  /// Used by QueryDetailsScreen: fetches remarks and maps them to a
+  /// QueryDetailItem so the details screen has real API data.
+  Future<void> fetchQueryDetail(String id) async {
+    state = state.copyWith(
+      isFetchingQueryDetail: true,
+      queryDetailError: null,
+      queryDetail: null,
+    );
+    try {
+      final resp = await _repo.supportTicketRemarks(id: id);
+      final ticket = resp.data.ticket;
+      final remarks = resp.data.remarks;
+
+      // The first admin remark (if any) becomes the "replied" value.
+      final adminRemark = remarks.isNotEmpty ? remarks.first : null;
+
+      final detail = QueryDetailItem(
+        ticketNumber: ticket.ticketNo,
+        ticketStatus: ticket.ticketStatus,
+        querySubmit: '',
+        category: ticket.ticketStatus,
+        question: ticket.description ?? '',
+        description: ticket.description ?? '',
+        replied: adminRemark?.remark,
+        repliedDate: adminRemark?.dateTime,
+        replyAttachment: adminRemark?.attachment,
+      );
+
+      state = state.copyWith(
+        isFetchingQueryDetail: false,
+        ticketRemarks: resp,
+        queryDetail: detail,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isFetchingQueryDetail: false,
+        queryDetailError: _errorMessage(e),
+      );
+    }
   }
 }

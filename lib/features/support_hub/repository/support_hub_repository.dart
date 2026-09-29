@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:Doctors_App/core/exceptions/app_exception.dart';
 import 'package:Doctors_App/core/services/credentials_storage_provider.dart';
@@ -12,8 +11,7 @@ import 'package:Doctors_App/features/support_hub/model/ticket_remarks_model.dart
 import 'package:Doctors_App/features/support_hub/model/update_support_ticket_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../core/services/api_client.dart';
-
+import 'package:Doctors_App/core/services/api_client.dart';
 part 'support_hub_repository.g.dart';
 
 @Riverpod(keepAlive: true)
