@@ -14,7 +14,6 @@ import '../../../common/ui/widgets/secondary_button.dart';
 import '../../model/query_detail_model.dart';
 import '../view_model/support_hub_view_model.dart';
 
-
 class QueryDetailsScreen extends ConsumerStatefulWidget {
   final String queryId;
 
@@ -30,7 +29,9 @@ class _QueryDetailsScreenState extends ConsumerState<QueryDetailsScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(supportHubViewModelProvider.notifier).fetchQueryDetail(widget.queryId);
+      ref
+          .read(supportHubViewModelProvider.notifier)
+          .fetchQueryDetail(widget.queryId);
     });
   }
 
