@@ -1,8 +1,3 @@
-// Add these alongside your existing suppport_enums.dart (or merge into it).
-// Reuses your existing `PriorityLevel` and `AppointmentMode` enums —
-// only the enums below are new.
-
-/// "Query type" dropdown on the Legal Support form.
 enum LegalQueryType { registerQuery, onCallSupport, bookAppointment }
 
 extension LegalQueryTypeX on LegalQueryType {
@@ -18,7 +13,6 @@ extension LegalQueryTypeX on LegalQueryType {
   }
 }
 
-/// "Related to" dropdown on the Service Support form.
 enum ServiceRelatedTo {
   renewal,
   documents,
@@ -47,7 +41,6 @@ extension ServiceRelatedToX on ServiceRelatedTo {
   }
 }
 
-/// "Preferred contact" dropdown on the Service Support form.
 enum PreferredContact { chatSupport, onCallSupport }
 
 extension PreferredContactX on PreferredContact {
@@ -61,7 +54,6 @@ extension PreferredContactX on PreferredContact {
   }
 }
 
-/// Legal ticket "category" chip — derived/assigned when a ticket is raised.
 enum LegalTicketCategory { consultation, notice, legalCase }
 
 extension LegalTicketCategoryX on LegalTicketCategory {
@@ -77,7 +69,6 @@ extension LegalTicketCategoryX on LegalTicketCategory {
   }
 }
 
-/// Common-query options, dependent on the selected [LegalQueryType].
 const Map<LegalQueryType, List<String>> kLegalCommonQueries = {
   LegalQueryType.registerQuery: [
     'Notice Received — Need to Reply',
@@ -123,7 +114,6 @@ const Map<LegalQueryType, List<String>> kLegalCommonQueries = {
   ],
 };
 
-/// Common-query options, dependent on the selected [ServiceRelatedTo].
 const Map<ServiceRelatedTo, List<String>> kServiceCommonQueries = {
   ServiceRelatedTo.renewal: [
     'Help Renewing',

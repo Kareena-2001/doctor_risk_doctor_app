@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:Doctors_App/features/helpdesk/model/suppport_enums.dart';
+import 'package:Doctors_App/features/support_hub//model/suppport_enums.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../../core/constants/dimensions.dart';

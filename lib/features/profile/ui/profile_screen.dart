@@ -1,7 +1,6 @@
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/profile/ui/widgets/personal_details_edit_section.dart';
 import 'package:Doctors_App/features/profile/ui/widgets/professional_details_edit_section.dart';
-import 'package:flutter/services.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
@@ -771,6 +770,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final degree = data.degree?.trim() ?? '';
     final doctorNo = data.doctorNo?.trim() ?? '';
 
+    final profileImage = data.photo?.trim() ?? '';
     final professionalDetails = [
       if (category.isNotEmpty) category,
       if (degree.isNotEmpty) degree,
@@ -800,17 +800,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                child: Text(
-                  data.firstName?.trim().isNotEmpty == true
-                      ? data.firstName!.trim()[0].toUpperCase()
-                      : 'D',
-                  style: customTextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
+                backgroundImage: profileImage.isNotEmpty
+                    ? NetworkImage(profileImage)
+                    : null,
+                child: profileImage.isEmpty
+                    ? Text(
+                        data.firstName?.trim().isNotEmpty == true
+                            ? data.firstName!.trim()[0].toUpperCase()
+                            : 'D',
+                        style: customTextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : null,
               ),
+
               width(12),
               Expanded(
                 child: Column(
@@ -818,13 +824,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   children: [
                     Text(
                       fullName.isEmpty ? 'Doctor' : fullName,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
                         color: context.secondaryTextColor,
-                        fontSize: 16,
+                        fontSize: 13.5,
                         fontWeight: FontWeight.bold,
-                      ),
+                      ).copyWith(height: 1.3),
                     ),
                     height(4),
                     if (professionalDetails.isNotEmpty)
@@ -1116,33 +1122,69 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildMembershipCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(Responsive.w(10)),
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: context.borderColor),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.card_membership_outlined,
-              color: AppColors.primary,
-              size: 21,
-            ),
+          Row(
+            children: [
+              Container(
+                width: Responsive.w(38),
+                height: Responsive.w(35),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.card_membership_outlined,
+                  color: AppColors.primary,
+                  size: Responsive.sp(15),
+                ),
+              ),
+              width(Responsive.w(10)),
+              Expanded(
+                child: Text(
+                  'Membership & Plans',
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(15),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
-          width(10),
-          Expanded(
-            child: Text(
-              'Membership & Plans',
-              style: customTextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+
+          height(Responsive.h(12)),
+
+          Text(
+            "You haven't secured a membership yet — plan details, "
+            "your Membership ID and tier will appear here once you do.",
+            style: customTextStyle(
+              fontSize: Responsive.sp(12),
+              fontWeight: FontWeight.w400,
+              color: context.secondaryTextColor,
+            ).copyWith(height: 1.5),
+          ),
+          height(Responsive.h(16)),
+          PrimaryButton(
+            height: 45,
+            borderRadius: 25,
+            borderColor: context.borderColor,
+            width: 220,
+            fontSize: 14,
+            gradient: LinearGradient(
+              colors: [AppColors.primary, AppColors.newPri],
             ),
+            textColor: AppColors.white,
+            onPressed: () {
+              context.push(Routes.documentVault);
+            },
+            text: 'Browse Plans',
           ),
         ],
       ),

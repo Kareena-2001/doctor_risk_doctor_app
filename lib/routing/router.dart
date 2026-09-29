@@ -1,4 +1,3 @@
-import 'package:Doctors_App/features/appointment/ui/appointment_form_view.dart';
 import 'package:Doctors_App/features/appointment/ui/appointment_list_view.dart';
 import 'package:Doctors_App/features/authentication/ui/sign_up_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/add_blog_screen.dart';
@@ -16,7 +15,7 @@ import 'package:Doctors_App/features/events/ui/events_screen.dart';
 import 'package:Doctors_App/features/medical_law_faq/ui/medico_legal_faq_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
-import 'package:Doctors_App/features/helpdesk/ui/support_hub_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/support_hub_screen.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_cases_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_consultant_form.dart';
 import 'package:Doctors_App/features/legal/ui/add_legal_notice_form.dart';
@@ -37,8 +36,8 @@ import '../core/widgets/app_drawer.dart';
 import '../features/authentication/ui/sign_in_screen.dart';
 import '../features/blog_central/model/my_submission_list_model.dart';
 import '../features/forgot_password/ui/create_new_password.dart';
-import '../features/helpdesk/ui/my_queries_screen.dart';
-import '../features/helpdesk/ui/widgets/query_details_screen.dart';
+import '../features/support_hub//ui/my_queries_screen.dart';
+import '../features/support_hub/ui/widgets/query_details_screen.dart';
 import '../features/home/ui/home_screen.dart';
 import '../features/main/ui/main_screen.dart';
 import '../features/notification/ui/notification_screen.dart';
@@ -392,11 +391,11 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: Routes.addAppointment,
-      pageBuilder: (context, state) =>
-          state.slidePage(const AppointmentFormView()),
-    ),
+    // GoRoute(
+    //   path: Routes.addAppointment,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const AppointmentFormView()),
+    // ),
     GoRoute(
       path: Routes.viewAppointment,
       pageBuilder: (context, state) =>

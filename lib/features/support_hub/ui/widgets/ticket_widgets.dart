@@ -1,4 +1,4 @@
-import 'package:Doctors_App/features/helpdesk/model/service_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/values/app_text_style.dart';

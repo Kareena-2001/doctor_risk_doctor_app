@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'add_address_response.freezed.dart';
+
 part 'add_address_response.g.dart';
 
 @freezed
@@ -18,9 +19,8 @@ class AddAddressResponse with _$AddAddressResponse {
 
 @freezed
 class AddAddressData with _$AddAddressData {
-  const factory AddAddressData({
-    required AddressModel address,
-  }) = _AddAddressData;
+  const factory AddAddressData({required AddressModel address}) =
+      _AddAddressData;
 
   factory AddAddressData.fromJson(Map<String, dynamic> json) =>
       _$AddAddressDataFromJson(json);
@@ -31,11 +31,9 @@ class AddressModel with _$AddressModel {
   const factory AddressModel({
     required int id,
 
-    @JsonKey(name: 'address_type')
-    required String addressType,
+    @JsonKey(name: 'address_type') required String addressType,
 
-    @JsonKey(name: 'own_visiting')
-    required String ownVisiting,
+    @JsonKey(name: 'own_visiting') required String ownVisiting,
 
     required String address1,
     required String address2,
