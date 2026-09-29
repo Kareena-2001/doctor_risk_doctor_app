@@ -6,7 +6,7 @@ part of 'blog_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$blogViewModelHash() => r'0746553409b7e90bf8f5bb5a7d721cb56532bf0b';
+String _$blogViewModelHash() => r'9d9793b5dd1c0c44ec377200c0cb251bcb9eedaf';
 
 /// See also [BlogViewModel].
 @ProviderFor(BlogViewModel)

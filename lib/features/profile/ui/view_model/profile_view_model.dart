@@ -102,7 +102,9 @@ class ProfileViewModel extends _$ProfileViewModel {
   }) async {
     _update((s) => s.copyWith(isSaving: true));
     try {
-      await ref.read(profileRepositoryProvider).addOrEditAddress(
+      await ref
+          .read(profileRepositoryProvider)
+          .addOrEditAddress(
             id: id,
             addressType: addressType,
             ownVisiting: ownVisiting,
@@ -297,7 +299,7 @@ class ProfileViewModel extends _$ProfileViewModel {
     }
   }
 
-  Future<bool> updateProfile({
+  Future<void> updateProfile({
     required String prefix,
     required String firstName,
     String? middleName,
@@ -326,7 +328,9 @@ class ProfileViewModel extends _$ProfileViewModel {
     String? ipd,
   }) async {
     final s = _current;
-    if (s.selectedCategory == null) return false;
+    if (s.selectedCategory == null) {
+      throw StateError('Please select a category before saving your profile.');
+    }
 
     _update((st) => st.copyWith(isSaving: true));
     try {
@@ -368,10 +372,10 @@ class ProfileViewModel extends _$ProfileViewModel {
         ipd: ipd,
       );
       await getProfile();
-      return true;
-    } catch (_) {
+    } catch (error) {
       _update((st) => st.copyWith(isSaving: false));
-      return false;
+      debugPrint('Profile update failed: $error');
+      rethrow;
     }
   }
 }

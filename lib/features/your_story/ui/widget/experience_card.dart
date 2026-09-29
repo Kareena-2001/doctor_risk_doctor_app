@@ -41,7 +41,8 @@ class ExperienceCard extends StatelessWidget {
       fontSize: Responsive.sp(13),
       color: context.secondaryTextColor,
     );
-
+    final isPublished =
+        experience.approveStatus?.trim().toLowerCase() == 'published';
     return Container(
       decoration: BoxDecoration(
         color: context.secondaryBackgroundColor,
@@ -95,7 +96,7 @@ class ExperienceCard extends StatelessWidget {
                   height: Responsive.w(20),
                   child: const CircularProgressIndicator(strokeWidth: 2),
                 )
-              else
+              else if (!isPublished)
                 PopupMenuButton<String>(
                   color: Colors.white,
                   tooltip: 'Experience actions',

@@ -9,7 +9,6 @@ import 'package:Doctors_App/features/profile/model/add_address_response.dart';
 import 'package:Doctors_App/features/profile/model/city_response.dart';
 import 'package:Doctors_App/features/profile/model/delete_address_response.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
-import 'package:Doctors_App/features/profile/model/profile_update_response.dart';
 import 'package:Doctors_App/features/profile/model/state_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -49,7 +48,7 @@ class ProfileRepository {
     return DoctorProfileResponse.fromJson(response);
   }
 
-  Future<ProfileUpdateResponse> updateProfile({
+  Future<void> updateProfile({
     File? photo,
     required String prefix,
     required String firstName,
@@ -157,10 +156,15 @@ class ProfileRepository {
       debugPrint('🟦 Profile Update Response: $response');
 
       if (response['status'] == true) {
-        return ProfileUpdateResponse.fromJson(response);
+        return;
       }
 
-      throw Exception(response['msg'] ?? 'Profile update failed');
+      final message = response['msg'];
+      throw Exception(
+        message is String && message.trim().isNotEmpty
+            ? message
+            : 'Profile update failed. Please try again.',
+      );
     } catch (e) {
       debugPrint('Profile Update Error: $e');
 
@@ -168,7 +172,7 @@ class ProfileRepository {
         throw Exception(e.message);
       }
 
-      throw Exception('Profile update error: ${e.toString()}');
+      rethrow;
     }
   }
 

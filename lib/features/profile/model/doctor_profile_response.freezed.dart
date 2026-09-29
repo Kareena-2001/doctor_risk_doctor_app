@@ -260,11 +260,18 @@ DoctorProfileData _$DoctorProfileDataFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$DoctorProfileData {
   int get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'profile_completion')
+  String? get profileCompletion => throw _privateConstructorUsedError;
+  @JsonKey(name: 'membership_status')
+  String? get membershipStatus => throw _privateConstructorUsedError;
+  String? get product => throw _privateConstructorUsedError;
   @JsonKey(name: 'doctor_no')
   String? get doctorNo => throw _privateConstructorUsedError;
   String? get photo => throw _privateConstructorUsedError;
   @JsonKey(name: 'organization_name')
   String? get organizationName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'product_type_id')
+  int? get productTypeId => throw _privateConstructorUsedError;
   @JsonKey(name: 'prifix')
   String? get prifix => throw _privateConstructorUsedError;
   @JsonKey(name: 'first_name')
@@ -314,9 +321,13 @@ abstract class $DoctorProfileDataCopyWith<$Res> {
   @useResult
   $Res call({
     int id,
+    @JsonKey(name: 'profile_completion') String? profileCompletion,
+    @JsonKey(name: 'membership_status') String? membershipStatus,
+    String? product,
     @JsonKey(name: 'doctor_no') String? doctorNo,
     String? photo,
     @JsonKey(name: 'organization_name') String? organizationName,
+    @JsonKey(name: 'product_type_id') int? productTypeId,
     @JsonKey(name: 'prifix') String? prifix,
     @JsonKey(name: 'first_name') String? firstName,
     @JsonKey(name: 'middle_name') String? middleName,
@@ -356,9 +367,13 @@ class _$DoctorProfileDataCopyWithImpl<$Res, $Val extends DoctorProfileData>
   @override
   $Res call({
     Object? id = null,
+    Object? profileCompletion = freezed,
+    Object? membershipStatus = freezed,
+    Object? product = freezed,
     Object? doctorNo = freezed,
     Object? photo = freezed,
     Object? organizationName = freezed,
+    Object? productTypeId = freezed,
     Object? prifix = freezed,
     Object? firstName = freezed,
     Object? middleName = freezed,
@@ -383,6 +398,18 @@ class _$DoctorProfileDataCopyWithImpl<$Res, $Val extends DoctorProfileData>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as int,
+            profileCompletion: freezed == profileCompletion
+                ? _value.profileCompletion
+                : profileCompletion // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            membershipStatus: freezed == membershipStatus
+                ? _value.membershipStatus
+                : membershipStatus // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            product: freezed == product
+                ? _value.product
+                : product // ignore: cast_nullable_to_non_nullable
+                      as String?,
             doctorNo: freezed == doctorNo
                 ? _value.doctorNo
                 : doctorNo // ignore: cast_nullable_to_non_nullable
@@ -395,6 +422,10 @@ class _$DoctorProfileDataCopyWithImpl<$Res, $Val extends DoctorProfileData>
                 ? _value.organizationName
                 : organizationName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            productTypeId: freezed == productTypeId
+                ? _value.productTypeId
+                : productTypeId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             prifix: freezed == prifix
                 ? _value.prifix
                 : prifix // ignore: cast_nullable_to_non_nullable
@@ -497,9 +528,13 @@ abstract class _$$DoctorProfileDataImplCopyWith<$Res>
   @useResult
   $Res call({
     int id,
+    @JsonKey(name: 'profile_completion') String? profileCompletion,
+    @JsonKey(name: 'membership_status') String? membershipStatus,
+    String? product,
     @JsonKey(name: 'doctor_no') String? doctorNo,
     String? photo,
     @JsonKey(name: 'organization_name') String? organizationName,
+    @JsonKey(name: 'product_type_id') int? productTypeId,
     @JsonKey(name: 'prifix') String? prifix,
     @JsonKey(name: 'first_name') String? firstName,
     @JsonKey(name: 'middle_name') String? middleName,
@@ -539,9 +574,13 @@ class __$$DoctorProfileDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? profileCompletion = freezed,
+    Object? membershipStatus = freezed,
+    Object? product = freezed,
     Object? doctorNo = freezed,
     Object? photo = freezed,
     Object? organizationName = freezed,
+    Object? productTypeId = freezed,
     Object? prifix = freezed,
     Object? firstName = freezed,
     Object? middleName = freezed,
@@ -566,6 +605,18 @@ class __$$DoctorProfileDataImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as int,
+        profileCompletion: freezed == profileCompletion
+            ? _value.profileCompletion
+            : profileCompletion // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        membershipStatus: freezed == membershipStatus
+            ? _value.membershipStatus
+            : membershipStatus // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        product: freezed == product
+            ? _value.product
+            : product // ignore: cast_nullable_to_non_nullable
+                  as String?,
         doctorNo: freezed == doctorNo
             ? _value.doctorNo
             : doctorNo // ignore: cast_nullable_to_non_nullable
@@ -578,6 +629,10 @@ class __$$DoctorProfileDataImplCopyWithImpl<$Res>
             ? _value.organizationName
             : organizationName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        productTypeId: freezed == productTypeId
+            ? _value.productTypeId
+            : productTypeId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         prifix: freezed == prifix
             ? _value.prifix
             : prifix // ignore: cast_nullable_to_non_nullable
@@ -656,9 +711,13 @@ class __$$DoctorProfileDataImplCopyWithImpl<$Res>
 class _$DoctorProfileDataImpl implements _DoctorProfileData {
   const _$DoctorProfileDataImpl({
     required this.id,
+    @JsonKey(name: 'profile_completion') this.profileCompletion,
+    @JsonKey(name: 'membership_status') this.membershipStatus,
+    this.product,
     @JsonKey(name: 'doctor_no') this.doctorNo,
     this.photo,
     @JsonKey(name: 'organization_name') this.organizationName,
+    @JsonKey(name: 'product_type_id') this.productTypeId,
     @JsonKey(name: 'prifix') this.prifix,
     @JsonKey(name: 'first_name') this.firstName,
     @JsonKey(name: 'middle_name') this.middleName,
@@ -685,6 +744,14 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
   @override
   final int id;
   @override
+  @JsonKey(name: 'profile_completion')
+  final String? profileCompletion;
+  @override
+  @JsonKey(name: 'membership_status')
+  final String? membershipStatus;
+  @override
+  final String? product;
+  @override
   @JsonKey(name: 'doctor_no')
   final String? doctorNo;
   @override
@@ -692,6 +759,9 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
   @override
   @JsonKey(name: 'organization_name')
   final String? organizationName;
+  @override
+  @JsonKey(name: 'product_type_id')
+  final int? productTypeId;
   @override
   @JsonKey(name: 'prifix')
   final String? prifix;
@@ -753,7 +823,7 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
 
   @override
   String toString() {
-    return 'DoctorProfileData(id: $id, doctorNo: $doctorNo, photo: $photo, organizationName: $organizationName, prifix: $prifix, firstName: $firstName, middleName: $middleName, lastName: $lastName, fullName: $fullName, email: $email, mobileNo: $mobileNo, alternateNo: $alternateNo, categoryName: $categoryName, specialityName: $specialityName, degree: $degree, establishmentName: $establishmentName, dob: $dob, gender: $gender, addresses: $addresses, clinicHospitalDetails: $clinicHospitalDetails, documents: $documents)';
+    return 'DoctorProfileData(id: $id, profileCompletion: $profileCompletion, membershipStatus: $membershipStatus, product: $product, doctorNo: $doctorNo, photo: $photo, organizationName: $organizationName, productTypeId: $productTypeId, prifix: $prifix, firstName: $firstName, middleName: $middleName, lastName: $lastName, fullName: $fullName, email: $email, mobileNo: $mobileNo, alternateNo: $alternateNo, categoryName: $categoryName, specialityName: $specialityName, degree: $degree, establishmentName: $establishmentName, dob: $dob, gender: $gender, addresses: $addresses, clinicHospitalDetails: $clinicHospitalDetails, documents: $documents)';
   }
 
   @override
@@ -762,11 +832,18 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
         (other.runtimeType == runtimeType &&
             other is _$DoctorProfileDataImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.profileCompletion, profileCompletion) ||
+                other.profileCompletion == profileCompletion) &&
+            (identical(other.membershipStatus, membershipStatus) ||
+                other.membershipStatus == membershipStatus) &&
+            (identical(other.product, product) || other.product == product) &&
             (identical(other.doctorNo, doctorNo) ||
                 other.doctorNo == doctorNo) &&
             (identical(other.photo, photo) || other.photo == photo) &&
             (identical(other.organizationName, organizationName) ||
                 other.organizationName == organizationName) &&
+            (identical(other.productTypeId, productTypeId) ||
+                other.productTypeId == productTypeId) &&
             (identical(other.prifix, prifix) || other.prifix == prifix) &&
             (identical(other.firstName, firstName) ||
                 other.firstName == firstName) &&
@@ -807,9 +884,13 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
   int get hashCode => Object.hashAll([
     runtimeType,
     id,
+    profileCompletion,
+    membershipStatus,
+    product,
     doctorNo,
     photo,
     organizationName,
+    productTypeId,
     prifix,
     firstName,
     middleName,
@@ -849,9 +930,13 @@ class _$DoctorProfileDataImpl implements _DoctorProfileData {
 abstract class _DoctorProfileData implements DoctorProfileData {
   const factory _DoctorProfileData({
     required final int id,
+    @JsonKey(name: 'profile_completion') final String? profileCompletion,
+    @JsonKey(name: 'membership_status') final String? membershipStatus,
+    final String? product,
     @JsonKey(name: 'doctor_no') final String? doctorNo,
     final String? photo,
     @JsonKey(name: 'organization_name') final String? organizationName,
+    @JsonKey(name: 'product_type_id') final int? productTypeId,
     @JsonKey(name: 'prifix') final String? prifix,
     @JsonKey(name: 'first_name') final String? firstName,
     @JsonKey(name: 'middle_name') final String? middleName,
@@ -878,6 +963,14 @@ abstract class _DoctorProfileData implements DoctorProfileData {
   @override
   int get id;
   @override
+  @JsonKey(name: 'profile_completion')
+  String? get profileCompletion;
+  @override
+  @JsonKey(name: 'membership_status')
+  String? get membershipStatus;
+  @override
+  String? get product;
+  @override
   @JsonKey(name: 'doctor_no')
   String? get doctorNo;
   @override
@@ -885,6 +978,9 @@ abstract class _DoctorProfileData implements DoctorProfileData {
   @override
   @JsonKey(name: 'organization_name')
   String? get organizationName;
+  @override
+  @JsonKey(name: 'product_type_id')
+  int? get productTypeId;
   @override
   @JsonKey(name: 'prifix')
   String? get prifix;

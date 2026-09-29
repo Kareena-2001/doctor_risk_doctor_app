@@ -5,6 +5,7 @@ import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +134,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
@@ -178,11 +179,11 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
         rawStatus == 'awaiting_admin_approval' ||
         rawStatus == 'awaiting admin approval';
 
-    // Draft: always editable + deletable.
-    // Awaiting admin approval: editable only if backend says can_edit.
     final bool canEdit = isDraft || (isAwaiting && blog.canEdit);
     final bool canDelete = isDraft;
 
+    final bool showEdit = isDraft || (isAwaiting && blog.canEdit);
+    final bool showDelete = isDraft;
     late final String statusLabel;
     late final Color statusColor;
     late final Color statusBgColor;
@@ -268,24 +269,31 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                   ),
                 ),
                 width(Responsive.w(8)),
-                GestureDetector(
-                  onTap: () {
-                    if (canEdit) {
-                      context.push(Routes.addBlog, extra: blog);
-                    } else {
-                      _showSubmissionDetailsDialog(context, blog.id.toString());
-                    }
-                  },
-                  child: Text(
-                    canEdit ? 'Edit' : 'View',
-                    style: customTextStyle(
-                      fontSize: Responsive.sp(12),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.newPri,
-                    ).copyWith(decoration: TextDecoration.underline),
+                if (showEdit)
+                  GestureDetector(
+                    onTap: () => context.push(Routes.addBlog, extra: blog),
+                    child: Text(
+                      'Edit',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(12),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.newPri,
+                      ).copyWith(decoration: TextDecoration.underline),
+                    ),
+                  )
+                else
+                  GestureDetector(
+                    onTap: () => _showSubmissionDetailsDialog(context, blog),
+                    child: Text(
+                      'View',
+                      style: customTextStyle(
+                        fontSize: Responsive.sp(12),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.newPri,
+                      ).copyWith(decoration: TextDecoration.underline),
+                    ),
                   ),
-                ),
-                if (canDelete) ...[
+                if (showDelete) ...[
                   width(Responsive.w(12)),
                   GestureDetector(
                     onTap: _deletingBlogId == blog.id
@@ -359,7 +367,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                       'Points: ',
                       style: customTextStyle(
                         fontSize: Responsive.sp(11),
-                        color: const Color(0xFF9CA3AF),
+                        color: Color(0xFF9CA3AF),
                       ),
                     ),
                     Text(
@@ -367,7 +375,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                       style: customTextStyle(
                         fontSize: Responsive.sp(11),
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF374151),
+                        color: Color(0xFF374151),
                       ),
                     ),
                   ],
@@ -380,12 +388,23 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     );
   }
 
-  void _showSubmissionDetailsDialog(BuildContext context, String blogId) {
+  void _showSubmissionDetailsDialog(
+    BuildContext context,
+    SubmissionModel blog,
+  ) {
+    final detailsFuture = ref
+        .read(blogViewModelProvider.notifier)
+        .fetchMySubmissionDetails(blog.id.toString());
+    final keywords = blog.keywords
+        .map((k) => k.keyword.trim())
+        .where((k) => k.isNotEmpty)
+        .toList();
+
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: context.secondaryBackgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(Responsive.w(16)),
           ),
@@ -393,14 +412,12 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
           child: Container(
             width: double.infinity,
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.75,
+              maxHeight: MediaQuery.of(dialogContext).size.height * 0.8,
             ),
             padding: EdgeInsets.all(Responsive.w(16)),
             child: FutureBuilder(
-              future: ref
-                  .read(blogViewModelProvider.notifier)
-                  .fetchMySubmissionDetails(blogId),
-              builder: (context, snapshot) {
+              future: detailsFuture,
+              builder: (_, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
                     height: 150,
@@ -414,42 +431,49 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     children: [
                       const Text('Failed to load submission details'),
                       height(Responsive.h(12)),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Close'),
+                      PrimaryButton(
+                        text: 'Close',
+                        height: Responsive.h(40),
+                        fontSize: Responsive.sp(13),
+                        borderRadius: Responsive.w(10),
+                        backgroundColor: AppColors.newPri,
+                        onPressed: () => Navigator.pop(dialogContext),
                       ),
                     ],
                   );
                 }
 
-                final responseData = snapshot.data!;
-                final data = responseData.data;
+                final data = snapshot.data!.data;
 
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Submission Detail',
-                          style: customTextStyle(
-                            fontSize: Responsive.sp(16),
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            'Submission Detail',
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(16),
+                              fontWeight: FontWeight.bold,
+                              color: context.primaryTextColor,
+                            ),
                           ),
                         ),
-
                         IconButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(dialogContext),
                           icon: const Icon(Icons.close),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
                       ],
                     ),
-                    Divider(),
-                    Expanded(
+                    Divider(color: context.borderColor),
+
+                    // Body
+                    Flexible(
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,7 +482,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                                 data.image!.isNotEmpty) ...[
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(
-                                  Responsive.w(8),
+                                  Responsive.w(10),
                                 ),
                                 child: Image.network(
                                   data.image!,
@@ -469,46 +493,81 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                                       const SizedBox.shrink(),
                                 ),
                               ),
-                              height(Responsive.h(12)),
+                              height(Responsive.h(14)),
                             ],
-                            Text(
-                              'Title',
-                              style: customTextStyle(
-                                fontSize: Responsive.sp(11),
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            height(Responsive.h(4)),
+
+                            // Title
                             Text(
                               data.title,
                               style: customTextStyle(
-                                fontSize: Responsive.sp(15),
+                                fontSize: Responsive.sp(16),
                                 fontWeight: FontWeight.bold,
-                              ),
+                                color: context.primaryTextColor,
+                              ).copyWith(height: 1.3),
                             ),
+                            height(Responsive.h(14)),
 
-                            height(Responsive.h(10)),
-
-                            Text(
-                              'Description',
-                              style: customTextStyle(
-                                fontSize: Responsive.sp(11),
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey.shade600,
+                            if (keywords.isNotEmpty) ...[
+                              _sectionLabel(context, 'Keywords'),
+                              height(Responsive.h(8)),
+                              Wrap(
+                                spacing: Responsive.w(8),
+                                runSpacing: Responsive.h(8),
+                                children: keywords
+                                    .map(
+                                      (k) => Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: Responsive.w(10),
+                                          vertical: Responsive.h(5),
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.newPri.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            Responsive.w(20),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          k,
+                                          style: customTextStyle(
+                                            fontSize: Responsive.sp(11),
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.newPri,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
                               ),
-                            ),
-                            height(Responsive.h(4)),
+                              height(Responsive.h(16)),
+                            ],
+
+                            // Description
+                            _sectionLabel(context, 'Description'),
+                            height(Responsive.h(6)),
                             Text(
                               data.description,
                               style: customTextStyle(
-                                fontSize: Responsive.sp(12),
-                                color: const Color(0xFF4B5563),
-                              ).copyWith(height: 1.5),
+                                fontSize: Responsive.sp(12.5),
+                                color: context.primaryTextColor.withValues(
+                                  alpha: 0.8,
+                                ),
+                              ).copyWith(height: 1.55),
                             ),
                           ],
                         ),
                       ),
+                    ),
+
+                    height(Responsive.h(14)),
+                    PrimaryButton(
+                      text: 'Close',
+                      height: Responsive.h(42),
+                      fontSize: Responsive.sp(13),
+                      borderRadius: Responsive.w(10),
+                      backgroundColor: AppColors.newPri,
+                      onPressed: () => Navigator.pop(dialogContext),
                     ),
                   ],
                 );
@@ -517,6 +576,17 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
           ),
         );
       },
+    );
+  }
+
+  Widget _sectionLabel(BuildContext context, String text) {
+    return Text(
+      text.toUpperCase(),
+      style: customTextStyle(
+        fontSize: Responsive.sp(10.5),
+        fontWeight: FontWeight.w700,
+        color: Colors.grey.shade600,
+      ).copyWith(letterSpacing: 0.6),
     );
   }
 }

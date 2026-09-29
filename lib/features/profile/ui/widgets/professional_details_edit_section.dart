@@ -3,7 +3,6 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
-import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
 import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +25,7 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
     required this.unqualifiedStaffCountCtrl,
     required this.onCancel,
     required this.onSave,
+    required this.onPickRetroactiveDate,
   });
 
   final bool isSaving;
@@ -39,6 +39,7 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
   final TextEditingController unqualifiedStaffCountCtrl;
   final VoidCallback onCancel;
   final VoidCallback onSave;
+  final VoidCallback onPickRetroactiveDate;
 
   Widget _referenceDropdown({
     required String label,
@@ -67,167 +68,6 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
     );
   }
 
-  Widget _degreeEditorField(
-    BuildContext context,
-    WidgetRef ref,
-    ProfileState state,
-  ) {
-    return GestureDetector(
-      onTap: state.isDegreeLoading
-          ? null
-          : () => _openDegreePicker(context, ref, state),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'DEGREE',
-          suffixIcon: const Icon(Icons.arrow_drop_down),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: state.isDegreeLoading
-            ? Text(
-                'Loading...',
-                style: customTextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade500,
-                ),
-              )
-            : state.selectedDegrees.isEmpty
-            ? Text(
-                state.degrees.isEmpty
-                    ? 'No degrees available'
-                    : 'Select Degree(s)',
-                style: customTextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade500,
-                ),
-              )
-            : Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: state.selectedDegrees
-                    .map(
-                      (d) => Chip(
-                        label: Text(d.name),
-                        onDeleted: () {
-                          ref
-                              .read(profileViewModelProvider.notifier)
-                              .setSelectedDegrees(
-                                state.selectedDegrees
-                                    .where((e) => e.id != d.id)
-                                    .toList(),
-                              );
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-      ),
-    );
-  }
-
-  Future<void> _openDegreePicker(
-    BuildContext context,
-    WidgetRef ref,
-    ProfileState state,
-  ) async {
-    final notifier = ref.read(profileViewModelProvider.notifier);
-    final tempSelected = [...state.selectedDegrees];
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Degree(s)',
-                    style: customTextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  height(12),
-                  if (state.degrees.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(
-                          'No degrees available',
-                          style: customTextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.degrees.length,
-                        itemBuilder: (context, index) {
-                          final degree = state.degrees[index];
-                          final isChecked = tempSelected.any(
-                            (item) => item.id == degree.id,
-                          );
-
-                          return CheckboxListTile(
-                            value: isChecked,
-                            title: Text(
-                              degree.name,
-                              style: customTextStyle(fontSize: 13),
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.zero,
-                            onChanged: (checked) {
-                              setSheetState(() {
-                                if (checked == true) {
-                                  if (!tempSelected.any(
-                                    (item) => item.id == degree.id,
-                                  )) {
-                                    tempSelected.add(degree);
-                                  }
-                                } else {
-                                  tempSelected.removeWhere(
-                                    (item) => item.id == degree.id,
-                                  );
-                                }
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  height(12),
-                  PrimaryButton(
-                    height: 46,
-                    fontSize: 14,
-                    text: 'Done',
-                    onPressed: state.degrees.isEmpty
-                        ? null
-                        : () {
-                            notifier.setSelectedDegrees(tempSelected);
-                            Navigator.of(sheetContext).pop();
-                          },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state =
@@ -235,6 +75,9 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
     final notifier = ref.read(profileViewModelProvider.notifier);
     final showRetroactiveDate = retroactiveCtrl.text.toLowerCase() == 'yes';
 
+    final states = state.states;
+    final Map<String, IdNameOption> stateByLabel = {};
+    final stateLabels = _uniqueLabels(states, stateByLabel);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -282,11 +125,25 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: CustomTextField(
-                isRequired: false,
-                label: 'MEDICAL REG. STATE',
-                controller: medicalRegStateCtrl,
-              ),
+              child:
+                  // CustomTextField(
+                  //   isRequired: false,
+                  //   label: 'MEDICAL REG. STATE',
+                  //   controller: medicalRegStateCtrl,
+                  // ),
+                  CustomDropdownField(
+                    key: ValueKey(
+                      'medical-registration-state-'
+                      '${medicalRegStateCtrl.text}-${stateLabels.length}',
+                    ),
+                    label: 'MEDICAL REG. STATE',
+                    controller: medicalRegStateCtrl,
+                    hint: 'Select state',
+                    items: stateLabels,
+                    value: medicalRegStateCtrl.text.isEmpty
+                        ? null
+                        : medicalRegStateCtrl.text,
+                  ),
             ),
             width(10),
             Expanded(
@@ -307,19 +164,19 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
         height(12),
         Row(
           children: [
-            Expanded(
-              child: CustomDropdownField(
-                isRequired: false,
-                label: 'RETROACTIVE',
-                controller: retroactiveCtrl,
-                value: retroactiveCtrl.text.isEmpty
-                    ? null
-                    : retroactiveCtrl.text,
-                items: const ['Yes', 'No'],
-                onChanged: (_) {},
-              ),
-            ),
-            width(10),
+            // Expanded(
+            //   child: CustomDropdownField(
+            //     isRequired: false,
+            //     label: 'RETROACTIVE',
+            //     controller: retroactiveCtrl,
+            //     value: retroactiveCtrl.text.isEmpty
+            //         ? null
+            //         : retroactiveCtrl.text,
+            //     items: const ['Yes', 'No'],
+            //     onChanged: (_) {},
+            //   ),
+            // ),
+            // width(10),
             Expanded(
               child: CustomDropdownField(
                 isRequired: false,
@@ -333,11 +190,22 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
         ),
         if (showRetroactiveDate) ...[
           height(12),
-          CustomTextField(
-            isRequired: false,
-            label: 'RETROACTIVE DATE',
-            controller: retroactiveDateCtrl,
+          GestureDetector(
+            onTap: onPickRetroactiveDate,
+            child: AbsorbPointer(
+              child: CustomTextField(
+                isRequired: false,
+                label: 'RETROACTIVE DATE',
+                controller: retroactiveDateCtrl,
+                readOnly: true,
+              ),
+            ),
           ),
+          // CustomTextField(
+          //   isRequired: false,
+          //   label: 'RETROACTIVE DATE',
+          //   controller: retroactiveDateCtrl,
+          // ),
         ],
         height(12),
         CustomDropdownField(
@@ -404,5 +272,23 @@ class ProfessionalDetailsEditSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  List<String> _uniqueLabels(
+    List<IdNameOption> options,
+    Map<String, IdNameOption> targetMap,
+  ) {
+    targetMap.clear();
+    final counts = <String, int>{};
+    final labels = <String>[];
+    for (final o in options) {
+      final base = o.name;
+      final occurrence = (counts[base] ?? 0) + 1;
+      counts[base] = occurrence;
+      final label = occurrence == 1 ? base : '$base ($occurrence)';
+      targetMap[label] = o;
+      labels.add(label);
+    }
+    return labels;
   }
 }

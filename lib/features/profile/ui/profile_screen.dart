@@ -11,6 +11,7 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/section_card.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
+import 'package:Doctors_App/features/authentication/ui/state/authentication_state.dart';
 import 'package:Doctors_App/features/home/model/policy_model.dart';
 import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart';
 import 'package:Doctors_App/features/profile/model/profile_address_request.dart';
@@ -116,7 +117,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return v.endsWith('.') ? v : '$v.';
   }
 
-  void _populateControllers(DoctorProfileData data) {
+  String _medicalRegStateName(String? value, List<IdNameOption> states) {
+    final rawValue = (value ?? '').trim();
+    if (rawValue.isEmpty) return '';
+    final stateId = int.tryParse(rawValue);
+
+    for (final state in states) {
+      if (state.name.trim().toLowerCase() == rawValue.toLowerCase() ||
+          state.id == stateId) {
+        return state.name;
+      }
+    }
+    return rawValue;
+  }
+
+  String? _medicalRegStateId(String? value, List<IdNameOption> states) {
+    final rawValue = (value ?? '').trim();
+    if (rawValue.isEmpty) return null;
+    final stateId = int.tryParse(rawValue);
+
+    for (final state in states) {
+      if (state.name.trim().toLowerCase() == rawValue.toLowerCase() ||
+          state.id == stateId) {
+        return state.id.toString();
+      }
+    }
+    return null;
+  }
+
+  void _populateControllers(
+    DoctorProfileData data, {
+    List<IdNameOption> states = const [],
+  }) {
     _prefixCtrl.text = _normalizePrefix(data.prifix);
     _firstNameCtrl.text = data.firstName ?? '';
     _middleNameCtrl.text = data.middleName ?? '';
@@ -134,11 +166,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final clinic = data.clinicHospitalDetails;
 
-    _medicalRegStateCtrl.text = clinic?.medicleRegState ?? '';
+    _medicalRegStateCtrl.text = _medicalRegStateName(
+      clinic?.medicleRegState,
+      states,
+    );
     _medicalRegNoCtrl.text = clinic?.medicleRegNo ?? '';
     _medicalRegYearCtrl.text = clinic?.medicleRegYear ?? '';
 
-    _retroactiveDateCtrl.text = clinic?.retroactiveDate ?? '';
+    _retroactiveDateCtrl.text = _formatDateForDisplay(clinic?.retroactiveDate);
 
     _retroactiveCtrl.text = _yesNoValue(clinic?.retroactive);
     _worldwideCtrl.text = _yesNoValue(clinic?.worldwide);
@@ -162,12 +197,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   String _formatDob(String? dob) {
-    if (dob == null || dob.isEmpty) return '';
-    final parsed = DateTime.tryParse(dob);
-    if (parsed == null) return dob;
-    return '${parsed.day.toString().padLeft(2, '0')}/'
-        '${parsed.month.toString().padLeft(2, '0')}/'
-        '${parsed.year}';
+    return _formatDateForDisplay(dob);
+  }
+
+  String _formatDateForDisplay(String? value) {
+    if (value == null || value.trim().isEmpty) return '';
+    final parsed = DateTime.tryParse(value);
+    if (parsed != null) {
+      return '${parsed.day.toString().padLeft(2, '0')}/'
+          '${parsed.month.toString().padLeft(2, '0')}/'
+          '${parsed.year}';
+    }
+
+    final parts = value.split('/');
+    if (parts.length == 3) {
+      final day = int.tryParse(parts[0]);
+      final month = int.tryParse(parts[1]);
+      final year = int.tryParse(parts[2]);
+      if (day != null && month != null && year != null) {
+        return '${day.toString().padLeft(2, '0')}/'
+            '${month.toString().padLeft(2, '0')}/$year';
+      }
+    }
+    return value;
   }
 
   DateTime? _parseDisplayDob(String display) {
@@ -181,13 +233,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   String? _dobToApiFormat(String display) {
+    return _dateToApiFormat(display);
+  }
+
+  String? _dateToApiFormat(String display) {
     if (display.trim().isEmpty) return null;
-    final parts = display.split('/');
-    if (parts.length != 3) return display;
-    final day = parts[0].padLeft(2, '0');
-    final month = parts[1].padLeft(2, '0');
-    final year = parts[2];
-    return '$year-$month-$day';
+    final date = _parseDisplayDob(display);
+    if (date == null) {
+      final parsed = DateTime.tryParse(display);
+      if (parsed == null) return display;
+      return '${parsed.year}-'
+          '${parsed.month.toString().padLeft(2, '0')}-'
+          '${parsed.day.toString().padLeft(2, '0')}';
+    }
+    return '${date.year}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+  }
+
+  DateTime? _parseDateValue(String value) {
+    return _parseDisplayDob(value) ?? DateTime.tryParse(value);
   }
 
   Future<void> _pickDob() async {
@@ -206,6 +271,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (picked != null) {
       setState(() {
         _dobCtrl.text =
+            '${picked.day.toString().padLeft(2, '0')}/'
+            '${picked.month.toString().padLeft(2, '0')}/'
+            '${picked.year}';
+      });
+    }
+  }
+
+  Future<void> _pickRetroactiveDate() async {
+    final now = DateTime.now();
+    final initial =
+        _parseDateValue(_retroactiveDateCtrl.text) ??
+        DateTime(now.year - 1, now.month, now.day);
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isAfter(now) ? now : initial,
+      firstDate: DateTime(1930),
+      lastDate: now,
+    );
+
+    if (picked != null && mounted) {
+      setState(() {
+        _retroactiveDateCtrl.text =
             '${picked.day.toString().padLeft(2, '0')}/'
             '${picked.month.toString().padLeft(2, '0')}/'
             '${picked.year}';
@@ -274,40 +362,66 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         )
         .toList();
 
-    final success = await ref
-        .read(profileViewModelProvider.notifier)
-        .updateProfile(
-          prefix: _prefixCtrl.text.trim(),
-          firstName: _firstNameCtrl.text.trim(),
-          middleName: _middleNameCtrl.text.trim(),
-          lastName: _lastNameCtrl.text.trim(),
-          email: _emailCtrl.text.trim(),
-          mobileNo: _mobileCtrl.text.trim(),
-          alternateNo: _alternateMobileCtrl.text.trim(),
-          establishmentName: _organisationCtrl.text.trim(),
-          dob: _dobToApiFormat(_dobCtrl.text),
-          gender: _genderCtrl.text.trim(),
-          addresses: addressRequests,
-          clinicHospitalId: data?.clinicHospitalDetails?.id?.toString(),
-          medicleRegState: _medicalRegStateCtrl.text.trim(),
-          medicleRegNo: _medicalRegNoCtrl.text.trim(),
-          medicleRegYear: _medicalRegYearCtrl.text.trim(),
-          retroactive: _apiYesNo(_retroactiveCtrl.text),
-          retroactiveDate: _retroactiveDateCtrl.text.trim(),
-          worldwide: _apiYesNo(_worldwideCtrl.text),
-          unqualifiedStaff: _apiYesNo(_unqualifiedStaffCtrl.text),
-          unqualifiedStaffCount: _unqualifiedStaffCountCtrl.text.trim(),
+    final states =
+        ref.read(profileViewModelProvider).valueOrNull?.states ?? const [];
+    final medicalRegStateId = _medicalRegStateId(
+      _medicalRegStateCtrl.text,
+      states,
+    );
+    if (_medicalRegStateCtrl.text.trim().isNotEmpty &&
+        medicalRegStateId == null) {
+      context.showErrorSnackBar(
+        'Please select a valid medical registration state.',
+      );
+      return;
+    }
+
+    try {
+      await ref
+          .read(profileViewModelProvider.notifier)
+          .updateProfile(
+            prefix: _prefixCtrl.text.trim(),
+            firstName: _firstNameCtrl.text.trim(),
+            middleName: _middleNameCtrl.text.trim(),
+            lastName: _lastNameCtrl.text.trim(),
+            email: _emailCtrl.text.trim(),
+            mobileNo: _mobileCtrl.text.trim(),
+            alternateNo: _alternateMobileCtrl.text.trim(),
+            establishmentName: _organisationCtrl.text.trim(),
+            dob: _dobToApiFormat(_dobCtrl.text),
+            gender: _genderCtrl.text.trim(),
+            addresses: addressRequests,
+            clinicHospitalId: data?.clinicHospitalDetails?.id?.toString(),
+            medicleRegState: medicalRegStateId ?? '',
+            medicleRegNo: _medicalRegNoCtrl.text.trim(),
+            medicleRegYear: _medicalRegYearCtrl.text.trim(),
+            retroactive: _apiYesNo(_retroactiveCtrl.text),
+            retroactiveDate:
+                _dateToApiFormat(_retroactiveDateCtrl.text.trim()) ?? '',
+            worldwide: _apiYesNo(_worldwideCtrl.text),
+            unqualifiedStaff: _apiYesNo(_unqualifiedStaffCtrl.text),
+            unqualifiedStaffCount: _unqualifiedStaffCountCtrl.text.trim(),
+          );
+
+      if (!mounted) return;
+
+      final updatedState = ref.read(profileViewModelProvider).valueOrNull;
+      final updatedProfile = updatedState?.profileData;
+      if (updatedProfile != null) {
+        _populateControllers(
+          updatedProfile,
+          states: updatedState?.states ?? const [],
         );
-
-    if (!mounted) return;
-
-    if (success) {
-      _controllersPopulated = false;
+        _controllersPopulated = true;
+      }
       setState(() => _isEditing = false);
 
       context.showSuccessSnackBar('Profile updated successfully');
-    } else {
-      context.showErrorSnackBar('Failed to update profile. Please try again.');
+    } catch (error) {
+      if (!mounted) return;
+      context.showErrorSnackBar(
+        error.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -410,9 +524,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     ) {
       next.whenData((state) {
         if (!_controllersPopulated && state.profileData != null) {
-          _populateControllers(state.profileData!);
+          _populateControllers(state.profileData!, states: state.states);
           _controllersPopulated = true;
           setState(() {});
+        } else if (!_isEditing &&
+            state.profileData != null &&
+            state.states.isNotEmpty) {
+          final resolvedState = _medicalRegStateName(
+            state.profileData!.clinicHospitalDetails?.medicleRegState,
+            state.states,
+          );
+          if (_medicalRegStateCtrl.text != resolvedState) {
+            _medicalRegStateCtrl.text = resolvedState;
+            setState(() {});
+          }
         }
       });
     });
@@ -507,6 +632,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 _unqualifiedStaffCountCtrl,
                             onCancel: _toggleEdit,
                             onSave: _saveChanges,
+                            onPickRetroactiveDate: _pickRetroactiveDate,
                           )
                         else
                           Wrap(
@@ -531,10 +657,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 'MEDICAL REG. YEAR',
                                 _medicalRegYearCtrl.text,
                               ),
-                              _buildReadUnit(
-                                'RETROACTIVE',
-                                _retroactiveCtrl.text,
-                              ),
+
+                              // _buildReadUnit(
+                              //   'RETROACTIVE',
+                              //   _retroactiveCtrl.text,
+                              // ),
                               _buildReadUnit(
                                 'RETROACTIVE DATE',
                                 _retroactiveDateCtrl.text,
@@ -694,7 +821,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
-                        color: context.primaryTextColor,
+                        color: context.secondaryTextColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -707,7 +834,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
                           fontSize: 11.5,
-                          color: Colors.grey.shade600,
+                          color: context.secondaryTextColor,
                         ),
                       ),
                     if (doctorNo.isNotEmpty) ...[
@@ -718,7 +845,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: customTextStyle(
                           fontSize: 10.5,
-                          color: Colors.grey.shade500,
+                          color: context.secondaryTextColor,
                         ),
                       ),
                     ],
@@ -742,62 +869,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             runSpacing: 8,
             children: [
               _statusTag(status),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.w(10),
-                  vertical: Responsive.h(5),
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+              if (data.product?.trim().isNotEmpty == true)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.w(10),
+                    vertical: Responsive.h(5),
                   ),
-                  borderRadius: BorderRadius.circular(Responsive.w(20)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.workspace_premium_rounded,
-                      size: Responsive.sp(13),
-                      color: Colors.white,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
                     ),
-                    width(Responsive.w(4)),
-                    Text(
-                      'Gold II · Premium',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(11),
-                        fontWeight: FontWeight.w700,
+                    borderRadius: BorderRadius.circular(Responsive.w(20)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.workspace_premium_rounded,
+                        size: Responsive.sp(13),
                         color: Colors.white,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          height(12),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: Responsive.w(10),
-              vertical: Responsive.h(5),
-            ),
-            decoration: BoxDecoration(
-              border: Border.all(color: status.heroBorder),
-              borderRadius: BorderRadius.circular(Responsive.w(20)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Profile 92% complete',
-                  style: customTextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade700,
+                      width(Responsive.w(4)),
+                      Text(
+                        data.product!,
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(11),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              if (data.profileCompletion?.trim().isNotEmpty == true)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.w(10),
+                    vertical: Responsive.h(5),
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: status.heroBorder),
+                    borderRadius: BorderRadius.circular(Responsive.w(20)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        data.profileCompletion!,
+                        style: customTextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ],
       ),
