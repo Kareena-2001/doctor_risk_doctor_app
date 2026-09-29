@@ -11,7 +11,7 @@ import '../../../routing/routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../common/ui/widgets/loading.dart';
 import '../model/query_list_model.dart';
-import 'view_model/help_view_model.dart';import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'view_model/support_hub_view_model.dart';import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 
 
 class MyQueriesScreen extends ConsumerStatefulWidget {

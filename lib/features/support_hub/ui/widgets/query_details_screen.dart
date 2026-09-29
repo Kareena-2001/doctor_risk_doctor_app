@@ -11,8 +11,7 @@ import '../../../../routing/routes.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../common/ui/widgets/loading.dart';
 import '../../../common/ui/widgets/secondary_button.dart';
-import '../../model/query_detail_model.dart';
-import '../view_model/help_view_model.dart';
+import '../view_model/support_hub_view_model.dart';
 
 class QueryDetailsScreen extends ConsumerStatefulWidget {
   final String queryId;

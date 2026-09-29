@@ -6,7 +6,7 @@ import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../theme/app_colors.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../common/ui/widgets/primary_button.dart';
-import '../view_model/help_view_model.dart';
+import '../view_model/support_hub_view_model.dart';
 
 class SuccessView extends ConsumerWidget {
   const SuccessView({super.key});
