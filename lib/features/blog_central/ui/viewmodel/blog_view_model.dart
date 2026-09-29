@@ -135,4 +135,8 @@ class BlogViewModel extends _$BlogViewModel {
 
     return !result.hasError;
   }
+
+  Future<void> blogDelete(int id) async {
+    await ref.read(blogRepositoryProvider).blogDelete(id.toString());
+  }
 }

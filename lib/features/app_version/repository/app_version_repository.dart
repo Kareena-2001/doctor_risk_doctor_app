@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/services/api_client.dart';
-import '../../../core/services/api_client.dart';
 import '../model/app_version_model.dart';
 
 part 'app_version_repository.g.dart';

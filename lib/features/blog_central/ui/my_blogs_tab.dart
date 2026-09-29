@@ -23,6 +23,8 @@ class MyBlogsTab extends ConsumerStatefulWidget {
 }
 
 class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
+  int? _deletingBlogId;
+
   @override
   void initState() {
     super.initState();
@@ -118,16 +120,68 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     }
   }
 
+  Future<void> _confirmAndDelete(SubmissionModel blog) async {
+    final title = blog.title.trim().isEmpty
+        ? 'Untitled blog'
+        : blog.title.trim();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Delete blog?'),
+        content: Text('“$title” will be permanently deleted.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _deletingBlogId = blog.id);
+
+    try {
+      await ref.read(blogViewModelProvider.notifier).blogDelete(blog.id);
+
+      if (!mounted) return;
+      context.showSuccessSnackBar('Blog deleted successfully');
+      await ref.read(blogViewModelProvider.notifier).refreshMySubmissions();
+    } catch (error) {
+      if (mounted) {
+        context.showErrorSnackBar(error.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _deletingBlogId = null);
+      }
+    }
+  }
+
   Widget _buildBlogCard(BuildContext context, SubmissionModel blog) {
     final String rawStatus = (blog.approveStatus ?? 'awaiting_admin_approval')
         .toString()
         .toLowerCase()
         .trim();
 
-    final bool canEdit =
-        rawStatus == 'draft' ||
+    final bool isDraft = rawStatus == 'draft';
+    final bool isAwaiting =
         rawStatus == 'awaiting_admin_approval' ||
         rawStatus == 'awaiting admin approval';
+
+    // Draft: always editable + deletable.
+    // Awaiting admin approval: editable only if backend says can_edit.
+    final bool canEdit = isDraft || (isAwaiting && blog.canEdit);
+    final bool canDelete = isDraft;
 
     late final String statusLabel;
     late final Color statusColor;
@@ -203,7 +257,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
               children: [
                 Expanded(
                   child: Text(
-                    blog.title ?? '',
+                    blog.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: customTextStyle(
@@ -216,9 +270,6 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                 width(Responsive.w(8)),
                 GestureDetector(
                   onTap: () {
-                    debugPrint(
-                      'Edit tapped — canEdit=$canEdit, id=${blog.id}, type=${blog.runtimeType}',
-                    );
                     if (canEdit) {
                       context.push(Routes.addBlog, extra: blog);
                     } else {
@@ -234,6 +285,30 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     ).copyWith(decoration: TextDecoration.underline),
                   ),
                 ),
+                if (canDelete) ...[
+                  width(Responsive.w(12)),
+                  GestureDetector(
+                    onTap: _deletingBlogId == blog.id
+                        ? null
+                        : () => _confirmAndDelete(blog),
+                    child: _deletingBlogId == blog.id
+                        ? SizedBox(
+                            width: Responsive.w(16),
+                            height: Responsive.w(16),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Delete',
+                            style: customTextStyle(
+                              fontSize: Responsive.sp(12),
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFB91C1C),
+                            ).copyWith(decoration: TextDecoration.underline),
+                          ),
+                  ),
+                ],
               ],
             ),
             height(Responsive.h(10)),
@@ -270,10 +345,6 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                     ),
                     width(Responsive.w(4)),
                     Text(
-                      // rawStatus == 'draft' ||
-                      //         rawStatus == 'awaiting_admin_approval'
-                      //     ? 'Last edited ${blog.updatedOn ?? 'N/A'}'
-                      //     : (blog.createdOn ?? 'N/A').toString(),
                       blog.createdOn,
                       style: customTextStyle(
                         fontSize: Responsive.sp(11),
