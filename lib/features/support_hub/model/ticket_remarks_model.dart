@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ticket_remarks_model.freezed.dart';
+
 part 'ticket_remarks_model.g.dart';
 
 @freezed
@@ -45,30 +46,23 @@ class TicketRemark with _$TicketRemark {
   const factory TicketRemark({
     required int id,
 
-    @JsonKey(name: 'sender_type')
-    required String senderType,
+    @JsonKey(name: 'sender_type') required String senderType,
 
-    @JsonKey(name: 'sender_department')
-    required String senderDepartment,
+    @JsonKey(name: 'sender_department') required String senderDepartment,
 
-    @JsonKey(name: 'sender_id')
-    required String senderId,
+    @JsonKey(name: 'sender_id') required String senderId,
 
     required String remark,
 
-    @JsonKey(name: 'attachment_type')
-    String? attachmentType,
+    @JsonKey(name: 'attachment_type') String? attachmentType,
 
     String? attachment,
 
-    @JsonKey(name: 'tickete_status')
-    required String ticketStatus,
+    @JsonKey(name: 'tickete_status') required String ticketStatus,
 
-    @JsonKey(name: 'date_time')
-    required String dateTime,
+    @JsonKey(name: 'date_time') required String dateTime,
 
-    @JsonKey(name: 'sender_name')
-    required String senderName,
+    @JsonKey(name: 'sender_name') required String senderName,
   }) = _TicketRemark;
 
   factory TicketRemark.fromJson(Map<String, dynamic> json) =>

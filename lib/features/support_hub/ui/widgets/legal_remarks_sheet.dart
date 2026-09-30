@@ -15,11 +15,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// Call this from a tap handler (not from build/initState).
 void showLegalRemarksSheet(
-  BuildContext context,
-  WidgetRef ref,
-  LegalTicket ticket,
-) {
+    BuildContext context,
+    WidgetRef ref,
+    LegalTicket ticket,
+    ) {
   ref
       .read(supportHubViewModelProvider.notifier)
       .fetchRemarks(id: ticket.id.toString());
@@ -49,6 +50,13 @@ enum _AttachType {
   final List<String>? extensions;
 }
 
+/// API sends "Name - Role" (e.g. "Test - Legal Team", "Dr. X - You").
+({String name, String role}) _splitSender(String raw) {
+  final i = raw.lastIndexOf(' - ');
+  if (i == -1) return (name: raw.trim(), role: '');
+  return (name: raw.substring(0, i).trim(), role: raw.substring(i + 3).trim());
+}
+
 class LegalRemarksSheet extends ConsumerStatefulWidget {
   final LegalTicket ticket;
 
@@ -61,6 +69,17 @@ class LegalRemarksSheet extends ConsumerStatefulWidget {
 class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
   final _ctrl = TextEditingController();
   File? _file;
+  String? _remarkError;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl.addListener(() {
+      if (_remarkError != null && _ctrl.text.trim().isNotEmpty) {
+        setState(() => _remarkError = null);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -80,18 +99,18 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
 
   Future<void> _send() async {
     final text = _ctrl.text.trim();
-
-    if (text.isEmpty && _file == null) {
-      context.showErrorSnackBar('Please enter a remark or attach a file');
+    if (text.isEmpty) {
+      setState(() => _remarkError = 'Please enter a remark');
       return;
     }
+
     final ok = await ref
         .read(supportHubViewModelProvider.notifier)
         .addRemark(
-          ticketId: widget.ticket.id.toString(),
-          remark: text,
-          file: _file,
-        );
+      ticketId: widget.ticket.id.toString(),
+      remark: text,
+      file: _file,
+    );
     if (!mounted) return;
     if (ok) {
       _ctrl.clear();
@@ -106,7 +125,6 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
     final state = ref.watch(supportHubViewModelProvider);
     final remarks = state.ticketRemarks?.data.remarks ?? const [];
     final media = MediaQuery.of(context);
-    final ticket = widget.ticket;
 
     return Padding(
       padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
@@ -118,36 +136,39 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Header(ticket: ticket),
+                _Header(ticket: widget.ticket),
                 height(12),
                 Expanded(
                   child: state.isFetchingRemarks
                       ? Loading()
                       : remarks.isEmpty
                       ? Center(
-                          child: Text(
-                            'No remarks yet — start the conversation below.',
-                            style: AppTheme.label12,
-                          ),
-                        )
+                    child: Text(
+                      'No remarks yet — start the conversation below.',
+                      style: AppTheme.label12,
+                    ),
+                  )
                       : ListView.separated(
-                          padding: const EdgeInsets.only(right: 8),
-                          itemCount: remarks.length,
-                          separatorBuilder: (_, _) => height(10),
-                          itemBuilder: (_, i) {
-                            final r = remarks[i];
-                            return _RemarkCard(
-                              sendarName: r.senderName,
-                              remark: r.remark,
-                              dateTime: r.dateTime,
-                              attachment: r.attachment,
-                            );
-                          },
-                        ),
+                    padding: const EdgeInsets.only(right: 8),
+                    itemCount: remarks.length,
+                    separatorBuilder: (_, _) => height(10),
+                    itemBuilder: (_, i) {
+                      final r = remarks[i];
+                      final sender = _splitSender(r.senderName);
+                      return _RemarkCard(
+                        name: sender.name,
+                        role: sender.role,
+                        isTeam: sender.role.toLowerCase() != 'you',
+                        remark: r.remark.trim(),
+                        dateTime: r.dateTime,
+                        attachment: r.attachment,
+                      );
+                    },
+                  ),
                 ),
                 const Divider(height: 24),
                 Padding(
-                  padding: EdgeInsets.only(right: 8),
+                  padding:  EdgeInsets.only(right: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -157,7 +178,25 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
                         hint: 'Type your update or question here…',
                         maxLines: 3,
                       ),
+                      if (_remarkError != null) ...[
+                        height(4),
+                        Text(
+                          _remarkError!,
+                          style: customTextStyle(
+                            fontSize: 11,
+                            color: Colors.red.shade400,
+                          ),
+                        ),
+                      ],
                       height(10),
+                      Text(
+                        'Attachment (optional)',
+                        style: customTextStyle(
+                          fontSize: 11,
+                          color: context.secondaryTextColor,
+                        ),
+                      ),
+                      height(6),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -259,13 +298,17 @@ class _Header extends StatelessWidget {
 }
 
 class _RemarkCard extends StatelessWidget {
-  final String sendarName;
+  final String name;
+  final String role;
+  final bool isTeam;
   final String remark;
   final String dateTime;
   final String? attachment;
 
   const _RemarkCard({
-    required this.sendarName,
+    required this.name,
+    required this.role,
+    required this.isTeam,
     required this.remark,
     required this.dateTime,
     this.attachment,
@@ -288,32 +331,45 @@ class _RemarkCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final hasAttachment = attachment != null && attachment!.isNotEmpty;
 
+    final cardColor = isTeam
+        ? AppColors.primary.withValues(alpha: 0.12)
+        : (isDark ? Colors.grey.shade800 : Colors.grey.shade100);
+    final accent = isTeam ? AppColors.primary : Colors.grey.shade400;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
+        color: cardColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border(left: BorderSide(color: AppColors.newPri, width: 3)),
+        border: Border(left: BorderSide(color: accent, width: 3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(
-                sendarName,
-                style: customTextStyle(
-                  fontSize: 10,
-                  color: context.secondaryTextColor,
+              Flexible(
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              // _Pill(
-              //   text: sendarName ? 'SUPPORT TEAM' : 'YOU',
-              //   background: Colors.grey.shade300,
-              //   color: Colors.black87,
-              // ),
+              if (role.isNotEmpty) ...[
+                width(6),
+                _Pill(
+                  text: role.toUpperCase(),
+                  background: isTeam ? AppColors.primary : Colors.grey.shade300,
+                  color: isTeam ? Colors.white : Colors.black87,
+                ),
+              ],
               const Spacer(),
+              width(8),
               Text(
                 dateTime,
                 style: customTextStyle(

@@ -102,16 +102,20 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
+
   Future<bool> addRemark({
     required String ticketId,
     required String remark,
     File? file,
   }) async {
     if (remark.trim().isEmpty && file == null) {
-      state = state.copyWith(
-        isSuccess: false,
-        error: 'Please enter a remark or attach a file',
-      );
+      if (remark.trim().isEmpty) {
+        state = state.copyWith(
+          isSuccess: false,
+          error: 'Please enter a remark',
+        );
+        return false;
+      }
       return false;
     }
 
