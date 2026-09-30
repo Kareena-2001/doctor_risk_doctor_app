@@ -54,8 +54,10 @@ class Routes {
   static const renewCentre = '/renewCentre';
 
   static const supportHub = '/supportHub';
-  static const myQueries = '/myQueries';
-  static const queryDetails = '/queryDetails';
+  static const legalSupport = '/legalSupport';
+  static const serviceSupport = '/serviceSupport';
+  static const addLegalSupport = '/addLegalSupport';
+  static const addServiceSupport = '/addServiceSupport';
 
   static const newsAdvisory = '/newsAdvisory';
   static const newsAdvisoryDetails = '/newsAdvisoryDetails';

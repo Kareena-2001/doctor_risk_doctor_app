@@ -7,6 +7,7 @@ import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
@@ -17,10 +18,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Call this from a tap handler (not from build/initState).
 void showLegalRemarksSheet(
-    BuildContext context,
-    WidgetRef ref,
-    LegalTicket ticket,
-    ) {
+  BuildContext context,
+  WidgetRef ref,
+  TicketItem ticket,
+) {
   ref
       .read(supportHubViewModelProvider.notifier)
       .fetchRemarks(id: ticket.id.toString());
@@ -58,7 +59,7 @@ enum _AttachType {
 }
 
 class LegalRemarksSheet extends ConsumerStatefulWidget {
-  final LegalTicket ticket;
+  final TicketItem ticket;
 
   const LegalRemarksSheet({super.key, required this.ticket});
 
@@ -107,10 +108,10 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
     final ok = await ref
         .read(supportHubViewModelProvider.notifier)
         .addRemark(
-      ticketId: widget.ticket.id.toString(),
-      remark: text,
-      file: _file,
-    );
+          ticketId: widget.ticket.id.toString(),
+          remark: text,
+          file: _file,
+        );
     if (!mounted) return;
     if (ok) {
       _ctrl.clear();
@@ -143,32 +144,32 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
                       ? Loading()
                       : remarks.isEmpty
                       ? Center(
-                    child: Text(
-                      'No remarks yet — start the conversation below.',
-                      style: AppTheme.label12,
-                    ),
-                  )
+                          child: Text(
+                            'No remarks yet — start the conversation below.',
+                            style: AppTheme.label12,
+                          ),
+                        )
                       : ListView.separated(
-                    padding: const EdgeInsets.only(right: 8),
-                    itemCount: remarks.length,
-                    separatorBuilder: (_, _) => height(10),
-                    itemBuilder: (_, i) {
-                      final r = remarks[i];
-                      final sender = _splitSender(r.senderName);
-                      return _RemarkCard(
-                        name: sender.name,
-                        role: sender.role,
-                        isTeam: sender.role.toLowerCase() != 'you',
-                        remark: r.remark.trim(),
-                        dateTime: r.dateTime,
-                        attachment: r.attachment,
-                      );
-                    },
-                  ),
+                          padding: const EdgeInsets.only(right: 8),
+                          itemCount: remarks.length,
+                          separatorBuilder: (_, _) => height(10),
+                          itemBuilder: (_, i) {
+                            final r = remarks[i];
+                            final sender = _splitSender(r.senderName);
+                            return _RemarkCard(
+                              name: sender.name,
+                              role: sender.role,
+                              isTeam: sender.role.toLowerCase() != 'you',
+                              remark: r.remark.trim(),
+                              dateTime: r.dateTime,
+                              attachment: r.attachment,
+                            );
+                          },
+                        ),
                 ),
                 const Divider(height: 24),
                 Padding(
-                  padding:  EdgeInsets.only(right: 8),
+                  padding: EdgeInsets.only(right: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -238,7 +239,7 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
 }
 
 class _Header extends StatelessWidget {
-  final LegalTicket ticket;
+  final TicketItem ticket;
 
   const _Header({required this.ticket});
 
@@ -260,9 +261,9 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(ticket.ticketNo, style: AppTheme.title16),
-                    if (ticket.legalType != null)
+                    if (ticket.typeValue != null)
                       _Pill(
-                        text: ticket.legalType!.toUpperCase(),
+                        text: ticket.typeValue!.toUpperCase(),
                         background: AppColors.primary.withValues(alpha: 0.1),
                         color: AppColors.primary,
                       ),

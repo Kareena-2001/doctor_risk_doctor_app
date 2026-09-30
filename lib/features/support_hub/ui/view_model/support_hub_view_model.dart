@@ -102,7 +102,57 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
+  Future<bool> addAppointment({
+    required String appointmentType,
+    required String appointmentQuery,
+    required String modeOfAppointment,
+    required String priority,
+    required String description,
+    required String preferredDate,
+    required String preferredTime,
+    File? file,
+  }) async {
+    if (description.trim().isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        error: 'Please enter description for your query',
+      );
+      return false;
+    }
 
+    state = state.copyWith(
+      isLoading: true,
+      isSuccess: false,
+      error: null,
+      createdTicket: null,
+    );
+
+    try {
+      await _repo.addAppointmentForm(
+        appointmentType: appointmentType,
+        appointmentQuery: appointmentQuery,
+        modeOfAppointment: modeOfAppointment,
+        priority: priority,
+        description: description.trim(),
+        preferredDate: preferredDate,
+        preferredTime: preferredTime,
+        file: file,
+      );
+
+      state = state.copyWith(isLoading: false, isSuccess: true);
+
+      await _refreshLoadedLists();
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        error: _errorMessage(e),
+      );
+      return false;
+    }
+  }
   Future<bool> addRemark({
     required String ticketId,
     required String remark,
@@ -397,84 +447,4 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     state = state.copyWith(isSuccess: false, error: null, createdTicket: null);
   }
 
-  Future<void> registerQuery({
-    required dynamic queryType,
-    required dynamic requestType,
-    required dynamic priority,
-    String details = '',
-    File? userAttachment,
-  }) async {
-    await addTicket(
-      ticketType: queryType.toString().split('.').last,
-      queryType: requestType.toString().split('.').last,
-      commonQuery: '',
-      preferredContact: '',
-      priority: priority.toString().split('.').last,
-      description: details,
-      legalType: '',
-    );
-  }
-
-  Future<void> fetchQueries() async {
-    state = state.copyWith(isFetchingQueries: true, error: null);
-    try {
-      final resp = await _repo.serviceTicketList();
-      final items = resp.data.tickets.map((t) {
-        return QueryListItem(
-          id: t.id.toString(),
-          ticketNumber: t.ticketNo,
-          question: t.queryType,
-          category: t.commonQuery ?? t.queryType,
-          description: t.description ?? '',
-          ticketStatus: t.ticketStatus,
-          querySubmit: t.createdOn,
-        );
-      }).toList();
-      state = state.copyWith(
-        isFetchingQueries: false,
-        serviceTickets: resp,
-        queries: items,
-      );
-    } catch (e) {
-      state = state.copyWith(isFetchingQueries: false, error: _errorMessage(e));
-    }
-  }
-
-  Future<void> fetchQueryDetail(String id) async {
-    state = state.copyWith(
-      isFetchingQueryDetail: true,
-      queryDetailError: null,
-      queryDetail: null,
-    );
-    try {
-      final resp = await _repo.supportTicketRemarks(id: id);
-      final ticket = resp.data.ticket;
-      final remarks = resp.data.remarks;
-
-      final adminRemark = remarks.isNotEmpty ? remarks.first : null;
-
-      final detail = QueryDetailItem(
-        ticketNumber: ticket.ticketNo,
-        ticketStatus: ticket.ticketStatus,
-        querySubmit: '',
-        category: ticket.ticketStatus,
-        question: ticket.description ?? '',
-        description: ticket.description ?? '',
-        replied: adminRemark?.remark,
-        repliedDate: adminRemark?.dateTime,
-        replyAttachment: adminRemark?.attachment,
-      );
-
-      state = state.copyWith(
-        isFetchingQueryDetail: false,
-        ticketRemarks: resp,
-        queryDetail: detail,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        isFetchingQueryDetail: false,
-        queryDetailError: _errorMessage(e),
-      );
-    }
-  }
 }

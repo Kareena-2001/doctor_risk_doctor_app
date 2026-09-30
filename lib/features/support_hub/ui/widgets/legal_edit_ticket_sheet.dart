@@ -4,16 +4,16 @@ import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Returns true/false = update success/fail, null = dismissed.
 Future<bool?> showLegalEditTicketSheet(
   BuildContext context,
-  LegalTicket ticket,
+  TicketItem ticket,
 ) {
   return showModalBottomSheet<bool>(
     context: context,
@@ -27,7 +27,7 @@ Future<bool?> showLegalEditTicketSheet(
 }
 
 class LegalEditTicketSheet extends ConsumerStatefulWidget {
-  final LegalTicket ticket;
+  final TicketItem ticket;
 
   const LegalEditTicketSheet({super.key, required this.ticket});
 

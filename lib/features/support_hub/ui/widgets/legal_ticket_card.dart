@@ -1,15 +1,14 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
-import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/service_ticket_model.dart';
-
 class LegalTicketCard extends StatelessWidget {
-  final LegalTicket ticket;
+  final TicketItem ticket;
   final VoidCallback onView;
   final VoidCallback? onRemarks;
   final VoidCallback? onEdit;
@@ -28,7 +27,8 @@ class LegalTicketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final status = parseTicketStatus(ticket.ticketStatus);
-    final editLabel = ticket.actions.editLabel ?? '';
+    final editLabel = ticket.editLabel ?? '';
+    final typeValue = ticket.typeValue ?? '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -68,7 +68,7 @@ class LegalTicketCard extends StatelessWidget {
             ],
           ),
           height(10),
-          if (ticket.legalType != null)
+          if (typeValue.isNotEmpty)
             Container(
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -77,7 +77,7 @@ class LegalTicketCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                ticket.legalType!,
+                typeValue,
                 style: customTextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,

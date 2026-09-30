@@ -1,7 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
-import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> showLegalTicketDetailSheet(
-    BuildContext context,
-    LegalTicket ticket,
-    ) {
+  BuildContext context,
+    TicketItem ticket,
+) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: context.primaryBackgroundColor,
@@ -24,7 +24,7 @@ Future<void> showLegalTicketDetailSheet(
 }
 
 class LegalTicketDetailSheet extends StatelessWidget {
-  final LegalTicket ticket;
+  final TicketItem  ticket;
 
   const LegalTicketDetailSheet({super.key, required this.ticket});
 
@@ -51,8 +51,8 @@ class LegalTicketDetailSheet extends StatelessWidget {
             _DetailRow(label: 'Type', value: t.queryType),
             if (t.commonQuery != null)
               _DetailRow(label: 'Query', value: t.commonQuery!),
-            if (t.legalType != null)
-              _DetailRow(label: 'Legal Type', value: t.legalType!),
+            if (t.typeValue  != null)
+              _DetailRow(label: 'Legal Type', value: t.typeValue !),
             _DetailRow(label: 'Priority', value: t.priority),
             _DetailRow(label: 'Raised', value: t.createdOn),
             if (t.description != null) ...[

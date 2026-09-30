@@ -9,7 +9,6 @@ import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/core/widgets/custom_time_picker.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
-import 'package:Doctors_App/features/support_hub/model/suppport_enums.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,8 +58,6 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
 
   List<String> get _commonQueryOptions => kLegalCommonQueries[_queryType]!;
 
-  /// Legal Type is only asked for "Register / Request a Query" and
-  /// "On-Call Support". Not for "Book Appointment".
   bool get _showLegalType => _queryType != LegalQueryType.bookAppointment;
 
   Future<void> _pickFile() async {
@@ -133,6 +130,12 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
     return desc;
   }
 
+  String _formatDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  String _formatTime(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
   Future<void> _submit() async {
     if (_commonQuery == null ||
         _priority == null ||
@@ -146,7 +149,9 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
       return;
     }
 
-    if (_queryType == LegalQueryType.bookAppointment &&
+    final isAppointment = _queryType == LegalQueryType.bookAppointment;
+
+    if (isAppointment &&
         (_appointmentMode == null ||
             _preferredDate == null ||
             _preferredTime == null)) {
@@ -154,23 +159,41 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
       return;
     }
 
-    final ok = await ref
-        .read(supportHubViewModelProvider.notifier)
-        .addTicket(
-          ticketType: 'legal',
-          queryType: _queryType.displayName,
-          commonQuery: _commonQuery!,
-          preferredContact: '',
-          priority: _priority!.displayName,
-          description: _buildDescription(),
-          legalType: _mapLegalType(),
-          file: _selectedFile?.path != null ? File(_selectedFile!.path!) : null,
-        );
+    final file = _selectedFile?.path != null
+        ? File(_selectedFile!.path!)
+        : null;
+    final vm = ref.read(supportHubViewModelProvider.notifier);
+
+    final ok = isAppointment
+        ? await vm.addAppointment(
+            appointmentType: 'legal',
+            appointmentQuery: _commonQuery!,
+            modeOfAppointment: _appointmentMode!.displayName,
+            priority: _priority!.displayName,
+            description: _detailsController.text.trim(),
+            preferredDate: _formatDate(_preferredDate!),
+            preferredTime: _formatTime(_preferredTime!),
+            file: file,
+          )
+        : await vm.addTicket(
+            ticketType: 'legal',
+            queryType: _queryType.displayName,
+            commonQuery: _commonQuery!,
+            preferredContact: '',
+            priority: _priority!.displayName,
+            description: _buildDescription(),
+            legalType: _mapLegalType(),
+            file: file,
+          );
 
     if (!mounted) return;
 
     if (ok) {
-      context.showSuccessSnackBar('Legal ticket raised successfully');
+      context.showSuccessSnackBar(
+        isAppointment
+            ? 'Appointment booked successfully'
+            : 'Legal ticket raised successfully',
+      );
       Navigator.pop(context, true);
     } else {
       final err = ref.read(supportHubViewModelProvider).error;

@@ -29,6 +29,11 @@ import 'package:Doctors_App/features/faq/ui/faq_screen.dart';
 import 'package:Doctors_App/features/renewal_centre/ui/renewal_centre_screen.dart';
 import 'package:Doctors_App/features/rewards/ui/rewards_screen.dart';
 import 'package:Doctors_App/features/scan/ui/scan_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/add_legal_ticket_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/add_service_ticket_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/legal_support_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/service_support_screen.dart';
+import 'package:Doctors_App/features/support_hub/ui/support_hub_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_drawer.dart';
@@ -169,10 +174,6 @@ final GoRouter router = GoRouter(
       path: Routes.rewards,
       pageBuilder: (context, state) => state.slidePage(const RewardsScreen()),
     ),
-    // GoRoute(
-    //   path: Routes.planListScreen,
-    //   pageBuilder: (context, state) => state.slidePage(const PlanListWidgets()),
-    // ),
     GoRoute(
       path: Routes.productList,
       pageBuilder: (context, state) => state.slidePage(const ProductView()),
@@ -240,6 +241,40 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: Routes.supportHub,
+      pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),
+    ),
+    GoRoute(
+      path: Routes.legalSupport,
+      pageBuilder: (context, state) => state.slidePage(LegalSupportScreen()),
+    ),
+    GoRoute(
+      path: Routes.serviceSupport,
+      pageBuilder: (context, state) => state.slidePage(ServiceSupportScreen()),
+    ),
+    GoRoute(
+      path: Routes.addLegalSupport,
+      pageBuilder: (context, state) => state.slidePage(AddLegalTicketScreen()),
+    ),
+    GoRoute(
+      path: Routes.addServiceSupport,
+      pageBuilder: (context, state) =>
+          state.slidePage(AddServiceTicketScreen()),
+    ),
+
+    GoRoute(
+      path: Routes.faqScreen,
+      pageBuilder: (context, state) => state.slidePage(FaqScreen()),
+    ),
+    GoRoute(
+      path: Routes.medicoLawFaq,
+      pageBuilder: (context, state) => state.slidePage(MedicoLegalFaqScreen()),
+    ),
+    GoRoute(
+      path: Routes.renewCentre,
+      pageBuilder: (context, state) => state.slidePage(RenewalCentreScreen()),
+    ),
+    GoRoute(
       path: Routes.privacyPolicy,
       pageBuilder: (context, state) => state.slidePage(PrivacyPolicyScreen()),
     ),
@@ -255,34 +290,7 @@ final GoRouter router = GoRouter(
       path: Routes.notification,
       pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
     ),
-    // GoRoute(
-    //   path: Routes.supportHub,
-    //   pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),
-    // ),
-    //
-    // GoRoute(
-    //   path: Routes.myQueries,
-    //   pageBuilder: (context, state) => state.slidePage(MyQueriesScreen()),
-    // ),
-    GoRoute(
-      path: Routes.faqScreen,
-      pageBuilder: (context, state) => state.slidePage(FaqScreen()),
-    ),
-    GoRoute(
-      path: Routes.medicoLawFaq,
-      pageBuilder: (context, state) => state.slidePage(MedicoLegalFaqScreen()),
-    ),
-    GoRoute(
-      path: Routes.renewCentre,
-      pageBuilder: (context, state) => state.slidePage(RenewalCentreScreen()),
-    ),
-    // GoRoute(
-    //   path: Routes.queryDetails,
-    //   pageBuilder: (context, state) {
-    //     final queryId = state.extra as String;
-    //     return state.slidePage(QueryDetailsScreen(queryId: queryId));
-    //   },
-    // ),
+
     GoRoute(
       path: Routes.forgotPassword,
       pageBuilder: (context, state) =>
@@ -351,11 +359,6 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-    // GoRoute(
-    //   path: Routes.editProfile,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const EditProfileScreen()),
-    // ),
     GoRoute(
       path: Routes.purchaseWizard,
       builder: (context, state) {
@@ -388,11 +391,6 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-    // GoRoute(
-    //   path: Routes.addAppointment,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const AppointmentFormView()),
-    // ),
     GoRoute(
       path: Routes.viewAppointment,
       pageBuilder: (context, state) =>

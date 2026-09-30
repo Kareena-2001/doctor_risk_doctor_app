@@ -19,7 +19,7 @@ extension LegalTypeX on LegalType {
       case LegalType.legalNotice:
         return 'NOTICE';
       case LegalType.legalConsultation:
-        return 'consultation';
+        return 'CONSULTATION';
       case LegalType.legalCase:
         return 'CASE';
     }
@@ -39,6 +39,40 @@ extension LegalQueryTypeX on LegalQueryType {
   }
 }
 
+enum PriorityLevel {
+  normal,
+  high,
+  urgent;
+
+  String get displayName {
+    switch (this) {
+      case PriorityLevel.normal:
+        return 'Normal';
+      case PriorityLevel.high:
+        return 'High';
+      case PriorityLevel.urgent:
+        return 'Urgent';
+    }
+  }
+}
+
+enum AppointmentMode {
+  videoCall,
+  phoneCall,
+  inPerson;
+
+  String get displayName {
+    switch (this) {
+      case AppointmentMode.videoCall:
+        return 'Video Call';
+      case AppointmentMode.phoneCall:
+        return 'Phone Call';
+      case AppointmentMode.inPerson:
+        return 'In Person';
+    }
+  }
+}
+
 enum ServiceRelatedTo {
   renewal,
   documents,
@@ -46,6 +80,7 @@ enum ServiceRelatedTo {
   endorsement,
   upgrade,
   membershipClarification,
+  bookAppointment,
 }
 
 extension ServiceRelatedToX on ServiceRelatedTo {
@@ -63,6 +98,8 @@ extension ServiceRelatedToX on ServiceRelatedTo {
         return 'Upgrade';
       case ServiceRelatedTo.membershipClarification:
         return 'Membership clarification';
+      case ServiceRelatedTo.bookAppointment:
+        return 'Book Appointment';
     }
   }
 }
@@ -171,5 +208,17 @@ const Map<ServiceRelatedTo, List<String>> kServiceCommonQueries = {
     'Coverage Query',
     'Terms Clarification',
     'General Question',
+  ],
+  ServiceRelatedTo.bookAppointment: [
+    'Case Discussion',
+    'Document Review',
+    'Court / Hearing Preparation',
+    'Notice Response Strategy Discussion',
+    'Settlement Discussion',
+    'Expert Witness Coordination',
+    'Evidence & Records Review Meeting',
+    'Pre‑Litigation Strategy Session',
+    'Consultation on a New Allegation',
+    'Other',
   ],
 };

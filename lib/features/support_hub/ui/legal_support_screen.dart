@@ -3,9 +3,8 @@ import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
-import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
 import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
-import 'package:Doctors_App/features/support_hub/ui/add_legal_ticket_screen.dart';
+import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_category_chips.dart';
@@ -15,10 +14,12 @@ import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.d
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_detail_sheet.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_list.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/raise_ticket_fab.dart';
+import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final _statusTabs = <(String, bool Function(TicketStatus))>[
   ('All', (_) => true),
@@ -45,15 +46,7 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }
 
-  Future<void> _openAddTicket() async {
-    final submitted = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (_) => const AddLegalTicketScreen()),
-    );
-    if (submitted == true) _refresh();
-  }
-
-  Future<void> _editTicket(LegalTicket ticket) async {
+  Future<void> _editTicket(TicketItem ticket) async {
     final ok = await showLegalEditTicketSheet(context, ticket);
     if (ok == null || !mounted) return;
     if (ok) {
@@ -63,15 +56,13 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
     }
   }
 
-  Future<void> _cancelTicket(LegalTicket ticket) async {
+  Future<void> _cancelTicket(TicketItem ticket) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.secondaryBackgroundColor,
         title: const Text('Cancel Ticket'),
-        content: const Text(
-          'Are you sure you want to cancel this legal support ticket?',
-        ),
+        content: const Text('Are you sure you want to cancel this ticket?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -104,7 +95,9 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(title: 'Legal Support'),
-      floatingActionButton: RaiseTicketFab(onTap: _openAddTicket),
+      floatingActionButton: RaiseTicketFab(
+        onTap: () => context.push(Routes.addLegalSupport),
+      ),
       body: _buildBody(state),
     );
   }
@@ -127,16 +120,18 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
 
   Widget _buildContent(SupportHubState state) {
     final category = state.legalCategory;
-    final tickets = state.legalTickets?.data.tickets ?? [];
+    final tickets =
+        state.legalTickets?.data.tickets.map((t) => t.toItem()).toList() ??
+            <TicketItem>[];
 
     final lists = [
       for (final tab in _statusTabs)
         tickets
             .where(
               (t) =>
-                  category.matches(t.legalType) &&
-                  tab.$2(parseTicketStatus(t.ticketStatus)),
-            )
+          category.matches(t.typeValue) &&
+              tab.$2(parseTicketStatus(t.ticketStatus)),
+        )
             .toList(),
     ];
 
