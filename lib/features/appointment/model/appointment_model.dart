@@ -20,11 +20,20 @@ class AppointmentResponse with _$AppointmentResponse {
 class AppointmentData with _$AppointmentData {
   const factory AppointmentData({
     required AppointmentCounts counts,
-    @JsonKey(name: 'data') required List<Appointment> appointments,
+
+    @JsonKey(name: 'data')
+    required List<Appointment> appointments,
+
     required int total,
-    @JsonKey(name: 'current_page') required int currentPage,
-    @JsonKey(name: 'last_page') required int lastPage,
-    @JsonKey(name: 'per_page') required int perPage,
+
+    @JsonKey(name: 'current_page')
+    required int currentPage,
+
+    @JsonKey(name: 'last_page')
+    required int lastPage,
+
+    @JsonKey(name: 'per_page')
+    required int perPage,
   }) = _AppointmentData;
 
   factory AppointmentData.fromJson(Map<String, dynamic> json) =>
@@ -74,6 +83,9 @@ class Appointment with _$Appointment {
     String? description,
 
     String? attachment,
+
+    @JsonKey(name: 'schedule_request')
+    String? scheduleRequest,
 
     @JsonKey(name: 'appointment_status')
     required String appointmentStatus,

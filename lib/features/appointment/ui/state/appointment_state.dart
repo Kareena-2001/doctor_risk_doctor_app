@@ -10,9 +10,17 @@ class AppointmentState with _$AppointmentState {
 
   const factory AppointmentState({
     @Default(false) bool isLoading,
-    @Default(false) bool isActionLoading,
-    String? errorMessage,
-    AppointmentResponse? appointmentResp,
-    AppointmentRemarksResponse? remarksResp,
+    @Default(false) bool isSuccess,
+    String? error,
+
+    AppointmentResponse? appointments,
+    @Default(false) bool isFetchingAppointments,
+    String? appointmentsError,
+
+    int? cancellingId,
+
+    AppointmentRemarksResponse? appointmentRemarks,
+    @Default(false) bool isFetchingRemarks,
+    String? remarksError,
   }) = _AppointmentState;
 }

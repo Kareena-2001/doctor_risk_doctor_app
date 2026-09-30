@@ -2,16 +2,16 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/appointment/model/appointment_item.dart';
 import 'package:Doctors_App/features/appointment/ui/state/appointment_state.dart';
 import 'package:Doctors_App/features/appointment/ui/view_model/appointment_view_model.dart';
+import 'package:Doctors_App/features/appointment/ui/widgets/appointment_detail_sheet.dart';
+import 'package:Doctors_App/features/appointment/ui/widgets/appointment_edit_sheet.dart';
+import 'package:Doctors_App/features/appointment/ui/widgets/appointment_list_widget.dart';
+import 'package:Doctors_App/features/appointment/ui/widgets/appointment_remarks_sheet.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
-import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
-import 'package:Doctors_App/features/support_hub/ui/widgets/legal_edit_ticket_sheet.dart';
-import 'package:Doctors_App/features/support_hub/ui/widgets/legal_remarks_sheet.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.dart';
-import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_detail_sheet.dart';
-import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_list.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
   AppointmentViewModel get _vm =>
       ref.read(appointmentViewModelProvider.notifier);
 
-  Future<void> _refresh() => _vm.fetchAppointments(appointmentNo: '');
+  Future<void> _refresh() => _vm.fetchAppointments();
 
   @override
   void initState() {
@@ -44,23 +44,63 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }
 
-  Future<void> editAppointment(TicketItem ticket) async {
-    final ok = await showLegalEditTicketSheet(context, ticket);
+  Future<void> _editAppointment(AppointmentItem appointment) async {
+    final ok = await showAppointmentEditSheet(context, appointment);
     if (ok == null || !mounted) return;
     if (ok) {
-      context.showSuccessSnackBar('Ticket updated successfully');
+      context.showSuccessSnackBar('Appointment updated successfully');
     } else {
-      context.showErrorSnackBar('Failed to update ticket');
+      context.showErrorSnackBar('Failed to update appointment');
     }
   }
 
-  Future<void> _cancelAppointment(TicketItem ticket) async {
+  Future<void> _rescheduleAppointment(AppointmentItem appointment) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: context.secondaryBackgroundColor,
-        title: const Text('Cancel Ticket'),
-        content: const Text('Are you sure you want to cancel this ticket?'),
+        title: const Text('Request Reschedule'),
+        content: const Text(
+          'Are you sure you want to request a reschedule for this appointment?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Yes, Reschedule',
+              style: TextStyle(color: AppColors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final ok = await _vm.rescheduleAppointment(appointment.id.toString());
+    if (!mounted) return;
+    if (ok) {
+      context.showSuccessSnackBar('Reschedule request sent successfully');
+    } else {
+      context.showErrorSnackBar(
+        ref.read(appointmentViewModelProvider).error ??
+            'Failed to request reschedule',
+      );
+    }
+  }
+
+  Future<void> _cancelAppointment(AppointmentItem appointment) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: context.secondaryBackgroundColor,
+        title: const Text('Cancel Appointment'),
+        content: const Text(
+          'Are you sure you want to cancel this appointment?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -78,43 +118,32 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
     );
     if (confirmed != true || !mounted) return;
 
-    final ok = await _vm.cancelAppointment(ticket.id);
+    final ok = await _vm.cancelAppointment(appointment.id);
     if (!mounted) return;
     if (ok) {
-      context.showSuccessSnackBar('Ticket cancelled successfully');
+      context.showSuccessSnackBar('Appointment cancelled successfully');
     } else {
-      context.showErrorSnackBar('Failed to cancel ticket');
+      context.showErrorSnackBar('Failed to cancel appointment');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final asyncState = ref.watch(appointmentViewModelProvider);
+    final state = ref.watch(appointmentViewModelProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Appointments'),
-
-      body: asyncState.when(
-        loading: () => Loading(),
-        error: (e, _) => CommonErrorState(
-          icon: Icons.error_outline,
-          title: 'Failed to load appointments',
-          message: e.toString(),
-          onRetry: _refresh,
-          buttonText: 'Retry',
-        ),
-        data: (state) => _buildBody(state),
-      ),
+      appBar: CustomAppBar(title: 'My Appointments'),
+      body: _buildBody(state),
     );
   }
 
   Widget _buildBody(AppointmentState state) {
-    if (state.appointmentResp == null) {
-      if (state.errorMessage != null) {
+    if (state.appointments == null) {
+      if (state.appointmentsError != null) {
         return CommonErrorState(
           icon: Icons.error_outline,
-          title: 'Failed to load appointment',
-          message: state.errorMessage!,
+          title: 'Failed to load appointments',
+          message: state.appointmentsError!,
           onRetry: _refresh,
           buttonText: 'Retry',
         );
@@ -125,44 +154,25 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
   }
 
   Widget _buildContent(AppointmentState state) {
-    final tickets =
-        state.appointmentResp?.data.appointments
-            .map(
-              (t) => TicketItem(
-                id: t.id,
-                ticketNo: t.appointmentNo,
-                queryType: t.appointmentType,
-                typeLabel: 'Mode',
-                typeValue: t.modeOfAppointment,
-                priority: t.priority,
-                description: t.description,
-                attachment: t.attachment,
-                ticketStatus: t.appointmentStatus,
-                createdOn: t.createdOn,
-                canRemark: true,
-                canEdit: true,
-                canCancel: true,
-                commonQuery: t.appointmentQuery,
-              ),
-            )
-            .toList() ??
-        <TicketItem>[];
+    final appointments =
+        state.appointments?.data.appointments.map((a) => a.toItem()).toList() ??
+        <AppointmentItem>[];
 
     final lists = [
       for (final tab in _statusTabs)
-        tickets
-            .where((t) => tab.$2(parseTicketStatus(t.ticketStatus)))
+        appointments
+            .where((a) => tab.$2(parseTicketStatus(a.appointmentStatus)))
             .toList(),
     ];
 
     return DefaultTabController(
       length: _statusTabs.length,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('My Legal Tickets', style: AppTheme.title14),
+            Text('My Appointments', style: AppTheme.title14),
             height(12),
             TabBar(
               isScrollable: true,
@@ -181,12 +191,14 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
               child: TabBarView(
                 children: [
                   for (final list in lists)
-                    LegalTicketList(
-                      tickets: list,
+                    AppointmentListWidget(
+                      appointments: list,
                       onRefresh: _refresh,
-                      onView: (t) => showLegalTicketDetailSheet(context, t),
-                      onRemarks: (t) => showLegalRemarksSheet(context, ref, t),
-                      onEdit: editAppointment,
+                      onView: (a) => showAppointmentDetailSheet(context, a),
+                      onRemarks: (a) =>
+                          showAppointmentRemarksSheet(context, ref, a),
+                      onEdit: _editAppointment,
+                      onReschedule: _rescheduleAppointment,
                       onCancel: _cancelAppointment,
                     ),
                 ],
