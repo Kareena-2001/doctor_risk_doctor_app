@@ -8,48 +8,62 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'support_state.freezed.dart';
 
+enum LegalCategory {
+  all('All Categories'),
+  consultation('Legal Consultation'),
+  notice('Legal Notice'),
+  legalCase('Legal Case');
+
+  const LegalCategory(this.label);
+
+  final String label;
+
+  bool matches(String? legalType) {
+    final t = (legalType ?? '').toLowerCase();
+    switch (this) {
+      case LegalCategory.all:
+        return true;
+      case LegalCategory.consultation:
+        return t.contains('consultation');
+      case LegalCategory.notice:
+        return t.contains('notice');
+      case LegalCategory.legalCase:
+        return t.contains('case');
+    }
+  }
+}
+
 @freezed
 class SupportHubState with _$SupportHubState {
   const factory SupportHubState({
-    // ── Mutations: create ticket / add remark / update / cancel ──────────
     @Default(false) bool isLoading,
     @Default(false) bool isSuccess,
     String? error,
 
-    /// Response of the last created ticket (read ticket number etc. from it).
     SupportTicketResponse? createdTicket,
 
-    /// Ticket number of the last created ticket — used by SuccessView.
     String? tktNumber,
 
-    /// Id of the ticket currently being cancelled (for per-item spinner).
     int? cancellingTicketId,
 
-    // ── Service tickets list ─────────────────────────────────────────────
     ServiceTicketResponse? serviceTickets,
     @Default(false) bool isFetchingServiceTickets,
     String? serviceTicketsError,
 
-    // ── Legal tickets list ───────────────────────────────────────────────
     LegalTicketResponse? legalTickets,
     @Default(false) bool isFetchingLegalTickets,
     String? legalTicketsError,
+    @Default(LegalCategory.all) LegalCategory legalCategory,
 
-    // ── Ticket remarks (conversation) ────────────────────────────────────
     TicketRemarksResponse? ticketRemarks,
     @Default(false) bool isFetchingRemarks,
     String? remarksError,
 
-    // ── Legacy "queries" list (MyQueriesScreen) ───────────────────────────
     @Default([]) List<QueryListItem> queries,
     @Default(false) bool isFetchingQueries,
 
-    // ── Legacy "query detail" (QueryDetailsScreen) ────────────────────────
     QueryDetailItem? queryDetail,
     @Default(false) bool isFetchingQueryDetail,
     String? queryDetailError,
   }) = _SupportHubState;
 }
-
-/// Alias kept for backward-compatibility with screens that import HelpState.
-typedef HelpState = SupportHubState;

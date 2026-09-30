@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:Doctors_App/core/constants/responsive.dart';
-import 'package:Doctors_App/core/widgets/app_dialog.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_multi_select_dropdown.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';

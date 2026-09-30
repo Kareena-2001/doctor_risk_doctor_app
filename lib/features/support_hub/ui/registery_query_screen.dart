@@ -40,7 +40,7 @@ class _RegisterQueryScreenState extends ConsumerState<RegisterQueryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<HelpState>(helpViewModelProvider, (prev, next) {
+    ref.listen<SupportHubState>(supportHubViewModelProvider, (prev, next) {
       if (prev?.isSuccess == false && next.isSuccess) {
         context.showSuccessSnackBar('Query submitted successfully');
         setState(() => isSubmitted = true);
@@ -50,7 +50,7 @@ class _RegisterQueryScreenState extends ConsumerState<RegisterQueryScreen> {
       }
     });
 
-    final helpState = ref.watch(helpViewModelProvider);
+    final helpState = ref.watch(supportHubViewModelProvider);
 
     return Scaffold(
       appBar: CustomAppBar(title: 'Register / Request a Query'),
@@ -122,7 +122,7 @@ class _RegisterQueryScreenState extends ConsumerState<RegisterQueryScreen> {
       return;
     }
     ref
-        .read(helpViewModelProvider.notifier)
+        .read(supportHubViewModelProvider.notifier)
         .registerQuery(
           queryType: _queryType!,
           requestType: _requestType!,

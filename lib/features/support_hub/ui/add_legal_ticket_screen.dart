@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_attachment_field.dart';
 import 'package:Doctors_App/core/widgets/custom_date_picker.dart';
@@ -138,10 +140,12 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
       context.showErrorSnackBar('Please fill in all required fields');
       return;
     }
+
     if (_detailsController.text.trim().isEmpty) {
       context.showErrorSnackBar('Please describe your query');
       return;
     }
+
     if (_queryType == LegalQueryType.bookAppointment &&
         (_appointmentMode == null ||
             _preferredDate == null ||
@@ -160,6 +164,7 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
           priority: _priority!.displayName,
           description: _buildDescription(),
           legalType: _mapLegalType(),
+          file: _selectedFile?.path != null ? File(_selectedFile!.path!) : null,
         );
 
     if (!mounted) return;
@@ -199,7 +204,6 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
                   _commonQuery = null;
 
                   if (v == LegalQueryType.bookAppointment) {
-                    // Legal Type is not applicable for appointments.
                     _legalType = null;
                   } else {
                     _appointmentMode = null;
@@ -290,7 +294,7 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
               hint: 'Choose file',
               controller: _attachmentController,
               onTap: _pickFile,
-              isRequired:  false,
+              isRequired: false,
             ),
             height(24),
             Center(
@@ -300,8 +304,9 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
                 ),
                 borderRadius: 25,
                 text: 'Submit Ticket',
-                height: 40,
-                width: 180, fontSize: 14,
+                height: 50,
+                width: 180,
+                fontSize: 14,
                 isLoading: isSubmitting,
                 onPressed: isSubmitting ? null : _submit,
               ),

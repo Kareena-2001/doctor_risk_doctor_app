@@ -8,10 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'support_hub_view_model.g.dart';
 
-/// Legacy alias — screens that import helpViewModelProvider continue to work.
-final helpViewModelProvider = supportHubViewModelProvider;
-
-/// Last-used list arguments, so lists can be refreshed after a mutation.
 class _ListArgs {
   final String? id;
   final String? ticketNo;
@@ -58,6 +54,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     required String priority,
     required String description,
     required String legalType,
+    File? file,
   }) async {
     if (description.trim().isEmpty) {
       state = state.copyWith(
@@ -84,6 +81,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         priority: priority,
         description: description.trim(),
         legalType: legalType,
+        file: file,
       );
 
       state = state.copyWith(
@@ -104,17 +102,12 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Add remark
-  // ───────────────────────────────────────────────────────────────────────
-
   Future<bool> addRemark({
     required String ticketId,
     required String remark,
-    String attachment = '',
+    File? file,
   }) async {
-    if (remark.trim().isEmpty && attachment.isEmpty) {
+    if (remark.trim().isEmpty && file == null) {
       state = state.copyWith(
         isSuccess: false,
         error: 'Please enter a remark or attach a file',
@@ -128,12 +121,11 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       await _repo.addSupportRemark(
         ticketId: ticketId,
         remark: remark.trim(),
-        attachment: attachment,
+        file: file,
       );
 
       state = state.copyWith(isLoading: false, isSuccess: true);
 
-      // Reload the conversation for this ticket.
       final args = _remarksArgs;
       if (args != null && args.id == ticketId) {
         await fetchRemarks(
@@ -159,10 +151,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Update ticket
-  // ───────────────────────────────────────────────────────────────────────
 
   Future<bool> updateTicket({
     required String id,
@@ -199,10 +187,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     }
   }
 
-  // ───────────────────────────────────────────────────────────────────────
-  // Cancel ticket
-  // ───────────────────────────────────────────────────────────────────────
-
   Future<bool> cancelTicket(int supportId) async {
     state = state.copyWith(
       cancellingTicketId: supportId,
@@ -225,10 +209,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Lists
-  // ───────────────────────────────────────────────────────────────────────
 
   Future<void> fetchServiceTickets({
     String? ticketNo,
@@ -336,6 +316,10 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     }
   }
 
+  void setLegalCategory(LegalCategory category) {
+    state = state.copyWith(legalCategory: category);
+  }
+
   Future<void> refreshLegalTickets() {
     final a = _legalArgs;
     if (a == null || a.id == null) return Future.value();
@@ -375,7 +359,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     state = state.copyWith(
       isFetchingRemarks: true,
       remarksError: null,
-      // Different ticket -> don't flash the previous ticket's remarks.
       ticketRemarks: null,
     );
 
@@ -410,12 +393,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     state = state.copyWith(isSuccess: false, error: null, createdTicket: null);
   }
 
-  // ───────────────────────────────────────────────────────────────────────
-  // Legacy helpers — kept so older screens compile until they are fully
-  // migrated to the new API-based flows.
-  // ───────────────────────────────────────────────────────────────────────
-
-  /// Used by RegisterQueryScreen: maps old enum-style params to addTicket.
   Future<void> registerQuery({
     required dynamic queryType,
     required dynamic requestType,
@@ -434,8 +411,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     );
   }
 
-  /// Used by MyQueriesScreen: fetches service tickets and maps them to
-  /// QueryListItem objects so the screen's queries list is populated.
   Future<void> fetchQueries() async {
     state = state.copyWith(isFetchingQueries: true, error: null);
     try {
@@ -472,7 +447,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       final ticket = resp.data.ticket;
       final remarks = resp.data.remarks;
 
-      // The first admin remark (if any) becomes the "replied" value.
       final adminRemark = remarks.isNotEmpty ? remarks.first : null;
 
       final detail = QueryDetailItem(

@@ -32,7 +32,7 @@ class _MyQueriesScreenState extends ConsumerState<MyQueriesScreen>
     _tabController = TabController(length: 4, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(helpViewModelProvider.notifier).fetchQueries();
+      ref.read(supportHubViewModelProvider.notifier).fetchQueries();
     });
   }
 
@@ -54,7 +54,7 @@ class _MyQueriesScreenState extends ConsumerState<MyQueriesScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final helpState = ref.watch(helpViewModelProvider);
+    final helpState = ref.watch(supportHubViewModelProvider);
 
     final allQueries = helpState.queries;
     final pendingQueries = _filterByStatus(allQueries, 'pending');
@@ -104,7 +104,7 @@ class _MyQueriesScreenState extends ConsumerState<MyQueriesScreen>
                       title: 'Failed to load Queries',
                       message: helpState.error ?? '',
                       onRetry: () {
-                        ref.read(helpViewModelProvider.notifier).fetchQueries();
+                        ref.read(supportHubViewModelProvider.notifier).fetchQueries();
                       },
                       buttonText: 'Retry',
                     )
@@ -155,7 +155,7 @@ class _MyQueriesScreenState extends ConsumerState<MyQueriesScreen>
 
     return AppRefreshIndicator(
       onRefresh: () async {
-        await ref.read(helpViewModelProvider.notifier).fetchQueries();
+        await ref.read(supportHubViewModelProvider.notifier).fetchQueries();
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
