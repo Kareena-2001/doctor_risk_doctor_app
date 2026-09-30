@@ -44,7 +44,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
         page: page,
         limit: limit,
       );
-      _emit(_current.copyWith(isLoading: false, resp: resp));
+      _emit(_current.copyWith(isLoading: false, appointmentResp: resp));
     } catch (e) {
       _emit(_current.copyWith(isLoading: false, errorMessage: e.toString()));
     }

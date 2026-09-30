@@ -20,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/support_ticket_enums.dart';
+
 final _statusTabs = <(String, bool Function(TicketStatus))>[
   ('All', (_) => true),
   ('Open', (s) => s.isOpenish),

@@ -70,9 +70,9 @@ class AppointmentRepository {
         formData['end_date'] = endDate;
       }
 
-      final response = await _apiClient.post(
+      final response = await _apiClient.get(
         url: 'doctor/appointmentlist',
-        formData: formData,
+        queryParams: formData,
         includeAuth: true,
       );
 

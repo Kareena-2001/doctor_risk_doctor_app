@@ -1,6 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
-import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
 import 'package:flutter/material.dart';
 
 TicketStatus parseTicketStatus(String raw) {

@@ -5,20 +5,17 @@ import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/appointment/ui/state/appointment_state.dart';
 import 'package:Doctors_App/features/appointment/ui/view_model/appointment_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
-import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
+import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
 import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_edit_ticket_sheet.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_remarks_sheet.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_detail_sheet.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_ticket_list.dart';
-import 'package:Doctors_App/features/support_hub/ui/widgets/raise_ticket_fab.dart';
-import 'package:Doctors_App/routing/routes.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 final _statusTabs = <(String, bool Function(TicketStatus))>[
   ('All', (_) => true),
@@ -92,14 +89,22 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(appointmentViewModelProvider);
+    final asyncState = ref.watch(appointmentViewModelProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Legal Support'),
-      floatingActionButton: RaiseTicketFab(
-        onTap: () => context.push(Routes.addLegalSupport),
+      appBar: CustomAppBar(title: 'Appointments'),
+
+      body: asyncState.when(
+        loading: () => Loading(),
+        error: (e, _) => CommonErrorState(
+          icon: Icons.error_outline,
+          title: 'Failed to load appointments',
+          message: e.toString(),
+          onRetry: _refresh,
+          buttonText: 'Retry',
+        ),
+        data: (state) => _buildBody(state),
       ),
-      body: _buildBody(state),
     );
   }
 
@@ -122,7 +127,24 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
   Widget _buildContent(AppointmentState state) {
     final tickets =
         state.appointmentResp?.data.appointments
-            .map((t) => t.toItem())
+            .map(
+              (t) => TicketItem(
+                id: t.id,
+                ticketNo: t.appointmentNo,
+                queryType: t.appointmentType,
+                typeLabel: 'Mode',
+                typeValue: t.modeOfAppointment,
+                priority: t.priority,
+                description: t.description,
+                attachment: t.attachment,
+                ticketStatus: t.appointmentStatus,
+                createdOn: t.createdOn,
+                canRemark: true,
+                canEdit: true,
+                canCancel: true,
+                commonQuery: t.appointmentQuery,
+              ),
+            )
             .toList() ??
         <TicketItem>[];
 

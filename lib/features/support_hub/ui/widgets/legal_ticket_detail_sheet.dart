@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 Future<void> showLegalTicketDetailSheet(
   BuildContext context,
-    TicketItem ticket,
+  TicketItem ticket,
 ) {
   return showModalBottomSheet<void>(
     context: context,
@@ -24,7 +24,7 @@ Future<void> showLegalTicketDetailSheet(
 }
 
 class LegalTicketDetailSheet extends StatelessWidget {
-  final TicketItem  ticket;
+  final TicketItem ticket;
 
   const LegalTicketDetailSheet({super.key, required this.ticket});
 
@@ -51,8 +51,8 @@ class LegalTicketDetailSheet extends StatelessWidget {
             _DetailRow(label: 'Type', value: t.queryType),
             if (t.commonQuery != null)
               _DetailRow(label: 'Query', value: t.commonQuery!),
-            if (t.typeValue  != null)
-              _DetailRow(label: 'Legal Type', value: t.typeValue !),
+            if (t.typeValue != null)
+              _DetailRow(label: 'Legal Type', value: t.typeValue!),
             _DetailRow(label: 'Priority', value: t.priority),
             _DetailRow(label: 'Raised', value: t.createdOn),
             if (t.description != null) ...[
