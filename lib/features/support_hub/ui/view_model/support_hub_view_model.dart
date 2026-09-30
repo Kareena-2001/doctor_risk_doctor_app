@@ -461,8 +461,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     }
   }
 
-  /// Used by QueryDetailsScreen: fetches remarks and maps them to a
-  /// QueryDetailItem so the details screen has real API data.
   Future<void> fetchQueryDetail(String id) async {
     state = state.copyWith(
       isFetchingQueryDetail: true,

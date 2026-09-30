@@ -124,7 +124,7 @@ class _QueryDetailsScreenState extends ConsumerState<QueryDetailsScreen> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.pending_rounded, color: Colors.orange, size: 24),
+            Icon(Icons.pending_rounded, color: Colors.orange, size: 24),
             width(12),
             Expanded(
               child: Column(
@@ -190,7 +190,7 @@ class _QueryDetailsScreenState extends ConsumerState<QueryDetailsScreen> {
 
   Widget _buildHeader(QueryDetailItem query, Color statusColor, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
