@@ -8,7 +8,7 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_seachbar.dart';
+import '../../../../core/widgets/pagination_footer.dart';
 import '../../../theme/app_colors.dart';
 
 class FaqScreen extends ConsumerStatefulWidget {
@@ -19,12 +19,29 @@ class FaqScreen extends ConsumerStatefulWidget {
 }
 
 class _FaqScreenState extends ConsumerState<FaqScreen> {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       ref.read(faqViewModelProvider.notifier).faqList();
     });
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(faqViewModelProvider.notifier).loadMoreFaqs();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -72,6 +89,12 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
                   ),
 
                   _buildCommonQuestions(state.faqs),
+                  PaginationFooter(
+                    hasMore: ref.read(faqViewModelProvider.notifier).hasMore,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  ),
 
                   SocialLinkWidget(),
                   height(50),

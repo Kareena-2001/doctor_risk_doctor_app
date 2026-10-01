@@ -16,6 +16,9 @@ class CommunityViewModel extends _$CommunityViewModel {
   String? _currentSearch;
   int? _currentTime;
   Timer? _searchDebounce;
+  bool _loadingMoreTestimonials = false;
+  bool _loadingMorePeerForum = false;
+  bool _loadingMoreReferrals = false;
 
   @override
   CommunityState build() {
@@ -24,6 +27,7 @@ class CommunityViewModel extends _$CommunityViewModel {
   }
 
   Future<void> allTestimonialList() async {
+    _loadingMoreTestimonials = false;
     state = state.copyWith(testimonialList: const AsyncLoading());
 
     final result = await AsyncValue.guard(
@@ -35,15 +39,44 @@ class CommunityViewModel extends _$CommunityViewModel {
 
   Future<void> refreshTestimonialList() => allTestimonialList();
 
+  Future<void> loadMoreTestimonials() async {
+    final current = state.testimonialList.valueOrNull;
+    if (current == null ||
+        _loadingMoreTestimonials ||
+        current.currentPage >= current.lastPage) {
+      return;
+    }
+
+    _loadingMoreTestimonials = true;
+    try {
+      final next = await ref
+          .read(communityRepositoryProvider)
+          .getAllTestimonialList(page: current.currentPage + 1);
+      state = state.copyWith(
+        testimonialList: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMoreTestimonials = false;
+    }
+  }
+
   Future<void> allPeerForumList({
     String? tab,
     String? search,
     int? time,
     bool timeExplicit = false,
+    bool filtersExplicit = false,
+    bool tabExplicit = false,
+    bool searchExplicit = false,
   }) async {
-    _currentTab = tab ?? _currentTab;
-    _currentSearch = search ?? _currentSearch;
+    _currentTab = (filtersExplicit || tabExplicit) ? tab : (tab ?? _currentTab);
+    _currentSearch = (filtersExplicit || searchExplicit)
+        ? search
+        : (search ?? _currentSearch);
     _currentTime = timeExplicit ? time : (time ?? _currentTime);
+    _loadingMorePeerForum = false;
 
     state = state.copyWith(peerForumList: const AsyncLoading());
 
@@ -62,6 +95,34 @@ class CommunityViewModel extends _$CommunityViewModel {
 
   Future<void> refreshPeerForumList() => allPeerForumList();
 
+  Future<void> loadMorePeerForum() async {
+    final current = state.peerForumList.valueOrNull;
+    if (current == null ||
+        _loadingMorePeerForum ||
+        current.currentPage >= current.lastPage) {
+      return;
+    }
+
+    _loadingMorePeerForum = true;
+    try {
+      final next = await ref
+          .read(communityRepositoryProvider)
+          .getAllPeerForumList(
+            tab: _currentTab,
+            search: _currentSearch,
+            time: _currentTime,
+            page: current.currentPage + 1,
+          );
+      state = state.copyWith(
+        peerForumList: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMorePeerForum = false;
+    }
+  }
+
   void setPeerForumTime(int? time) {
     if (_currentTime == time) return;
     state = state.copyWith(selectedPeerForumTime: time);
@@ -72,14 +133,17 @@ class CommunityViewModel extends _$CommunityViewModel {
     state = state.copyWith(peerForumSearchQuery: query);
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 450), () {
-      allPeerForumList(search: query.trim().isEmpty ? null : query.trim());
+      allPeerForumList(
+        search: query.trim().isEmpty ? null : query.trim(),
+        searchExplicit: true,
+      );
     });
   }
 
   void clearPeerForumSearch() {
     _searchDebounce?.cancel();
     state = state.copyWith(peerForumSearchQuery: '');
-    allPeerForumList(search: null);
+    allPeerForumList(search: null, searchExplicit: true);
   }
 
   Future<void> getDoctorNo() async {
@@ -125,6 +189,7 @@ class CommunityViewModel extends _$CommunityViewModel {
   }
 
   Future<void> referDoctorList() async {
+    _loadingMoreReferrals = false;
     state = state.copyWith(referralList: const AsyncLoading());
 
     final result = await AsyncValue.guard(
@@ -135,6 +200,29 @@ class CommunityViewModel extends _$CommunityViewModel {
   }
 
   Future<void> refreshReferDoctorList() => referDoctorList();
+
+  Future<void> loadMoreReferrals() async {
+    final current = state.referralList.valueOrNull;
+    if (current == null ||
+        _loadingMoreReferrals ||
+        current.currentPage >= current.lastPage) {
+      return;
+    }
+
+    _loadingMoreReferrals = true;
+    try {
+      final next = await ref
+          .read(communityRepositoryProvider)
+          .referDoctorList(page: current.currentPage + 1);
+      state = state.copyWith(
+        referralList: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMoreReferrals = false;
+    }
+  }
 
   List<IdNameOption> _mapIdName(List<dynamic> items) => items
       .map((e) => IdNameOption(id: e.id as int, name: e.name as String))

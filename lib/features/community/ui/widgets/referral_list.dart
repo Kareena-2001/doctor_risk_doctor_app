@@ -1,5 +1,6 @@
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/community/model/referred_doctors_response.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -9,39 +10,66 @@ import '../../../../core/constants/values/app_text_style.dart';
 
 class ReferralList extends StatelessWidget {
   final List<ReferredDoctor> referrals;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final String? paginationError;
+  final VoidCallback onLoadMore;
 
-  const ReferralList({super.key, required this.referrals});
+  const ReferralList({
+    super.key,
+    required this.referrals,
+    required this.hasMore,
+    required this.isLoadingMore,
+    required this.onLoadMore,
+    this.paginationError,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (referrals.isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(Responsive.w(20)),
-        decoration: BoxDecoration(
-          color: context.secondaryBackgroundColor,
-          borderRadius: BorderRadius.circular(Responsive.w(16)),
-        ),
-        child: Text(
-          'No referrals yet. Share your link to get started.',
-          textAlign: TextAlign.center,
-          style: customTextStyle(
-            fontSize: Responsive.sp(12),
-            color: Colors.grey.shade600,
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(Responsive.w(20)),
+            decoration: BoxDecoration(
+              color: context.secondaryBackgroundColor,
+              borderRadius: BorderRadius.circular(Responsive.w(16)),
+            ),
+            child: Text(
+              'No referrals yet. Share your link to get started.',
+              textAlign: TextAlign.center,
+              style: customTextStyle(
+                fontSize: Responsive.sp(12),
+                color: Colors.grey.shade600,
+              ),
+            ),
           ),
-        ),
+          PaginationFooter(
+            hasMore: hasMore,
+            isLoading: isLoadingMore,
+            errorMessage: paginationError,
+            onLoadMore: onLoadMore,
+          ),
+        ],
       );
     }
 
     return Column(
-      children: referrals
-          .map(
-            (referral) => Padding(
-          padding: EdgeInsets.only(bottom: Responsive.h(10)),
-          child: _ReferralTile(referral: referral),
+      children: [
+        ...referrals.map(
+          (referral) => Padding(
+            padding: EdgeInsets.only(bottom: Responsive.h(10)),
+            child: _ReferralTile(referral: referral),
+          ),
         ),
-      )
-          .toList(),
+        PaginationFooter(
+          hasMore: hasMore,
+          isLoading: isLoadingMore,
+          errorMessage: paginationError,
+          onLoadMore: onLoadMore,
+        ),
+      ],
     );
   }
 }

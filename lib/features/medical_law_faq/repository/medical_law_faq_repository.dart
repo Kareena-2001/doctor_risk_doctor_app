@@ -29,9 +29,13 @@ class MedicalLawFaqRepository {
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
 
-  Future<MedicalLawFaqResponse> medicalFaqList() async {
+  Future<MedicalLawFaqResponse> medicalFaqList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/medicallawdoctor',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

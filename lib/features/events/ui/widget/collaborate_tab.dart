@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/exceptions/app_exception.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/events/model/collaboration_response.dart';
@@ -23,6 +24,9 @@ class CollaborateTab extends ConsumerStatefulWidget {
 
 class _CollaborateTabState extends ConsumerState<CollaborateTab>
     with AutomaticKeepAliveClientMixin {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -32,6 +36,22 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab>
     Future.microtask(
       () => ref.read(eventsViewModelProvider.notifier).collaborationList(),
     );
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref
+          .read(eventsViewModelProvider.notifier)
+          .loadMoreCollaborations();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -53,22 +73,37 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab>
         ),
         data: (response) {
           final proposals = response.data;
+          final hasMore =
+              response.currentPage != null &&
+              response.lastPage != null &&
+              response.currentPage! < response.lastPage!;
 
           return ListView.separated(
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.w(16),
               vertical: Responsive.h(16),
             ),
-            itemCount: proposals.isEmpty ? 2 : proposals.length + 1,
+            itemCount:
+                (proposals.isEmpty ? 2 : proposals.length + 1) +
+                (hasMore ? 1 : 0),
             separatorBuilder: (_, __) => height(Responsive.h(14)),
             itemBuilder: (context, index) {
               if (index == 0) {
                 return _buildInfoCard();
               }
 
-              if (proposals.isEmpty) {
+              if (proposals.isEmpty && index == 1) {
                 return CommonEmptyState(
                   title: 'No collaboration proposals yet.',
+                );
+              }
+
+              if (index > proposals.length) {
+                return PaginationFooter(
+                  hasMore: hasMore,
+                  isLoading: _loadingMore,
+                  errorMessage: _paginationError,
+                  onLoadMore: _loadMore,
                 );
               }
 

@@ -69,9 +69,13 @@ class EventsRepository {
     return AddCollaborationResponse.fromJson(response);
   }
 
-  Future<CollaborationResponse> collaborationList() async {
+  Future<CollaborationResponse> collaborationList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.post(
       url: 'doctor/collaborationList',
+      formData: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 
@@ -82,10 +86,18 @@ class EventsRepository {
     required String search,
     String tab = '',
     String title = '',
+    int page = 1,
+    int limit = 10,
   }) async {
     final response = await _apiClient.post(
       url: 'doctor/Eventlist',
-      formData: {'search': search, 'tab': tab, 'title': title},
+      formData: {
+        'search': search,
+        'tab': tab,
+        'title': title,
+        'page': page.toString(),
+        'limit': limit.toString(),
+      },
       includeAuth: true,
     );
 

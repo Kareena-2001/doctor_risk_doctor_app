@@ -10,6 +10,14 @@ String _cleanError(Object error) =>
 
 @riverpod
 class EventsViewModel extends _$EventsViewModel {
+  String _upcomingType = '';
+  String _upcomingQuery = '';
+  String _pastType = '';
+  String _pastQuery = '';
+  bool _loadingMoreUpcoming = false;
+  bool _loadingMorePast = false;
+  bool _loadingMoreCollaborations = false;
+
   @override
   EventsState build() {
     return const EventsState();
@@ -78,6 +86,7 @@ class EventsViewModel extends _$EventsViewModel {
   }
 
   Future<void> collaborationList() async {
+    _loadingMoreCollaborations = false;
     state = state.copyWith(collaborationList: const AsyncLoading());
 
     final result = await AsyncValue.guard(
@@ -88,6 +97,32 @@ class EventsViewModel extends _$EventsViewModel {
   }
 
   Future<void> refreshCollaborationList() => collaborationList();
+
+  Future<void> loadMoreCollaborations() async {
+    final current = state.collaborationList.valueOrNull;
+    final lastPage = current?.lastPage;
+    if (current == null ||
+        _loadingMoreCollaborations ||
+        lastPage == null ||
+        current.currentPage == null ||
+        current.currentPage! >= lastPage) {
+      return;
+    }
+
+    _loadingMoreCollaborations = true;
+    try {
+      final next = await ref
+          .read(eventsRepositoryProvider)
+          .collaborationList(page: current.currentPage! + 1);
+      state = state.copyWith(
+        collaborationList: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMoreCollaborations = false;
+    }
+  }
 
   Future<void> fetchDoctorDetails() async {
     state = state.copyWith(doctorDetails: const AsyncLoading());
@@ -103,6 +138,9 @@ class EventsViewModel extends _$EventsViewModel {
     String type = '',
     String query = '',
   }) async {
+    _upcomingType = type;
+    _upcomingQuery = query;
+    _loadingMoreUpcoming = false;
     state = state.copyWith(upcomingEvents: const AsyncLoading());
 
     final result = await AsyncValue.guard(
@@ -115,6 +153,9 @@ class EventsViewModel extends _$EventsViewModel {
   }
 
   Future<void> fetchPastEvents({String type = '', String query = ''}) async {
+    _pastType = type;
+    _pastQuery = query;
+    _loadingMorePast = false;
     state = state.copyWith(pastEvents: const AsyncLoading());
 
     final result = await AsyncValue.guard(
@@ -131,6 +172,62 @@ class EventsViewModel extends _$EventsViewModel {
 
   Future<void> refreshPastEvents({String type = '', String query = ''}) =>
       fetchPastEvents(type: type, query: query);
+
+  Future<void> loadMoreUpcomingEvents() async {
+    final current = state.upcomingEvents.valueOrNull;
+    if (current == null ||
+        _loadingMoreUpcoming ||
+        current.currentPage >= current.lastPage) {
+      return;
+    }
+
+    _loadingMoreUpcoming = true;
+    try {
+      final next = await ref
+          .read(eventsRepositoryProvider)
+          .eventList(
+            search: 'upcoming',
+            tab: _upcomingType,
+            title: _upcomingQuery,
+            page: current.currentPage + 1,
+          );
+      state = state.copyWith(
+        upcomingEvents: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMoreUpcoming = false;
+    }
+  }
+
+  Future<void> loadMorePastEvents() async {
+    final current = state.pastEvents.valueOrNull;
+    if (current == null ||
+        _loadingMorePast ||
+        current.currentPage >= current.lastPage) {
+      return;
+    }
+
+    _loadingMorePast = true;
+    try {
+      final next = await ref
+          .read(eventsRepositoryProvider)
+          .eventList(
+            search: 'past',
+            tab: _pastType,
+            title: _pastQuery,
+            page: current.currentPage + 1,
+          );
+      state = state.copyWith(
+        pastEvents: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      _loadingMorePast = false;
+    }
+  }
 
   Future<bool> submitEventRegistration({
     required int eventId,

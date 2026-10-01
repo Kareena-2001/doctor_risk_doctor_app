@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/your_story/ui/viewmodel/your_story_view_model.dart';
 import 'package:Doctors_App/features/your_story/ui/widget/add_testimonial_form.dart';
@@ -19,6 +20,9 @@ class TestimonialListScreen extends ConsumerStatefulWidget {
 }
 
 class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +41,22 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
     await ref
         .read(yourStoryViewModelProvider.notifier)
         .refreshTestimonialList();
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref
+          .read(yourStoryViewModelProvider.notifier)
+          .loadMoreTestimonials();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -64,10 +84,23 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(Responsive.w(16)),
-              itemCount: testimonials.length,
+              itemCount: testimonials.length +
+                  (response != null &&
+                          response.currentPage < response.lastPage
+                      ? 1
+                      : 0),
               separatorBuilder: (_, __) => height(Responsive.h(14)),
-              itemBuilder: (_, index) =>
-                  TestimonialCard(testimonial: testimonials[index]),
+              itemBuilder: (_, index) {
+                if (index == testimonials.length) {
+                  return PaginationFooter(
+                    hasMore: true,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  );
+                }
+                return TestimonialCard(testimonial: testimonials[index]);
+              },
             ),
           );
         },

@@ -11,6 +11,7 @@ import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
 import '../../../../core/widgets/common_empty_state.dart';
+import '../../../../core/widgets/pagination_footer.dart';
 import '../../../../extensions/build_context_extension.dart';
 import '../../../../extensions/date_time_extension.dart';
 import '../../../../theme/app_colors.dart';
@@ -18,11 +19,15 @@ import '../../../../theme/app_colors.dart';
 class EventListTab extends ConsumerStatefulWidget {
   final List<EventModel> events;
   final String activeTab;
+  final bool hasMore;
+  final Future<void> Function() onLoadMore;
 
   const EventListTab({
     super.key,
     required this.events,
     required this.activeTab,
+    required this.hasMore,
+    required this.onLoadMore,
   });
 
   @override
@@ -31,6 +36,8 @@ class EventListTab extends ConsumerStatefulWidget {
 
 class _EventListTabState extends ConsumerState<EventListTab> {
   late List<EventModel> _events;
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -43,7 +50,31 @@ class _EventListTabState extends ConsumerState<EventListTab> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.events != widget.events) {
-      _events = List<EventModel>.from(widget.events);
+      final registeredEventIds = _events
+          .where((event) => !event.registerButton)
+          .map((event) => event.id)
+          .toSet();
+      _events = widget.events
+          .map(
+            (event) => registeredEventIds.contains(event.id)
+                ? event.copyWith(registerButton: false)
+                : event,
+          )
+          .toList();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await widget.onLoadMore();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
     }
   }
 
@@ -65,17 +96,27 @@ class _EventListTabState extends ConsumerState<EventListTab> {
         Responsive.w(16),
         Responsive.h(24),
       ),
-      itemCount: _events.length,
+      itemCount: _events.length + (widget.hasMore ? 1 : 0),
       separatorBuilder: (_, __) => height(Responsive.h(18)),
-      itemBuilder: (context, index) => _EventCard(
-        event: _events[index],
-        activeTab: widget.activeTab,
-        onRegistrationSuccess: () {
-          setState(() {
-            _events[index] = _events[index].copyWith(registerButton: false);
-          });
-        },
-      ),
+      itemBuilder: (context, index) {
+        if (index == _events.length) {
+          return PaginationFooter(
+            hasMore: widget.hasMore,
+            isLoading: _loadingMore,
+            errorMessage: _paginationError,
+            onLoadMore: _loadMore,
+          );
+        }
+        return _EventCard(
+          event: _events[index],
+          activeTab: widget.activeTab,
+          onRegistrationSuccess: () {
+            setState(() {
+              _events[index] = _events[index].copyWith(registerButton: false);
+            });
+          },
+        );
+      },
     );
   }
 }

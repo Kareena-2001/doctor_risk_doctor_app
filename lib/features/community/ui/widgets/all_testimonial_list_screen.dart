@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
@@ -20,12 +21,31 @@ class AllTestimonialListScreen extends ConsumerStatefulWidget {
 
 class _AllTestimonialListScreenState
     extends ConsumerState<AllTestimonialListScreen> {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(
       () => ref.read(communityViewModelProvider.notifier).allTestimonialList(),
     );
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref
+          .read(communityViewModelProvider.notifier)
+          .loadMoreTestimonials();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -40,7 +60,7 @@ class _AllTestimonialListScreenState
         loading: () => const Center(child: Loading()),
         error: (error, _) => _buildError(error),
         data: (response) {
-          final testimonials = response.data ?? [];
+          final testimonials = response.data;
 
           if (testimonials.isEmpty) {
             return _buildEmpty();
@@ -53,10 +73,20 @@ class _AllTestimonialListScreenState
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(Responsive.w(16)),
-              itemCount: testimonials.length,
+              itemCount: testimonials.length +
+                  (response.currentPage < response.lastPage ? 1 : 0),
               separatorBuilder: (_, __) => height(Responsive.h(14)),
-              itemBuilder: (_, index) =>
-                  TestimonialCard(testimonial: testimonials[index]),
+              itemBuilder: (_, index) {
+                if (index == testimonials.length) {
+                  return PaginationFooter(
+                    hasMore: true,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  );
+                }
+                return TestimonialCard(testimonial: testimonials[index]);
+              },
             ),
           );
         },
@@ -70,7 +100,9 @@ class _AllTestimonialListScreenState
         title: 'Failed to load your testimonial',
         message: error.toString(),
         onRetry: () {
-          ref.read(communityViewModelProvider.notifier).refreshPeerForumList();
+          ref
+              .read(communityViewModelProvider.notifier)
+              .refreshTestimonialList();
         },
       ),
     );

@@ -24,6 +24,9 @@ class ReferAndGroupsTab extends ConsumerStatefulWidget {
 }
 
 class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +42,20 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
       ref.read(communityViewModelProvider.notifier).getDoctorNo(),
       ref.read(communityViewModelProvider.notifier).refreshReferDoctorList(),
     ]);
+  }
+
+  Future<void> _loadMoreReferrals() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(communityViewModelProvider.notifier).loadMoreReferrals();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   void _showReferDoctorForm() {
@@ -318,7 +335,13 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
           ],
         ),
       ),
-      data: (response) => ReferralList(referrals: response.data),
+      data: (response) => ReferralList(
+        referrals: response.data,
+        hasMore: response.currentPage < response.lastPage,
+        isLoadingMore: _loadingMore,
+        paginationError: _paginationError,
+        onLoadMore: _loadMoreReferrals,
+      ),
     );
   }
 }

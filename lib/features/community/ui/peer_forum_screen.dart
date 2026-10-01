@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/community/model/peer_forum_response.dart';
@@ -33,6 +34,8 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
   ];
 
   String? _selectedTab;
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -46,7 +49,23 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
   void _onTabTap(String? tab) {
     if (_selectedTab == tab) return;
     setState(() => _selectedTab = tab);
-    ref.read(communityViewModelProvider.notifier).allPeerForumList(tab: tab);
+    ref
+        .read(communityViewModelProvider.notifier)
+        .allPeerForumList(tab: tab, tabExplicit: true);
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(communityViewModelProvider.notifier).loadMorePeerForum();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -100,9 +119,20 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                     Responsive.w(16),
                     Responsive.h(24),
                   ),
-                  itemCount: posts.length,
+                  itemCount: posts.length +
+                      (response.currentPage < response.lastPage ? 1 : 0),
                   separatorBuilder: (_, __) => height(Responsive.h(14)),
-                  itemBuilder: (_, index) => _buildPostCard(posts[index]),
+                  itemBuilder: (_, index) {
+                    if (index == posts.length) {
+                      return PaginationFooter(
+                        hasMore: true,
+                        isLoading: _loadingMore,
+                        errorMessage: _paginationError,
+                        onLoadMore: _loadMore,
+                      );
+                    }
+                    return _buildPostCard(posts[index]);
+                  },
                 );
               },
             ),

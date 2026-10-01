@@ -3,6 +3,7 @@ import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/your_story/model/experience_response.dart';
 import 'package:Doctors_App/features/your_story/ui/viewmodel/your_story_view_model.dart';
@@ -23,6 +24,8 @@ class ExperienceListScreen extends ConsumerStatefulWidget {
 
 class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
   int? _deletingExperienceId;
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -94,6 +97,22 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
     }
   }
 
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref
+          .read(yourStoryViewModelProvider.notifier)
+          .loadMoreExperiences();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final experiencesAsync = ref.watch(
@@ -160,9 +179,20 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
                 Responsive.w(16),
                 Responsive.h(24),
               ),
-              itemCount: experiences.length,
+              itemCount: experiences.length +
+                  ((response?.currentPage ?? 1) < (response?.lastPage ?? 1)
+                      ? 1
+                      : 0),
               separatorBuilder: (_, __) => height(Responsive.h(14)),
               itemBuilder: (context, index) {
+                if (index == experiences.length) {
+                  return PaginationFooter(
+                    hasMore: true,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  );
+                }
                 final experience = experiences[index];
                 return ExperienceCard(
                   experience: experience,

@@ -28,9 +28,10 @@ class FaqRepository {
   }) : _apiClient = apiClient,
        _credentialsStorage = credentialsStorage;
 
-  Future<FaqResponse> faqList() async {
+  Future<FaqResponse> faqList({int page = 1, int limit = 10}) async {
     final response = await _apiClient.get(
       url: 'doctor/faqdoctor',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

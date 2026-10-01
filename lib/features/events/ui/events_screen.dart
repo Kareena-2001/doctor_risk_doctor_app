@@ -171,6 +171,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                     child: EventListTab(
                       events: response.data,
                       activeTab: 'upcoming',
+                      hasMore: response.currentPage < response.lastPage,
+                      onLoadMore: viewModel.loadMoreUpcomingEvents,
                     ),
                   ),
                   loading: () => Center(child: Loading()),
@@ -191,6 +193,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                     child: EventListTab(
                       events: response.data,
                       activeTab: 'past',
+                      hasMore: response.currentPage < response.lastPage,
+                      onLoadMore: viewModel.loadMorePastEvents,
                     ),
                   ),
                   loading: () => const Center(child: Loading()),

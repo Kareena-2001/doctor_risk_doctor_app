@@ -64,9 +64,13 @@ class CommunityRepository {
     return PeerForumResponse.fromJson(response);
   }
 
-  Future<TestimonialResponse> getAllTestimonialList() async {
+  Future<TestimonialResponse> getAllTestimonialList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/testimoniallist',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 
@@ -121,9 +125,13 @@ class CommunityRepository {
     return ReferDoctorResponse.fromJson(response);
   }
 
-  Future<ReferredDoctorsResponse> referDoctorList() async {
+  Future<ReferredDoctorsResponse> referDoctorList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/referdoctorlist',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

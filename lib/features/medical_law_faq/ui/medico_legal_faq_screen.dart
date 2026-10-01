@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/features/medical_law_faq/ui/view_model/medical_law_faq_view_model.dart';
@@ -19,6 +20,9 @@ class MedicoLegalFaqScreen extends ConsumerStatefulWidget {
 }
 
 class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
+  bool _loadingMore = false;
+  String? _paginationError;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +30,22 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
     Future.microtask(() {
       ref.read(medicalLawFaqViewModelProvider.notifier).medicalLawFaqList();
     });
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref
+          .read(medicalLawFaqViewModelProvider.notifier)
+          .loadMoreMedicalFaqs();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -85,6 +105,17 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
                             return _buildFaqTile(state.faqs[index], index);
                           },
                         ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: PaginationFooter(
+                    hasMore: ref
+                        .read(medicalLawFaqViewModelProvider.notifier)
+                        .hasMore,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  ),
                 ),
 
                 SocialLinkWidget(),
