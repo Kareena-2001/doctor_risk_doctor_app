@@ -2,6 +2,7 @@ import 'package:Doctors_App/features/events/model/collaboration_response.dart';
 import 'package:Doctors_App/features/events/model/doctor_no_response.dart';
 import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/features/events/model/event_registration_response.dart';
+import 'package:Doctors_App/features/events/model/payment_summary_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -21,5 +22,7 @@ class EventsState with _$EventsState {
 
     @Default(AsyncValue.data(null))
     AsyncValue<EventRegistrationResponse?> registerEvent,
+
+    @Default(AsyncLoading()) AsyncValue<PaymentSummaryResponse> paymentList,
   }) = _EventsState;
 }

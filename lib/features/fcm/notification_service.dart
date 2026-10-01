@@ -4,14 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
-// import '../../core/navigation/main_tab_state.dart';
-import '../../routing/router.dart';
-
-// import '../notification/ui/viewmodel/notification_count_provider.dart';
 import '../notification/ui/viewmodel/notification_view_model.dart';
-// import 'notification_navigator.dart';
 
 final unreadNotificationCountProvider = StateProvider<int>((ref) => 0);
 
@@ -340,11 +333,6 @@ class NotificationService {
     _navigateByType(type, typeId);
   }
 
-  /// Routes based on notification `type` + `type_id` via the shared
-  /// NotificationNavigator (same logic used by the in-app notification list).
-  /// Uses `rootNavigatorKey.currentContext` — NOT a manually saved context —
-  /// so this works reliably even when triggered from a background/terminated
-  /// FCM callback with no live widget-tree context available.
   void _navigateByType(String type, String typeId) {
     // final context = _navContext;
     // if (context == null || !context.mounted) {

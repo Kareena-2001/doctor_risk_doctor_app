@@ -69,9 +69,9 @@ class _EventCollaborateScreenState
   }
 
   List<String> _uniqueLabels(
-      List<IdNameOption> options,
-      Map<String, IdNameOption> targetMap,
-      ) {
+    List<IdNameOption> options,
+    Map<String, IdNameOption> targetMap,
+  ) {
     targetMap.clear();
     final counts = <String, int>{};
     final labels = <String>[];
@@ -105,29 +105,29 @@ class _EventCollaborateScreenState
     final success = await ref
         .read(eventsViewModelProvider.notifier)
         .addCollaboration(
-      collaborationTarget: _targetController.text.trim(),
-      fullName: _nameController.text.trim(),
-      emailId: _emailController.text.trim().isEmpty
-          ? null
-          : _emailController.text.trim(),
-      mobileNo: _mobileController.text.trim(),
-      organisation: _organisationController.text.trim(),
-      modeOfEvent: _modeOfEventController.text.trim().isEmpty
-          ? null
-          : _modeOfEventController.text.trim(),
-      preferredDate: _dateToApiFormat(_preferredDateController.text),
-      preferredTime: _preferredTimeController.text.trim().isEmpty
-          ? null
-          : _preferredTimeController.text.trim(),
-      stateId: _isOffline ? _selectedState?.id.toString() : null,
-      cityId: _isOffline ? _selectedCity?.id.toString() : null,
-      area: _areaController.text.trim().isEmpty
-          ? null
-          : _areaController.text.trim(),
-      purpose: _purposeController.text.trim().isEmpty
-          ? null
-          : _purposeController.text.trim(),
-    );
+          collaborationTarget: _targetController.text.trim(),
+          fullName: _nameController.text.trim(),
+          emailId: _emailController.text.trim().isEmpty
+              ? null
+              : _emailController.text.trim(),
+          mobileNo: _mobileController.text.trim(),
+          organisation: _organisationController.text.trim(),
+          modeOfEvent: _modeOfEventController.text.trim().isEmpty
+              ? null
+              : _modeOfEventController.text.trim(),
+          preferredDate: _dateToApiFormat(_preferredDateController.text),
+          preferredTime: _preferredTimeController.text.trim().isEmpty
+              ? null
+              : _preferredTimeController.text.trim(),
+          stateId: _isOffline ? _selectedState?.id.toString() : null,
+          cityId: _isOffline ? _selectedCity?.id.toString() : null,
+          area: _areaController.text.trim().isEmpty
+              ? null
+              : _areaController.text.trim(),
+          purpose: _purposeController.text.trim().isEmpty
+              ? null
+              : _purposeController.text.trim(),
+        );
     if (!mounted) return;
 
     if (success) {
@@ -239,7 +239,6 @@ class _EventCollaborateScreenState
                   setState(() {
                     _modeOfEventController.text = value ?? '';
                     if (!_isOffline) {
-                      // Clear state/city when switching away from Offline
                       _selectedState = null;
                       _selectedCity = null;
                       _stateController.clear();
@@ -264,7 +263,7 @@ class _EventCollaborateScreenState
 
                   if (date != null) {
                     _preferredDateController.text =
-                    '${date.day.toString().padLeft(2, '0')}/'
+                        '${date.day.toString().padLeft(2, '0')}/'
                         '${date.month.toString().padLeft(2, '0')}/'
                         '${date.year}';
                   }
@@ -297,15 +296,15 @@ class _EventCollaborateScreenState
                   }
                 },
               ),
-              height(Responsive.h(16)),
-              CustomTextField(
-                isRequired: false,
-                label: 'Area',
-                controller: _areaController,
-                icon: Icons.location_on_outlined,
-                hint: 'Locality',
-              ),
               if (_isOffline) ...[
+                height(Responsive.h(16)),
+                CustomTextField(
+                  isRequired: false,
+                  label: 'Area',
+                  controller: _areaController,
+                  icon: Icons.location_on_outlined,
+                  hint: 'Locality',
+                ),
                 height(Responsive.h(16)),
                 CustomDropdownField(
                   isRequired: false,
@@ -318,8 +317,7 @@ class _EventCollaborateScreenState
                       ? null
                       : _stateController.text,
                   onChanged: (label) {
-                    final option =
-                    label == null ? null : _stateByLabel[label];
+                    final option = label == null ? null : _stateByLabel[label];
                     if (option == null) return;
                     setState(() {
                       _selectedState = option;
@@ -394,7 +392,7 @@ class _EventCollaborateScreenState
                 ],
               ),
 
-              height(Responsive.h(16)),
+              height(Responsive.h(40)),
             ],
           ),
         ),

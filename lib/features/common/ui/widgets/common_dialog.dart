@@ -54,6 +54,7 @@ class CommonDialog extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: SecondaryButton(
+                          borderColor: context.borderColor,
                           text: secondaryButtonLabel ?? '',
                           onPressed: () {
                             if (autoDismiss) {

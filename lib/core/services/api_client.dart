@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/values/app_constants.dart';
 import '../../routing/routes.dart';
 import '../../routing/router.dart';
 
@@ -55,24 +56,7 @@ class _SessionInterceptor extends Interceptor {
       return;
     }
 
-    dynamic rawData = response.data;
-    if (rawData is String) {
-      try {
-        rawData = rawData.trim().isEmpty ? null : jsonDecode(rawData);
-      } catch (_) {
-        rawData = null;
-      }
-    }
-
-    final bodyLooksUnauthorized =
-        rawData is Map<String, dynamic> &&
-        (rawData['status'] == 401 ||
-            rawData['code'] == 401 ||
-            ((rawData['status'] == false || rawData['success'] == false) &&
-                response.statusCode == 401));
-
-    if ((response.statusCode == 401 || bodyLooksUnauthorized) &&
-        !_isHandlingExpiry) {
+    if (_isUnauthorizedResponse(response) && !_isHandlingExpiry) {
       debugPrint(' Session expired - 401');
       _handleSessionExpired();
     }
@@ -85,11 +69,42 @@ class _SessionInterceptor extends Interceptor {
     final includeAuth =
         err.requestOptions.extra['includeAuth'] as bool? ?? true;
 
-    if (includeAuth && err.response?.statusCode == 401 && !_isHandlingExpiry) {
+    if (includeAuth &&
+        _isUnauthorizedResponse(err.response) &&
+        !_isHandlingExpiry) {
       debugPrint(' HTTP 401 Unauthorized');
       _handleSessionExpired();
     }
     handler.next(err);
+  }
+
+  bool _isUnauthorizedResponse(Response? response) {
+    if (response == null) return false;
+    if (response.statusCode == 401) return true;
+
+    dynamic rawData = response.data;
+    if (rawData is String) {
+      try {
+        rawData = rawData.trim().isEmpty ? null : jsonDecode(rawData);
+      } on FormatException {
+        return false;
+      }
+    }
+
+    if (rawData is! Map) return false;
+
+    final status = rawData['status']?.toString();
+    final code = rawData['code']?.toString();
+    final message = (rawData['message'] ?? rawData['msg'])
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    return status == '401' ||
+        code == '401' ||
+        message == 'unauthorized' ||
+        ((rawData['status'] == false || rawData['success'] == false) &&
+            response.statusCode == 401);
   }
 
   Future<void> _handleSessionExpired() async {
@@ -108,7 +123,7 @@ class _SessionInterceptor extends Interceptor {
       await prefs.remove('user_image');
       await prefs.remove('user_application_status');
       await prefs.remove('user_ol_generate');
-      await prefs.setBool('isLogin', false);
+      await prefs.setBool(AppConstants.isLoginKey, false);
 
       debugPrint(' Session data cleared');
 

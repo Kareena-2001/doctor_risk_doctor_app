@@ -3,7 +3,6 @@ import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_text_field.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
-import 'package:Doctors_App/features/support_hub/model/legal_ticket_model.dart';
 import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';

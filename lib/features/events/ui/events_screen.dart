@@ -32,7 +32,6 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
   String _searchQuery = '';
   Timer? _debounce;
 
-  // String get _apiType => _typeFilter == 'All' ? '' : _typeFilter;
   String get _apiType => _typeFilter;
 
   @override

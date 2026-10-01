@@ -6,7 +6,6 @@ import 'package:Doctors_App/features/document_vault/model/document_upload_respon
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../core/exceptions/app_exception.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/credentials_storage_provider.dart';
 import '../../../core/services/credentials_storage_service.dart';

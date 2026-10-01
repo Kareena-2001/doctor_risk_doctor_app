@@ -172,6 +172,7 @@ class SupportHubRepository {
       rethrow;
     }
   }
+
   Future<AddRemarkResponse> addSupportRemark({
     required String ticketId,
     required String remark,

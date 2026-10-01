@@ -24,7 +24,7 @@ class CompanyDocumentsSection extends ConsumerWidget {
         const DocumentSectionHeader(
           title: 'Company‑Issued Documents',
           subtitle:
-          'Issued by DoctorsRisk once your plan and payment are confirmed.',
+              'Issued by DoctorsRisk once your plan and payment are confirmed.',
         ),
         height(Responsive.h(12)),
         DocumentSectionBody<CompanyDocument>(
@@ -43,9 +43,9 @@ class CompanyDocumentsSection extends ConsumerWidget {
               badge: isIssued
                   ? null
                   : const DocumentStatusBadge(
-                label: 'Not issued',
-                color: kDocOrange,
-              ),
+                      label: 'Not issued',
+                      color: kDocOrange,
+                    ),
               actions: [
                 if (isIssued)
                   DocumentActionButton(

@@ -102,6 +102,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
+
   Future<bool> addAppointment({
     required String appointmentType,
     required String appointmentQuery,
@@ -153,6 +154,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       return false;
     }
   }
+
   Future<bool> addRemark({
     required String ticketId,
     required String remark,
@@ -446,5 +448,4 @@ class SupportHubViewModel extends _$SupportHubViewModel {
   void resetState() {
     state = state.copyWith(isSuccess: false, error: null, createdTicket: null);
   }
-
 }

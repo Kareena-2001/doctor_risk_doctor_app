@@ -6,6 +6,7 @@ import 'package:Doctors_App/features/events/model/collaboration_response.dart';
 import 'package:Doctors_App/features/events/model/doctor_no_response.dart';
 import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/features/events/model/event_registration_response.dart';
+import 'package:Doctors_App/features/events/model/payment_summary_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'events_repository.g.dart';
@@ -122,5 +123,23 @@ class EventsRepository {
     );
 
     return DoctorNoResponse.fromJson(response);
+  }
+
+  Future<PaymentSummaryResponse> eventPaymentSummary({
+    required String eventRegistrationId,
+    required String rewardPointsUsed,
+    required String couponCode,
+  }) async {
+    final response = await _apiClient.get(
+      url: 'doctor/eventpaymentSummary',
+      queryParams: {
+        'event_registration_id': eventRegistrationId,
+        'reward_points_used': rewardPointsUsed,
+        'coupon_code': couponCode,
+      },
+      includeAuth: true,
+    );
+
+    return PaymentSummaryResponse.fromJson(response);
   }
 }

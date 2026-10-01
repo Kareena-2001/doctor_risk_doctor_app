@@ -8,9 +8,7 @@ import 'package:flutter/material.dart';
 
 const Color kDocGreen = Color(0xFF1E8E4E);
 const Color kDocOrange = Color(0xFFE8912D);
-const Color kDocUploadGreen = Color(
-  0xFF0F6B45,
-);
+const Color kDocUploadGreen = Color(0xFF0F6B45);
 
 class DocumentTile extends StatelessWidget {
   final String title;
