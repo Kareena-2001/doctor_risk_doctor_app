@@ -6,6 +6,7 @@ import 'package:Doctors_App/features/blog_central/ui/blog_screen.dart';
 import 'package:Doctors_App/features/blog_central/ui/my_blogs_tab.dart';
 import 'package:Doctors_App/features/change_password/ui/change_password_screen.dart';
 import 'package:Doctors_App/features/community/ui/community_screen.dart';
+import 'package:Doctors_App/features/community/ui/widgets/referral_list_screen.dart';
 import 'package:Doctors_App/features/document_vault/ui/document_vault_screen.dart';
 import 'package:Doctors_App/features/emergency/ui/emergency_assistance_screen.dart';
 import 'package:Doctors_App/features/events/model/event_list_response.dart';
@@ -331,6 +332,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.eventsScreen,
       pageBuilder: (context, state) => state.slidePage(const EventsScreen()),
+    ),
+    GoRoute(
+      path: Routes.referList,
+      pageBuilder: (context, state) =>
+          state.slidePage(const ReferralListScreen()),
     ),
     GoRoute(
       path: Routes.eventRegister,

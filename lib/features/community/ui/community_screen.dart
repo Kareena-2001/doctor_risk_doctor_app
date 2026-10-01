@@ -8,6 +8,8 @@ import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/dimensions.dart';
+
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
 
@@ -41,6 +43,7 @@ class _CommunityScreenState extends State<CommunityScreen>
         children: [
           Container(
             color: context.secondaryBackgroundColor,
+            padding: EdgeInsets.symmetric(horizontal: Responsive.w(16)),
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.newPri,
@@ -68,6 +71,7 @@ class _CommunityScreenState extends State<CommunityScreen>
               ],
             ),
           ),
+          height(100),
         ],
       ),
     );

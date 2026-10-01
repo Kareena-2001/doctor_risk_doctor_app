@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
-import '../../../../theme/app_colors.dart';
 
 class ReferralList extends StatelessWidget {
   final List<ReferredDoctor> referrals;
@@ -63,6 +62,7 @@ class _ReferralTile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(14)),
       decoration: BoxDecoration(
+        border: Border.all(color: context.borderColor),
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(14)),
         boxShadow: [

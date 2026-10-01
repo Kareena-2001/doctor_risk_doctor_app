@@ -44,13 +44,14 @@ class ReferralLinkCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(Responsive.w(16)),
       decoration: BoxDecoration(
+        // border: Border.all(color: context.borderColor),
         color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(Responsive.w(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -72,7 +73,7 @@ class ReferralLinkCard extends StatelessWidget {
               vertical: Responsive.h(10),
             ),
             decoration: BoxDecoration(
-              color: context.secondaryWidgetColor,
+              border: Border.all(color: context.borderColor, width: 1),
               borderRadius: BorderRadius.circular(Responsive.w(10)),
             ),
             child: Row(
@@ -95,8 +96,8 @@ class ReferralLinkCard extends StatelessWidget {
                           ),
                         ),
                 ),
-                width(Responsive.w(8)),
-                if (displayLink.isNotEmpty)
+                if (displayLink.isNotEmpty) ...[
+                  width(Responsive.w(8)),
                   InkWell(
                     onTap: () => _copy(context),
                     borderRadius: BorderRadius.circular(Responsive.w(8)),
@@ -109,6 +110,7 @@ class ReferralLinkCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                ],
               ],
             ),
           ),

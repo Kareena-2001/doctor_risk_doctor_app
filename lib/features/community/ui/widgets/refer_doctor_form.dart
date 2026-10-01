@@ -132,14 +132,24 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
       communityViewModelProvider.select((state) => state.addReferral),
       (previous, next) {
         next?.whenOrNull(
-          data: (response) {
+          data: (response) async {
             if (!mounted) return;
+
             if (response.status) {
               _clearForm();
-              context.showSuccessSnackBar(response.msg);
-              ref
+
+              // Refresh referral list
+              await ref
                   .read(communityViewModelProvider.notifier)
                   .refreshReferDoctorList();
+
+              if (!mounted) return;
+
+              // Close the bottom sheet/dialog
+              Navigator.of(context).pop();
+
+              // Show success message after closing
+              context.showSuccessSnackBar(response.msg);
             }
           },
           error: (error, stackTrace) {
