@@ -3,7 +3,6 @@ import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
-import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
 import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
@@ -96,7 +95,11 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
     final state = ref.watch(supportHubViewModelProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Legal Support'),
+      appBar: CustomAppBar(
+        title: 'Legal Support',
+        infoMessage:
+            'Legal matters or cases that existed before your membership was purchased are not covered and are chargeable separately. Connect with our support team for details.',
+      ),
       floatingActionButton: RaiseTicketFab(
         onTap: () => context.push(Routes.addLegalSupport),
       ),
@@ -122,25 +125,32 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
 
   Widget _buildContent(SupportHubState state) {
     final category = state.legalCategory;
+    final counts = state.legalTickets!.data.counts;
+    final statusCounts = [
+      counts.all,
+      counts.open,
+      counts.closed,
+      counts.cancelled,
+    ];
     final tickets =
         state.legalTickets?.data.tickets.map((t) => t.toItem()).toList() ??
-            <TicketItem>[];
+        <TicketItem>[];
 
     final lists = [
       for (final tab in _statusTabs)
         tickets
             .where(
               (t) =>
-          category.matches(t.typeValue) &&
-              tab.$2(parseTicketStatus(t.ticketStatus)),
-        )
+                  category.matches(t.typeValue) &&
+                  tab.$2(parseTicketStatus(t.ticketStatus)),
+            )
             .toList(),
     ];
 
     return DefaultTabController(
       length: _statusTabs.length,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -160,7 +170,7 @@ class _LegalSupportScreenState extends ConsumerState<LegalSupportScreen> {
               indicatorColor: AppColors.primary,
               tabs: [
                 for (var i = 0; i < _statusTabs.length; i++)
-                  Tab(text: '${_statusTabs[i].$1} (${lists[i].length})'),
+                  Tab(text: '${_statusTabs[i].$1} (${statusCounts[i]})'),
               ],
             ),
             height(12),

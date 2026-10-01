@@ -10,5 +10,9 @@ class EmergencyState with _$EmergencyState {
     @Default(true) bool isSopLoading,
     @Default(<SopModel>[]) List<SopModel> sops,
     String? sopError,
+    
+    @Default(false) bool isSopLoadingMore,
+    @Default(true) bool hasMoreSops,
+    @Default(1) int sopPage,
   }) = _EmergencyState;
 }

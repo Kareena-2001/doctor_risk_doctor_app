@@ -1,7 +1,4 @@
 import 'dart:io';
-
-import 'package:Doctors_App/features/support_hub/model/query_detail_model.dart';
-import 'package:Doctors_App/features/support_hub/model/query_list_model.dart';
 import 'package:Doctors_App/features/support_hub/repository/support_hub_repository.dart';
 import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

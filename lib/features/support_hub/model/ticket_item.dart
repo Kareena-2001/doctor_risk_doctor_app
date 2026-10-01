@@ -8,7 +8,6 @@ class TicketItem {
   final String queryType;
   final String? commonQuery;
 
-  /// "Legal Type" for legal tickets, "Preferred Contact" for service tickets.
   final String typeLabel;
   final String? typeValue;
 

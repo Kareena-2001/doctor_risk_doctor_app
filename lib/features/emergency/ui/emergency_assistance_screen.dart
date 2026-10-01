@@ -10,6 +10,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
+import '../../../core/widgets/common_empty_state.dart';
+import '../../../core/widgets/common_error_state.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 import '../../common/ui/widgets/primary_button.dart';
@@ -25,14 +27,33 @@ class EmergencyAssistanceScreen extends ConsumerStatefulWidget {
 class _EmergencyAssistanceScreenState
     extends ConsumerState<EmergencyAssistanceScreen> {
   bool _isOpen = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
+    _scrollController.addListener(_onScroll);
+
     Future.microtask(() {
       ref.read(emergencyViewModelProvider.notifier).loadSops();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final pos = _scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 200) {
+      ref.read(emergencyViewModelProvider.notifier).loadMoreSops();
+    }
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -172,13 +193,12 @@ class _EmergencyAssistanceScreenState
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final state = ref.watch(emergencyViewModelProvider);
 
     return Scaffold(
       backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(
-        title: 'Emergency Help',
+        title: 'Emergency',
         showBack: true,
         backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
       ),
@@ -187,6 +207,7 @@ class _EmergencyAssistanceScreenState
           return ref.read(emergencyViewModelProvider.notifier).loadSops();
         },
         child: SingleChildScrollView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
@@ -236,17 +257,25 @@ class _EmergencyAssistanceScreenState
     }
 
     if (state.sopError != null && state.sops.isEmpty) {
-      return _buildErrorState(state.sopError!);
+      return _buildError(state.sopError!);
     }
 
     if (state.sops.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmpty();
     }
-
     return Column(
-      children: state.sops
-          .map((sop) => _buildScenarioCard(context, sop, isDark))
-          .toList(),
+      children: [
+        ...state.sops.map((sop) => _buildScenarioCard(context, sop, isDark)),
+        if (state.isSopLoadingMore)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: Responsive.h(16)),
+            child: SizedBox(
+              width: Responsive.w(24),
+              height: Responsive.w(24),
+              child: const CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+          ),
+      ],
     );
   }
 
@@ -274,77 +303,20 @@ class _EmergencyAssistanceScreenState
     );
   }
 
-  Widget _buildErrorState(String message) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(Responsive.w(20)),
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(Responsive.w(12)),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: Responsive.sp(30),
-            color: Colors.red,
-          ),
-          height(Responsive.h(10)),
-          Text(
-            'Unable to load emergency guidance',
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(13),
-              fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(6)),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(11.5),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(14)),
-          TextButton.icon(
-            onPressed: () {
-              ref.read(emergencyViewModelProvider.notifier).loadSops();
-            },
-            icon: const Icon(Icons.refresh),
-            label: const Text('Try again'),
-          ),
-        ],
-      ),
+  Widget _buildError(String message) {
+    return CommonErrorState(
+      title: 'Unable to load emergency guidance',
+      message: message,
+      onRetry: () async {
+        await ref.read(emergencyViewModelProvider.notifier).loadSops();
+      },
     );
   }
 
-  Widget _buildEmptyState() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: Responsive.h(40)),
-      child: Column(
-        children: [
-          Icon(
-            Icons.shield_outlined,
-            size: Responsive.sp(40),
-            color: AppColors.homeTextMuted,
-          ),
-          height(Responsive.h(12)),
-          Text(
-            'No emergency guidance available',
-            textAlign: TextAlign.center,
-            style: customTextStyle(
-              fontSize: Responsive.sp(13),
-              fontWeight: FontWeight.w600,
-              color: AppColors.textColor,
-            ),
-          ),
-        ],
-      ),
+  Widget _buildEmpty() {
+    return const CommonEmptyState(
+      title: 'No emergency guidance available',
+      icon: Icons.shield_outlined,
     );
   }
 
@@ -527,9 +499,7 @@ class _EmergencyAssistanceScreenState
               ),
             ],
           ),
-
           height(Responsive.h(16)),
-
           Wrap(
             spacing: Responsive.w(12),
             runSpacing: Responsive.h(10),

@@ -7,10 +7,12 @@ import '../../theme/app_theme.dart';
 import '../constants/dimensions.dart';
 import '../constants/responsive.dart';
 import '../constants/values/app_text_style.dart';
+import 'app_dialog.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
-  final String? subTitle;
+  final String? subTitle;final String? infoMessage; // <-- ADD THIS
+  final VoidCallback? onInfo; // <-- ADD THIS
   final Color? backgroundColor;
   final Gradient? gradient;
   final bool showBack;
@@ -41,7 +43,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     required this.title,
-    this.subTitle,
+    this.subTitle,this.infoMessage, // <-- ADD THIS
+    this.onInfo, // <-- ADD THIS
     this.backgroundColor,
     this.gradient,
     this.showBack = true,
@@ -92,13 +95,39 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: customTextStyle(
-              color: context.primaryTextColor,
-              fontSize: Responsive.sp(16),
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: customTextStyle(
+                  color: context.primaryTextColor,
+                  fontSize: Responsive.sp(16),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (infoMessage != null || onInfo != null) ...[
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () {
+                    if (onInfo != null) {
+                      onInfo!();
+                    } else if (infoMessage != null) {
+                      AppDialog.info(
+                        context: context,
+                        title: title,
+                        message: infoMessage!,
+                      );
+                    }
+                  },
+                  child: Icon(
+                    Icons.info_outline_rounded,
+                    size: Responsive.sp(18),
+                    color: context.primaryTextColor.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ],
           ),
           if (subTitle != null) ...[
             height(2),

@@ -371,7 +371,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
             isRequired: false,
             label: 'Title (optional)',
             controller: _titleController,
-            hint: 'e.g. What I Learned from a Difficult Clinical Case',
+            hint: 'Add a title for your experience (optional)',
           ),
 
           height(Responsive.h(20)),
@@ -527,14 +527,17 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
-
   Widget _buildModeToggle() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(Responsive.w(4)),
       decoration: BoxDecoration(
         color: context.secondaryWidgetColor,
-        // color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(Responsive.w(30)),
+        border: Border.all(
+          color: context.borderColor,
+        ),
       ),
       child: Row(
         children: [
@@ -564,6 +567,11 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
     required YourStoryMode mode,
   }) {
     final selected = _mode == mode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final unselectedColor = isDark
+        ? Colors.grey.shade400
+        : Colors.grey.shade600;
 
     return Expanded(
       child: GestureDetector(
@@ -574,10 +582,16 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
+          padding: EdgeInsets.symmetric(
+            vertical: Responsive.h(10),
+          ),
           decoration: BoxDecoration(
-            color: selected ? AppColors.newPri : Colors.transparent,
-            borderRadius: BorderRadius.circular(Responsive.w(30)),
+            color: selected
+                ? AppColors.newPri
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(
+              Responsive.w(30),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -585,7 +599,9 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
               Icon(
                 icon,
                 size: Responsive.sp(16),
-                color: selected ? Colors.white : Colors.grey.shade600,
+                color: selected
+                    ? Colors.white
+                    : unselectedColor,
               ),
               width(Responsive.w(6)),
               Text(
@@ -593,7 +609,9 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : Colors.grey.shade600,
+                  color: selected
+                      ? Colors.white
+                      : unselectedColor,
                 ),
               ),
             ],
@@ -602,8 +620,8 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
-
   Widget _buildTextInput() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -626,7 +644,21 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
                 fontSize: Responsive.sp(12),
                 color: Colors.grey.shade400,
               ),
-              border: InputBorder.none,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+                  // width: 1.5,
+                ),
+              ),
+
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkLine : AppColors.fieldBorder,
+                  // width: 1.5,
+                ),
+              ),
             ),
           ),
         ),

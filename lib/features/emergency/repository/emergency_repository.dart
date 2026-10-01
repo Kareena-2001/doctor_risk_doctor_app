@@ -12,9 +12,7 @@ part 'emergency_repository.g.dart';
 @Riverpod(keepAlive: true)
 EmergencyRepository emergencyRepository(Ref ref) {
   final apiClient = ref.watch(apiClientProvider);
-  final credentialsStorage = ref.watch(
-    credentialsStorageServiceProvider,
-  );
+  final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
 
   return EmergencyRepository(
     apiClient: apiClient,
@@ -29,12 +27,13 @@ class EmergencyRepository {
   const EmergencyRepository({
     required ApiClient apiClient,
     required CredentialsStorageService credentialsStorage,
-  })  : _apiClient = apiClient,
-        _credentialsStorage = credentialsStorage;
+  }) : _apiClient = apiClient,
+       _credentialsStorage = credentialsStorage;
 
-  Future<SopResponse> getSopList() async {
+  Future<SopResponse> getSopList({int page = 1, int limit = 10}) async {
     final response = await _apiClient.get(
       url: 'doctor/dosopdlist',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

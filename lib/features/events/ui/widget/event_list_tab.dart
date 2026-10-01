@@ -50,7 +50,12 @@ class _EventListTabState extends ConsumerState<EventListTab> {
   @override
   Widget build(BuildContext context) {
     if (_events.isEmpty) {
-      return CommonEmptyState(icon: Icons.info, title: 'No items found here.');
+      return CommonEmptyState(
+        icon: Icons.event_busy_outlined,
+        title: widget.activeTab == 'past'
+            ? 'No past events available'
+            : 'No upcoming events available',
+      );
     }
 
     return ListView.separated(
@@ -180,14 +185,12 @@ class _EventCard extends StatelessWidget {
                   title: 'Event Type',
                   value: event.eventType,
                 ),
-                if (!isOnline &&
-                    event.address != null &&
-                    event.address!.isNotEmpty) ...[
+                if (!isOnline && event.address.isNotEmpty) ...[
                   height(Responsive.h(12)),
                   _buildDetailRow(
                     icon: Icons.location_on_outlined,
                     title: 'Venue',
-                    value: event.address!,
+                    value: event.address,
                   ),
                 ],
                 height(Responsive.h(12)),
@@ -196,13 +199,12 @@ class _EventCard extends StatelessWidget {
                   title: 'Price',
                   value: event.price == '0.00' ? 'Free' : '₹${event.price}',
                 ),
-                if (event.priceDescription != null &&
-                    event.priceDescription!.isNotEmpty) ...[
+                if (event.priceDescription.isNotEmpty) ...[
                   height(Responsive.h(12)),
                   _buildDetailRow(
                     icon: Icons.info_outline_rounded,
                     title: 'Price Details',
-                    value: event.priceDescription!,
+                    value: event.priceDescription,
                   ),
                 ],
                 height(Responsive.h(12)),
@@ -399,9 +401,7 @@ class _EventCard extends StatelessWidget {
               ),
             ),
             height(Responsive.h(6)),
-            if (!isOnline &&
-                event.address != null &&
-                event.address!.isNotEmpty) ...[
+            if (!isOnline && event.address.isNotEmpty) ...[
               Row(
                 children: [
                   Icon(
@@ -412,7 +412,7 @@ class _EventCard extends StatelessWidget {
                   width(Responsive.w(4)),
                   Expanded(
                     child: Text(
-                      event.address!,
+                      event.address,
                       style: customTextStyle(
                         fontSize: Responsive.sp(11),
                         color: AppColors.grey,
@@ -424,7 +424,6 @@ class _EventCard extends StatelessWidget {
               ),
               height(Responsive.h(8)),
             ],
-
             GestureDetector(
               onTap: () => _showDescriptionDialog(context),
               child: Row(
@@ -456,8 +455,7 @@ class _EventCard extends StatelessWidget {
             height(Responsive.h(8)),
 
             Text(
-              event.priceDescription != null &&
-                      event.priceDescription!.isNotEmpty
+              event.priceDescription.isNotEmpty
                   ? '${event.price == '0.00' ? 'Free' : '₹${event.price}'} (${event.priceDescription})'
                   : (event.price == '0.00' ? 'Free' : '₹${event.price}'),
               style: customTextStyle(
@@ -496,7 +494,6 @@ class _EventCard extends StatelessWidget {
                               _showNotApplicableDialog(context, 'Recording');
                               return;
                             }
-                            // TODO: launch event.watchRecordingLink
                           },
                         ),
                       ),
@@ -516,14 +513,10 @@ class _EventCard extends StatelessWidget {
                               ? AppColors.homeTextMuted
                               : AppColors.textColor,
                           onPressed: () {
-                            if (event.certificateDisabled
-                            // ||
-                                // event.certificateUrl == null
-                            ) {
+                            if (event.certificateDisabled) {
                               _showNotApplicableDialog(context, 'Certificate');
                               return;
                             }
-                            // TODO: open event.certificateUrl
                           },
                           text: 'Certificate',
                         ),

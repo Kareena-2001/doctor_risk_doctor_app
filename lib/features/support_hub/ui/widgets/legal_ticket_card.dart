@@ -1,7 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
-import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
 import 'package:Doctors_App/features/support_hub/model/support_ticket_enums.dart';
 import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/widgets/legal_status_badge.dart';
