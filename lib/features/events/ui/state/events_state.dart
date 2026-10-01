@@ -24,5 +24,13 @@ class EventsState with _$EventsState {
     AsyncValue<EventRegistrationResponse?> registerEvent,
 
     @Default(AsyncLoading()) AsyncValue<PaymentSummaryResponse> paymentList,
+
+    // ---- payment screen UI state ----
+    @Default(false) bool redeemPoints,
+    @Default(false) bool applyingCoupon,
+    @Default(false) bool paying,
+    String? appliedCoupon,
+    String? couponError,
+    int? availableRewardPoints,
   }) = _EventsState;
 }

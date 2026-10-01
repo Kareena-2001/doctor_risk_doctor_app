@@ -127,16 +127,24 @@ class EventsRepository {
 
   Future<PaymentSummaryResponse> eventPaymentSummary({
     required String eventRegistrationId,
-    required String rewardPointsUsed,
-    required String couponCode,
+    String? rewardPointsUsed,
+    String? couponCode,
   }) async {
+    final queryParams = <String, String>{
+      'event_registration_id': eventRegistrationId,
+    };
+
+    if (rewardPointsUsed != null) {
+      queryParams['reward_points_used'] = rewardPointsUsed;
+    }
+
+    if (couponCode != null && couponCode.isNotEmpty) {
+      queryParams['coupon_code'] = couponCode;
+    }
+
     final response = await _apiClient.get(
       url: 'doctor/eventpaymentSummary',
-      queryParams: {
-        'event_registration_id': eventRegistrationId,
-        'reward_points_used': rewardPointsUsed,
-        'coupon_code': couponCode,
-      },
+      queryParams: queryParams,
       includeAuth: true,
     );
 

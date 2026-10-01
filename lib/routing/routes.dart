@@ -88,4 +88,6 @@ class Routes {
   static const scanScreen = '/scanScreen';
 
   static const changePassword = '/changePassword';
+
+  static const payment = '/payment';
 }

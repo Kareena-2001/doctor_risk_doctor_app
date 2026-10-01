@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payment_summary_model.freezed.dart';
+
 part 'payment_summary_model.g.dart';
 
 @freezed

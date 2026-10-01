@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_list_response.freezed.dart';
-
 part 'event_list_response.g.dart';
 
 @freezed
@@ -25,41 +24,61 @@ class EventListResponse with _$EventListResponse {
 class EventModel with _$EventModel {
   const factory EventModel({
     required int id,
-    @JsonKey(name: 'event_type') required String eventType,
+
+    @JsonKey(name: 'event_type')
+    required String eventType,
+
     required String title,
+
     required String description,
+
     required String date,
+
     required String time,
-    String? address,
-    @JsonKey(name: 'organization_type') required String organizationType,
-    @JsonKey(name: 'category_type') required String categoryType,
+
+    required String address,
+
+    @JsonKey(name: 'organization_type')
+    required String organizationType,
+
+    @JsonKey(name: 'category_type')
+    required String categoryType,
+
+    /// API returns "0.00" / "1499.00"
     required String price,
 
-    @JsonKey(name: 'price_description') String? priceDescription,
+    @JsonKey(name: 'price_description')
+    required String priceDescription,
 
-    @JsonKey(name: 'attendance_status') String? attendanceStatus,
+    @JsonKey(name: 'attendance_status')
+    String? attendanceStatus,
 
-    @JsonKey(name: 'register_button') @Default(false) bool registerButton,
+    @JsonKey(name: 'your_registered')
+    required bool yourRegistered,
+
+    @JsonKey(name: 'register_button')
+    required bool registerButton,
 
     @JsonKey(name: 'watch_recording_button')
-    @Default(false)
-    bool watchRecordingButton,
+    required bool watchRecordingButton,
+
     @JsonKey(name: 'watch_recording_disabled')
-    @Default(false)
-    bool watchRecordingDisabled,
-    @JsonKey(name: 'watch_recording_link') String? watchRecordingLink,
+    required bool watchRecordingDisabled,
 
-    // Nullable INT — API sends a number (e.g. 1), not a string.
+    @JsonKey(name: 'watch_recording_link')
+    String? watchRecordingLink,
+
     @JsonKey(name: 'watch_recording_link_duration')
-    int? watchRecordingLinkDuration,
+    String? watchRecordingLinkDuration,
 
-    @JsonKey(name: 'recording_expiry_date') String? recordingExpiryDate,
+    @JsonKey(name: 'recording_expiry_date')
+    String? recordingExpiryDate,
 
-    @JsonKey(name: 'certificate_button') @Default(false) bool certificateButton,
+    @JsonKey(name: 'certificate_button')
+    required bool certificateButton,
+
     @JsonKey(name: 'certificate_disabled')
-    @Default(false)
-    bool certificateDisabled,
-    @JsonKey(name: 'certificate_url') String? certificateUrl,
+    required bool certificateDisabled,
   }) = _EventModel;
 
   factory EventModel.fromJson(Map<String, dynamic> json) =>

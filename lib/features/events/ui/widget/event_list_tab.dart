@@ -516,8 +516,10 @@ class _EventCard extends StatelessWidget {
                               ? AppColors.homeTextMuted
                               : AppColors.textColor,
                           onPressed: () {
-                            if (event.certificateDisabled ||
-                                event.certificateUrl == null) {
+                            if (event.certificateDisabled
+                            // ||
+                                // event.certificateUrl == null
+                            ) {
                               _showNotApplicableDialog(context, 'Certificate');
                               return;
                             }

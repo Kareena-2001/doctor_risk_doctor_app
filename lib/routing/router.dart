@@ -13,6 +13,7 @@ import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/features/events/ui/event_collaborate_form.dart';
 import 'package:Doctors_App/features/events/ui/event_register_screen.dart';
 import 'package:Doctors_App/features/events/ui/events_screen.dart';
+import 'package:Doctors_App/features/events/ui/widget/event_payment_screen.dart';
 import 'package:Doctors_App/features/medical_law_faq/ui/medico_legal_faq_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
@@ -440,5 +441,18 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const ChangePasswordScreen()),
     ),
+
+    GoRoute(
+      path: Routes.payment,
+      pageBuilder: (context, state) {
+        return state.slidePage(PaymentScreen(eventRegistrationId: ''));
+      },
+    ),
+
+    // GoRoute(
+    //   path: Routes.payment,
+    //   pageBuilder: (context, state) =>
+    //       state.slidePage(const PaymentScreen(args: args)),
+    // ),
   ],
 );
