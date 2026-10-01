@@ -134,10 +134,10 @@ class _AddServiceTicketScreenState
       return;
     }
 
-    if (_detailsController.text.trim().isEmpty) {
-      context.showErrorSnackBar('Please describe your query');
-      return;
-    }
+    // if (_detailsController.text.trim().isEmpty) {
+    //   context.showErrorSnackBar('Please describe your query');
+    //   return;
+    // }
 
     if (_isAppointment &&
         (_appointmentMode == null ||

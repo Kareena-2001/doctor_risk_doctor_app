@@ -80,15 +80,15 @@ extension TicketStatusX on TicketStatus {
 
   bool get isOpenish =>
       this == TicketStatus.open ||
-          this == TicketStatus.inProgress ||
-          this == TicketStatus.escalated;
+      this == TicketStatus.inProgress ||
+      this == TicketStatus.escalated;
 
   Color get color {
     switch (this) {
       case TicketStatus.open:
-        return Colors.orange;
-      case TicketStatus.inProgress:
         return Colors.blue;
+      case TicketStatus.inProgress:
+        return Colors.orange;
       case TicketStatus.escalated:
         return Colors.deepOrange;
       case TicketStatus.closed:
@@ -113,6 +113,7 @@ extension TicketStatusX on TicketStatus {
     }
   }
 }
+
 enum AppointmentMode {
   videoCall,
   phoneCall,

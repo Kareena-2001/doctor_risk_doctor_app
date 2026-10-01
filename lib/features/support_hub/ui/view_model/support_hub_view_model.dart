@@ -53,14 +53,14 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     required String legalType,
     File? file,
   }) async {
-    if (description.trim().isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        isSuccess: false,
-        error: 'Please enter description for your query',
-      );
-      return false;
-    }
+    // if (description.trim().isEmpty) {
+    //   state = state.copyWith(
+    //     isLoading: false,
+    //     isSuccess: false,
+    //     error: 'Please enter description for your query',
+    //   );
+    //   return false;
+    // }
 
     state = state.copyWith(
       isLoading: true,
@@ -110,14 +110,14 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     required String preferredTime,
     File? file,
   }) async {
-    if (description.trim().isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        isSuccess: false,
-        error: 'Please enter description for your query',
-      );
-      return false;
-    }
+    // if (description.trim().isEmpty) {
+    //   state = state.copyWith(
+    //     isLoading: false,
+    //     isSuccess: false,
+    //     error: 'Please enter description for your query',
+    //   );
+    //   return false;
+    // }
 
     state = state.copyWith(
       isLoading: true,

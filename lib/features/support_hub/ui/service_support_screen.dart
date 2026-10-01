@@ -3,7 +3,6 @@ import 'package:Doctors_App/core/widgets/common_error_state.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
-import 'package:Doctors_App/features/support_hub/model/service_ticket_model.dart';
 import 'package:Doctors_App/features/support_hub/model/ticket_item.dart';
 import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:Doctors_App/features/support_hub/ui/view_model/support_hub_view_model.dart';
@@ -126,13 +125,21 @@ class _ServiceSupportScreenState extends ConsumerState<ServiceSupportScreen> {
   Widget _buildContent(SupportHubState state) {
     final tickets =
         state.serviceTickets?.data.tickets.map((t) => t.toItem()).toList() ??
-            <TicketItem>[];
+        <TicketItem>[];
+    final counts = state.serviceTickets!.data.counts;
 
     final lists = [
       for (final tab in _statusTabs)
         tickets
             .where((t) => tab.$2(parseTicketStatus(t.ticketStatus)))
             .toList(),
+    ];
+
+    final statusCounts = [
+      counts.all,
+      counts.open,
+      counts.closed,
+      counts.cancelled,
     ];
 
     return DefaultTabController(
@@ -153,7 +160,7 @@ class _ServiceSupportScreenState extends ConsumerState<ServiceSupportScreen> {
               indicatorColor: AppColors.primary,
               tabs: [
                 for (var i = 0; i < _statusTabs.length; i++)
-                  Tab(text: '${_statusTabs[i].$1} (${lists[i].length})'),
+                  Tab(text: '${_statusTabs[i].$1} (${statusCounts[i]})'),
               ],
             ),
             height(12),

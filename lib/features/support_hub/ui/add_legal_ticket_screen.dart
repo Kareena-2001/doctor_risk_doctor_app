@@ -106,10 +106,8 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
   }
 
   String _mapLegalType() {
-    // Register / On-call -> comes from the Legal Type dropdown.
     if (_showLegalType && _legalType != null) return _legalType!.apiValue;
 
-    // Book appointment -> no dropdown, keep the previous mapping.
     final q = _commonQuery ?? '';
     if (q.contains('Notice')) return 'notice';
     if (_queryType == LegalQueryType.bookAppointment) return 'case';
@@ -141,11 +139,6 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
         _priority == null ||
         (_showLegalType && _legalType == null)) {
       context.showErrorSnackBar('Please fill in all required fields');
-      return;
-    }
-
-    if (_detailsController.text.trim().isEmpty) {
-      context.showErrorSnackBar('Please describe your query');
       return;
     }
 

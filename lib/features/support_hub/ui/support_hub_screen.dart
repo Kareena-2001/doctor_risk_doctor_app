@@ -5,8 +5,6 @@ import '../../../core/constants/dimensions.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_theme.dart';
-import 'service_support_screen.dart';
-import 'legal_support_screen.dart';
 
 class SupportHubScreen extends StatelessWidget {
   const SupportHubScreen({super.key});
