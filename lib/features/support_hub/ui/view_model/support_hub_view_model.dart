@@ -32,6 +32,9 @@ class SupportHubViewModel extends _$SupportHubViewModel {
   _ListArgs? _serviceArgs;
   _ListArgs? _legalArgs;
   _ListArgs? _remarksArgs;
+  bool _hasMoreRemarks = false;
+
+  bool get hasMoreRemarks => _hasMoreRemarks;
 
   @override
   SupportHubState build() => const SupportHubState();
@@ -101,7 +104,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     required String preferredTime,
     File? file,
   }) async {
-
     state = state.copyWith(
       isLoading: true,
       isSuccess: false,
@@ -171,7 +173,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
           appointmentStatus: args.appointmentStatus,
           startDate: args.startDate,
           endDate: args.endDate,
-          page: args.page,
+          page: 1,
           limit: args.limit,
         );
       } else {
@@ -254,6 +256,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     String? endDate,
     int page = 1,
     int limit = 10,
+    bool append = false,
   }) async {
     _serviceArgs = _ListArgs(
       ticketNo: ticketNo,
@@ -280,9 +283,16 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         page: page,
         limit: limit,
       );
+      final current = state.serviceTickets;
       state = state.copyWith(
         isFetchingServiceTickets: false,
-        serviceTickets: resp,
+        serviceTickets: append && current != null
+            ? resp.copyWith(
+                data: resp.data.copyWith(
+                  tickets: [...current.data.tickets, ...resp.data.tickets],
+                ),
+              )
+            : resp,
       );
     } catch (e) {
       state = state.copyWith(
@@ -290,6 +300,27 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         serviceTicketsError: _errorMessage(e),
       );
     }
+  }
+
+  Future<void> loadMoreServiceTickets() async {
+    final current = state.serviceTickets;
+    final args = _serviceArgs;
+    if (current == null ||
+        args == null ||
+        state.isFetchingServiceTickets ||
+        current.data.currentPage >= current.data.lastPage) {
+      return;
+    }
+    await fetchServiceTickets(
+      ticketNo: args.ticketNo,
+      appointmentType: args.appointmentType,
+      appointmentStatus: args.appointmentStatus,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      page: current.data.currentPage + 1,
+      limit: args.limit,
+      append: true,
+    );
   }
 
   Future<void> refreshServiceTickets() {
@@ -301,7 +332,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       appointmentStatus: a.appointmentStatus,
       startDate: a.startDate,
       endDate: a.endDate,
-      page: a.page,
+      page: 1,
       limit: a.limit,
     );
   }
@@ -315,6 +346,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     String? endDate,
     int page = 1,
     int limit = 10,
+    bool append = false,
   }) async {
     _legalArgs = _ListArgs(
       id: id,
@@ -343,13 +375,46 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         page: page,
         limit: limit,
       );
-      state = state.copyWith(isFetchingLegalTickets: false, legalTickets: resp);
+
+      final current = state.legalTickets;
+      state = state.copyWith(
+        isFetchingLegalTickets: false,
+        legalTickets: append && current != null
+            ? resp.copyWith(
+                data: resp.data.copyWith(
+                  tickets: [...current.data.tickets, ...resp.data.tickets],
+                ),
+              )
+            : resp,
+      );
     } catch (e) {
       state = state.copyWith(
         isFetchingLegalTickets: false,
         legalTicketsError: _errorMessage(e),
       );
     }
+  }
+
+  Future<void> loadMoreLegalTickets() async {
+    final current = state.legalTickets;
+    final args = _legalArgs;
+    if (current == null ||
+        args == null ||
+        state.isFetchingLegalTickets ||
+        current.data.currentPage >= current.data.lastPage) {
+      return;
+    }
+    await fetchLegalTickets(
+      id: args.id!,
+      ticketNo: args.ticketNo,
+      appointmentType: args.appointmentType,
+      appointmentStatus: args.appointmentStatus,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      page: current.data.currentPage + 1,
+      limit: args.limit,
+      append: true,
+    );
   }
 
   void setLegalCategory(LegalCategory category) {
@@ -366,7 +431,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       appointmentStatus: a.appointmentStatus,
       startDate: a.startDate,
       endDate: a.endDate,
-      page: a.page,
+      page: 1,
       limit: a.limit,
     );
   }
@@ -380,6 +445,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     String? endDate,
     int page = 1,
     int limit = 10,
+    bool append = false,
   }) async {
     _remarksArgs = _ListArgs(
       id: id,
@@ -395,7 +461,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     state = state.copyWith(
       isFetchingRemarks: true,
       remarksError: null,
-      ticketRemarks: null,
+      ticketRemarks: append ? state.ticketRemarks : null,
     );
 
     try {
@@ -409,13 +475,45 @@ class SupportHubViewModel extends _$SupportHubViewModel {
         page: page,
         limit: limit,
       );
-      state = state.copyWith(isFetchingRemarks: false, ticketRemarks: resp);
+      final current = state.ticketRemarks;
+      state = state.copyWith(
+        isFetchingRemarks: false,
+        ticketRemarks: append && current != null
+            ? resp.copyWith(
+                data: resp.data.copyWith(
+                  remarks: [...current.data.remarks, ...resp.data.remarks],
+                ),
+              )
+            : resp,
+      );
+      _hasMoreRemarks = resp.data.remarks.length >= limit;
     } catch (e) {
       state = state.copyWith(
         isFetchingRemarks: false,
         remarksError: _errorMessage(e),
       );
     }
+  }
+
+  Future<void> loadMoreRemarks() async {
+    final args = _remarksArgs;
+    if (args == null ||
+        !_hasMoreRemarks ||
+        state.isFetchingRemarks ||
+        state.ticketRemarks == null) {
+      return;
+    }
+    await fetchRemarks(
+      id: args.id!,
+      ticketNo: args.ticketNo,
+      appointmentType: args.appointmentType,
+      appointmentStatus: args.appointmentStatus,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      page: args.page + 1,
+      limit: args.limit,
+      append: true,
+    );
   }
 
   Future<void> _refreshLoadedLists() async {

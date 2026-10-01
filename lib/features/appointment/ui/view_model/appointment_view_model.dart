@@ -52,6 +52,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
     String? endDate,
     int page = 1,
     int limit = 10,
+    bool append = false,
   }) async {
     _listArgs = _ListArgs(
       appointmentNo: appointmentNo,
@@ -78,13 +79,47 @@ class AppointmentViewModel extends _$AppointmentViewModel {
         page: page,
         limit: limit,
       );
-      state = state.copyWith(isFetchingAppointments: false, appointments: resp);
+      final current = state.appointments;
+      state = state.copyWith(
+        isFetchingAppointments: false,
+        appointments: append && current != null
+            ? resp.copyWith(
+                data: resp.data.copyWith(
+                  appointments: [
+                    ...current.data.appointments,
+                    ...resp.data.appointments,
+                  ],
+                ),
+              )
+            : resp,
+      );
     } catch (e) {
       state = state.copyWith(
         isFetchingAppointments: false,
         appointmentsError: _errorMessage(e),
       );
     }
+  }
+
+  Future<void> loadMoreAppointments() async {
+    final current = state.appointments;
+    final args = _listArgs;
+    if (current == null ||
+        args == null ||
+        state.isFetchingAppointments ||
+        current.data.currentPage >= current.data.lastPage) {
+      return;
+    }
+    await fetchAppointments(
+      appointmentNo: args.appointmentNo,
+      appointmentType: args.appointmentType,
+      appointmentStatus: args.appointmentStatus,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      page: current.data.currentPage + 1,
+      limit: args.limit,
+      append: true,
+    );
   }
 
   Future<void> refreshAppointments() {
@@ -96,7 +131,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       appointmentStatus: a.appointmentStatus,
       startDate: a.startDate,
       endDate: a.endDate,
-      page: a.page,
+      page: 1,
       limit: a.limit,
     );
   }
@@ -221,7 +256,9 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       );
       return false;
     }
-  }Future<bool> rescheduleAppointment(String id) async {
+  }
+
+  Future<bool> rescheduleAppointment(String id) async {
     state = state.copyWith(isSuccess: false, error: null);
 
     try {
@@ -231,9 +268,11 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       final resp = state.appointments;
       if (resp != null) {
         final updated = resp.data.appointments
-            .map((a) => a.id.toString() == id
-            ? a.copyWith(scheduleRequest: 'Reschedule requested')
-            : a)
+            .map(
+              (a) => a.id.toString() == id
+                  ? a.copyWith(scheduleRequest: 'Reschedule requested')
+                  : a,
+            )
             .toList();
 
         state = state.copyWith(
@@ -253,6 +292,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       return false;
     }
   }
+
   void resetState() {
     state = state.copyWith(isSuccess: false, error: null);
   }

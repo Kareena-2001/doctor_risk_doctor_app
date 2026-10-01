@@ -171,6 +171,12 @@ class _ServiceSupportScreenState extends ConsumerState<ServiceSupportScreen> {
                     LegalTicketList(
                       tickets: list,
                       onRefresh: _refresh,
+                      onLoadMore: _vm.loadMoreServiceTickets,
+                      hasMore:
+                          state.serviceTickets!.data.currentPage <
+                          state.serviceTickets!.data.lastPage,
+                      isLoadingMore: state.isFetchingServiceTickets,
+                      paginationError: state.serviceTicketsError,
                       onView: (t) => showLegalTicketDetailSheet(context, t),
                       onRemarks: (t) => showLegalRemarksSheet(context, ref, t),
                       onEdit: _editTicket,

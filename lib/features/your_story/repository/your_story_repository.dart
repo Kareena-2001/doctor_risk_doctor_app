@@ -9,6 +9,7 @@ import 'package:Doctors_App/features/your_story/model/testimonial_response.dart'
 import 'package:Doctors_App/features/your_story/model/testimonial_submit_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../core/services/api_client.dart';
 
 part 'your_story_repository.g.dart';
@@ -82,9 +83,13 @@ class YourStoryRepository {
     return ExperienceSubmitResponse.fromJson(response);
   }
 
-  Future<ExperienceResponse> experienceList() async {
+  Future<ExperienceResponse> experienceList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/myexperiencelist',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 
@@ -140,9 +145,13 @@ class YourStoryRepository {
     return TestimonialSubmitResponse.fromJson(response);
   }
 
-  Future<TestimonialResponse> testimonialList() async {
+  Future<TestimonialResponse> testimonialList({
+    int page = 1,
+    int limit = 10,
+  }) async {
     final response = await _apiClient.get(
       url: 'doctor/mytestimoniallist',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

@@ -69,23 +69,47 @@ class LegalRemarksSheet extends ConsumerStatefulWidget {
 
 class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
   final _ctrl = TextEditingController();
+  final ScrollController _remarksScrollController = ScrollController();
   File? _file;
   String? _remarkError;
 
   @override
   void initState() {
     super.initState();
+    _remarksScrollController.addListener(_loadMoreWhenNearEnd);
     _ctrl.addListener(() {
       if (_remarkError != null && _ctrl.text.trim().isNotEmpty) {
         setState(() => _remarkError = null);
       }
     });
+    _scheduleRemarksCheck();
   }
 
   @override
   void dispose() {
+    _remarksScrollController
+      ..removeListener(_loadMoreWhenNearEnd)
+      ..dispose();
     _ctrl.dispose();
     super.dispose();
+  }
+
+  void _scheduleRemarksCheck() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadMoreWhenNearEnd();
+    });
+  }
+
+  void _loadMoreWhenNearEnd() {
+    if (!_remarksScrollController.hasClients ||
+        !ref.read(supportHubViewModelProvider.notifier).hasMoreRemarks ||
+        ref.read(supportHubViewModelProvider).isFetchingRemarks ||
+        ref.read(supportHubViewModelProvider).remarksError != null) {
+      return;
+    }
+    if (_remarksScrollController.position.extentAfter < 200) {
+      ref.read(supportHubViewModelProvider.notifier).loadMoreRemarks();
+    }
   }
 
   Future<void> _pick(_AttachType type) async {
@@ -126,6 +150,7 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
     final state = ref.watch(supportHubViewModelProvider);
     final remarks = state.ticketRemarks?.data.remarks ?? const [];
     final media = MediaQuery.of(context);
+    _scheduleRemarksCheck();
 
     return Padding(
       padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
@@ -140,20 +165,77 @@ class _LegalRemarksSheetState extends ConsumerState<LegalRemarksSheet> {
                 _Header(ticket: widget.ticket),
                 height(12),
                 Expanded(
-                  child: state.isFetchingRemarks
+                  child: state.isFetchingRemarks && remarks.isEmpty
                       ? Loading()
                       : remarks.isEmpty
                       ? Center(
-                          child: Text(
-                            'No remarks yet — start the conversation below.',
-                            style: AppTheme.label12,
-                          ),
+                          child: state.remarksError != null
+                              ? Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      state.remarksError!,
+                                      style: AppTheme.label12,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    TextButton(
+                                      onPressed: () => ref
+                                          .read(
+                                            supportHubViewModelProvider
+                                                .notifier,
+                                          )
+                                          .fetchRemarks(
+                                            id: widget.ticket.id.toString(),
+                                          ),
+                                      child: const Text('Retry'),
+                                    ),
+                                  ],
+                                )
+                              : Text(
+                                  'No remarks yet — start the conversation below.',
+                                  style: AppTheme.label12,
+                                ),
                         )
                       : ListView.separated(
+                          controller: _remarksScrollController,
                           padding: const EdgeInsets.only(right: 8),
-                          itemCount: remarks.length,
+                          itemCount:
+                              remarks.length +
+                              ((ref
+                                          .read(
+                                            supportHubViewModelProvider
+                                                .notifier,
+                                          )
+                                          .hasMoreRemarks ||
+                                      state.remarksError != null)
+                                  ? 1
+                                  : 0),
                           separatorBuilder: (_, _) => height(10),
                           itemBuilder: (_, i) {
+                            if (i == remarks.length) {
+                              if (state.remarksError != null) {
+                                return Center(
+                                  child: TextButton(
+                                    onPressed: ref
+                                        .read(
+                                          supportHubViewModelProvider.notifier,
+                                        )
+                                        .loadMoreRemarks,
+                                    child: const Text(
+                                      'Could not load more remarks. Tap to retry.',
+                                    ),
+                                  ),
+                                );
+                              }
+                              return state.isFetchingRemarks
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink();
+                            }
                             final r = remarks[i];
                             final sender = _splitSender(r.senderName);
                             return _RemarkCard(

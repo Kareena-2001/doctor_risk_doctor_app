@@ -258,23 +258,19 @@ class SupportHubRepository {
       }
 
       if (appointmentType != null && appointmentType.isNotEmpty) {
-        formData['tickete_status'] = appointmentType;
+        formData['appointment_type'] = appointmentType;
       }
 
       if (appointmentStatus != null && appointmentStatus.isNotEmpty) {
-        formData['start_date'] = appointmentStatus;
+        formData['tickete_status'] = appointmentStatus;
       }
 
       if (startDate != null && startDate.isNotEmpty) {
-        formData['end_date'] = startDate;
+        formData['start_date'] = startDate;
       }
 
       if (endDate != null && endDate.isNotEmpty) {
-        formData['page'] = endDate;
-      }
-
-      if (endDate != null && endDate.isNotEmpty) {
-        formData['limit'] = endDate;
+        formData['end_date'] = endDate;
       }
 
       final response = await _apiClient.get(
@@ -320,23 +316,19 @@ class SupportHubRepository {
       }
 
       if (appointmentType != null && appointmentType.isNotEmpty) {
-        formData['tickete_status'] = appointmentType;
+        formData['appointment_type'] = appointmentType;
       }
 
       if (appointmentStatus != null && appointmentStatus.isNotEmpty) {
-        formData['start_date'] = appointmentStatus;
+        formData['tickete_status'] = appointmentStatus;
       }
 
       if (startDate != null && startDate.isNotEmpty) {
-        formData['end_date'] = startDate;
+        formData['start_date'] = startDate;
       }
 
       if (endDate != null && endDate.isNotEmpty) {
-        formData['page'] = endDate;
-      }
-
-      if (endDate != null && endDate.isNotEmpty) {
-        formData['limit'] = endDate;
+        formData['end_date'] = endDate;
       }
 
       final response = await _apiClient.get(
@@ -382,23 +374,19 @@ class SupportHubRepository {
       }
 
       if (appointmentType != null && appointmentType.isNotEmpty) {
-        formData['tickete_status'] = appointmentType;
+        formData['appointment_type'] = appointmentType;
       }
 
       if (appointmentStatus != null && appointmentStatus.isNotEmpty) {
-        formData['start_date'] = appointmentStatus;
+        formData['tickete_status'] = appointmentStatus;
       }
 
       if (startDate != null && startDate.isNotEmpty) {
-        formData['end_date'] = startDate;
+        formData['start_date'] = startDate;
       }
 
       if (endDate != null && endDate.isNotEmpty) {
-        formData['page'] = endDate;
-      }
-
-      if (endDate != null && endDate.isNotEmpty) {
-        formData['limit'] = endDate;
+        formData['end_date'] = endDate;
       }
 
       final response = await _apiClient.get(

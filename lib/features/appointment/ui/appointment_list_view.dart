@@ -164,6 +164,13 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
             .where((a) => tab.$2(parseTicketStatus(a.appointmentStatus)))
             .toList(),
     ];
+    final counts = state.appointments!.data.counts;
+    final statusCounts = [
+      counts.all,
+      counts.open,
+      counts.closed,
+      counts.cancelled,
+    ];
 
     return DefaultTabController(
       length: _statusTabs.length,
@@ -172,8 +179,8 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('My Appointments', style: AppTheme.title14),
-            height(12),
+            // Text('My Appointments', style: AppTheme.title14),
+            // height(12),
             TabBar(
               isScrollable: true,
               padding: EdgeInsets.zero,
@@ -183,7 +190,7 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
               indicatorColor: AppColors.primary,
               tabs: [
                 for (var i = 0; i < _statusTabs.length; i++)
-                  Tab(text: '${_statusTabs[i].$1} (${lists[i].length})'),
+                  Tab(text: '${_statusTabs[i].$1} (${statusCounts[i]})'),
               ],
             ),
             height(12),
@@ -194,6 +201,12 @@ class _AppointmentListViewState extends ConsumerState<AppointmentListView> {
                     AppointmentListWidget(
                       appointments: list,
                       onRefresh: _refresh,
+                      onLoadMore: _vm.loadMoreAppointments,
+                      hasMore:
+                          state.appointments!.data.currentPage <
+                          state.appointments!.data.lastPage,
+                      isLoadingMore: state.isFetchingAppointments,
+                      paginationError: state.appointmentsError,
                       onView: (a) => showAppointmentDetailSheet(context, a),
                       onRemarks: (a) =>
                           showAppointmentRemarksSheet(context, ref, a),

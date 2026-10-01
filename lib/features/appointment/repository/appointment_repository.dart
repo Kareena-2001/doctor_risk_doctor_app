@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:Doctors_App/features/appointment/model/add_appointment_remark_model.dart';
-import 'package:Doctors_App/features/appointment/model/appointment_create_model.dart';
 import 'package:Doctors_App/features/appointment/model/appointment_model.dart';
 import 'package:Doctors_App/features/appointment/model/appointment_remarks_model.dart';
 import 'package:Doctors_App/features/appointment/model/cancel_appointment_model.dart';
@@ -119,16 +118,8 @@ class AppointmentRepository {
         formData['start_date'] = startDate;
       }
 
-      if (startDate != null && startDate.isNotEmpty) {
-        formData['end_date'] = startDate;
-      }
-
       if (endDate != null && endDate.isNotEmpty) {
-        formData['page'] = endDate;
-      }
-
-      if (endDate != null && endDate.isNotEmpty) {
-        formData['limit'] = endDate;
+        formData['end_date'] = endDate;
       }
 
       final response = await _apiClient.get(
