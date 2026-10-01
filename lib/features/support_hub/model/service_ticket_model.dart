@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'service_ticket_model.freezed.dart';
 
 part 'service_ticket_model.g.dart';
-
 
 @freezed
 class ServiceTicketResponse with _$ServiceTicketResponse {

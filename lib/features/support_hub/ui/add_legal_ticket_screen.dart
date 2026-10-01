@@ -251,7 +251,6 @@ class _AddLegalTicketScreenState extends ConsumerState<AddLegalTicketScreen> {
                 onChanged: (v) => setState(() => _legalType = v),
               ),
             ],
-
             if (isAppointment) ...[
               height(16),
               CustomDropdownField<AppointmentMode>(

@@ -28,7 +28,7 @@ class LegalTicketCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final status = parseTicketStatus(ticket.ticketStatus);
     final editLabel = ticket.editLabel ?? '';
-    final typeValue = ticket.typeValue ?? '';
+    final typeValue = ticket.typeValue?.split(' ').last.toUpperCase() ?? '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),

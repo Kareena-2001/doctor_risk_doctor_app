@@ -31,7 +31,7 @@ class LegalTicketList extends StatelessWidget {
               physics: AlwaysScrollableScrollPhysics(),
               children: [
                 SizedBox(height: Responsive.h(180)),
-                const CommonEmptyState(
+                CommonEmptyState(
                   icon: Icons.confirmation_number_outlined,
                   title: 'No tickets found',
                   message: 'Raise a ticket to get started',

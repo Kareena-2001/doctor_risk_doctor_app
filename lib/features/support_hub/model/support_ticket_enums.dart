@@ -21,11 +21,11 @@ extension LegalTypeX on LegalType {
   String get apiValue {
     switch (this) {
       case LegalType.legalNotice:
-        return 'NOTICE';
+        return 'Legal Notice';
       case LegalType.legalConsultation:
-        return 'CONSULTATION';
+        return 'Legal Consultation';
       case LegalType.legalCase:
-        return 'CASE';
+        return 'Legal Case';
     }
   }
 }

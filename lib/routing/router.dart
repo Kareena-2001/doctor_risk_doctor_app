@@ -171,7 +171,6 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const EmergencyAssistanceScreen()),
     ),
-
     GoRoute(
       path: Routes.rewards,
       pageBuilder: (context, state) => state.slidePage(const RewardsScreen()),
@@ -180,7 +179,6 @@ final GoRouter router = GoRouter(
       path: Routes.productList,
       pageBuilder: (context, state) => state.slidePage(const ProductView()),
     ),
-
     GoRoute(
       path: Routes.productHub,
       builder: (context, state) => const ProductHubView(),
@@ -214,7 +212,6 @@ final GoRouter router = GoRouter(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-
         return PurchaseWizardScreen(
           product: extra.$1,
           tier: extra.$2,
@@ -224,7 +221,6 @@ final GoRouter router = GoRouter(
         );
       },
     ),
-
     GoRoute(
       path: Routes.homeScreen,
       pageBuilder: (context, state) => state.slidePage(HomeScreen()),
@@ -238,7 +234,6 @@ final GoRouter router = GoRouter(
       path: Routes.aboutUs,
       pageBuilder: (context, state) {
         final comingFromHome = state.extra as bool? ?? false;
-
         return state.slidePage(AboutUsScreen(showBack: comingFromHome));
       },
     ),
@@ -292,7 +287,6 @@ final GoRouter router = GoRouter(
       path: Routes.notification,
       pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
     ),
-
     GoRoute(
       path: Routes.forgotPassword,
       pageBuilder: (context, state) =>
@@ -403,7 +397,6 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const AppointmentListView()),
     ),
-
     GoRoute(
       path: Routes.legalConsultant,
       pageBuilder: (context, state) =>
@@ -441,18 +434,11 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const ChangePasswordScreen()),
     ),
-
     GoRoute(
       path: Routes.payment,
       pageBuilder: (context, state) {
         return state.slidePage(PaymentScreen(eventRegistrationId: ''));
       },
     ),
-
-    // GoRoute(
-    //   path: Routes.payment,
-    //   pageBuilder: (context, state) =>
-    //       state.slidePage(const PaymentScreen(args: args)),
-    // ),
   ],
 );
