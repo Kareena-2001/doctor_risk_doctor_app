@@ -159,21 +159,20 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.documentVault,
-      pageBuilder: (context, state) =>
-          state.slidePage(const DocumentVaultScreen()),
+      pageBuilder: (context, state) => state.slidePage(DocumentVaultScreen()),
     ),
     GoRoute(
       path: Routes.emergency,
       pageBuilder: (context, state) =>
-          state.slidePage(const EmergencyAssistanceScreen()),
+          state.slidePage(EmergencyAssistanceScreen()),
     ),
     GoRoute(
       path: Routes.rewards,
-      pageBuilder: (context, state) => state.slidePage(const RewardsScreen()),
+      pageBuilder: (context, state) => state.slidePage(RewardsScreen()),
     ),
     GoRoute(
       path: Routes.productList,
-      pageBuilder: (context, state) => state.slidePage(const ProductView()),
+      pageBuilder: (context, state) => state.slidePage(ProductView()),
     ),
     GoRoute(
       path: Routes.productHub,
@@ -398,6 +397,7 @@ final GoRouter router = GoRouter(
       path: Routes.legalScreen,
       pageBuilder: (context, state) => state.slidePage(const LegalScreen()),
     ),
+
     GoRoute(
       path: Routes.addLegalNotice,
       pageBuilder: (context, state) =>

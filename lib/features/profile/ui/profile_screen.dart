@@ -16,12 +16,15 @@ import 'package:Doctors_App/features/profile/model/doctor_profile_response.dart'
 import 'package:Doctors_App/features/profile/model/profile_address_request.dart';
 import 'package:Doctors_App/features/profile/ui/state/profile_state.dart';
 import 'package:Doctors_App/features/profile/ui/view_model/profile_view_model.dart';
+import 'package:Doctors_App/features/rewards/model/reward_points_model.dart';
 import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../extensions/date_time_extension.dart';
 import '../../../routing/routes.dart';
+import '../../rewards/ui/view_model/rewards_view_model.dart';
 import 'widgets/profile_address_form_sheet.dart';
 
 const PolicyStatus kCurrentDashboardStatus = PolicyStatus.active;
@@ -104,10 +107,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _worldwideCtrl = TextEditingController();
     _unqualifiedStaffCtrl = TextEditingController();
     _unqualifiedStaffCountCtrl = TextEditingController();
-
-    Future.microtask(
-      () => ref.read(profileViewModelProvider.notifier).getProfile(),
-    );
+    Future.microtask(() {
+      ref.read(profileViewModelProvider.notifier).getProfile();
+      ref.read(rewardsViewModelProvider.notifier).loadRewards();
+    });
   }
 
   String _normalizePrefix(String? raw) {
@@ -1073,49 +1076,153 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildRewardsSection() {
+    final rewards = ref.watch(rewardsViewModelProvider).rewardsData;
+    final latest = (rewards?.rewardPoints ?? const <RewardPointModel>[])
+        .take(3)
+        .toList();
+
     return SectionCard(
       title: 'Rewards & Points',
+      onViewAll: () {
+        context.push(Routes.rewards);
+      },
       icon: Icons.stars_rounded,
       children: [
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: '320',
-                style: customTextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFD99A00),
-                ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              _fmtPoints(rewards?.availablePoints),
+              style: customTextStyle(
+                fontSize: Responsive.sp(28),
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFD99A00),
               ),
-              TextSpan(
-                text: ' points available',
-                style: customTextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade700,
-                ),
+            ),
+            width(Responsive.w(6)),
+            Text(
+              'points available',
+              style: customTextStyle(
+                fontSize: Responsive.sp(12),
+                fontWeight: FontWeight.w500,
+                color: context.secondaryTextColor,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        height(10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: context.borderColor),
-          ),
-          child: Text(
-            'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
+        height(Responsive.h(12)),
+        if (latest.isEmpty)
+          Text(
+            'No reward points yet.',
             style: customTextStyle(
-              fontSize: 11,
-              color: context.primaryTextColor,
-            ).copyWith(height: 1.4),
-          ),
+              fontSize: Responsive.sp(12),
+              color: context.secondaryTextColor,
+            ),
+          )
+        else
+          ...List.generate(latest.length, (i) {
+            return Column(
+              children: [
+                // Divider(height: 1, thickness: 1, color: context.borderColor),
+                _rewardRow(latest[i]),
+              ],
+            );
+          }),
+        height(Responsive.h(4)),
+        Divider(height: 1, thickness: 1, color: context.borderColor),
+        height(Responsive.h(10)),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.info_outline_rounded,
+              size: Responsive.sp(13),
+              color: context.secondaryTextColor,
+            ),
+            width(Responsive.w(8)),
+            Expanded(
+              child: Text(
+                'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
+                style: customTextStyle(
+                  fontSize: Responsive.sp(10.5),
+                  color: context.secondaryTextColor,
+                ).copyWith(height: 1.35),
+              ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  Widget _rewardRow(RewardPointModel reward) {
+    final date = DateTime.tryParse(reward.date);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
+      child: Row(
+        children: [
+          Container(
+            width: Responsive.w(32),
+            height: Responsive.w(32),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.article_rounded,
+              color: AppColors.primary,
+              size: Responsive.sp(15),
+            ),
+          ),
+          width(Responsive.w(10)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  reward.text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(12),
+                    fontWeight: FontWeight.w600,
+                    color: context.primaryTextColor,
+                  ),
+                ),
+                height(Responsive.h(2)),
+                Text(
+                  '${reward.rewardPointType}  •  ${date == null ? reward.date : date.toEventDate()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(10),
+                    color: context.secondaryTextColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          width(Responsive.w(8)),
+          Text(
+            '+${_fmtPoints(reward.points)} pts',
+            style: customTextStyle(
+              fontSize: Responsive.sp(12),
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF2E9E5B),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _fmtPoints(int? value) {
+    if (value == null) return '-';
+    return value.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]},',
     );
   }
 

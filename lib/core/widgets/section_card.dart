@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../extensions/build_context_extension.dart';
 import '../../theme/app_colors.dart';
 import '../constants/dimensions.dart';
@@ -10,6 +11,8 @@ class SectionCard extends ConsumerWidget {
   final String? subtitle;
   final IconData icon;
   final List<Widget> children;
+  final VoidCallback? onViewAll;
+  final String viewAllText;
 
   const SectionCard({
     super.key,
@@ -17,6 +20,8 @@ class SectionCard extends ConsumerWidget {
     this.subtitle,
     required this.icon,
     required this.children,
+    this.onViewAll,
+    this.viewAllText = 'View All',
   });
 
   @override
@@ -40,6 +45,7 @@ class SectionCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -77,6 +83,25 @@ class SectionCard extends ConsumerWidget {
                   ],
                 ),
               ),
+              if (onViewAll != null) ...[
+                width(8),
+                TextButton(
+                  onPressed: onViewAll,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    viewAllText,
+                    style: customTextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.accent,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           height(16),

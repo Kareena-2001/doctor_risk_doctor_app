@@ -1,215 +1,340 @@
+import 'package:Doctors_App/core/widgets/common_empty_state.dart';
+import 'package:Doctors_App/core/widgets/common_error_state.dart';
+import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/features/rewards/model/reward_points_model.dart';
+import 'package:Doctors_App/features/rewards/ui/view_model/rewards_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/dimensions.dart';
 import '../../../core/constants/responsive.dart';
 import '../../../core/constants/values/app_text_style.dart';
+import '../../../extensions/date_time_extension.dart';
 import '../../../theme/app_colors.dart';
-import '../model/rewards_model.dart';
 
-class RewardsScreen extends ConsumerWidget {
+class RewardsScreen extends ConsumerStatefulWidget {
   const RewardsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  ConsumerState<RewardsScreen> createState() => _RewardsScreenState();
+}
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.all(Responsive.w(0)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildPointsHeroCard(isDark),
-          height(Responsive.h(24)),
-          Text(
-            'Points History',
-            style: customTextStyle(
-              fontSize: Responsive.sp(16),
-              fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
-            ),
-          ),
-          height(Responsive.h(4)),
-          Text(
-            'Track points earned through community contributions and referrals.',
-            style: customTextStyle(
-              fontSize: Responsive.sp(12),
-              color: AppColors.homeTextMuted,
-            ),
-          ),
-          height(Responsive.h(16)),
-          ...rewardsData.transactions.map(
-            (tx) => _buildTransactionTile(tx, isDark),
-          ),
-          height(Responsive.h(40)),
-        ],
-      ),
-    );
+class _RewardsScreenState extends ConsumerState<RewardsScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  static const _green = Color(0xFF2E9E5B);
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(rewardsViewModelProvider.notifier).loadRewards();
+    });
+    _scrollController.addListener(_onScroll);
   }
 
-  Widget _buildPointsHeroCard(bool isDark) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(Responsive.w(20)),
-      decoration: BoxDecoration(
-        // gradient: LinearGradient(
-        //   colors: [AppColors.white],
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        // ),
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(16)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(rewardsViewModelProvider.notifier).loadMoreRewards();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rewardsState = ref.watch(rewardsViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final rewardsData = rewardsState.rewardsData;
+
+    Widget body;
+
+    if (rewardsData == null && rewardsState.isLoading) {
+      body = const Center(child: Loading());
+    } else if (rewardsData == null && rewardsState.errorMessage != null) {
+      body = _buildError(rewardsState.errorMessage!);
+    } else if (rewardsData == null) {
+      body = const SizedBox.shrink();
+    } else {
+      body = RefreshIndicator(
+        onRefresh: () =>
+            ref.read(rewardsViewModelProvider.notifier).loadRewards(),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'AVAILABLE BALANCE',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(11),
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textColor,
-                ).copyWith(letterSpacing: 1.0),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Responsive.w(10),
-                  vertical: Responsive.h(4),
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
-                  ),
-                  borderRadius: BorderRadius.circular(Responsive.w(20)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      size: Responsive.sp(13),
-                      color: Colors.white,
-                    ),
-                    width(Responsive.w(4)),
-                    Text(
-                      'Gold Tier',
-                      style: customTextStyle(
-                        fontSize: Responsive.sp(11),
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          padding: EdgeInsets.fromLTRB(
+            Responsive.w(16),
+            Responsive.h(12),
+            Responsive.w(16),
+            Responsive.h(24),
           ),
-          height(Responsive.h(8)),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                '${rewardsData.availablePoints}',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(32),
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textColorGrey,
-                ),
-              ),
-              width(Responsive.w(6)),
-              Text(
-                'points available',
-                style: customTextStyle(
-                  fontSize: Responsive.sp(14),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textColor,
-                ),
-              ),
-            ],
-          ),
-          height(Responsive.h(16)),
-          Divider(color: Colors.white.withValues(alpha: 0.12), height: 1),
-          height(Responsive.h(16)),
-          Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: Responsive.sp(16),
-                color: AppColors.textColor,
-              ),
-              width(Responsive.w(8)),
-              Expanded(
-                child: Text(
-                  'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
-                  style: customTextStyle(
-                    fontSize: Responsive.sp(11.5),
-                    color: AppColors.textColorGrey,
-                  ).copyWith(height: 1.4),
+              _buildPointsHeroCard(rewardsData),
+              height(Responsive.h(20)),
+              _buildHistoryHeader(rewardsData),
+              height(Responsive.h(12)),
+              if (rewardsData.rewardPoints.isEmpty)
+                _buildEmptyState()
+              else
+                ...rewardsData.rewardPoints.map(
+                  (reward) => _buildTransactionTile(reward, isDark),
                 ),
-              ),
+              if (rewardsState.isLoadingMore)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: Responsive.h(12)),
+                  child: Center(child: Loading()),
+                ),
             ],
           ),
-        ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: CustomAppBar(title: 'Rewards'),
+      body: body,
+    );
+  }
+
+  Widget _buildError(String message) {
+    return Center(
+      child: CommonErrorState(
+        title: 'Failed to load rewards',
+        message: message,
+        onRetry: () {
+          ref.read(rewardsViewModelProvider.notifier).loadRewards();
+        },
       ),
     );
   }
 
-  Widget _buildTransactionTile(RewardTransactionModel tx, bool isDark) {
-    final isPositive = tx.type == TransactionType.earn;
+  Widget _buildPointsHeroCard(RewardPointsData data) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Responsive.w(16)),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: context.secondaryBackgroundColor,
+          borderRadius: BorderRadius.circular(Responsive.w(16)),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 2.5,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFE6C878), Color(0xFFB8912F)],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(Responsive.w(16)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.workspace_premium_rounded,
+                        size: Responsive.sp(14),
+                        color: Color(0xFFB8912F),
+                      ),
+                      width(Responsive.w(6)),
+                      Text(
+                        'AVAILABLE BALANCE',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(10),
+                          fontWeight: FontWeight.w700,
+                          color: context.secondaryTextColor,
+                        ).copyWith(letterSpacing: 1.2),
+                      ),
+                    ],
+                  ),
+                  height(Responsive.h(6)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        _formatNumber(data.availablePoints),
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(30),
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFFD99A00),
+                        ),
+                      ),
+                      width(Responsive.w(6)),
+                      Text(
+                        'points',
+                        style: customTextStyle(
+                          fontSize: Responsive.sp(13),
+                          fontWeight: FontWeight.w600,
+                          color: context.secondaryTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  height(Responsive.h(12)),
+                  Divider(height: 1, thickness: 1, color: context.borderColor),
+                  height(Responsive.h(12)),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _heroStat(
+                          'Total Earned',
+                          data.totalEarnedPoints,
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: Responsive.h(28),
+                        color: context.borderColor,
+                      ),
+                      width(Responsive.w(16)),
+                      Expanded(
+                        child: _heroStat(
+                          'Total Redeemed',
+                          data.totalRedeemedPoints,
+                        ),
+                      ),
+                    ],
+                  ),
+                  height(Responsive.h(12)),
+                  Divider(height: 1, thickness: 1, color: context.borderColor),
+                  height(Responsive.h(10)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: Responsive.sp(13),
+                        color: context.secondaryTextColor,
+                      ),
+                      width(Responsive.w(8)),
+                      Expanded(
+                        child: Text(
+                          'Redeem your points at checkout — toward a membership renewal, a new plan purchase, or a paid event — from the Payment Gateway\'s "Redeem Reward Points" toggle.',
+                          style: customTextStyle(
+                            fontSize: Responsive.sp(10.5),
+                            color: context.secondaryTextColor,
+                          ).copyWith(height: 1.35),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget _heroStat(String label, int value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _formatNumber(value),
+          style: customTextStyle(
+            fontSize: Responsive.sp(16),
+            fontWeight: FontWeight.w800,
+            color: context.primaryTextColor,
+          ),
+        ),
+        height(Responsive.h(1)),
+        Text(
+          label,
+          style: customTextStyle(
+            fontSize: Responsive.sp(10.5),
+            color: context.secondaryTextColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHistoryHeader(RewardPointsData data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Points History',
+          style: customTextStyle(
+            fontSize: Responsive.sp(15),
+            fontWeight: FontWeight.w700,
+            color: context.primaryTextColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionTile(RewardPointModel reward, bool isDark) {
     return Container(
-      margin: EdgeInsets.only(bottom: Responsive.h(12)),
-      padding: EdgeInsets.all(Responsive.w(14)),
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: Responsive.h(8)),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.w(12),
+        vertical: Responsive.h(10),
+      ),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A1A1D) : Colors.white,
-        borderRadius: BorderRadius.circular(Responsive.w(12)),
+        borderRadius: BorderRadius.circular(Responsive.w(14)),
         border: Border.all(color: AppColors.fieldGrey.withValues(alpha: 0.5)),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Container(
-          //   padding: EdgeInsets.all(Responsive.w(8)),
-          //   decoration: BoxDecoration(
-          //     color: const Color(0xFF57C97E).withValues(alpha: 0.12),
-          //     shape: BoxShape.circle,
-          //   ),
-          //   child: Icon(
-          //     Icons.add_rounded,
-          //     color: const Color(0xFF57C97E),
-          //     size: Responsive.sp(18),
-          //   ),
-          // ),
-          // width(Responsive.w(12)),
+          Container(
+            width: Responsive.w(36),
+            height: Responsive.w(36),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.article_rounded,
+              color: AppColors.primary,
+              size: Responsive.sp(17),
+            ),
+          ),
+          width(Responsive.w(10)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tx.title,
+                  reward.text,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: customTextStyle(
-                    fontSize: Responsive.sp(11),
+                    fontSize: Responsive.sp(12.5),
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textColor,
+                    color: context.primaryTextColor,
                   ).copyWith(height: 1.3),
                 ),
-                height(Responsive.h(4)),
+                height(Responsive.h(3)),
                 Text(
-                  tx.date,
+                  '${reward.rewardPointType}  •  ${_formatDate(reward.date)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: customTextStyle(
-                    fontSize: Responsive.sp(9),
+                    fontSize: Responsive.sp(10.5),
                     color: AppColors.homeTextMuted,
                   ),
                 ),
@@ -218,16 +343,42 @@ class RewardsScreen extends ConsumerWidget {
           ),
           width(Responsive.w(8)),
           Text(
-            '${isPositive ? '+' : '-'}${_formatNumber(tx.points)} Pts',
+            '+${_formatNumber(reward.points)}',
+            style: customTextStyle(
+              fontSize: Responsive.sp(15),
+              fontWeight: FontWeight.w800,
+              color: _green,
+            ),
+          ),
+          width(Responsive.w(2)),
+          Text(
+            'pts',
             style: customTextStyle(
               fontSize: Responsive.sp(10),
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+              color: _green,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildEmptyState() {
+    return CommonEmptyState(
+      title: 'No reward points yet',
+      icon: Icons.shield_outlined,
+    );
+  }
+
+  String _formatDate(String raw) {
+    final date = DateTime.tryParse(raw);
+
+    if (date == null) {
+      return raw;
+    }
+
+    return date.toEventDate();
   }
 
   String _formatNumber(int number) {

@@ -12,7 +12,7 @@ class Assets {
   static const logo = 'assets/images/logo.png';
   static const googleLogo = 'assets/images/google_logo.svg';
   static const appleLogo = 'assets/images/apple_logo.svg';
-  static const user = 'assets/images/user.jpg';
+  static const user = 'assets/images/user.png';
   static const bellIcons = 'assets/images/bell_icons.webp';
 
 }
