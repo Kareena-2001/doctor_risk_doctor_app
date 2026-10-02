@@ -1159,7 +1159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     Text(
                       policy.title.toUpperCase(),
                       style: customTextStyle(
-                        color: AppColors.textColorGrey,
+                        color: context.greyColor,
                         fontSize: Responsive.sp(11),
                         fontWeight: FontWeight.w700,
                       ).copyWith(letterSpacing: 1.2),
@@ -1174,7 +1174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             policy.policyType,
             style: customTextStyle(
               fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
               fontSize: Responsive.sp(12.5),
             ),
           ),
@@ -1209,7 +1209,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     Text(
                       policy.policyNumber,
                       style: customTextStyle(
-                        color: AppColors.textColor,
+                        color: context.secondaryTextColor,
                         fontSize: Responsive.sp(12),
                         fontWeight: FontWeight.w600,
                       ).copyWith(letterSpacing: 1.5),
@@ -1307,7 +1307,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               Text(
                 label.toUpperCase(),
                 style: customTextStyle(
-                  color: AppColors.homeTextMuted,
+                  color: context.greyColor,
                   fontSize: Responsive.sp(9.5),
                   fontWeight: FontWeight.w600,
                 ).copyWith(letterSpacing: 0.8),
@@ -1316,7 +1316,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               Text(
                 value,
                 style: customTextStyle(
-                  color: AppColors.textColor,
+                  color: context.secondaryTextColor,
                   fontSize: Responsive.sp(13),
                   fontWeight: FontWeight.w600,
                 ),
@@ -2141,7 +2141,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     style: customTextStyle(
                       fontSize: Responsive.sp(13),
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textColor,
+                      color: context.primaryTextColor,
                     ),
                   ),
                   height(Responsive.h(8)),
@@ -2152,8 +2152,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
                   height(Responsive.h(6)),
                   if (event.eventType != 'Online' &&
-                      event.address != null &&
-                      event.address!.isNotEmpty) ...[
+                      event.address.isNotEmpty) ...[
                     Row(
                       children: [
                         Icon(
@@ -2164,7 +2163,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         width(Responsive.w(4)),
                         Expanded(
                           child: Text(
-                            event.address!,
+                            event.address,
                             style: customTextStyle(
                               fontSize: Responsive.sp(11),
                               color: AppColors.grey,
@@ -2176,7 +2175,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     ),
                     height(Responsive.h(8)),
                   ],
-
                   Text(
                     event.priceDescription != null &&
                             event.priceDescription!.isNotEmpty
@@ -2187,7 +2185,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       fontWeight: FontWeight.bold,
                       color: event.price == '0.00'
                           ? Colors.green
-                          : AppColors.textColor,
+                          : context.primaryTextColor,
                     ),
                   ),
                   if (!canRegister) ...[
@@ -2284,7 +2282,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 title,
                 style: customTextStyle(
                   fontSize: Responsive.sp(10),
-                  color: AppColors.homeTextMuted,
+                  color: context.greyColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -2293,7 +2291,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 value,
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
-                  color: AppColors.textColor,
+                  color: context.secondaryTextColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

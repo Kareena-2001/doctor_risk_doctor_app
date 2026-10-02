@@ -1,5 +1,6 @@
 import 'package:Doctors_App/core/constants/assets.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -366,7 +367,8 @@ class AppDrawer extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white,
+        // color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white,
+        color: context.secondaryBackgroundColor,
         borderRadius: BorderRadius.circular(16),
         shadowColor: Colors.black.withValues(alpha: 0.04),
         elevation: isDark ? 0 : 2,

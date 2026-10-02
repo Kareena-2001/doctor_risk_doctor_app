@@ -119,7 +119,8 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                     Responsive.w(16),
                     Responsive.h(24),
                   ),
-                  itemCount: posts.length +
+                  itemCount:
+                      posts.length +
                       (response.currentPage < response.lastPage ? 1 : 0),
                   separatorBuilder: (_, __) => height(Responsive.h(14)),
                   itemBuilder: (_, index) {
@@ -224,7 +225,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
 
     final detailsStyle = customTextStyle(
       fontSize: Responsive.sp(13),
-      color: Colors.grey.shade700,
+      color: context.greyColor,
     );
 
     return Container(

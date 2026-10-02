@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../features/common/ui/widgets/custom_snack_bar.dart';
 import '../theme/app_colors.dart';
-
 extension ThemeModeExtension on BuildContext {
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
@@ -21,11 +20,15 @@ extension ThemeModeExtension on BuildContext {
   Color get secondaryTextColor =>
       isDarkMode ? AppColors.darkInk600 : AppColors.mono80;
 
-  Color get dividerColor => isDarkMode ? AppColors.darkLine : AppColors.mono20;
+  Color get dividerColor =>
+      isDarkMode ? AppColors.darkLine : AppColors.mono20;
 
-  // Border color
   Color get borderColor =>
       isDarkMode ? AppColors.darkLine : AppColors.lineLight;
+
+  // Grey color
+  Color get greyColor =>
+      isDarkMode ? AppColors.darkInk400 : AppColors.mono60;
 
   ThemeData get lightTheme => ThemeData.light().copyWith(
     scaffoldBackgroundColor: AppColors.mono0,
@@ -46,11 +49,15 @@ extension ThemeModeExtension on BuildContext {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
     ),
-    dividerTheme: const DividerThemeData(color: AppColors.lineLight),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.lineLight,
+    ),
     inputDecorationTheme: const InputDecorationTheme(
       filled: true,
       fillColor: AppColors.mono0,
-      hintStyle: TextStyle(color: AppColors.ink400),
+      hintStyle: TextStyle(
+        color: AppColors.ink400,
+      ),
     ),
     textTheme: Theme.of(this).textTheme.apply(
       bodyColor: AppColors.ink900,
@@ -66,7 +73,9 @@ extension ThemeModeExtension on BuildContext {
       color: AppColors.darkCard,
       surfaceTintColor: Colors.transparent,
     ),
-    dialogTheme: const DialogThemeData(backgroundColor: AppColors.darkCard),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: AppColors.darkCard,
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.darkCard,
       surfaceTintColor: Colors.transparent,
@@ -86,11 +95,15 @@ extension ThemeModeExtension on BuildContext {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
     ),
-    dividerTheme: const DividerThemeData(color: AppColors.darkLine),
+    dividerTheme: const DividerThemeData(
+      color: AppColors.darkLine,
+    ),
     inputDecorationTheme: const InputDecorationTheme(
       fillColor: AppColors.darkCard,
       filled: true,
-      hintStyle: TextStyle(color: AppColors.darkInk400),
+      hintStyle: TextStyle(
+        color: AppColors.darkInk400,
+      ),
     ),
     textTheme: Theme.of(this).textTheme.apply(
       bodyColor: AppColors.darkInk900,
@@ -99,19 +112,27 @@ extension ThemeModeExtension on BuildContext {
   );
 
   void showSuccessSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.success(text: text));
+    ScaffoldMessenger.of(this).showSnackBar(
+      CustomSnackBar.success(text: text),
+    );
   }
 
   void showInfoSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.info(text: text));
+    ScaffoldMessenger.of(this).showSnackBar(
+      CustomSnackBar.info(text: text),
+    );
   }
 
   void showWarningSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.warning(text: text));
+    ScaffoldMessenger.of(this).showSnackBar(
+      CustomSnackBar.warning(text: text),
+    );
   }
 
   void showErrorSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.error(text: text));
+    ScaffoldMessenger.of(this).showSnackBar(
+      CustomSnackBar.error(text: text),
+    );
   }
 
   void hideKeyboard() {

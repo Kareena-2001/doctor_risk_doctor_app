@@ -430,7 +430,7 @@ class _EventCard extends StatelessWidget {
               style: customTextStyle(
                 fontSize: Responsive.sp(13),
                 fontWeight: FontWeight.bold,
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
             height(Responsive.h(8)),
@@ -438,7 +438,7 @@ class _EventCard extends StatelessWidget {
               _formatEventDateTime(),
               style: customTextStyle(
                 fontSize: Responsive.sp(11),
-                color: AppColors.grey,
+                color: context.greyColor,
               ),
             ),
             height(Responsive.h(6)),
@@ -499,8 +499,8 @@ class _EventCard extends StatelessWidget {
               event.priceDescription?.isNotEmpty == true
                   ? '${event.price == null || event.price == '0.00' ? 'Free' : '₹${event.price}'} (${event.priceDescription})'
                   : (event.price == null || event.price == '0.00'
-                  ? 'Free'
-                  : '₹${event.price}'),
+                        ? 'Free'
+                        : '₹${event.price}'),
               style: customTextStyle(
                 fontSize: Responsive.sp(11),
                 fontWeight: FontWeight.bold,

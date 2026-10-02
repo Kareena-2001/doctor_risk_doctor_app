@@ -7,7 +7,6 @@ import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/viewmodel/news_advisory_view_model.dart';
-import 'package:Doctors_App/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -80,7 +79,10 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
             child: Text(
               error.toString(),
               textAlign: TextAlign.center,
-              style: customTextStyle(fontSize: 14, color: Colors.grey.shade700),
+              style: customTextStyle(
+                fontSize: 14,
+                color: context.secondaryTextColor,
+              ),
             ),
           ),
         ),
@@ -124,7 +126,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
                               'No news advisories found.',
                               style: customTextStyle(
                                 fontSize: 14,
-                                color: Colors.grey.shade600,
+                                color: context.secondaryTextColor,
                               ),
                             ),
                           ),
@@ -180,7 +182,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
         decoration: BoxDecoration(
           color: context.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +196,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
                     style: customTextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.newPri,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -206,7 +208,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
                   style: customTextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.newPri,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -226,7 +228,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
               overflow: TextOverflow.ellipsis,
               style: customTextStyle(
                 fontSize: 11.5,
-                color: Colors.grey.shade700,
+                color: context.secondaryTextColor,
               ).copyWith(height: 1.5),
             ),
 
@@ -239,14 +241,14 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
                   style: customTextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.newPri,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 Spacer(),
                 Icon(
                   Icons.arrow_forward_rounded,
                   size: 15,
-                  color: AppColors.newPri,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),

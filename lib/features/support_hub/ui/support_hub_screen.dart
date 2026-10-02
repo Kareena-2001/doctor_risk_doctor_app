@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +65,7 @@ class _SupportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
-      color: isDark ? Colors.grey.shade800 : Colors.white,
+      color: context.secondaryBackgroundColor,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),

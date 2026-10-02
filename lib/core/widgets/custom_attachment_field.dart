@@ -1,3 +1,4 @@
+import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +24,7 @@ class CustomAttachmentField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,7 +33,7 @@ class CustomAttachmentField extends ConsumerWidget {
             Text(
               label ?? '',
               style: customTextStyle(
-                color: AppColors.labelColor,
+                color: isDark ? AppColors.darkInk600 : AppColors.labelColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),

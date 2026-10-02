@@ -295,7 +295,7 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
             style: customTextStyle(
               fontSize: Responsive.sp(14),
               fontWeight: FontWeight.bold,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           height(Responsive.h(12)),

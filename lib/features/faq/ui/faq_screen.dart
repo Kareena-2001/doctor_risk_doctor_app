@@ -90,9 +90,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
                 itemBuilder: (context, index) {
                   if (index == 1) {
                     return PaginationFooter(
-                      hasMore: ref
-                          .read(faqViewModelProvider.notifier)
-                          .hasMore,
+                      hasMore: ref.read(faqViewModelProvider.notifier).hasMore,
                       isLoading: _loadingMore,
                       errorMessage: _paginationError,
                       onLoadMore: _loadMore,
@@ -128,7 +126,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
                             'Common questions about your policy, membership and how DoctorsRisk works as a service.',
                             style: customTextStyle(
                               fontSize: 13,
-                              color: Colors.grey[800],
+                              color: context.greyColor,
                               fontWeight: FontWeight.w600,
                             ).copyWith(height: 1.4),
                           ),
@@ -200,7 +198,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
             style: customTextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           children: [
@@ -210,7 +208,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
               answer,
               style: customTextStyle(
                 fontSize: 13,
-                color: AppColors.textColor,
+                color: context.secondaryTextColor,
               ).copyWith(height: 1.5),
             ),
           ],

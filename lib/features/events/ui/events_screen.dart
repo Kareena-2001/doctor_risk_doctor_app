@@ -272,7 +272,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                   color: selected ? null : context.secondaryWidgetColor,
                   borderRadius: BorderRadius.circular(Responsive.w(30)),
                   border: Border.all(
-                    color: selected ? Colors.transparent : Colors.grey.shade300,
+                    color: selected ? Colors.transparent : context.greyColor,
                   ),
                 ),
                 child: Text(
@@ -280,7 +280,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                   style: customTextStyle(
                     fontSize: Responsive.sp(11),
                     fontWeight: FontWeight.w600,
-                    color: selected ? Colors.white : AppColors.textColor,
+                    color: selected ? Colors.white : context.greyColor,
                   ),
                 ),
               ),

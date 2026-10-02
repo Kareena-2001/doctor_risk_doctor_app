@@ -6,6 +6,14 @@ import '../features/common/ui/providers/app_theme_mode_provider.dart';
 class AppColors {
   AppColors._();
 
+  static bool _isDark(WidgetRef ref) {
+    final mode = ref.watch(appThemeModeProvider).value ?? ThemeMode.system;
+    return mode == ThemeMode.dark ||
+        (mode == ThemeMode.system &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+  }
+
   static const blueberry10 = Color(0xFFE5F4FF);
   static const blueberry20 = Color(0xFFCCE9FF);
   static const blueberry30 = Color(0xFFB3DFFF);
@@ -162,77 +170,77 @@ class AppColors {
   static const Color goldColor = Color(0xFFE6C878);
 
   static Color baseColor(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkMint200 : Colors.grey.shade300;
   }
 
   static Color highlightColor(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkBrand700 : Colors.grey.shade100;
   }
 
   static Color background(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkPaper : const Color(0xFFF5F5F5);
   }
 
   static Color cardBackground(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkCard : Colors.white;
   }
 
   static Color surfaceBackground(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkCard : const Color(0xFFFFFFFF);
   }
 
   static Color textBg(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? accent : const Color(0xFFFFFFFF);
   }
 
   static Color textAccent(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkBrand500 : const Color(0xFF2C3E50);
   }
 
   static Color textPrimary(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk900 : const Color(0xFF212121);
   }
 
   static Color textSecondary(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk600 : const Color(0xFF757575);
   }
 
   static Color textTertiary(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk400 : const Color(0xFF9E9E9E);
   }
 
   static Color textQuaternary(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk600 : const Color(0xFF2D2D2D);
   }
 
   static Color appBarBackground(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkCard : Colors.white;
   }
 
   static Color appBarText(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk900 : const Color(0xFF212121);
   }
 
   static Color appBarIcon(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? grey : const Color(0xFF212121);
   }
 
   static Color bottomNavBackground(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkCard : Colors.white;
   }
 
@@ -244,7 +252,7 @@ class AppColors {
   );
 
   static Color bottomNavUnselected(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkInk400 : const Color(0xFF757575);
   }
 
@@ -261,12 +269,12 @@ class AppColors {
   static const Color cardRed = Color(0xFFF44336);
 
   static Color cardSelected(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? orange : const Color(0xFF2D2D2D);
   }
 
   static Color borderColor(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? darkLine : const Color(0xFFE0E0E0);
   }
 
@@ -277,12 +285,12 @@ class AppColors {
   static const Color info = Color(0xFF42A5F5);
 
   static Color shimmerBase(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? const Color(0xFF3A3A3A) : Colors.grey.shade300;
   }
 
   static Color shimmerHighlight(WidgetRef ref) {
-    final isDark = ref.watch(appThemeModeProvider).value == ThemeMode.dark;
+    final isDark = _isDark(ref);
     return isDark ? const Color(0xFF4F4F4F) : Colors.grey.shade100;
   }
 }

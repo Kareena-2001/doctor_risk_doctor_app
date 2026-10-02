@@ -133,7 +133,7 @@ class _EmergencyAssistanceScreenState
                     style: customTextStyle(
                       fontSize: Responsive.sp(15),
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textColor,
+                      color: context.primaryTextColor,
                     ),
                   ),
                   height(Responsive.h(12)),
@@ -142,7 +142,7 @@ class _EmergencyAssistanceScreenState
                     style: customTextStyle(
                       fontSize: Responsive.sp(12),
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textColor,
+                      color: context.secondaryTextColor,
                     ),
                   ),
                   height(Responsive.h(8)),
@@ -152,7 +152,7 @@ class _EmergencyAssistanceScreenState
                       'body': Style(
                         margin: Margins.zero,
                         padding: HtmlPaddings.zero,
-                        color: AppColors.textColor,
+                        color: context.secondaryTextColor,
                         fontSize: FontSize(Responsive.sp(12.5)),
                         lineHeight: LineHeight.number(1.45),
                       ),
@@ -162,7 +162,7 @@ class _EmergencyAssistanceScreenState
                       ),
                       'li': Style(
                         margin: Margins.only(bottom: Responsive.h(10)),
-                        color: AppColors.textColor,
+                        color: context.secondaryTextColor,
                         fontSize: FontSize(Responsive.sp(12.5)),
                       ),
                     },
@@ -196,12 +196,7 @@ class _EmergencyAssistanceScreenState
     final state = ref.watch(emergencyViewModelProvider);
 
     return Scaffold(
-      backgroundColor: context.primaryBackgroundColor,
-      appBar: CustomAppBar(
-        title: 'Emergency',
-        showBack: true,
-        backgroundColor: isDark ? Colors.black : const Color(0xFFF8F9FA),
-      ),
+      appBar: CustomAppBar(title: 'Emergency', showBack: true),
       body: RefreshIndicator(
         onRefresh: () {
           return ref.read(emergencyViewModelProvider.notifier).loadSops();
@@ -224,7 +219,7 @@ class _EmergencyAssistanceScreenState
                 style: customTextStyle(
                   fontSize: Responsive.sp(16),
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textColor,
+                  color: context.primaryTextColor,
                 ),
               ),
 
@@ -372,7 +367,7 @@ class _EmergencyAssistanceScreenState
               textAlign: TextAlign.center,
               style: customTextStyle(
                 fontSize: Responsive.sp(12.5),
-                color: AppColors.textColor,
+                color: context.secondaryTextColor,
               ).copyWith(height: 1.4),
             ),
           ),
@@ -430,7 +425,7 @@ class _EmergencyAssistanceScreenState
             textAlign: TextAlign.center,
             style: customTextStyle(
               fontSize: Responsive.sp(11),
-              color: AppColors.grey,
+              color: context.greyColor,
             ),
           ),
         ],
@@ -481,17 +476,15 @@ class _EmergencyAssistanceScreenState
                       style: customTextStyle(
                         fontSize: Responsive.sp(12),
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textColor,
+                        color: context.secondaryTextColor,
                       ),
                     ),
-
                     height(Responsive.h(4)),
-
                     Text(
                       sop.shortDescription,
                       style: customTextStyle(
                         fontSize: Responsive.sp(11.5),
-                        color: AppColors.homeTextMuted,
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   ],

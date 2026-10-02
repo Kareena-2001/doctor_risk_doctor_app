@@ -95,7 +95,7 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
                           'Common medico-legal questions, answered in plain language for Indian practice.',
                           style: customTextStyle(
                             fontSize: 13,
-                            color: Colors.grey[800],
+                            color: context.greyColor,
                             fontWeight: FontWeight.w600,
                           ).copyWith(height: 1.4),
                         ),
@@ -176,7 +176,7 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
             style: customTextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
+              color: context.primaryTextColor,
             ),
           ),
           children: [
@@ -186,7 +186,7 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
               faq.answerDescription,
               style: customTextStyle(
                 fontSize: 13,
-                color: AppColors.textColor,
+                color: context.secondaryTextColor,
               ).copyWith(height: 1.5),
             ),
           ],

@@ -122,6 +122,7 @@ class ReferralLinkCard extends StatelessWidget {
                   label: 'WhatsApp',
                   icon: Icons.chat_rounded,
                   onTap: () => _shareVia('whatsapp', displayLink, context),
+                  context: context,
                 ),
               ),
               width(Responsive.w(10)),
@@ -130,6 +131,7 @@ class ReferralLinkCard extends StatelessWidget {
                   label: 'Email',
                   icon: Icons.email_rounded,
                   onTap: () => _shareVia('email', displayLink, context),
+                  context: context,
                 ),
               ),
               width(Responsive.w(10)),
@@ -138,6 +140,7 @@ class ReferralLinkCard extends StatelessWidget {
                   label: 'X',
                   icon: Icons.close_rounded,
                   onTap: () => _shareVia('x', displayLink, context),
+                  context: context,
                 ),
               ),
             ],
@@ -188,6 +191,7 @@ class ReferralLinkCard extends StatelessWidget {
     required String label,
     required IconData icon,
     required VoidCallback onTap,
+    required BuildContext context,
   }) {
     return InkWell(
       onTap: onTap,
@@ -195,19 +199,23 @@ class ReferralLinkCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: context.greyColor),
           borderRadius: BorderRadius.circular(Responsive.w(10)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: Responsive.sp(16), color: AppColors.textColor),
+            Icon(
+              icon,
+              size: Responsive.sp(16),
+              color: context.secondaryTextColor,
+            ),
             height(Responsive.h(4)),
             Text(
               label,
               style: customTextStyle(
                 fontSize: Responsive.sp(10.5),
-                color: AppColors.textColor,
+                color: context.primaryTextColor,
               ),
             ),
           ],

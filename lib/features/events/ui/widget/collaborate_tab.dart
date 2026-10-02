@@ -180,7 +180,7 @@ class _CollaborationCard extends StatelessWidget {
                     style: customTextStyle(
                       fontSize: Responsive.sp(13),
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textColor,
+                      color: context.primaryTextColor,
                     ),
                   ),
                   height(Responsive.h(7)),
@@ -190,7 +190,7 @@ class _CollaborationCard extends StatelessWidget {
                         : organisation,
                     style: customTextStyle(
                       fontSize: Responsive.sp(11),
-                      color: AppColors.homeTextMuted,
+                      color: context.greyColor,
                     ),
                   ),
                 ],

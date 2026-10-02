@@ -20,16 +20,34 @@ TextStyle customTextStyle({
   );
 }
 
-Color _getColorFromAppColors(TextColorType type, WidgetRef? ref) {
+Color? _getColorFromAppColors(TextColorType type, WidgetRef? ref) {
+  if (ref == null) {
+    switch (type) {
+      case TextColorType.primary:
+      case TextColorType.secondary:
+      case TextColorType.tertiary:
+      case TextColorType.appBar:
+        return null;
+      case TextColorType.success:
+        return AppColors.greenAccent;
+      case TextColorType.error:
+        return AppColors.error;
+      case TextColorType.warning:
+        return AppColors.accent;
+      case TextColorType.info:
+        return AppColors.info;
+    }
+  }
+
   switch (type) {
     case TextColorType.primary:
-      return ref != null ? AppColors.textPrimary(ref) : AppColors.grey;
+      return AppColors.textPrimary(ref);
     case TextColorType.secondary:
-      return ref != null ? AppColors.textSecondary(ref) : AppColors.grey;
+      return AppColors.textSecondary(ref);
     case TextColorType.tertiary:
-      return ref != null ? AppColors.textTertiary(ref) : AppColors.grey;
+      return AppColors.textTertiary(ref);
     case TextColorType.appBar:
-      return ref != null ? AppColors.appBarText(ref) : AppColors.grey;
+      return AppColors.appBarText(ref);
     case TextColorType.success:
       return AppColors.greenAccent;
     case TextColorType.error:
