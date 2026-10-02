@@ -4,6 +4,7 @@ import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
 import 'package:Doctors_App/features/rewards/model/reward_points_model.dart';
+import 'package:Doctors_App/features/rewards/ui/state/rewards_state.dart';
 import 'package:Doctors_App/features/rewards/ui/view_model/rewards_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,9 +38,15 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      ref.read(rewardsViewModelProvider.notifier).loadMoreRewards();
+
+    final position = _scrollController.position;
+
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      final state = ref.read(rewardsViewModelProvider);
+
+      if (state.hasMore && !state.isLoadingMore && !state.isLoading) {
+        ref.read(rewardsViewModelProvider.notifier).loadMoreRewards();
+      }
     }
   }
 
@@ -53,58 +60,67 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen> {
   Widget build(BuildContext context) {
     final rewardsState = ref.watch(rewardsViewModelProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final rewardsData = rewardsState.rewardsData;
-
-    Widget body;
-
-    if (rewardsData == null && rewardsState.isLoading) {
-      body = const Center(child: Loading());
-    } else if (rewardsData == null && rewardsState.errorMessage != null) {
-      body = _buildError(rewardsState.errorMessage!);
-    } else if (rewardsData == null) {
-      body = const SizedBox.shrink();
-    } else {
-      body = RefreshIndicator(
-        onRefresh: () =>
-            ref.read(rewardsViewModelProvider.notifier).loadRewards(),
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
-          ),
-          padding: EdgeInsets.fromLTRB(
-            Responsive.w(16),
-            Responsive.h(12),
-            Responsive.w(16),
-            Responsive.h(24),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPointsHeroCard(rewardsData),
-              height(Responsive.h(20)),
-              _buildHistoryHeader(rewardsData),
-              height(Responsive.h(12)),
-              if (rewardsData.rewardPoints.isEmpty)
-                _buildEmptyState()
-              else
-                ...rewardsData.rewardPoints.map(
-                  (reward) => _buildTransactionTile(reward, isDark),
-                ),
-              if (rewardsState.isLoadingMore)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: Responsive.h(12)),
-                  child: Center(child: Loading()),
-                ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: CustomAppBar(title: 'Rewards'),
-      body: body,
+      body: _buildBody(rewardsState, isDark),
+    );
+  }
+
+  Widget _buildBody(RewardsState rewardsState, bool isDark) {
+    final rewardsData = rewardsState.rewardsData;
+    if (rewardsData == null && rewardsState.isLoading) {
+      return const Center(child: Loading());
+    }
+    if (rewardsData == null && rewardsState.errorMessage != null) {
+      return _buildError(rewardsState.errorMessage!);
+    }
+    if (rewardsData == null) {
+      return const SizedBox.shrink();
+    }
+    return RefreshIndicator(
+      onRefresh: () async {
+        await ref.read(rewardsViewModelProvider.notifier).loadRewards();
+      },
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
+        padding: EdgeInsets.fromLTRB(
+          Responsive.w(16),
+          Responsive.h(12),
+          Responsive.w(16),
+          Responsive.h(24),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPointsHeroCard(rewardsData),
+
+            height(Responsive.h(20)),
+
+            _buildHistoryHeader(rewardsData),
+
+            height(Responsive.h(12)),
+
+            if (rewardsData.rewardPoints.isEmpty)
+              _buildEmptyState()
+            else
+              ...rewardsData.rewardPoints.map(
+                (reward) => _buildTransactionTile(reward, isDark),
+              ),
+
+            if (rewardsState.isLoadingMore)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: Responsive.h(12)),
+                child: const Center(child: Loading()),
+              ),
+
+            // Bottom breathing space
+            height(Responsive.h(20)),
+          ],
+        ),
+      ),
     );
   }
 
