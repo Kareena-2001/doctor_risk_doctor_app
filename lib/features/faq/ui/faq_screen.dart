@@ -1,4 +1,5 @@
 import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/faq/ui/view_model/faq_view_model.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     try {
       await ref.read(faqViewModelProvider.notifier).loadMoreFaqs();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -71,7 +72,7 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
             children: [
               const SizedBox(height: 120),
               Center(
-                child: Text(error.toString(), textAlign: TextAlign.center),
+                child: Text(error.readableMessage, textAlign: TextAlign.center),
               ),
             ],
           ),

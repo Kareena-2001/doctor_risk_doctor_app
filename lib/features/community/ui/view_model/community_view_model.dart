@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:Doctors_App/features/community/repository/community_repository.dart';
 import 'package:Doctors_App/features/community/ui/state/community_state.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -240,7 +241,7 @@ class CommunityViewModel extends _$CommunityViewModel {
     } catch (error) {
       state = state.copyWith(
         isCategoryLoading: false,
-        categoryError: error.toString(),
+        categoryError: error.readableMessage,
       );
     }
   }
@@ -266,7 +267,7 @@ class CommunityViewModel extends _$CommunityViewModel {
     } catch (error) {
       state = state.copyWith(
         isSpecialityLoading: false,
-        specialityError: error.toString(),
+        specialityError: error.readableMessage,
       );
     }
   }
@@ -286,7 +287,7 @@ class CommunityViewModel extends _$CommunityViewModel {
     } catch (error) {
       state = state.copyWith(
         isDegreeLoading: false,
-        degreeError: error.toString(),
+        degreeError: error.readableMessage,
       );
     }
   }

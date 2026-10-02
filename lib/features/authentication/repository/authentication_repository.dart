@@ -143,12 +143,6 @@ class AuthenticationRepository {
     return logoutResponse;
   }
 
-  // Future<void> signOut() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.remove('auth_token');
-  //   await setIsLogin(false);
-  // }
-
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');

@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/community/ui/state/community_state.dart';
@@ -52,7 +53,7 @@ class _ReferAndGroupsTabState extends ConsumerState<ReferAndGroupsTab> {
     try {
       await ref.read(communityViewModelProvider.notifier).loadMoreReferrals();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }

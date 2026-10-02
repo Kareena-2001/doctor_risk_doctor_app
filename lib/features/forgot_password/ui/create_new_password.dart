@@ -130,7 +130,7 @@ class _CreateNewPasswordState extends ConsumerState<CreateNewPassword> {
           // }
         },
         error: (e, _) {
-          context.showErrorSnackBar(e.toString());
+          context.showErrorSnackBar(e);
         },
       );
     });

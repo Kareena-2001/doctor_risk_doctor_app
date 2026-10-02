@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:Doctors_App/features/authentication/model/register/register_request.dart';
 import 'package:Doctors_App/features/authentication/ui/view_model/user_provider.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 
 import '../../repository/authentication_repository.dart';
 import '../state/authentication_state.dart';
@@ -68,14 +69,6 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
       passwordController.dispose();
       confirmPasswordController.dispose();
     });
-
-    // Future.microtask(() {
-    //   categoryList();
-    //
-    //   if (_current.registrationType == RegistrationType.professional) {
-    //     degreeList();
-    //   }
-    // });
     return const AuthenticationState();
   }
 
@@ -233,7 +226,7 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
       _set(
         (s) => s.copyWith(
           isCategoryLoading: false,
-          categoryError: error.toString(),
+          categoryError: error.readableMessage,
         ),
       );
     }
@@ -265,7 +258,7 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
       _set(
         (s) => s.copyWith(
           isSpecialityLoading: false,
-          specialityError: error.toString(),
+          specialityError: error.readableMessage,
         ),
       );
     }
@@ -287,8 +280,10 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
       );
     } catch (error) {
       _set(
-        (s) =>
-            s.copyWith(isDegreeLoading: false, degreeError: error.toString()),
+        (s) => s.copyWith(
+          isDegreeLoading: false,
+          degreeError: error.readableMessage,
+        ),
       );
     }
   }
@@ -342,26 +337,6 @@ class AuthenticationViewModel extends _$AuthenticationViewModel {
     if (s.selectedCategory == null) {
       throw const RegistrationValidationException('Please select a category');
     }
-
-    // if (s.registrationType == RegistrationType.professional &&
-    //     s.selectedSpeciality == null) {
-    //   throw const RegistrationValidationException('Please select a speciality');
-    // }
-
-    // if (s.registrationType == RegistrationType.professional &&
-    //     s.selectedDegrees.isEmpty) {
-    //   throw const RegistrationValidationException(
-    //     'Please select at least one degree',
-    //   );
-    // }
-
-    // if (s.registrationType == RegistrationType.establishment &&
-    //     establishmentNameController.text.trim().isEmpty) {
-    //   throw const RegistrationValidationException(
-    //     'Please enter the establishment name',
-    //   );
-    // }
-
     if (!s.agreeTerms) {
       throw const RegistrationValidationException(
         'Please agree to the Terms & Conditions',

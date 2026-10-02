@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,8 +44,9 @@ class _BlogDetailsScreenState extends ConsumerState<BlogDetailsScreen> {
       appBar: const CustomAppBar(title: 'Blog Details'),
       body: detailAsync.when(
         loading: () => const Center(child: Loading()),
-        error: (error, stackTrace) =>
-            Center(child: Text('Failed to load blog: $error')),
+        error: (error, stackTrace) => Center(
+          child: Text('Failed to load blog: ${error.readableMessage}'),
+        ),
         data: (detail) {
           if (detail.data.isEmpty) {
             return const Center(child: Text('Blog not found'));

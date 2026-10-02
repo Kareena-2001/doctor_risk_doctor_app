@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Doctors_App/features/appointment/repository/appointment_repository.dart';
 import 'package:Doctors_App/features/appointment/ui/state/appointment_state.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -38,11 +39,6 @@ class AppointmentViewModel extends _$AppointmentViewModel {
   AppointmentState build() => const AppointmentState();
 
   AppointmentRepository get _repo => ref.read(appointmentRepositoryProvider);
-
-  String _errorMessage(Object e) {
-    final s = e.toString();
-    return s.startsWith('Exception: ') ? s.substring('Exception: '.length) : s;
-  }
 
   Future<void> fetchAppointments({
     String? appointmentNo,
@@ -96,7 +92,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
     } catch (e) {
       state = state.copyWith(
         isFetchingAppointments: false,
-        appointmentsError: _errorMessage(e),
+        appointmentsError: e.readableMessage,
       );
     }
   }
@@ -162,7 +158,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       debugPrint('fetchRemarks ERROR => $e\n$st');
       state = state.copyWith(
         isFetchingRemarks: false,
-        remarksError: e.toString(),
+        remarksError: e.readableMessage,
       );
     }
   }
@@ -194,7 +190,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -229,7 +225,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -252,7 +248,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       state = state.copyWith(
         cancellingId: null,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -288,7 +284,7 @@ class AppointmentViewModel extends _$AppointmentViewModel {
       refreshAppointments(); // sync with server, no await
       return true;
     } catch (e) {
-      state = state.copyWith(isSuccess: false, error: _errorMessage(e));
+      state = state.copyWith(isSuccess: false, error: e.readableMessage);
       return false;
     }
   }

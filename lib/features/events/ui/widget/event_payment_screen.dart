@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/utils/decoration.dart';
@@ -197,7 +198,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                state.error.toString().replaceFirst('Exception: ', ''),
+                state.error!.readableMessage,
                 textAlign: TextAlign.center,
                 style: customTextStyle(
                   fontSize: Responsive.sp(12.5),

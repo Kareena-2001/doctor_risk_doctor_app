@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/pagination_footer.dart';
@@ -42,7 +43,7 @@ class _AllTestimonialListScreenState
           .read(communityViewModelProvider.notifier)
           .loadMoreTestimonials();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -73,7 +74,8 @@ class _AllTestimonialListScreenState
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(Responsive.w(16)),
-              itemCount: testimonials.length +
+              itemCount:
+                  testimonials.length +
                   (response.currentPage < response.lastPage ? 1 : 0),
               separatorBuilder: (_, __) => height(Responsive.h(14)),
               itemBuilder: (_, index) {
@@ -98,7 +100,7 @@ class _AllTestimonialListScreenState
     return Center(
       child: CommonErrorState(
         title: 'Failed to load your testimonial',
-        message: error.toString(),
+        message: error.readableMessage,
         onRetry: () {
           ref
               .read(communityViewModelProvider.notifier)

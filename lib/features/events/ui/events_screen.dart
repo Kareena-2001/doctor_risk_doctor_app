@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
@@ -177,7 +178,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                   ),
                   loading: () => Center(child: Loading()),
                   error: (error, _) => _buildErrorState(
-                    error.toString(),
+                    error.readableMessage,
                     () => viewModel.refreshUpcomingEvents(
                       type: _apiType,
                       query: _searchQuery,
@@ -199,7 +200,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen>
                   ),
                   loading: () => const Center(child: Loading()),
                   error: (error, _) => _buildErrorState(
-                    error.toString(),
+                    error.readableMessage,
                     () => viewModel.refreshPastEvents(
                       type: _apiType,
                       query: _searchQuery,

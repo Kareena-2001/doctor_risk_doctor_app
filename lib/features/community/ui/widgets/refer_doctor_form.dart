@@ -154,7 +154,7 @@ class _ReferDoctorFormState extends ConsumerState<ReferDoctorForm> {
           },
           error: (error, stackTrace) {
             if (!mounted) return;
-            context.showWarningSnackBar(error.toString());
+            context.showWarningSnackBar(error);
           },
         );
       },

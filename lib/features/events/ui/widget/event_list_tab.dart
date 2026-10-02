@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/app_dialog.dart';
 import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/events/model/event_list_response.dart';
@@ -72,7 +73,7 @@ class _EventListTabState extends ConsumerState<EventListTab> {
     try {
       await widget.onLoadMore();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }

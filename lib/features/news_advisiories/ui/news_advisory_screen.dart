@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
@@ -58,7 +59,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
     try {
       await ref.read(newsAdvisoryViewModelProvider.notifier).loadMoreNews();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -77,7 +78,7 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              error.toString(),
+              error.readableMessage,
               textAlign: TextAlign.center,
               style: customTextStyle(
                 fontSize: 14,
@@ -111,9 +112,11 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
                     itemCount:
                         (state.news.isEmpty ? 1 : state.news.length) +
                         (ref
-                                .read(newsAdvisoryViewModelProvider.notifier)
-                                .hasMore ||
-                            _paginationError != null
+                                    .read(
+                                      newsAdvisoryViewModelProvider.notifier,
+                                    )
+                                    .hasMore ||
+                                _paginationError != null
                             ? 1
                             : 0) +
                         1,

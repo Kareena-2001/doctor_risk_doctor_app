@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
@@ -43,7 +44,7 @@ class _ReferralListScreenState extends ConsumerState<ReferralListScreen> {
     try {
       await ref.read(communityViewModelProvider.notifier).loadMoreReferrals();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }

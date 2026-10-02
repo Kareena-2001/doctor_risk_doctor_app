@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/support_hub/repository/support_hub_repository.dart';
 import 'package:Doctors_App/features/support_hub/ui/state/support_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -40,11 +41,6 @@ class SupportHubViewModel extends _$SupportHubViewModel {
   SupportHubState build() => const SupportHubState();
 
   SupportHubRepository get _repo => ref.read(supportHubRepositoryProvider);
-
-  String _errorMessage(Object e) {
-    final s = e.toString();
-    return s.startsWith('Exception: ') ? s.substring('Exception: '.length) : s;
-  }
 
   Future<bool> addTicket({
     required String ticketType,
@@ -88,7 +84,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -131,7 +127,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -184,7 +180,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -219,7 +215,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       state = state.copyWith(
         isLoading: false,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -242,7 +238,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
       state = state.copyWith(
         cancellingTicketId: null,
         isSuccess: false,
-        error: _errorMessage(e),
+        error: e.readableMessage,
       );
       return false;
     }
@@ -297,7 +293,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     } catch (e) {
       state = state.copyWith(
         isFetchingServiceTickets: false,
-        serviceTicketsError: _errorMessage(e),
+        serviceTicketsError: e.readableMessage,
       );
     }
   }
@@ -390,7 +386,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     } catch (e) {
       state = state.copyWith(
         isFetchingLegalTickets: false,
-        legalTicketsError: _errorMessage(e),
+        legalTicketsError: e.readableMessage,
       );
     }
   }
@@ -490,7 +486,7 @@ class SupportHubViewModel extends _$SupportHubViewModel {
     } catch (e) {
       state = state.copyWith(
         isFetchingRemarks: false,
-        remarksError: _errorMessage(e),
+        remarksError: e.readableMessage,
       );
     }
   }

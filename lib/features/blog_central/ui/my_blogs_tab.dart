@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
@@ -45,7 +46,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     try {
       await ref.read(blogViewModelProvider.notifier).loadMoreSubmissions();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -78,7 +79,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Failed to load your blogs: $e'),
+              Text('Failed to load your blogs: ${e.readableMessage}'),
               TextButton(
                 onPressed: () => ref
                     .read(blogViewModelProvider.notifier)
@@ -223,7 +224,7 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
       await ref.read(blogViewModelProvider.notifier).refreshMySubmissions();
     } catch (error) {
       if (mounted) {
-        context.showErrorSnackBar(error.toString());
+        context.showErrorSnackBar(error);
       }
     } finally {
       if (mounted) {

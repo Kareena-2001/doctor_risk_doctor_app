@@ -227,9 +227,9 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -249,9 +249,9 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -273,9 +273,7 @@ class ApiClient {
       throw _handleDioError(e);
     } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      debugPrint('Unexpected Error in ApiClient: $e');
-      debugPrint('Stack Trace:\n$stackTrace');
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -293,9 +291,9 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -315,9 +313,9 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -380,9 +378,9 @@ class ApiClient {
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 0, message: _friendlyMessage(0, null));
+      throw _handleUnexpectedError(e, stackTrace);
     }
   }
 
@@ -481,6 +479,14 @@ class ApiClient {
         }
         return 'Something went wrong. Please try again.';
     }
+  }
+
+  ApiException _handleUnexpectedError(Object error, StackTrace stackTrace) {
+    if (kDebugMode) {
+      debugPrint('Unexpected ApiClient failure: ${error.runtimeType}');
+      debugPrint('Stack Trace:\n$stackTrace');
+    }
+    return ApiException(statusCode: -1, message: _friendlyMessage(-1, null));
   }
 
   ApiException _handleDioError(DioException error) {

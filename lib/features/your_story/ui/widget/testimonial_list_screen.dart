@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/pagination_footer.dart';
@@ -53,7 +54,7 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
           .read(yourStoryViewModelProvider.notifier)
           .loadMoreTestimonials();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -84,9 +85,9 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.all(Responsive.w(16)),
-              itemCount: testimonials.length +
-                  (response != null &&
-                          response.currentPage < response.lastPage
+              itemCount:
+                  testimonials.length +
+                  (response != null && response.currentPage < response.lastPage
                       ? 1
                       : 0),
               separatorBuilder: (_, __) => height(Responsive.h(14)),
@@ -131,7 +132,7 @@ class _TestimonialListScreenState extends ConsumerState<TestimonialListScreen> {
             ),
             height(Responsive.h(12)),
             Text(
-              error.toString(),
+              error.readableMessage,
               textAlign: TextAlign.center,
               style: customTextStyle(
                 fontSize: Responsive.sp(13),

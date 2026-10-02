@@ -129,7 +129,7 @@ class _AddTestimonialFormState extends ConsumerState<AddTestimonialForm> {
 
       submitState.whenOrNull(
         error: (error, _) {
-          context.showErrorSnackBar(error.toString());
+          context.showErrorSnackBar(error);
         },
       );
     }

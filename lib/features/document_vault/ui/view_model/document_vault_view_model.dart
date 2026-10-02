@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/document_vault/model/doctor_document_response.dart';
 import 'package:Doctors_App/features/document_vault/repository/document_vault_repository.dart';
 import 'package:Doctors_App/features/document_vault/ui/state/document_vault_state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'document_vault_view_model.g.dart';
@@ -37,7 +37,7 @@ class DocumentVaultViewModel extends _$DocumentVaultViewModel {
     } catch (e) {
       state = state.copyWith(
         isUploadedLoading: false,
-        uploadedError: _errorMessage(e),
+        uploadedError: e.readableMessage,
       );
     }
   }
@@ -56,7 +56,7 @@ class DocumentVaultViewModel extends _$DocumentVaultViewModel {
     } catch (e) {
       state = state.copyWith(
         isCompanyLoading: false,
-        companyError: _errorMessage(e),
+        companyError: e.readableMessage,
       );
     }
   }
@@ -92,14 +92,9 @@ class DocumentVaultViewModel extends _$DocumentVaultViewModel {
             : 'Document uploaded successfully',
       );
     } catch (e) {
-      return (success: false, message: _errorMessage(e));
+      return (success: false, message: e.readableMessage);
     } finally {
       state = state.copyWith(uploadingDocName: null);
     }
-  }
-
-  String _errorMessage(Object e) {
-    debugPrint('DocumentVaultViewModel error => $e');
-    return 'Something went wrong. Please try again.';
   }
 }

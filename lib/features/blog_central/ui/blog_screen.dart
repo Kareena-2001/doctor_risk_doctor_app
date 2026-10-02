@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
@@ -58,7 +59,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
     try {
       await ref.read(blogViewModelProvider.notifier).loadMoreBlogs();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -146,7 +147,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 error: (e, _) => Center(
                   child: Column(
                     children: [
-                      Text('Failed to load blogs: $e'),
+                      Text('Failed to load blogs: ${e.readableMessage}'),
                       TextButton(
                         onPressed: _fetchData,
                         child: const Text('Retry'),
@@ -355,7 +356,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
               height(Responsive.h(6)),
             ],
             Text(
-              blog.title ?? '',
+              blog.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: customTextStyle(

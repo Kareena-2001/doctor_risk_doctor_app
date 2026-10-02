@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/emergency/repository/emergency_repository.dart';
 import 'package:Doctors_App/features/emergency/ui/state/emergency_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -36,7 +37,7 @@ class EmergencyViewModel extends _$EmergencyViewModel {
         sopError: null,
       );
     } catch (e) {
-      state = state.copyWith(isSopLoading: false, sopError: _errorMessage(e));
+      state = state.copyWith(isSopLoading: false, sopError: e.readableMessage);
     } finally {
       _isFetching = false;
     }
@@ -64,9 +65,5 @@ class EmergencyViewModel extends _$EmergencyViewModel {
     } finally {
       _isFetching = false;
     }
-  }
-
-  String _errorMessage(Object error) {
-    return error.toString().replaceFirst('Exception: ', '');
   }
 }

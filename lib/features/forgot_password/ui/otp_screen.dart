@@ -109,7 +109,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           // }
         },
         error: (e, _) {
-          context.showErrorSnackBar(e.toString());
+          context.showErrorSnackBar(e);
         },
       );
     });

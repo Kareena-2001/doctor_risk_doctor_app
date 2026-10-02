@@ -138,9 +138,7 @@ class AddressStep extends ConsumerWidget {
                 );
               } catch (e) {
                 if (!context.mounted) return;
-                context.showErrorSnackBar(
-                  e.toString().replaceFirst('Exception: ', ''),
-                );
+                context.showErrorSnackBar(e);
                 rethrow;
               }
             },
@@ -178,7 +176,7 @@ class AddressStep extends ConsumerWidget {
       context.showSuccessSnackBar('Address deleted successfully.');
     } catch (e) {
       if (!context.mounted) return;
-      context.showErrorSnackBar(e.toString().replaceFirst('Exception: ', ''));
+      context.showErrorSnackBar(e);
     }
   }
 }

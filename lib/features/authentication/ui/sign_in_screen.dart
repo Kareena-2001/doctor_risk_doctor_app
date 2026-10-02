@@ -115,7 +115,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             context.go(Routes.main);
           }
         },
-        error: (e, _) => context.showErrorSnackBar(e.toString()),
+        error: (e, _) => context.showErrorSnackBar(e),
       );
     });
 

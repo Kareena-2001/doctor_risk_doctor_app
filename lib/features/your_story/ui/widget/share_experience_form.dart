@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
@@ -165,7 +166,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
 
       submitStatus.whenOrNull(
         error: (error, _) {
-          context.showErrorSnackBar(error.toString());
+          context.showErrorSnackBar(error);
         },
       );
     }
@@ -210,7 +211,9 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       });
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar('Could not load video: $e');
+        context.showWarningSnackBar(
+          'Could not load video: ${e.readableMessage}',
+        );
       }
     }
   }
@@ -242,7 +245,9 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       });
     } catch (e) {
       if (mounted) {
-        context.showWarningSnackBar('Could not record video: $e');
+        context.showWarningSnackBar(
+          'Could not record video: ${e.readableMessage}',
+        );
       }
     }
   }
@@ -527,6 +532,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
+
   Widget _buildModeToggle() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -535,9 +541,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       decoration: BoxDecoration(
         color: context.secondaryWidgetColor,
         borderRadius: BorderRadius.circular(Responsive.w(30)),
-        border: Border.all(
-          color: context.borderColor,
-        ),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
@@ -582,16 +586,10 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(
-            vertical: Responsive.h(10),
-          ),
+          padding: EdgeInsets.symmetric(vertical: Responsive.h(10)),
           decoration: BoxDecoration(
-            color: selected
-                ? AppColors.newPri
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(
-              Responsive.w(30),
-            ),
+            color: selected ? AppColors.newPri : Colors.transparent,
+            borderRadius: BorderRadius.circular(Responsive.w(30)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -599,9 +597,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
               Icon(
                 icon,
                 size: Responsive.sp(16),
-                color: selected
-                    ? Colors.white
-                    : unselectedColor,
+                color: selected ? Colors.white : unselectedColor,
               ),
               width(Responsive.w(6)),
               Text(
@@ -609,9 +605,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
                 style: customTextStyle(
                   fontSize: Responsive.sp(12),
                   fontWeight: FontWeight.w600,
-                  color: selected
-                      ? Colors.white
-                      : unselectedColor,
+                  color: selected ? Colors.white : unselectedColor,
                 ),
               ),
             ],
@@ -620,6 +614,7 @@ class _ShareExperienceFormState extends ConsumerState<ShareExperienceForm> {
       ),
     );
   }
+
   Widget _buildTextInput() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(

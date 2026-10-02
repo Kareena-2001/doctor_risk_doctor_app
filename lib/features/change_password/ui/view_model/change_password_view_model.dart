@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/change_password/model/change_password_model.dart';
 import 'package:Doctors_App/features/change_password/repository/change_password_repository.dart';
 import 'package:Doctors_App/features/change_password/ui/state/change_password_state.dart';
@@ -30,7 +31,10 @@ class ChangePasswordViewModel extends _$ChangePasswordViewModel {
       return true;
     } catch (e) {
       state = AsyncData(
-        state.value!.copyWith(isLoading: false, errorMessage: e.toString()),
+        state.value!.copyWith(
+          isLoading: false,
+          errorMessage: e.readableMessage,
+        ),
       );
       return false;
     }

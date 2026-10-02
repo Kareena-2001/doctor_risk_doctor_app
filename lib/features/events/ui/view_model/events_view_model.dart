@@ -1,12 +1,10 @@
 import 'package:Doctors_App/features/events/model/payment_summary_model.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/events/repository/events_repository.dart';
 import 'package:Doctors_App/features/events/ui/state/events_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'events_view_model.g.dart';
-
-String _cleanError(Object error) =>
-    error.toString().replaceFirst('Exception: ', '');
 
 @riverpod
 class EventsViewModel extends _$EventsViewModel {
@@ -351,7 +349,7 @@ class EventsViewModel extends _$EventsViewModel {
       await action();
       return null;
     } catch (e) {
-      return _cleanError(e);
+      return e.readableMessage;
     } finally {
       state = state.copyWith(paying: false);
     }
@@ -410,7 +408,7 @@ class EventsViewModel extends _$EventsViewModel {
 
     if (result.hasError) {
       _restoreOrFail(hasPrevious, previous, result.error!, result.stackTrace!);
-      return _cleanError(result.error!);
+      return result.error!.readableMessage;
     }
 
     final response = result.requireValue;

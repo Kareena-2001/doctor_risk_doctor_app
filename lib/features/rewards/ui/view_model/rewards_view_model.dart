@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/features/rewards/repository/rewards_repository.dart';
 import 'package:Doctors_App/features/rewards/ui/state/rewards_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -51,14 +52,14 @@ class RewardsViewModel extends _$RewardsViewModel {
         rewardsData: isRefresh
             ? data
             : data.copyWith(
-          rewardPoints: [...current.rewardPoints, ...data.rewardPoints],
-        ),
+                rewardPoints: [...current.rewardPoints, ...data.rewardPoints],
+              ),
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         isLoadingMore: false,
-        errorMessage: e.toString().replaceFirst('Exception: ', ''),
+        errorMessage: e.readableMessage,
       );
     } finally {
       _isFetching = false;

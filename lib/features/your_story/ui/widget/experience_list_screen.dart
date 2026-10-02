@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
@@ -88,7 +89,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
           .refreshExperienceList();
     } catch (error) {
       if (mounted) {
-        context.showErrorSnackBar(error.toString());
+        context.showErrorSnackBar(error);
       }
     } finally {
       if (mounted) {
@@ -105,7 +106,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
     try {
       await ref.read(yourStoryViewModelProvider.notifier).loadMoreExperiences();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -133,7 +134,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
         error: (error, _) => Center(
           child: CommonErrorState(
             title: 'Failed to load your experiences',
-            message: error.toString(),
+            message: error.readableMessage,
             onRetry: () {
               ref
                   .read(yourStoryViewModelProvider.notifier)

@@ -2,6 +2,7 @@ import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/profile/ui/widgets/personal_details_edit_section.dart';
 import 'package:Doctors_App/features/profile/ui/widgets/professional_details_edit_section.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
@@ -421,9 +422,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context.showSuccessSnackBar('Profile updated successfully');
     } catch (error) {
       if (!mounted) return;
-      context.showErrorSnackBar(
-        error.toString().replaceFirst('Exception: ', ''),
-      );
+      context.showErrorSnackBar(error);
     }
   }
 
@@ -471,9 +470,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   );
                 } catch (e) {
                   if (!mounted) return;
-                  context.showErrorSnackBar(
-                    e.toString().replaceFirst('Exception: ', ''),
-                  );
+                  context.showErrorSnackBar(e);
                   rethrow;
                 }
               },
@@ -511,7 +508,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context.showSuccessSnackBar('Address deleted successfully.');
     } catch (e) {
       if (!mounted) return;
-      context.showErrorSnackBar(e.toString().replaceFirst('Exception: ', ''));
+      context.showErrorSnackBar(e);
     }
   }
 
@@ -1066,7 +1063,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Center(
       child: CommonErrorState(
         icon: Icons.error_outline,
-        title: 'Failed to load profile.\n$error',
+        title: 'Failed to load profile.\n${error.readableMessage}',
         onRetry: () {
           ref.read(profileViewModelProvider.notifier).getProfile();
         },

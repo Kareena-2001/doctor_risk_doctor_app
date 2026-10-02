@@ -1,4 +1,5 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
@@ -43,7 +44,7 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
           .read(medicalLawFaqViewModelProvider.notifier)
           .loadMoreMedicalFaqs();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -73,7 +74,7 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
             children: [
               const SizedBox(height: 120),
               Center(
-                child: Text(error.toString(), textAlign: TextAlign.center),
+                child: Text(error.readableMessage, textAlign: TextAlign.center),
               ),
             ],
           ),

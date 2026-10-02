@@ -4,6 +4,7 @@ import 'package:Doctors_App/features/common/ui/widgets/primary_button.dart';
 import 'package:Doctors_App/features/events/model/event_list_response.dart';
 import 'package:Doctors_App/features/events/ui/view_model/events_view_model.dart';
 import 'package:Doctors_App/features/events/ui/widget/event_payment_screen.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,10 +40,8 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
 
   String? _registrationId;
   double get _eventPrice =>
-      double.tryParse(
-        widget.event.price?.replaceAll(',', '').trim() ?? '',
-      ) ??
-          0;
+      double.tryParse(widget.event.price?.replaceAll(',', '').trim() ?? '') ??
+      0;
   // double get _eventPrice => widget.event.price.toDouble();
 
   bool get _isPaidEvent => _eventPrice > 0;
@@ -98,8 +97,7 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
     final registerState = ref.read(eventsViewModelProvider).registerEvent;
     String message = 'Registration failed. Please try again.';
     registerState.whenOrNull(
-      error: (error, _) =>
-          message = error.toString().replaceFirst('Exception: ', ''),
+      error: (error, _) => message = error.readableMessage,
     );
     return message;
   }
@@ -363,9 +361,9 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
           ),
           height(Responsive.h(8)),
           Text(
-              (widget.event.priceDescription?.isNotEmpty ?? false)
-                  ? widget.event.priceDescription!
-                  : (_isPaidEvent ? '₹${widget.event.price}' : 'Free'),
+            (widget.event.priceDescription?.isNotEmpty ?? false)
+                ? widget.event.priceDescription!
+                : (_isPaidEvent ? '₹${widget.event.price}' : 'Free'),
             style: customTextStyle(fontSize: Responsive.sp(11)),
           ),
         ],

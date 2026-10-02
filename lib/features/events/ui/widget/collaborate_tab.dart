@@ -1,4 +1,4 @@
-import 'package:Doctors_App/core/exceptions/app_exception.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
@@ -46,7 +46,7 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab>
     try {
       await ref.read(eventsViewModelProvider.notifier).loadMoreCollaborations();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -64,7 +64,7 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab>
         loading: () => Loading(),
         error: (error, _) => CommonErrorState(
           title: '',
-          message: error is ApiException ? error.message : error.toString(),
+          message: error.readableMessage,
           onRetry: () => ref
               .read(eventsViewModelProvider.notifier)
               .refreshCollaborationList(),

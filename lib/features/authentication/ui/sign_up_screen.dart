@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:Doctors_App/core/constants/responsive.dart';
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_multi_select_dropdown.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
@@ -60,7 +61,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       context.showWarningSnackBar(error.message);
     } catch (error) {
       if (!context.mounted) return;
-      context.showWarningSnackBar('Registration failed: $error');
+      context.showWarningSnackBar(
+        'Registration failed: ${error.readableMessage}',
+      );
     }
   }
 

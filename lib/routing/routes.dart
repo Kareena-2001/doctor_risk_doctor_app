@@ -67,13 +67,6 @@ class Routes {
   static const addAppointment = '/addAppointment';
   static const viewAppointment = '/viewAppointment';
 
-  static const legalConsultant = '/legalConsultant';
-  static const legalNotice = '/legalNotice';
-
-  static const addLegalConsultant = '/addLegalConsultant';
-  static const addLegalCases = '/addLegalCases';
-  static const legalScreen = '/legalScreen';
-  static const addLegalNotice = '/addLegalNotice';
   static const scanScreen = '/scanScreen';
 
   static const changePassword = '/changePassword';

@@ -17,12 +17,6 @@ import 'package:Doctors_App/features/events/ui/widget/event_payment_screen.dart'
 import 'package:Doctors_App/features/medical_law_faq/ui/medico_legal_faq_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/forget_password_screen.dart';
 import 'package:Doctors_App/features/forgot_password/ui/otp_screen.dart';
-import 'package:Doctors_App/features/legal/ui/add_legal_cases_form.dart';
-import 'package:Doctors_App/features/legal/ui/add_legal_consultant_form.dart';
-import 'package:Doctors_App/features/legal/ui/add_legal_notice_form.dart';
-import 'package:Doctors_App/features/legal/ui/legal_consultant_view.dart';
-import 'package:Doctors_App/features/legal/ui/legal_notice_view.dart';
-import 'package:Doctors_App/features/legal/ui/legal_screen.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/news_advisory_screen.dart';
 import 'package:Doctors_App/features/onboarding/ui/onboarding_view.dart';
 import 'package:Doctors_App/features/product/model/product_tier.dart';
@@ -374,35 +368,7 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(const AppointmentListView()),
     ),
-    GoRoute(
-      path: Routes.legalConsultant,
-      pageBuilder: (context, state) =>
-          state.slidePage(const LegalConsultantView()),
-    ),
-    GoRoute(
-      path: Routes.legalNotice,
-      pageBuilder: (context, state) => state.slidePage(const LegalNoticeView()),
-    ),
-    GoRoute(
-      path: Routes.addLegalConsultant,
-      pageBuilder: (context, state) =>
-          state.slidePage(const AddLegalConsultantForm()),
-    ),
-    GoRoute(
-      path: Routes.addLegalCases,
-      pageBuilder: (context, state) =>
-          state.slidePage(const AddLegalCasesForm()),
-    ),
-    GoRoute(
-      path: Routes.legalScreen,
-      pageBuilder: (context, state) => state.slidePage(const LegalScreen()),
-    ),
 
-    GoRoute(
-      path: Routes.addLegalNotice,
-      pageBuilder: (context, state) =>
-          state.slidePage(const AddLegalNoticeForm()),
-    ),
     GoRoute(
       path: Routes.scanScreen,
       pageBuilder: (context, state) => state.slidePage(const ScanScreen()),

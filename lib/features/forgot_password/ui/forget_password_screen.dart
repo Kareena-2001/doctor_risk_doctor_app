@@ -48,7 +48,7 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
           // }
         },
         error: (e, _) {
-          context.showErrorSnackBar(e.toString());
+          context.showErrorSnackBar(e);
         },
       );
     });

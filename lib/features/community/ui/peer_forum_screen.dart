@@ -1,3 +1,4 @@
+import 'package:Doctors_App/core/exceptions/exception_extension.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/common_empty_state.dart';
 import 'package:Doctors_App/core/widgets/common_error_state.dart';
@@ -62,7 +63,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
     try {
       await ref.read(communityViewModelProvider.notifier).loadMorePeerForum();
     } catch (error) {
-      _paginationError = error.toString();
+      _paginationError = error.readableMessage;
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
@@ -106,7 +107,7 @@ class _PeerForumTabState extends ConsumerState<PeerForumTab> {
                 .refreshPeerForumList(),
             child: peerForumState.when(
               loading: () => Center(child: Loading()),
-              error: (err, _) => _buildError(err.toString()),
+              error: (err, _) => _buildError(err.readableMessage),
               data: (response) {
                 final posts = response.data;
                 if (posts.isEmpty) {

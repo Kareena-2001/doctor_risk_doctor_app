@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../core/exceptions/exception_extension.dart';
 import '../features/common/ui/widgets/custom_snack_bar.dart';
 import '../theme/app_colors.dart';
 
@@ -107,12 +109,16 @@ extension ThemeModeExtension on BuildContext {
     ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.info(text: text));
   }
 
-  void showWarningSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.warning(text: text));
+  void showWarningSnackBar(Object error) {
+    ScaffoldMessenger.of(
+      this,
+    ).showSnackBar(CustomSnackBar.warning(text: error.readableMessage));
   }
 
-  void showErrorSnackBar(String text) {
-    ScaffoldMessenger.of(this).showSnackBar(CustomSnackBar.error(text: text));
+  void showErrorSnackBar(Object error) {
+    ScaffoldMessenger.of(
+      this,
+    ).showSnackBar(CustomSnackBar.error(text: error.readableMessage));
   }
 
   void hideKeyboard() {
