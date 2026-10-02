@@ -85,9 +85,10 @@ class BlogRepository {
     return BlogSubmitResponse.fromJson(response);
   }
 
-  Future<MySubmissionListModel> mySubmissionList() async {
+  Future<MySubmissionListModel> mySubmissionList({int page = 1}) async {
     final response = await _apiClient.post(
       url: 'doctor/mysubmissionlist',
+      body: {'page': page},
       includeAuth: true,
     );
 

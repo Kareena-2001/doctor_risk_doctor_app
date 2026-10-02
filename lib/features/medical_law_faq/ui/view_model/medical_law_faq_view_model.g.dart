@@ -7,7 +7,7 @@ part of 'medical_law_faq_view_model.dart';
 // **************************************************************************
 
 String _$medicalLawFaqViewModelHash() =>
-    r'c14026bde4e17b4bc7feb5b844f0e3d03d17e94c';
+    r'b96b03b62151269724b0e8a100a374a9d942cd2c';
 
 /// See also [MedicalLawFaqViewModel].
 @ProviderFor(MedicalLawFaqViewModel)

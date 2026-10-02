@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/dimensions.dart';
 import '../../../../core/constants/responsive.dart';
 import '../../../../core/constants/values/app_text_style.dart';
+import '../../../../core/widgets/app_refresh_indicator.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/pagination_footer.dart';
 import '../../../theme/app_colors.dart';
@@ -44,6 +45,14 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
     }
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      _loadingMore = false;
+      _paginationError = null;
+    });
+    await ref.read(faqViewModelProvider.notifier).faqList();
+  }
+
   @override
   Widget build(BuildContext context) {
     Responsive.init(context);
@@ -55,50 +64,90 @@ class _FaqScreenState extends ConsumerState<FaqScreen> {
       appBar: CustomAppBar(title: "FAQ's"),
       body: faqState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) =>
-            Center(child: Text(error.toString(), textAlign: TextAlign.center)),
+        error: (error, stackTrace) => AppRefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const SizedBox(height: 120),
+              Center(
+                child: Text(error.toString(), textAlign: TextAlign.center),
+              ),
+            ],
+          ),
+        ),
         data: (state) {
           if (state.faqs.isEmpty) {
-            return const Center(child: Text('No FAQs available'));
+            return AppRefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount:
+                    ref.read(faqViewModelProvider.notifier).hasMore ||
+                        _paginationError != null
+                    ? 2
+                    : 1,
+                itemBuilder: (context, index) {
+                  if (index == 1) {
+                    return PaginationFooter(
+                      hasMore: ref
+                          .read(faqViewModelProvider.notifier)
+                          .hasMore,
+                      isLoading: _loadingMore,
+                      errorMessage: _paginationError,
+                      onLoadMore: _loadMore,
+                    );
+                  }
+                  return const SizedBox(
+                    height: 200,
+                    child: Center(child: Text('No FAQs available')),
+                  );
+                },
+              ),
+            );
           }
 
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18.0,
-                vertical: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Common questions about your policy, membership and how DoctorsRisk works as a service.',
-                          style: customTextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[800],
-                            fontWeight: FontWeight.w600,
-                          ).copyWith(height: 1.4),
-                        ),
-                      ],
+          return AppRefreshIndicator(
+            onRefresh: _refresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18.0,
+                  vertical: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Common questions about your policy, membership and how DoctorsRisk works as a service.',
+                            style: customTextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[800],
+                              fontWeight: FontWeight.w600,
+                            ).copyWith(height: 1.4),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
-                  _buildCommonQuestions(state.faqs),
-                  PaginationFooter(
-                    hasMore: ref.read(faqViewModelProvider.notifier).hasMore,
-                    isLoading: _loadingMore,
-                    errorMessage: _paginationError,
-                    onLoadMore: _loadMore,
-                  ),
+                    _buildCommonQuestions(state.faqs),
+                    PaginationFooter(
+                      hasMore: ref.read(faqViewModelProvider.notifier).hasMore,
+                      isLoading: _loadingMore,
+                      errorMessage: _paginationError,
+                      onLoadMore: _loadMore,
+                    ),
 
-                  SocialLinkWidget(),
-                  height(50),
-                ],
+                    SocialLinkWidget(),
+                    height(50),
+                  ],
+                ),
               ),
             ),
           );

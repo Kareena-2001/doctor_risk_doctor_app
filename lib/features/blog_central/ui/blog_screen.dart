@@ -4,6 +4,7 @@ import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_dropdown_field.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/blog_central/model/blog_list_response.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
@@ -29,6 +30,8 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
   String selectedFilter = 'All Topics';
   String selectedSort = 'Newest first';
   final TextEditingController _searchController = TextEditingController();
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -36,14 +39,29 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
     Future.microtask(() => _fetchData());
   }
 
-  void _fetchData() {
-    ref
+  Future<void> _fetchData() {
+    _paginationError = null;
+    return ref
         .read(blogViewModelProvider.notifier)
         .fetchBlogList(
           query: _searchController.text.trim(),
           category: selectedFilter,
           sortBy: selectedSort,
         );
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(blogViewModelProvider.notifier).loadMoreBlogs();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -62,7 +80,7 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
       backgroundColor: context.primaryBackgroundColor,
       appBar: CustomAppBar(title: 'Blog Central'),
       body: AppRefreshIndicator(
-        onRefresh: () async => _fetchData(),
+        onRefresh: _fetchData,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(
@@ -94,6 +112,10 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                 controller: _searchController,
                 hint: 'Search by keyword, specialty or author…',
                 onChanged: (val) {
+                  setState(() {
+                    _paginationError = null;
+                    _loadingMore = false;
+                  });
                   ref
                       .read(blogViewModelProvider.notifier)
                       .onSearchChanged(
@@ -165,6 +187,12 @@ class _BlogScreenState extends ConsumerState<BlogScreen> {
                     },
                   );
                 },
+              ),
+              PaginationFooter(
+                hasMore: ref.read(blogViewModelProvider.notifier).hasMoreBlogs,
+                isLoading: _loadingMore,
+                errorMessage: _paginationError,
+                onLoadMore: _loadMore,
               ),
               height(Responsive.h(30)),
             ],

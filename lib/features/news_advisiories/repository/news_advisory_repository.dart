@@ -8,9 +8,7 @@ import '../../../core/services/credentials_storage_provider.dart';
 part 'news_advisory_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-NewsAdvisoryRepository newsAdvisoryRepository(
-    NewsAdvisoryRepositoryRef ref,
-    ) {
+NewsAdvisoryRepository newsAdvisoryRepository(NewsAdvisoryRepositoryRef ref) {
   final apiClient = ref.watch(apiClientProvider);
   final credentialsStorage = ref.watch(credentialsStorageServiceProvider);
   return NewsAdvisoryRepository(
@@ -27,11 +25,12 @@ class NewsAdvisoryRepository {
     required ApiClient apiClient,
     required CredentialsStorageService credentialsStorage,
   }) : _apiClient = apiClient,
-        _credentialsStorage = credentialsStorage;
+       _credentialsStorage = credentialsStorage;
 
-  Future<NewsAdvisoryResponse> newsList() async {
+  Future<NewsAdvisoryResponse> newsList({int page = 1, int limit = 10}) async {
     final response = await _apiClient.get(
       url: 'doctor/newsadvisoriesdoctor',
+      queryParams: {'page': page.toString(), 'limit': limit.toString()},
       includeAuth: true,
     );
 

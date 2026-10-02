@@ -2,6 +2,7 @@ import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/blog_central/ui/viewmodel/blog_view_model.dart';
 import 'package:Doctors_App/features/common/ui/widgets/loading.dart';
@@ -25,6 +26,8 @@ class MyBlogsTab extends ConsumerStatefulWidget {
 
 class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
   int? _deletingBlogId;
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -32,6 +35,28 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
     Future.microtask(
       () => ref.read(blogViewModelProvider.notifier).fetchMySubmissions(),
     );
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(blogViewModelProvider.notifier).loadMoreSubmissions();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _loadingMore = false;
+      _paginationError = null;
+    });
+    await ref.read(blogViewModelProvider.notifier).refreshMySubmissions();
   }
 
   @override
@@ -68,21 +93,40 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
 
           if (blogs.isEmpty) {
             return AppRefreshIndicator(
-              onRefresh: () => ref
-                  .read(blogViewModelProvider.notifier)
-                  .refreshMySubmissions(),
-              child: ListView(
-                children: [
-                  SizedBox(height: Responsive.h(120)),
-                  Center(child: Text('You haven\'t submitted any blogs yet')),
-                ],
+              onRefresh: _refresh,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount:
+                    ref
+                            .read(blogViewModelProvider.notifier)
+                            .hasMoreSubmissions ||
+                        _paginationError != null
+                    ? 2
+                    : 1,
+                itemBuilder: (context, index) {
+                  if (index == 1) {
+                    return PaginationFooter(
+                      hasMore: ref
+                          .read(blogViewModelProvider.notifier)
+                          .hasMoreSubmissions,
+                      isLoading: _loadingMore,
+                      errorMessage: _paginationError,
+                      onLoadMore: _loadMore,
+                    );
+                  }
+                  return SizedBox(
+                    height: Responsive.h(200),
+                    child: const Center(
+                      child: Text('You haven\'t submitted any blogs yet'),
+                    ),
+                  );
+                },
               ),
             );
           }
 
           return AppRefreshIndicator(
-            onRefresh: () =>
-                ref.read(blogViewModelProvider.notifier).refreshMySubmissions(),
+            onRefresh: _refresh,
             child: ListView.separated(
               padding: EdgeInsets.fromLTRB(
                 Responsive.w(16),
@@ -90,10 +134,30 @@ class _MyBlogsTabState extends ConsumerState<MyBlogsTab> {
                 Responsive.w(16),
                 Responsive.h(24),
               ),
-              itemCount: blogs.length + 1,
+              itemCount:
+                  blogs.length +
+                  (ref
+                              .read(blogViewModelProvider.notifier)
+                              .hasMoreSubmissions ||
+                          _paginationError != null
+                      ? 1
+                      : 0) +
+                  1,
               separatorBuilder: (_, index) => height(Responsive.h(14)),
               itemBuilder: (context, index) {
-                if (index == blogs.length) {
+                final hasMore = ref
+                    .read(blogViewModelProvider.notifier)
+                    .hasMoreSubmissions;
+                final hasFooter = hasMore || _paginationError != null;
+                if (index == blogs.length && hasFooter) {
+                  return PaginationFooter(
+                    hasMore: hasMore,
+                    isLoading: _loadingMore,
+                    errorMessage: _paginationError,
+                    onLoadMore: _loadMore,
+                  );
+                }
+                if (index == blogs.length + (hasFooter ? 1 : 0)) {
                   return Column(
                     children: [
                       const SocialLinkWidget(),

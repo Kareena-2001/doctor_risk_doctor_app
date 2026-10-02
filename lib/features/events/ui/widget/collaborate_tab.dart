@@ -44,9 +44,7 @@ class _CollaborateTabState extends ConsumerState<CollaborateTab>
       _paginationError = null;
     });
     try {
-      await ref
-          .read(eventsViewModelProvider.notifier)
-          .loadMoreCollaborations();
+      await ref.read(eventsViewModelProvider.notifier).loadMoreCollaborations();
     } catch (error) {
       _paginationError = error.toString();
     } finally {

@@ -240,12 +240,12 @@ class _EventCard extends StatelessWidget {
                   title: 'Price',
                   value: event.price == '0.00' ? 'Free' : '₹${event.price}',
                 ),
-                if (event.priceDescription.isNotEmpty) ...[
+                if (event.priceDescription != null) ...[
                   height(Responsive.h(12)),
                   _buildDetailRow(
                     icon: Icons.info_outline_rounded,
                     title: 'Price Details',
-                    value: event.priceDescription,
+                    value: event.priceDescription ?? '',
                   ),
                 ],
                 height(Responsive.h(12)),
@@ -496,13 +496,15 @@ class _EventCard extends StatelessWidget {
             height(Responsive.h(8)),
 
             Text(
-              event.priceDescription.isNotEmpty
-                  ? '${event.price == '0.00' ? 'Free' : '₹${event.price}'} (${event.priceDescription})'
-                  : (event.price == '0.00' ? 'Free' : '₹${event.price}'),
+              event.priceDescription?.isNotEmpty == true
+                  ? '${event.price == null || event.price == '0.00' ? 'Free' : '₹${event.price}'} (${event.priceDescription})'
+                  : (event.price == null || event.price == '0.00'
+                  ? 'Free'
+                  : '₹${event.price}'),
               style: customTextStyle(
                 fontSize: Responsive.sp(11),
                 fontWeight: FontWeight.bold,
-                color: event.price == '0.00'
+                color: event.price == null || event.price == '0.00'
                     ? Colors.green
                     : AppColors.textColor,
               ),

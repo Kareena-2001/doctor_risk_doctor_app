@@ -103,9 +103,7 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
       _paginationError = null;
     });
     try {
-      await ref
-          .read(yourStoryViewModelProvider.notifier)
-          .loadMoreExperiences();
+      await ref.read(yourStoryViewModelProvider.notifier).loadMoreExperiences();
     } catch (error) {
       _paginationError = error.toString();
     } finally {
@@ -179,7 +177,8 @@ class _ExperienceListScreenState extends ConsumerState<ExperienceListScreen> {
                 Responsive.w(16),
                 Responsive.h(24),
               ),
-              itemCount: experiences.length +
+              itemCount:
+                  experiences.length +
                   ((response?.currentPage ?? 1) < (response?.lastPage ?? 1)
                       ? 1
                       : 0),

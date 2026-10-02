@@ -7,7 +7,7 @@ part of 'news_advisory_view_model.dart';
 // **************************************************************************
 
 String _$newsAdvisoryViewModelHash() =>
-    r'23b4f45ba16846cd59c1223219b805438b768bc8';
+    r'0a0a15e767c24deb4079b3af5125d4f7074e0337';
 
 /// See also [NewsAdvisoryViewModel].
 @ProviderFor(NewsAdvisoryViewModel)

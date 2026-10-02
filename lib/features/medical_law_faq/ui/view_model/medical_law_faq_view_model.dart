@@ -12,6 +12,7 @@ class MedicalLawFaqViewModel extends _$MedicalLawFaqViewModel {
   int _currentPage = 1;
   int _lastPage = 1;
   bool _loadingMore = false;
+  int _requestId = 0;
 
   bool get hasMore => _currentPage < _lastPage;
   bool get isLoadingMore => _loadingMore;
@@ -22,6 +23,7 @@ class MedicalLawFaqViewModel extends _$MedicalLawFaqViewModel {
   }
 
   Future<void> medicalLawFaqList() async {
+    final requestId = ++_requestId;
     _loadingMore = false;
     _currentPage = 1;
     state = const AsyncLoading();
@@ -29,10 +31,12 @@ class MedicalLawFaqViewModel extends _$MedicalLawFaqViewModel {
     try {
       final repository = ref.read(medicalLawFaqRepositoryProvider);
       final response = await repository.medicalFaqList(page: 1);
+      if (requestId != _requestId) return;
       _currentPage = response.currentPage;
       _lastPage = response.lastPage;
       state = AsyncData(MedicalLawFaqState(faqs: response.data));
     } catch (error, stackTrace) {
+      if (requestId != _requestId) return;
       state = AsyncError(error, stackTrace);
     }
   }
@@ -42,17 +46,19 @@ class MedicalLawFaqViewModel extends _$MedicalLawFaqViewModel {
     if (current == null || !hasMore || _loadingMore) return;
 
     _loadingMore = true;
+    final requestId = _requestId;
     try {
       final response = await ref
           .read(medicalLawFaqRepositoryProvider)
           .medicalFaqList(page: _currentPage + 1);
+      if (requestId != _requestId) return;
       _currentPage = response.currentPage;
       _lastPage = response.lastPage;
       state = AsyncData(
         MedicalLawFaqState(faqs: [...current.faqs, ...response.data]),
       );
     } finally {
-      _loadingMore = false;
+      if (requestId == _requestId) _loadingMore = false;
     }
   }
 }

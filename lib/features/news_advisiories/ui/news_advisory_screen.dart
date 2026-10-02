@@ -1,7 +1,9 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/custom_seachbar.dart';
+import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:Doctors_App/features/home/ui/widgets/social_link_widget.dart';
 import 'package:Doctors_App/features/news_advisiories/ui/viewmodel/news_advisory_view_model.dart';
@@ -21,6 +23,8 @@ class NewsAdvisoryScreen extends ConsumerStatefulWidget {
 
 class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
   late final TextEditingController _searchController;
+  bool _loadingMore = false;
+  String? _paginationError;
 
   @override
   void initState() {
@@ -37,6 +41,28 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _paginationError = null;
+      _loadingMore = false;
+    });
+    await ref.read(newsAdvisoryViewModelProvider.notifier).newsList();
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _loadingMore = true;
+      _paginationError = null;
+    });
+    try {
+      await ref.read(newsAdvisoryViewModelProvider.notifier).loadMoreNews();
+    } catch (error) {
+      _paginationError = error.toString();
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -75,36 +101,68 @@ class _NewsAdvisoryScreenState extends ConsumerState<NewsAdvisoryScreen> {
               ),
 
               Expanded(
-                child: state.news.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No news advisories found.',
-                          style: customTextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
+                child: AppRefreshIndicator(
+                  onRefresh: _refresh,
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    itemCount:
+                        (state.news.isEmpty ? 1 : state.news.length) +
+                        (ref
+                                .read(newsAdvisoryViewModelProvider.notifier)
+                                .hasMore ||
+                            _paginationError != null
+                            ? 1
+                            : 0) +
+                        1,
+                    itemBuilder: (context, index) {
+                      if (state.news.isEmpty && index == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          child: Center(
+                            child: Text(
+                              'No news advisories found.',
+                              style: customTextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
                           ),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                        itemCount: state.news.length + 1,
-                        separatorBuilder: (_, index) {
-                          if (index == state.news.length - 1) {
-                            return const SizedBox(height: 24);
-                          }
+                        );
+                      }
 
-                          return const SizedBox(height: 12);
-                        },
-                        itemBuilder: (context, index) {
-                          if (index == state.news.length) {
-                            return Column(
-                              children: [SocialLinkWidget(), height(50)],
-                            );
-                          }
+                      final itemCount = state.news.isEmpty
+                          ? 1
+                          : state.news.length;
+                      final hasMore = ref
+                          .read(newsAdvisoryViewModelProvider.notifier)
+                          .hasMore;
+                      final hasFooter = hasMore || _paginationError != null;
+                      if (index == itemCount && hasFooter) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: PaginationFooter(
+                            hasMore: hasMore,
+                            isLoading: _loadingMore,
+                            errorMessage: _paginationError,
+                            onLoadMore: _loadMore,
+                          ),
+                        );
+                      }
 
-                          return _buildNewsCard(state.news[index]);
-                        },
-                      ),
+                      if (index >= itemCount + (hasFooter ? 1 : 0)) {
+                        return Column(
+                          children: [SocialLinkWidget(), height(50)],
+                        );
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildNewsCard(state.news[index]),
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           );

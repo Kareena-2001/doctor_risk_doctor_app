@@ -37,14 +37,12 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
   int? _doctorId;
   bool _isProcessing = false;
 
-  /// Created once for paid events; reused if user comes back from payment
-  /// screen and taps "Proceed to Payment" again.
   String? _registrationId;
-
-  /// Parsed event price. '0.00' / '' / invalid => free.
   double get _eventPrice =>
-      double.tryParse(widget.event.price.replaceAll(',', '').trim()) ?? 0;
-
+      double.tryParse(
+        widget.event.price?.replaceAll(',', '').trim() ?? '',
+      ) ??
+          0;
   // double get _eventPrice => widget.event.price.toDouble();
 
   bool get _isPaidEvent => _eventPrice > 0;
@@ -365,9 +363,9 @@ class _EventRegisterScreenState extends ConsumerState<EventRegisterScreen> {
           ),
           height(Responsive.h(8)),
           Text(
-            (widget.event.priceDescription?.isNotEmpty ?? false)
-                ? widget.event.priceDescription!
-                : (_isPaidEvent ? '₹${widget.event.price}' : 'Free'),
+              (widget.event.priceDescription?.isNotEmpty ?? false)
+                  ? widget.event.priceDescription!
+                  : (_isPaidEvent ? '₹${widget.event.price}' : 'Free'),
             style: customTextStyle(fontSize: Responsive.sp(11)),
           ),
         ],

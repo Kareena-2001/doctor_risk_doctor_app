@@ -12,6 +12,20 @@ part 'blog_view_model.g.dart';
 @riverpod
 class BlogViewModel extends _$BlogViewModel {
   Timer? _debounceTimer;
+  int _blogPage = 1;
+  int _blogLastPage = 1;
+  int _submissionPage = 1;
+  int _submissionLastPage = 1;
+  bool _loadingMoreBlogs = false;
+  bool _loadingMoreSubmissions = false;
+  String? _blogQuery;
+  String? _blogCategory;
+  String? _blogSortBy;
+  int _blogRequestId = 0;
+  int _submissionRequestId = 0;
+
+  bool get hasMoreBlogs => _blogPage < _blogLastPage;
+  bool get hasMoreSubmissions => _submissionPage < _submissionLastPage;
 
   @override
   BlogState build() {
@@ -26,29 +40,65 @@ class BlogViewModel extends _$BlogViewModel {
     String? category,
     String? sortBy,
   }) async {
+    final requestId = ++_blogRequestId;
+    _blogQuery = query;
+    _blogCategory = (category == 'All Topics' || category == null)
+        ? null
+        : category;
+    _blogSortBy = switch (sortBy) {
+      'Newest first' => 'newest',
+      'Oldest first' => 'oldest',
+      'Most Read' => 'most_read',
+      _ => null,
+    };
+    _blogPage = 1;
+    _blogLastPage = 1;
+    _loadingMoreBlogs = false;
     state = state.copyWith(blogList: const AsyncLoading());
-
-    String? mappedSortBy;
-    if (sortBy == 'Newest first') {
-      mappedSortBy = 'newest';
-    } else if (sortBy == 'Oldest first') {
-      mappedSortBy = 'oldest';
-    } else if (sortBy == 'Most Read') {
-      mappedSortBy = 'most_read';
-    }
 
     final result = await AsyncValue.guard(
       () => ref
           .read(blogRepositoryProvider)
           .blogsList(
-            keywords: query,
-            category: (category == 'All Topics' || category == null)
-                ? null
-                : category,
-            sortBy: mappedSortBy,
+            keywords: _blogQuery,
+            category: _blogCategory,
+            sortBy: _blogSortBy,
+            page: '1',
           ),
     );
+    if (requestId != _blogRequestId) return;
+    final response = result.valueOrNull;
+    if (response != null) {
+      _blogPage = response.currentPage;
+      _blogLastPage = response.lastPage;
+    }
     state = state.copyWith(blogList: result);
+  }
+
+  Future<void> loadMoreBlogs() async {
+    final current = state.blogList.valueOrNull;
+    if (current == null || !hasMoreBlogs || _loadingMoreBlogs) return;
+
+    _loadingMoreBlogs = true;
+    final requestId = _blogRequestId;
+    try {
+      final next = await ref
+          .read(blogRepositoryProvider)
+          .blogsList(
+            keywords: _blogQuery,
+            category: _blogCategory,
+            sortBy: _blogSortBy,
+            page: (_blogPage + 1).toString(),
+          );
+      if (requestId != _blogRequestId) return;
+      _blogPage = next.currentPage;
+      _blogLastPage = next.lastPage;
+      state = state.copyWith(
+        blogList: AsyncData(next.copyWith(data: [...current.data, ...next.data])),
+      );
+    } finally {
+      if (requestId == _blogRequestId) _loadingMoreBlogs = false;
+    }
   }
 
   void onSearchChanged(String query, {String? category, String? sortBy}) {
@@ -65,11 +115,48 @@ class BlogViewModel extends _$BlogViewModel {
   }) => fetchBlogList(query: query, category: category, sortBy: sortBy);
 
   Future<void> fetchMySubmissions() async {
+    final requestId = ++_submissionRequestId;
+    _submissionPage = 1;
+    _submissionLastPage = 1;
+    _loadingMoreSubmissions = false;
     state = state.copyWith(mySubmissions: const AsyncLoading());
     final result = await AsyncValue.guard(
-      () => ref.read(blogRepositoryProvider).mySubmissionList(),
+      () => ref.read(blogRepositoryProvider).mySubmissionList(page: 1),
     );
+    if (requestId != _submissionRequestId) return;
+    final response = result.valueOrNull;
+    if (response != null) {
+      _submissionPage = response.currentPage;
+      _submissionLastPage = response.lastPage;
+    }
     state = state.copyWith(mySubmissions: result);
+  }
+
+  Future<void> loadMoreSubmissions() async {
+    final current = state.mySubmissions.valueOrNull;
+    if (current == null || !hasMoreSubmissions || _loadingMoreSubmissions) {
+      return;
+    }
+
+    _loadingMoreSubmissions = true;
+    final requestId = _submissionRequestId;
+    try {
+      final next = await ref
+          .read(blogRepositoryProvider)
+          .mySubmissionList(page: _submissionPage + 1);
+      if (requestId != _submissionRequestId) return;
+      _submissionPage = next.currentPage;
+      _submissionLastPage = next.lastPage;
+      state = state.copyWith(
+        mySubmissions: AsyncData(
+          next.copyWith(data: [...current.data, ...next.data]),
+        ),
+      );
+    } finally {
+      if (requestId == _submissionRequestId) {
+        _loadingMoreSubmissions = false;
+      }
+    }
   }
 
   Future<MySubmissionListViewResponse?> fetchMySubmissionDetails(

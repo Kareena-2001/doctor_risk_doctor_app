@@ -1,5 +1,6 @@
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
+import 'package:Doctors_App/core/widgets/app_refresh_indicator.dart';
 import 'package:Doctors_App/core/widgets/custom_app_bar.dart';
 import 'package:Doctors_App/core/widgets/pagination_footer.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
@@ -48,6 +49,14 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
     }
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      _loadingMore = false;
+      _paginationError = null;
+    });
+    await ref.read(medicalLawFaqViewModelProvider.notifier).medicalLawFaqList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final faqState = ref.watch(medicalLawFaqViewModelProvider);
@@ -57,70 +66,84 @@ class _MedicoLegalFaqScreenState extends ConsumerState<MedicoLegalFaqScreen> {
       appBar: const CustomAppBar(title: 'Medical Law 101'),
       body: faqState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) =>
-            Center(child: Text(error.toString(), textAlign: TextAlign.center)),
+        error: (error, stackTrace) => AppRefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const SizedBox(height: 120),
+              Center(
+                child: Text(error.toString(), textAlign: TextAlign.center),
+              ),
+            ],
+          ),
+        ),
         data: (state) {
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Common medico-legal questions, answered in plain language for Indian practice.',
-                        style: customTextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[800],
-                          fontWeight: FontWeight.w600,
-                        ).copyWith(height: 1.4),
-                      ),
-                    ],
+          return AppRefreshIndicator(
+            onRefresh: _refresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Common medico-legal questions, answered in plain language for Indian practice.',
+                          style: customTextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.w600,
+                          ).copyWith(height: 1.4),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: state.faqs.isEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 40),
-                            child: Text(
-                              'No matching legal topics found.',
-                              style: customTextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: state.faqs.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: Text(
+                                'No matching legal topics found.',
+                                style: customTextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
                               ),
                             ),
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: state.faqs.length,
+                            separatorBuilder: (_, __) => height(12),
+                            itemBuilder: (context, index) {
+                              return _buildFaqTile(state.faqs[index], index);
+                            },
                           ),
-                        )
-                      : ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.faqs.length,
-                          separatorBuilder: (_, __) => height(12),
-                          itemBuilder: (context, index) {
-                            return _buildFaqTile(state.faqs[index], index);
-                          },
-                        ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: PaginationFooter(
-                    hasMore: ref
-                        .read(medicalLawFaqViewModelProvider.notifier)
-                        .hasMore,
-                    isLoading: _loadingMore,
-                    errorMessage: _paginationError,
-                    onLoadMore: _loadMore,
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: PaginationFooter(
+                      hasMore: ref
+                          .read(medicalLawFaqViewModelProvider.notifier)
+                          .hasMore,
+                      isLoading: _loadingMore,
+                      errorMessage: _paginationError,
+                      onLoadMore: _loadMore,
+                    ),
+                  ),
 
-                SocialLinkWidget(),
-                height(50),
-              ],
+                  SocialLinkWidget(),
+                  height(50),
+                ],
+              ),
             ),
           );
         },
