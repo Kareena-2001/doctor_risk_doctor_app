@@ -48,9 +48,6 @@ class _SessionInterceptor extends Interceptor {
     final includeAuth =
         response.requestOptions.extra['includeAuth'] as bool? ?? true;
 
-    // Only an authenticated request's 401 means "your session expired".
-    // A 401 on login/register/etc. (includeAuth: false) just means
-    // invalid credentials — that's the caller's job to show, not ours.
     if (!includeAuth) {
       handler.next(response);
       return;
@@ -389,14 +386,6 @@ class ApiClient {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // Response handling
-  // ─────────────────────────────────────────────────────────────
-
-  /// Parses the raw response, decodes it if the server didn't send
-  /// proper JSON content-type, and throws a friendly [ApiException]
-  /// for every failure case: business failure (status/success == false),
-  /// HTTP error status, validation errors, or an unparseable body.
   Map<String, dynamic> _handleResponse(Response response) {
     final statusCode = response.statusCode ?? 0;
     dynamic rawData = response.data;
@@ -427,8 +416,6 @@ class ApiClient {
 
     final data = rawData;
 
-    // Backend is inconsistent: some endpoints use {"status": true, "msg": ...},
-    // others use {"success": true, "message": ...}. Accept either.
     final bodyOk = data['status'] == true || data['success'] == true;
     final httpOk = statusCode >= 200 && statusCode < 300;
 
@@ -452,8 +439,6 @@ class ApiClient {
     return null;
   }
 
-  /// Handles Laravel-style validation error bodies:
-  /// {"errors": {"email": ["The email field is required."]}}
   String? _extractValidationMessage(Map<String, dynamic> data) {
     final errors = data['errors'];
     if (errors is Map) {
@@ -469,8 +454,6 @@ class ApiClient {
     return null;
   }
 
-  /// Server message wins when present; otherwise falls back to a
-  /// consistent, user-facing message per status code.
   String _friendlyMessage(int statusCode, String? serverMessage) {
     if (serverMessage != null && serverMessage.trim().isNotEmpty) {
       return serverMessage;

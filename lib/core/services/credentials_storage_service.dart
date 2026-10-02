@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CredentialsStorageService {
   static const String _keyRememberMe = 'remember_me';
-  static const String _keySavedEmpId = 'saved_empid';
+  static const String _keySavedLoginId = 'saved_empid';
   static const String _keySavedPassword = 'saved_password';
 
   Future<void> saveCredentials({
@@ -11,14 +11,14 @@ class CredentialsStorageService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyRememberMe, true);
-    await prefs.setString(_keySavedEmpId, login);
+    await prefs.setString(_keySavedLoginId, login);
     await prefs.setString(_keySavedPassword, password);
   }
 
   Future<void> clearCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyRememberMe, false);
-    await prefs.remove(_keySavedEmpId);
+    await prefs.remove(_keySavedLoginId);
     await prefs.remove(_keySavedPassword);
   }
 
@@ -28,7 +28,7 @@ class CredentialsStorageService {
 
     if (!rememberMe) return null;
 
-    final login = prefs.getString(_keySavedEmpId);
+    final login = prefs.getString(_keySavedLoginId);
     final password = prefs.getString(_keySavedPassword);
 
     if (login == null || password == null) return null;

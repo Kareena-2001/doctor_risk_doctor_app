@@ -1,4 +1,3 @@
-
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/core/constants/values/app_text_style.dart';
 import 'package:Doctors_App/theme/app_colors.dart';

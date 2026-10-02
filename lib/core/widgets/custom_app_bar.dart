@@ -11,8 +11,9 @@ import 'app_dialog.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
-  final String? subTitle;final String? infoMessage; // <-- ADD THIS
-  final VoidCallback? onInfo; // <-- ADD THIS
+  final String? subTitle;
+  final String? infoMessage;
+  final VoidCallback? onInfo;
   final Color? backgroundColor;
   final Gradient? gradient;
   final bool showBack;
@@ -43,8 +44,9 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     required this.title,
-    this.subTitle,this.infoMessage, // <-- ADD THIS
-    this.onInfo, // <-- ADD THIS
+    this.subTitle,
+    this.infoMessage,
+    this.onInfo,
     this.backgroundColor,
     this.gradient,
     this.showBack = true,

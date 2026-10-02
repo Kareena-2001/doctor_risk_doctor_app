@@ -8,10 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
-/// Full-screen player used to preview an experience/testimonial video.
-///
-/// Requires the `video_player` package in pubspec.yaml:
-///   video_player: ^2.9.2
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key, required this.videoUrl, this.title});
 
@@ -49,16 +45,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return _controller
         .initialize()
         .then((_) {
-      if (!mounted) return;
-      _hasError = false;
-      _controller.play();
-      _startHideControlsTimer();
-      setState(() {});
-    })
+          if (!mounted) return;
+          _hasError = false;
+          _controller.play();
+          _startHideControlsTimer();
+          setState(() {});
+        })
         .catchError((_) {
-      if (!mounted) return;
-      setState(() => _hasError = true);
-    });
+          if (!mounted) return;
+          setState(() => _hasError = true);
+        });
   }
 
   void _onVideoStateChanged() {
@@ -121,7 +117,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         elevation: 0,
         title: Text(
           widget.title ?? 'Video',
-          style: customTextStyle(fontSize: Responsive.sp(15), color: Colors.white),
+          style: customTextStyle(
+            fontSize: Responsive.sp(15),
+            color: Colors.white,
+          ),
         ),
       ),
       body: FutureBuilder<void>(
@@ -133,7 +132,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
           if (snapshot.connectionState != ConnectionState.done ||
               !_controller.value.isInitialized) {
-            return const Center(child: CircularProgressIndicator(color: Colors.white));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
 
           return GestureDetector(
@@ -165,12 +166,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, size: Responsive.sp(42), color: AppColors.cardRed),
+            Icon(
+              Icons.error_outline_rounded,
+              size: Responsive.sp(42),
+              color: AppColors.cardRed,
+            ),
             height(Responsive.h(12)),
             Text(
               'Unable to play this video.',
               textAlign: TextAlign.center,
-              style: customTextStyle(fontSize: Responsive.sp(13), color: Colors.white70),
+              style: customTextStyle(
+                fontSize: Responsive.sp(13),
+                color: Colors.white70,
+              ),
             ),
             height(Responsive.h(16)),
             OutlinedButton(
@@ -178,7 +186,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 foregroundColor: Colors.white,
                 side: const BorderSide(color: Colors.white54),
               ),
-              onPressed: () => setState(() => _initializeFuture = _initializePlayer()),
+              onPressed: () =>
+                  setState(() => _initializeFuture = _initializePlayer()),
               child: const Text('Retry'),
             ),
           ],
@@ -191,8 +200,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final value = _controller.value;
     final position = value.position;
     final duration = value.duration;
-    final maxMs = duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0;
-    final posMs = position.inMilliseconds.clamp(0, duration.inMilliseconds).toDouble();
+    final maxMs = duration.inMilliseconds > 0
+        ? duration.inMilliseconds.toDouble()
+        : 1.0;
+    final posMs = position.inMilliseconds
+        .clamp(0, duration.inMilliseconds)
+        .toDouble();
 
     return Container(
       color: Colors.black.withValues(alpha: 0.25),
@@ -202,27 +215,39 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           IconButton(
             iconSize: Responsive.sp(56),
             icon: Icon(
-              value.isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+              value.isPlaying
+                  ? Icons.pause_circle_filled_rounded
+                  : Icons.play_circle_fill_rounded,
               color: Colors.white,
             ),
             onPressed: _togglePlayPause,
           ),
           const Spacer(),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: Responsive.w(12), vertical: Responsive.h(8)),
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.w(12),
+              vertical: Responsive.h(8),
+            ),
             child: Row(
               children: [
                 Text(
                   _formatDuration(position),
-                  style: customTextStyle(fontSize: Responsive.sp(11), color: Colors.white),
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: Colors.white,
+                  ),
                 ),
                 width(Responsive.w(8)),
                 Expanded(
                   child: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       trackHeight: 2.5,
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 6,
+                      ),
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 12,
+                      ),
                       activeTrackColor: AppColors.newPri,
                       inactiveTrackColor: Colors.white30,
                       thumbColor: AppColors.newPri,
@@ -232,7 +257,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       max: maxMs,
                       value: posMs,
                       onChanged: (newValue) {
-                        _controller.seekTo(Duration(milliseconds: newValue.toInt()));
+                        _controller.seekTo(
+                          Duration(milliseconds: newValue.toInt()),
+                        );
                       },
                       onChangeStart: (_) => _hideControlsTimer?.cancel(),
                       onChangeEnd: (_) {
@@ -244,7 +271,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 width(Responsive.w(8)),
                 Text(
                   _formatDuration(duration),
-                  style: customTextStyle(fontSize: Responsive.sp(11), color: Colors.white),
+                  style: customTextStyle(
+                    fontSize: Responsive.sp(11),
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),

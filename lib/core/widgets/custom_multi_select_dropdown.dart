@@ -385,10 +385,6 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
 
   bool _isSelected(T item) => _selected.any((e) => widget.isEqual(e, item));
 
-  /// True if this row should render as checked. For a clean single-value
-  /// item this is just _isSelected. For a dirty combined entry like
-  /// "C, D" it's checked only when every comma-separated piece is
-  /// already present in the current selection.
   bool _isRowSelected(T item) {
     final parts = widget
         .itemLabel(item)
@@ -414,7 +410,6 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
         .where((p) => p.isNotEmpty)
         .toList();
 
-    // Clean single-value item — original behavior.
     if (parts.length <= 1) {
       setState(() {
         if (_isSelected(item)) {
@@ -425,10 +420,6 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
       });
       return;
     }
-
-    // Dirty combined master-data entry (e.g. "C, D") — expand into
-    // real degrees where they exist in the list, else synthesize custom
-    // ones, and select/deselect each piece independently.
     final expanded = parts.map((token) {
       return widget.items.firstWhere(
         (e) => widget.itemLabel(e).toLowerCase() == token.toLowerCase(),
@@ -451,17 +442,6 @@ class _DropdownPanelState<T> extends State<_DropdownPanel<T>> {
     });
   }
 
-  // void _submitCustom() {
-  //   final text = _customController.text.trim();
-  //   if (text.isEmpty || widget.onCreateCustomItem == null) return;
-  //
-  //   final item = widget.onCreateCustomItem!(text);
-  //   setState(() {
-  //     _selected.add(item);
-  //     _customController.clear();
-  //     _showCustomInput = false;
-  //   });
-  // }
   void _submitCustom() {
     final raw = _customController.text.trim();
     if (raw.isEmpty || widget.onCreateCustomItem == null) return;

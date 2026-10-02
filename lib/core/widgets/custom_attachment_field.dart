@@ -31,7 +31,7 @@ class CustomAttachmentField extends ConsumerWidget {
         Row(
           children: [
             Text(
-              label ?? '',
+              label,
               style: customTextStyle(
                 color: isDark ? AppColors.darkInk600 : AppColors.labelColor,
                 fontWeight: FontWeight.w600,

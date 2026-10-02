@@ -29,7 +29,10 @@ class CustomRadioGroup<T> extends FormField<T> {
              children: [
                Text(
                  label,
-                 style: AppTheme.label12.copyWith(color: AppColors.labelColor,fontWeight: FontWeight.w700),
+                 style: AppTheme.label12.copyWith(
+                   color: AppColors.labelColor,
+                   fontWeight: FontWeight.w700,
+                 ),
                ),
                height(8),
                Wrap(

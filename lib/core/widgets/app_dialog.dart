@@ -228,10 +228,6 @@ class AppDialog {
     );
   }
 
-  // =====================
-  // CONFIG MAP
-  // =====================
-
   static _DialogConfig _getConfig(DialogType type) {
     switch (type) {
       case DialogType.success:

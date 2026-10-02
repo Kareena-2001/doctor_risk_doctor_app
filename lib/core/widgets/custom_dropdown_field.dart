@@ -131,7 +131,6 @@ class CustomDropdownField<T> extends StatelessWidget {
               ),
             );
           }).toList(),
-
           onChanged: (val) {
             if (controller != null) {
               controller!.text = val.toString();
@@ -141,7 +140,6 @@ class CustomDropdownField<T> extends StatelessWidget {
               onChanged!(val);
             }
           },
-
           validator: (val) {
             if (!isRequired) return null;
 

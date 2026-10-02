@@ -1,4 +1,3 @@
-
 import 'package:Doctors_App/core/constants/responsive.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';

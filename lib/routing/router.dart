@@ -53,10 +53,6 @@ import '../features/product/ui/plan_finder_view.dart';
 import '../features/product/ui/product_hub_view.dart';
 import '../features/product/ui/purchase_wizard_screen.dart';
 import '../features/product/ui/source_details_view.dart';
-import '../features/setting/about_us_screen.dart';
-import '../features/setting/contact_us.dart';
-import '../features/setting/privacy_policy_screen.dart';
-import '../features/setting/terms_conditions_screen.dart';
 import 'routes.dart';
 
 enum SlideDirection { right, left, up, down }
@@ -230,13 +226,7 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(EventCollaborateScreen()),
     ),
-    GoRoute(
-      path: Routes.aboutUs,
-      pageBuilder: (context, state) {
-        final comingFromHome = state.extra as bool? ?? false;
-        return state.slidePage(AboutUsScreen(showBack: comingFromHome));
-      },
-    ),
+
     GoRoute(
       path: Routes.supportHub,
       pageBuilder: (context, state) => state.slidePage(SupportHubScreen()),
@@ -271,22 +261,12 @@ final GoRouter router = GoRouter(
       path: Routes.renewCentre,
       pageBuilder: (context, state) => state.slidePage(RenewalCentreScreen()),
     ),
-    GoRoute(
-      path: Routes.privacyPolicy,
-      pageBuilder: (context, state) => state.slidePage(PrivacyPolicyScreen()),
-    ),
-    GoRoute(
-      path: Routes.termsAndCondition,
-      pageBuilder: (context, state) => state.slidePage(TermsConditionsScreen()),
-    ),
-    GoRoute(
-      path: Routes.contactUs,
-      pageBuilder: (context, state) => state.slidePage(ContactUsPage()),
-    ),
+
     GoRoute(
       path: Routes.notification,
       pageBuilder: (context, state) => state.slidePage(NotificationScreen()),
     ),
+
     GoRoute(
       path: Routes.forgotPassword,
       pageBuilder: (context, state) =>
@@ -307,6 +287,7 @@ final GoRouter router = GoRouter(
         return state.slidePage(CreateNewPassword(id: id));
       },
     ),
+
     GoRoute(
       path: Routes.newsAdvisory,
       pageBuilder: (context, state) =>
@@ -351,9 +332,6 @@ final GoRouter router = GoRouter(
       path: Routes.addBlog,
       builder: (context, state) {
         final blogToEdit = state.extra as SubmissionModel?;
-        debugPrint(
-          'Router addBlog — extra=$blogToEdit (runtimeType=${state.extra.runtimeType})',
-        );
         return AddBlogScreen(
           key: ValueKey(blogToEdit?.id ?? 'new'),
           blogToEdit: blogToEdit,

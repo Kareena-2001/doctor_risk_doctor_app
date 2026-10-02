@@ -22,28 +22,17 @@ class Routes {
   static const emergency = '/emergency';
   static const rewards = '/rewards';
   static const main = '/main';
-  static const accountInformation = '/accountInformation';
-  static const appearances = '/appearances';
-  static const languages = '/languages';
-  static const premium = '/premium';
-  static const offerLetter = '/offerLetter';
   static const homeScreen = '/homeScreen';
   static const addCollaboration = '/addCollaboration';
 
-  // static const planListScreen = '/planListScreen';
   static const String productHub = '/product-hub';
   static const String productList = '/product-list';
   static const String myPlans = '/my-plans';
 
   static const String purchaseWizard = '/purchaseWizard';
 
-  static const aboutUs = '/aboutUs';
-  static const privacyPolicy = '/privacyPolicy';
-  static const termsAndCondition = '/termsAndCondition';
-  static const contactUs = '/contactUs';
   static const notification = '/notification';
 
-  static const helpSupport = '/helpSupport';
   static const faqScreen = '/faqScreen';
   static const medicoLawFaq = '/medicoLawFaq';
   static const productSource = '/product/source';
@@ -88,6 +77,5 @@ class Routes {
   static const scanScreen = '/scanScreen';
 
   static const changePassword = '/changePassword';
-
   static const payment = '/payment';
 }

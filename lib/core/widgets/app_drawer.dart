@@ -34,7 +34,7 @@ class AppDrawer extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildHeader(context, isDark),
-            const SizedBox(height: 12),
+            height(12),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -45,7 +45,7 @@ class AppDrawer extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sectionLabel('CORE SERVICES', isDark),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     _tile(
                       context,
                       icon: Icons.shopping_bag_outlined,
@@ -54,7 +54,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.productList),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.warning_amber_rounded,
@@ -63,7 +62,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.emergency),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.support_agent_rounded,
@@ -72,7 +70,6 @@ class AppDrawer extends ConsumerWidget {
                       isDark: isDark,
                       onTap: () => context.push(Routes.supportHub),
                     ),
-
                     _tile(
                       context,
                       icon: Icons.calendar_month_outlined,

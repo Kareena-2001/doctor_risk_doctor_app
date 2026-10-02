@@ -61,7 +61,6 @@ class CustomBottomNavBar extends StatelessWidget {
               return Stack(
                 alignment: Alignment.centerLeft,
                 children: [
-                  // Sliding pill indicator behind the active icon.
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 320),
                     curve: Curves.easeOutCubic,
@@ -73,10 +72,9 @@ class CustomBottomNavBar extends StatelessWidget {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: (isDark
-                                ? AppColors.darkBrand700
-                                : AppColors.newPri)
-                            .withValues(alpha: 0.12),
+                        color:
+                            (isDark ? AppColors.darkBrand700 : AppColors.newPri)
+                                .withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                     ),
