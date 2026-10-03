@@ -1,6 +1,7 @@
 import 'package:Doctors_App/core/constants/assets.dart';
 import 'package:Doctors_App/core/constants/dimensions.dart';
 import 'package:Doctors_App/extensions/build_context_extension.dart';
+import 'package:Doctors_App/features/authentication/ui/view_model/user_provider.dart';
 import 'package:Doctors_App/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,7 @@ class AppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userState = ref.watch(userProviderProvider);
     Responsive.init(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -33,7 +35,7 @@ class AppDrawer extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeader(context, isDark),
+            _buildHeader(context, isDark, userState.value),
             height(12),
             Expanded(
               child: SingleChildScrollView(
@@ -248,7 +250,15 @@ class AppDrawer extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, bool isDark) {
+  Widget _buildHeader(BuildContext context, bool isDark, UserData? data) {
+    final name = data?.fullName.isNotEmpty == true
+        ? data!.fullName
+        : 'Doctor';
+
+    final email = data?.email?.isNotEmpty == true
+        ? data!.email!
+        : 'doctor@example.com';
+
     return Column(
       children: [
         Padding(
@@ -324,7 +334,7 @@ class AppDrawer extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Dr. Paresh Mathur",
+                      name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(
@@ -333,9 +343,9 @@ class AppDrawer extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    height(2),
+
                     Text(
-                      "doctor@example.com",
+                      email,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: customTextStyle(

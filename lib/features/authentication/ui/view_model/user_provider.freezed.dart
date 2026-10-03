@@ -17,14 +17,14 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$UserData {
-  String get empUid => throw _privateConstructorUsedError;
-  String get employeeId => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
+  int get doctorId => throw _privateConstructorUsedError;
+  String get doctorNo => throw _privateConstructorUsedError;
+  String get prefix => throw _privateConstructorUsedError;
+  String get firstName => throw _privateConstructorUsedError;
+  String? get middleName => throw _privateConstructorUsedError;
+  String get lastName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String get mobile => throw _privateConstructorUsedError;
-  String get designation => throw _privateConstructorUsedError;
-  String? get profilePhoto => throw _privateConstructorUsedError;
-  bool get isStaff => throw _privateConstructorUsedError;
 
   /// Create a copy of UserData
   /// with the given fields replaced by the non-null parameter values.
@@ -39,14 +39,14 @@ abstract class $UserDataCopyWith<$Res> {
       _$UserDataCopyWithImpl<$Res, UserData>;
   @useResult
   $Res call({
-    String empUid,
-    String employeeId,
-    String name,
+    int doctorId,
+    String doctorNo,
+    String prefix,
+    String firstName,
+    String? middleName,
+    String lastName,
     String? email,
     String mobile,
-    String designation,
-    String? profilePhoto,
-    bool isStaff,
   });
 }
 
@@ -65,28 +65,40 @@ class _$UserDataCopyWithImpl<$Res, $Val extends UserData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? empUid = null,
-    Object? employeeId = null,
-    Object? name = null,
+    Object? doctorId = null,
+    Object? doctorNo = null,
+    Object? prefix = null,
+    Object? firstName = null,
+    Object? middleName = freezed,
+    Object? lastName = null,
     Object? email = freezed,
     Object? mobile = null,
-    Object? designation = null,
-    Object? profilePhoto = freezed,
-    Object? isStaff = null,
   }) {
     return _then(
       _value.copyWith(
-            empUid: null == empUid
-                ? _value.empUid
-                : empUid // ignore: cast_nullable_to_non_nullable
+            doctorId: null == doctorId
+                ? _value.doctorId
+                : doctorId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            doctorNo: null == doctorNo
+                ? _value.doctorNo
+                : doctorNo // ignore: cast_nullable_to_non_nullable
                       as String,
-            employeeId: null == employeeId
-                ? _value.employeeId
-                : employeeId // ignore: cast_nullable_to_non_nullable
+            prefix: null == prefix
+                ? _value.prefix
+                : prefix // ignore: cast_nullable_to_non_nullable
                       as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
+            firstName: null == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            middleName: freezed == middleName
+                ? _value.middleName
+                : middleName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastName: null == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
                       as String,
             email: freezed == email
                 ? _value.email
@@ -96,18 +108,6 @@ class _$UserDataCopyWithImpl<$Res, $Val extends UserData>
                 ? _value.mobile
                 : mobile // ignore: cast_nullable_to_non_nullable
                       as String,
-            designation: null == designation
-                ? _value.designation
-                : designation // ignore: cast_nullable_to_non_nullable
-                      as String,
-            profilePhoto: freezed == profilePhoto
-                ? _value.profilePhoto
-                : profilePhoto // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isStaff: null == isStaff
-                ? _value.isStaff
-                : isStaff // ignore: cast_nullable_to_non_nullable
-                      as bool,
           )
           as $Val,
     );
@@ -124,14 +124,14 @@ abstract class _$$UserDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String empUid,
-    String employeeId,
-    String name,
+    int doctorId,
+    String doctorNo,
+    String prefix,
+    String firstName,
+    String? middleName,
+    String lastName,
     String? email,
     String mobile,
-    String designation,
-    String? profilePhoto,
-    bool isStaff,
   });
 }
 
@@ -149,28 +149,40 @@ class __$$UserDataImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? empUid = null,
-    Object? employeeId = null,
-    Object? name = null,
+    Object? doctorId = null,
+    Object? doctorNo = null,
+    Object? prefix = null,
+    Object? firstName = null,
+    Object? middleName = freezed,
+    Object? lastName = null,
     Object? email = freezed,
     Object? mobile = null,
-    Object? designation = null,
-    Object? profilePhoto = freezed,
-    Object? isStaff = null,
   }) {
     return _then(
       _$UserDataImpl(
-        empUid: null == empUid
-            ? _value.empUid
-            : empUid // ignore: cast_nullable_to_non_nullable
+        doctorId: null == doctorId
+            ? _value.doctorId
+            : doctorId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        doctorNo: null == doctorNo
+            ? _value.doctorNo
+            : doctorNo // ignore: cast_nullable_to_non_nullable
                   as String,
-        employeeId: null == employeeId
-            ? _value.employeeId
-            : employeeId // ignore: cast_nullable_to_non_nullable
+        prefix: null == prefix
+            ? _value.prefix
+            : prefix // ignore: cast_nullable_to_non_nullable
                   as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
+        firstName: null == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        middleName: freezed == middleName
+            ? _value.middleName
+            : middleName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastName: null == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
                   as String,
         email: freezed == email
             ? _value.email
@@ -180,18 +192,6 @@ class __$$UserDataImplCopyWithImpl<$Res>
             ? _value.mobile
             : mobile // ignore: cast_nullable_to_non_nullable
                   as String,
-        designation: null == designation
-            ? _value.designation
-            : designation // ignore: cast_nullable_to_non_nullable
-                  as String,
-        profilePhoto: freezed == profilePhoto
-            ? _value.profilePhoto
-            : profilePhoto // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isStaff: null == isStaff
-            ? _value.isStaff
-            : isStaff // ignore: cast_nullable_to_non_nullable
-                  as bool,
       ),
     );
   }
@@ -201,36 +201,36 @@ class __$$UserDataImplCopyWithImpl<$Res>
 
 class _$UserDataImpl extends _UserData with DiagnosticableTreeMixin {
   const _$UserDataImpl({
-    required this.empUid,
-    required this.employeeId,
-    required this.name,
+    required this.doctorId,
+    required this.doctorNo,
+    required this.prefix,
+    required this.firstName,
+    this.middleName,
+    required this.lastName,
     this.email,
     required this.mobile,
-    required this.designation,
-    this.profilePhoto,
-    required this.isStaff,
   }) : super._();
 
   @override
-  final String empUid;
+  final int doctorId;
   @override
-  final String employeeId;
+  final String doctorNo;
   @override
-  final String name;
+  final String prefix;
+  @override
+  final String firstName;
+  @override
+  final String? middleName;
+  @override
+  final String lastName;
   @override
   final String? email;
   @override
   final String mobile;
-  @override
-  final String designation;
-  @override
-  final String? profilePhoto;
-  @override
-  final bool isStaff;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'UserData(empUid: $empUid, employeeId: $employeeId, name: $name, email: $email, mobile: $mobile, designation: $designation, profilePhoto: $profilePhoto, isStaff: $isStaff)';
+    return 'UserData(doctorId: $doctorId, doctorNo: $doctorNo, prefix: $prefix, firstName: $firstName, middleName: $middleName, lastName: $lastName, email: $email, mobile: $mobile)';
   }
 
   @override
@@ -238,14 +238,14 @@ class _$UserDataImpl extends _UserData with DiagnosticableTreeMixin {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'UserData'))
-      ..add(DiagnosticsProperty('empUid', empUid))
-      ..add(DiagnosticsProperty('employeeId', employeeId))
-      ..add(DiagnosticsProperty('name', name))
+      ..add(DiagnosticsProperty('doctorId', doctorId))
+      ..add(DiagnosticsProperty('doctorNo', doctorNo))
+      ..add(DiagnosticsProperty('prefix', prefix))
+      ..add(DiagnosticsProperty('firstName', firstName))
+      ..add(DiagnosticsProperty('middleName', middleName))
+      ..add(DiagnosticsProperty('lastName', lastName))
       ..add(DiagnosticsProperty('email', email))
-      ..add(DiagnosticsProperty('mobile', mobile))
-      ..add(DiagnosticsProperty('designation', designation))
-      ..add(DiagnosticsProperty('profilePhoto', profilePhoto))
-      ..add(DiagnosticsProperty('isStaff', isStaff));
+      ..add(DiagnosticsProperty('mobile', mobile));
   }
 
   @override
@@ -253,30 +253,32 @@ class _$UserDataImpl extends _UserData with DiagnosticableTreeMixin {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserDataImpl &&
-            (identical(other.empUid, empUid) || other.empUid == empUid) &&
-            (identical(other.employeeId, employeeId) ||
-                other.employeeId == employeeId) &&
-            (identical(other.name, name) || other.name == name) &&
+            (identical(other.doctorId, doctorId) ||
+                other.doctorId == doctorId) &&
+            (identical(other.doctorNo, doctorNo) ||
+                other.doctorNo == doctorNo) &&
+            (identical(other.prefix, prefix) || other.prefix == prefix) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.middleName, middleName) ||
+                other.middleName == middleName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.mobile, mobile) || other.mobile == mobile) &&
-            (identical(other.designation, designation) ||
-                other.designation == designation) &&
-            (identical(other.profilePhoto, profilePhoto) ||
-                other.profilePhoto == profilePhoto) &&
-            (identical(other.isStaff, isStaff) || other.isStaff == isStaff));
+            (identical(other.mobile, mobile) || other.mobile == mobile));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    empUid,
-    employeeId,
-    name,
+    doctorId,
+    doctorNo,
+    prefix,
+    firstName,
+    middleName,
+    lastName,
     email,
     mobile,
-    designation,
-    profilePhoto,
-    isStaff,
   );
 
   /// Create a copy of UserData
@@ -290,33 +292,33 @@ class _$UserDataImpl extends _UserData with DiagnosticableTreeMixin {
 
 abstract class _UserData extends UserData {
   const factory _UserData({
-    required final String empUid,
-    required final String employeeId,
-    required final String name,
+    required final int doctorId,
+    required final String doctorNo,
+    required final String prefix,
+    required final String firstName,
+    final String? middleName,
+    required final String lastName,
     final String? email,
     required final String mobile,
-    required final String designation,
-    final String? profilePhoto,
-    required final bool isStaff,
   }) = _$UserDataImpl;
   const _UserData._() : super._();
 
   @override
-  String get empUid;
+  int get doctorId;
   @override
-  String get employeeId;
+  String get doctorNo;
   @override
-  String get name;
+  String get prefix;
+  @override
+  String get firstName;
+  @override
+  String? get middleName;
+  @override
+  String get lastName;
   @override
   String? get email;
   @override
   String get mobile;
-  @override
-  String get designation;
-  @override
-  String? get profilePhoto;
-  @override
-  bool get isStaff;
 
   /// Create a copy of UserData
   /// with the given fields replaced by the non-null parameter values.

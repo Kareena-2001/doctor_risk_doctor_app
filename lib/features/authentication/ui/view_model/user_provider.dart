@@ -13,19 +13,26 @@ part 'user_provider.g.dart';
 @freezed
 class UserData with _$UserData {
   const factory UserData({
-    required String empUid,
-    required String employeeId,
-    required String name,
+    required int doctorId,
+    required String doctorNo,
+    required String prefix,
+    required String firstName,
+    String? middleName,
+    required String lastName,
     String? email,
     required String mobile,
-    required String designation,
-    String? profilePhoto,
-    required bool isStaff,
   }) = _UserData;
 
   const UserData._();
 
-  String get fullName => name;
+  String get fullName {
+    return [
+      prefix,
+      firstName,
+      middleName,
+      lastName,
+    ].where((value) => value != null && value.trim().isNotEmpty).join(' ');
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -54,15 +61,19 @@ class UserProvider extends _$UserProvider {
 
       debugPrint('[USER] JWT decoded successfully');
 
+      final doctorId = decodedToken['doctor_id'];
+
       return UserData(
-        empUid: decodedToken['emp_uid']?.toString() ?? '',
-        employeeId: decodedToken['employee_id']?.toString() ?? '',
-        name: decodedToken['name']?.toString() ?? '',
+        doctorId: doctorId is int
+            ? doctorId
+            : int.tryParse(doctorId?.toString() ?? '') ?? 0,
+        doctorNo: decodedToken['doctor_no']?.toString() ?? '',
+        prefix: decodedToken['prifix']?.toString() ?? '',
+        firstName: decodedToken['first_name']?.toString() ?? '',
+        middleName: decodedToken['middle_name']?.toString(),
+        lastName: decodedToken['last_name']?.toString() ?? '',
         email: decodedToken['email']?.toString(),
-        mobile: decodedToken['mobile']?.toString() ?? '',
-        designation: decodedToken['designation']?.toString() ?? '',
-        profilePhoto: decodedToken['profile_photo']?.toString(),
-        isStaff: decodedToken['isStaff'] == true,
+        mobile: decodedToken['mobile_no']?.toString() ?? '',
       );
     } catch (e, stackTrace) {
       debugPrint('[USER] Error decoding JWT: $e');

@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'referred_doctors_response.freezed.dart';
+
 part 'referred_doctors_response.g.dart';
 
 @freezed
@@ -23,9 +24,16 @@ class ReferredDoctorsResponse with _$ReferredDoctorsResponse {
 @freezed
 class ReferredDoctor with _$ReferredDoctor {
   const factory ReferredDoctor({
+    required int id,
     @JsonKey(name: 'created_on') required String createdOn,
     @JsonKey(name: 'full_name') required String fullName,
     required String status,
+
+    @JsonKey(name: 'category_name') String? categoryName,
+    @JsonKey(name: 'speciality_name') String? specialityName,
+
+    @Default('') String degree,
+    String? remarks,
   }) = _ReferredDoctor;
 
   factory ReferredDoctor.fromJson(Map<String, dynamic> json) =>
