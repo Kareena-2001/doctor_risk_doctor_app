@@ -241,7 +241,6 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) =>
           state.slidePage(AddServiceTicketScreen()),
     ),
-
     GoRoute(
       path: Routes.faqScreen,
       pageBuilder: (context, state) => state.slidePage(FaqScreen()),

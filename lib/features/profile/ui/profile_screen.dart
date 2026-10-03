@@ -1262,9 +1262,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ],
           ),
-
           height(Responsive.h(12)),
-
           Text(
             "You haven't secured a membership yet — plan details, "
             "your Membership ID and tier will appear here once you do.",
@@ -1279,7 +1277,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             height: 45,
             borderRadius: 25,
             borderColor: context.borderColor,
-            width: 220,
+            width: 200,
             fontSize: 14,
             gradient: LinearGradient(
               colors: [AppColors.primary, AppColors.newPri],

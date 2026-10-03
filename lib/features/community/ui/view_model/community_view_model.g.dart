@@ -7,7 +7,7 @@ part of 'community_view_model.dart';
 // **************************************************************************
 
 String _$communityViewModelHash() =>
-    r'b278c3b5187d45abf105d96470196b7855ebe371';
+    r'c84c99988f2e332daac7c5f740ff6311155990de';
 
 /// See also [CommunityViewModel].
 @ProviderFor(CommunityViewModel)

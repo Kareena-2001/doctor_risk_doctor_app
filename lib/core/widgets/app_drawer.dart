@@ -243,7 +243,7 @@ class AppDrawer extends ConsumerWidget {
           ),
         ),
         activeThumbColor: AppColors.brand500,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12),
       ),
     );
   }
